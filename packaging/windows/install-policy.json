@@ -1,7 +1,7 @@
 {
   "id": "pdfcraft",
   "name": "PSG PDF",
-  "upgradeCode": "EA00C367-7270-4C50-9D8B-A7A5C88AD27F",
+  "upgradeCode": "C984AB08-3E67-48B7-8DC2-6F1428165299",
   "sources": [
     "psg-pdf.wxs",
     "installer-ui.wxs"
