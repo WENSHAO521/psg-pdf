@@ -24,6 +24,10 @@ The publish job creates the tag on the pushed commit, uploads every installer wi
 `SHA256SUMS.txt`, and writes the notes: for a beta the changes since the last release, for a
 stable release its `CHANGELOG.md` section.
 
+A stable release is published only when every platform built. A beta is published with the
+platforms that did, and its notes name any that is missing (the macOS runners have at times never
+started for this repository).
+
 ## Commit messages
 
 The changelog is built from [Conventional Commits](https://www.conventionalcommits.org/):

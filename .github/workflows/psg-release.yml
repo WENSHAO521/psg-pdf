@@ -141,6 +141,13 @@ jobs:
   publish:
     name: Publish ${{ needs.release-tag.outputs.tag }}
     needs: [release-tag, build]
+    # A stable release needs every platform. A beta publishes what built: on this repository the
+    # macOS runners have often never started (the job is cancelled while still queued), and a
+    # missing platform shouldn't hold back the Linux and Windows test builds. The notes say what
+    # is missing.
+    if: >-
+      always() && needs.release-tag.outputs.tag != '' &&
+      (needs.build.result == 'success' || contains(needs.release-tag.outputs.tag, '-beta.'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -162,7 +169,10 @@ jobs:
           merge-multiple: true
       - name: Checksums
         working-directory: assets
-        run: sha256sum -- * | tee SHA256SUMS.txt
+        run: |
+          set -euo pipefail
+          compgen -G '*' >/dev/null || { echo '::error::no platform built anything to publish'; exit 1; }
+          sha256sum -- * | tee SHA256SUMS.txt
       - name: Release notes
         run: |
           set -euo pipefail
@@ -183,9 +193,12 @@ jobs:
             echo
             echo "## Downloads"
             echo
-            echo "- macOS 11+ (Apple silicon and Intel): \`psg-pdf-suite-*-macos-universal.dmg\`"
-            echo "- Windows 10+ x64: \`psg-pdf-*-windows-x64.msi\` (installer) or \`*-portable.zip\`"
-            echo "- Linux x86_64: \`.deb\`, \`.rpm\`, \`.tar.gz\` (both apps) or \`.AppImage\` (PSG PDF)"
+            platform() { # <glob> <line>: the line when a file matches, else a note that it is missing
+              if compgen -G "assets/$1" >/dev/null; then echo "- $2"; else echo "- ${2%%:*}: not in this build"; fi
+            }
+            platform '*-macos-universal.dmg' "macOS 11+ (Apple silicon and Intel): \`psg-pdf-suite-*-macos-universal.dmg\`"
+            platform '*-windows-x64.msi' "Windows 10+ x64: \`psg-pdf-*-windows-x64.msi\` (installer) or \`*-portable.zip\`"
+            platform '*-linux-x86_64.deb' "Linux x86_64: \`.deb\`, \`.rpm\`, \`.tar.gz\` (both apps) or \`.AppImage\` (PSG PDF)"
             echo
             echo "PSG Academic PDF needs a TeX installation (pdflatex, latexmk, biber); see the README."
             echo "\`SHA256SUMS.txt\` lists every file's SHA-256."
