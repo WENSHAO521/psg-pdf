@@ -3011,7 +3011,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "6209dab02ae65efa6b5929da789d999864a1e950d94aa1fb5e033ace2affb682"
+sha256 = "88a1af4611b9e8855473a344636dd091b8f1db3ad160299c3c6390112b065a83"
 
 [[asset]]
 path = "assets/app-icon/hicolor/16x16/apps/com.panoramascholarly.psgpdf.png"
@@ -3022,7 +3022,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "a8e326b5dc7d4220676ee7c509509b7bfbf58e26075458bba2062db0d55a2a42"
+sha256 = "9a7ef198646c60e053b4c8e0751db27630e67a160488c50bdf318553b487dbcf"
 
 [[asset]]
 path = "assets/app-icon/hicolor/24x24/apps/com.panoramascholarly.psgpdf.png"
@@ -3033,7 +3033,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "5c4d3515acfa1807ca11eb90ce06679f15a6cb4e9b343070721fb86f27631a05"
+sha256 = "aebee442ee35df1ea3c3d7105b20c5f3ac0bae4889666f25547177da5f985d47"
 
 [[asset]]
 path = "assets/app-icon/hicolor/256x256/apps/com.panoramascholarly.psgpdf.png"
@@ -3044,7 +3044,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "0808f94fcd0efb6ff0c3faa2fc0b6c9e97306e5e67a1586974f491f29b77302e"
+sha256 = "03555fd6782eace5be9c9c6bfc58c6dbdc5e0e7658779f4448a42763a0c46875"
 
 [[asset]]
 path = "assets/app-icon/hicolor/32x32/apps/com.panoramascholarly.psgpdf.png"
@@ -3055,7 +3055,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "1ccacd9446ae2ef33061e2e2fccf8c80ddfb34a84a346153f247dcd780a5e99f"
+sha256 = "7143aaab2aaacc1112e627e2790ff55646001c9d416589fe11d9b69199946baf"
 
 [[asset]]
 path = "assets/app-icon/hicolor/48x48/apps/com.panoramascholarly.psgpdf.png"
@@ -3066,7 +3066,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "ba12c4f3956314c4178865b8995560463e0067318aa08d9feff92eb8dfe257ab"
+sha256 = "c6e421813ea3cf7952a024f7b7c6d0a56ac6723057190bf2d9b1748fd3c03ab4"
 
 [[asset]]
 path = "assets/app-icon/hicolor/512x512/apps/com.panoramascholarly.psgpdf.png"
@@ -3077,7 +3077,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "808dadb73c71044f43c315f021cf47279a06454ccc519802a8ae3e0e42273e8f"
+sha256 = "e607dcaebfb7f303c39477e82b72011f64439627da631a1f764b03007d0c3fd3"
 
 [[asset]]
 path = "assets/app-icon/hicolor/64x64/apps/com.panoramascholarly.psgpdf.png"
@@ -3088,7 +3088,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "93bb4da7f9e38aa3f0a83d08888fcf8ae0e84526c53148555dad19a87c9b4130"
+sha256 = "39b56dcd0f6bdb6a69eade87696da18dd39bd74c22f5aa161f96656f40ae1156"
 
 [[asset]]
 path = "assets/app-icon/hicolor/scalable/apps/com.panoramascholarly.psgpdf.svg"
@@ -3099,7 +3099,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "2ba00a2b0da1da86a9fc8748b57bdfabea6f379ac1787191c29ca46b00789780"
+sha256 = "ad05e2a376e09c304e9172aeea35c6ee852c888e8cd575ffe370d3870e6f9c2e"
 
 [[asset]]
 path = "assets/app-icon/psg-pdf-1024.png"
@@ -3110,7 +3110,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "f9209b5605249ab4cbb104ae951580543e31daa949c949e199a32d9ef10f49bf"
+sha256 = "46668f53d2d2d856ff7a3a8092195ff7a4a529d53b33e51c698c20e64e3f41bd"
 
 [[asset]]
 path = "assets/app-icon/psg-pdf-256.png"
@@ -3121,7 +3121,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "0808f94fcd0efb6ff0c3faa2fc0b6c9e97306e5e67a1586974f491f29b77302e"
+sha256 = "03555fd6782eace5be9c9c6bfc58c6dbdc5e0e7658779f4448a42763a0c46875"
 
 [[asset]]
 path = "assets/app-icon/psg-pdf.icns"
@@ -3132,7 +3132,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "9dcf0241b1e500199f842dd16e47c1fc5d7f421e101ad411f814f54a33538841"
+sha256 = "27a4f707c13c6020dfa70afb6b31b5d2178dee487480e73c8b698a45c310bcd4"
 
 [[asset]]
 path = "assets/app-icon/psg-pdf.ico"
@@ -3143,7 +3143,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "23b86bed78a4183af2ce3057f7d40813656f9736007057284537c09ee1500639"
+sha256 = "6d7dac3b3693f8b185741251b241de7306a06dd49d701b40b66cf04b3dce69a2"
 
 [[asset]]
 path = "assets/app-icon/psg-pdf.svg"
@@ -3154,7 +3154,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "2ba00a2b0da1da86a9fc8748b57bdfabea6f379ac1787191c29ca46b00789780"
+sha256 = "ad05e2a376e09c304e9172aeea35c6ee852c888e8cd575ffe370d3870e6f9c2e"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/128x128/apps/com.panoramascholarly.psgacademicpdf.png"
@@ -3165,7 +3165,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "f976a333622397c7ab0aa2d751090d794a443c57213f2091e22c67fb1ac2992c"
+sha256 = "250609b39f480c110dec2c26c85a56356680f8faa268bd3804431911aa97a7ee"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/16x16/apps/com.panoramascholarly.psgacademicpdf.png"
@@ -3176,7 +3176,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "ffdb4fe5977cf09667f9e55220a5c32098af55c6973c3a14be116799e5da13b8"
+sha256 = "15a71836867485a9d84566df3f5b306599b141957ab1fd1794214d83acfaaede"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/256x256/apps/com.panoramascholarly.psgacademicpdf.png"
@@ -3187,7 +3187,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "a14ec3ee38f2a2daa68fa9f6142fc4c53eda4953bb80a5c059533267961db0d4"
+sha256 = "3ec8301d199769991831141abf11984b41e9de1ee3af92890d897b565eed2de0"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/32x32/apps/com.panoramascholarly.psgacademicpdf.png"
@@ -3198,7 +3198,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "52d7047a9f0818a5ae237f5c289e4e08acf6271e2721ef8c66eabc9c53103fc0"
+sha256 = "60c8f646c3c93712a00b8dad36eb94eed83a7328222b0d3039ee2d0dd74a59cd"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/48x48/apps/com.panoramascholarly.psgacademicpdf.png"
@@ -3209,7 +3209,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "09433d96dcc68978abbf191c8c98d0f063a013333849e319f5a42c60a81c2ed7"
+sha256 = "2a61b0e66774be9c619a6c6350eff51649b644266298a15a2a173e3d46d7a089"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/64x64/apps/com.panoramascholarly.psgacademicpdf.png"
@@ -3220,7 +3220,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "3a311b46c871ebce0e0fc8b257da3b5b4b597e84d24847615eb8069ababeaaff"
+sha256 = "9564baea674a344708545e8e1bf1613b387555eb04970ce245755cade916f9ac"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/scalable/apps/com.panoramascholarly.psgacademicpdf.svg"
@@ -3231,7 +3231,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "a6925d30c3e2d62ccaf38634f66da2052176a2c4f30390b172612da5c2087448"
+sha256 = "7cb4f1ec87d7b599f09f7d1b03d9968f27444728527a7567769dd5b6faea8e9f"
 
 [[asset]]
 path = "assets/app-icon-academic/psg-academic-pdf-1024.png"
@@ -3242,7 +3242,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "ee70fbe8a1097574b7b8d543a76c08796b77411550b5a5f23a552cd770502dde"
+sha256 = "05c757295ef79acfd89dcc4cca6935f72090a2eb4ddf6c069b805390b0f84f80"
 
 [[asset]]
 path = "assets/app-icon-academic/psg-academic-pdf-256.png"
@@ -3253,7 +3253,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "a14ec3ee38f2a2daa68fa9f6142fc4c53eda4953bb80a5c059533267961db0d4"
+sha256 = "3ec8301d199769991831141abf11984b41e9de1ee3af92890d897b565eed2de0"
 
 [[asset]]
 path = "assets/app-icon-academic/psg-academic-pdf.ico"
@@ -3264,7 +3264,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "295b167caacef611c8101a2453e631fb35273b02aa4973ee92d7c973cf928830"
+sha256 = "66beee18b6e934b40981171bde82da81a29d1bb95d8742171049e135478f78b8"
 
 [[asset]]
 path = "assets/app-icon-academic/psg-academic-pdf.icns"
@@ -3275,7 +3275,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF macOS app bundle icon"
-sha256 = "518d35b2eff6e6fdaa4a0068c7ae56b5a262d2acfc3f0fea5283d55063ccdce2"
+sha256 = "cc8bc55057297831993e56a405da7f9e1c81b2b78a4b0e2eec921ecb8da671e0"
 
 [[asset]]
 path = "assets/app-icon-academic/psg-academic-pdf.svg"
@@ -3286,7 +3286,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "a6925d30c3e2d62ccaf38634f66da2052176a2c4f30390b172612da5c2087448"
+sha256 = "7cb4f1ec87d7b599f09f7d1b03d9968f27444728527a7567769dd5b6faea8e9f"
 
 [[asset]]
 path = "templates/academic/psg-article/body.tex"
