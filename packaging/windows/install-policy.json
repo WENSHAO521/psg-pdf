@@ -6,7 +6,7 @@
     "pdfcraft.wxs",
     "installer-ui.wxs"
   ],
-  "icon": "assets/app-icon/pdfcraft.ico",
+  "icon": "assets/app-icon/psg-pdf.ico",
   "localization": [],
   "extensions": [],
   "payloads": [

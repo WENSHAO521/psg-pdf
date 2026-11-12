@@ -4262,31 +4262,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "pdfcraft"
-version = "0.18.1"
-dependencies = [
- "chrono",
- "craft-update",
- "eframe",
- "egui",
- "fmv-macos-events",
- "log",
- "pdfcraft-engine",
- "pdfcraft-platform",
- "pdfcraft-ui-egui",
- "pollster 1.0.1",
- "raw-window-handle",
- "serde_json",
- "uds_windows",
- "wayland-client",
- "wayland-protocols",
- "windows",
- "winit",
- "winresource",
- "winsafe",
-]
-
-[[package]]
 name = "pdfcraft-a11y"
 version = "0.18.1"
 dependencies = [
@@ -5309,6 +5284,57 @@ dependencies = [
  "rusty-fork",
  "tempfile",
  "unarray",
+]
+
+[[package]]
+name = "psg-academic"
+version = "0.18.1"
+dependencies = [
+ "chrono",
+ "log",
+ "serde",
+ "tempfile",
+ "thiserror 2.0.21",
+ "toml",
+]
+
+[[package]]
+name = "psg-academic-pdf"
+version = "0.18.1"
+dependencies = [
+ "chrono",
+ "eframe",
+ "egui",
+ "log",
+ "pdfcraft-render",
+ "psg-academic",
+ "rfd",
+ "tempfile",
+]
+
+[[package]]
+name = "psg-pdf"
+version = "0.18.1"
+dependencies = [
+ "chrono",
+ "craft-update",
+ "eframe",
+ "egui",
+ "fmv-macos-events",
+ "log",
+ "pdfcraft-engine",
+ "pdfcraft-platform",
+ "pdfcraft-ui-egui",
+ "pollster 1.0.1",
+ "raw-window-handle",
+ "serde_json",
+ "uds_windows",
+ "wayland-client",
+ "wayland-protocols",
+ "windows",
+ "winit",
+ "winresource",
+ "winsafe",
 ]
 
 [[package]]

@@ -58,7 +58,7 @@ echo "==> PdfCraft $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $N
 if [[ "$SKIP_BUILD" = 0 ]]; then
   args=()
   for t in "${TARGETS[@]}"; do args+=(--target "$t"); done
-  (cd "$ROOT" && cargo build --release --locked -p pdfcraft -p pdfcraft-cli "${args[@]}")
+  (cd "$ROOT" && cargo build --release --locked -p psg-pdf -p pdfcraft-cli "${args[@]}")
 fi
 
 rm -rf "$WORK"
@@ -116,8 +116,8 @@ notarize() {
 echo "==> assembling $APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 # Executable and icon carry the display name (CFBundleExecutable / CFBundleIconFile).
-cp "$WORK/bin/pdfcraft" "$APP/Contents/MacOS/PdfCraft"
-cp "$ROOT/assets/app-icon/pdfcraft.icns" "$APP/Contents/Resources/PdfCraft.icns"
+cp "$WORK/bin/psg-pdf" "$APP/Contents/MacOS/PdfCraft"
+cp "$ROOT/assets/app-icon/psg-pdf.icns" "$APP/Contents/Resources/PdfCraft.icns"
 # Required embedded-font notices are independent of optional font inputs.
 cp "$ROOT/NOTICE" "$APP/Contents/Resources/NOTICE"
 # The standard About panel (PdfCraft menu > About PdfCraft) shows Credits.rtf under the version:

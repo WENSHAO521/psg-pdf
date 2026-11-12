@@ -76,7 +76,7 @@ if (-not $SkipBuild) {
   [Environment]::SetEnvironmentVariable($flagVar, '-C target-feature=+crt-static')
   # Fail the build (rather than warn) if the icon/VERSIONINFO can't be embedded.
   $env:PDFCRAFT_REQUIRE_WINRES = '1'
-  Invoke-Native "cargo build ($Target)" { cargo build --release --locked -p pdfcraft -p pdfcraft-cli --target $Target }
+  Invoke-Native "cargo build ($Target)" { cargo build --release --locked -p psg-pdf -p pdfcraft-cli --target $Target }
 }
 
 $Bin = Join-Path $TargetDir "$Target\release"
@@ -144,7 +144,7 @@ $Msi = Join-Path $Dist "pdfcraft-$Version-windows-$Arch.msi"
 Invoke-Native 'wix build' {
   wix build (Join-Path $PSScriptRoot 'pdfcraft.wxs') -arch $Arch `
     (Join-Path $PSScriptRoot 'installer-ui.wxs') `
-    -d "Version=$MsiVersion" -d "BinDir=$Stage" -d "ModelsDir=$Models" -d "IconPath=$(Join-Path $Root 'assets\app-icon\pdfcraft.ico')" `
+    -d "Version=$MsiVersion" -d "BinDir=$Stage" -d "ModelsDir=$Models" -d "IconPath=$(Join-Path $Root 'assets\app-icon\psg-pdf.ico')" `
     -d "DocsDir=$Docs" -d "HasCraftFontLicences=$HasCraftFontLicences" `
     -o $Msi
 }
@@ -179,7 +179,7 @@ if ($HasCraftFontLicences -eq 1) {
   Copy-Item (Join-Path $Docs 'OFL-*.txt') $Portable
 }
 # portable.txt beside pdfcraft.exe switches on portable mode: settings, logs, recovery files and new
-# digital IDs go to PdfCraftData\ next to the exe instead of %APPDATA% (#157; see
+# digital IDs go to PSGPDFData\ next to the exe instead of %APPDATA% (#157; see
 # crates/ui-egui/src/portable.rs).
 Copy-Item (Join-Path $PSScriptRoot 'portable.txt') $Portable
 $Zip = Join-Path $Dist "pdfcraft-$Version-windows-$Arch-portable.zip"

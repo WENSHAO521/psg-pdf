@@ -2,7 +2,7 @@
 # Build PdfCraft for FreeBSD and package it:
 #   $DIST/pdfcraft-<version>-freebsd-<arch>.tar.gz   a /usr/local-style tree (bin/, share/)
 #
-# Extract it into /usr/local (or anywhere, and run bin/pdfcraft from there). The desktop entry,
+# Extract it into /usr/local (or anywhere, and run bin/psg-pdf from there). The desktop entry,
 # MIME type, AppStream metadata and icons are the freedesktop ones Linux uses.
 #
 # Usage: packaging/freebsd/package.sh [--skip-build]
@@ -11,7 +11,7 @@ set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
 LINUX="$ROOT/packaging/linux"
-APP_ID=ai.storyteller.pdfcraft
+APP_ID=com.panoramascholarly.psgpdf
 
 SKIP_BUILD=0
 while [[ $# -gt 0 ]]; do
@@ -51,7 +51,7 @@ BASENAME="pdfcraft-$VERSION-freebsd-$ARCH"
 echo "==> PdfCraft $VERSION for FreeBSD $ARCH"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
-  (cd "$ROOT" && cargo build --release --locked ${CARGO_BUILD_TARGET:+--target "$CARGO_BUILD_TARGET"} -p pdfcraft -p pdfcraft-cli)
+  (cd "$ROOT" && cargo build --release --locked ${CARGO_BUILD_TARGET:+--target "$CARGO_BUILD_TARGET"} -p psg-pdf -p pdfcraft-cli)
 fi
 # Cargo puts a cross build under target/<triple>/release.
 BIN="$CARGO_TARGET_DIR/${CARGO_BUILD_TARGET:+$CARGO_BUILD_TARGET/}release"
@@ -62,8 +62,8 @@ rm -rf "$WORK"
 # FreeBSD's install(1) has no -D: create the directories first.
 mkdir -p "$STAGE/bin" "$STAGE/share/applications" "$STAGE/share/mime/packages" "$STAGE/share/metainfo" \
   "$STAGE/share/icons" "$STAGE/share/doc/pdfcraft"
-install -m 755 "$BIN/pdfcraft" "$BIN/pdfcraft-cli" "$STAGE/bin/"
-strip "$STAGE/bin/pdfcraft" "$STAGE/bin/pdfcraft-cli" 2>/dev/null || true
+install -m 755 "$BIN/psg-pdf" "$BIN/pdfcraft-cli" "$STAGE/bin/"
+strip "$STAGE/bin/psg-pdf" "$STAGE/bin/pdfcraft-cli" 2>/dev/null || true
 install -m 644 "$LINUX/$APP_ID.desktop" "$STAGE/share/applications/$APP_ID.desktop"
 install -m 644 "$LINUX/$APP_ID.mime.xml" "$STAGE/share/mime/packages/$APP_ID.xml"
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$PDFCRAFT_BUILD_DATE/g" \
@@ -75,7 +75,7 @@ copy_docs "$STAGE/share/doc/pdfcraft"
 (unset CARGO_BUILD_TARGET; stage_models "$STAGE/share/pdfcraft/models")
 
 if [[ -z "${CARGO_BUILD_TARGET:-}" ]] && [[ "$ARCH" = "$HOST_ARCH" ]]; then
-  "$STAGE/bin/pdfcraft" --version
+  "$STAGE/bin/psg-pdf" --version
 else
   # They cannot run here, so check what they are instead: executables, not libraries or objects.
   # An older file(1) calls a PIE a shared object; its interpreter still marks it as a program.

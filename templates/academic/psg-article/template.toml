@@ -1,0 +1,14 @@
+# PSG Academic PDF template manifest. See templates/academic/README.md for the format.
+id = "psg-article"
+name = "PSG Research Article"
+description = "Single-column research article for Panorama Scholarly Group journals: pdfLaTeX, BibLaTeX with Biber, A4."
+version = "1.0.0"
+licence = "MIT OR Apache-2.0"
+engine = "pdflatex"
+bibliography = "biber"
+main = "main.tex"
+# The file an imported manuscript body replaces.
+body = "body.tex"
+# The file PSG Academic PDF writes the publication metadata to.
+metadata = "psg-metadata.tex"
+files = ["main.tex", "psg-article.cls", "body.tex", "references.bib", "psg-metadata.tex"]

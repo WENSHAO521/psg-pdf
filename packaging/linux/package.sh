@@ -26,7 +26,7 @@ set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
 HERE="$ROOT/packaging/linux"
-APP_ID=ai.storyteller.pdfcraft
+APP_ID=com.panoramascholarly.psgpdf
 
 SKIP_BUILD=0
 FORMATS="appimage deb rpm tar cli"
@@ -54,9 +54,9 @@ echo "==> PdfCraft $VERSION$LABEL_SUFFIX for Linux $ARCH ($FORMATS)"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   if [[ -n "${CROSS_TARGET:-}" ]]; then
-    (cd "$ROOT" && cargo build --release --locked -p pdfcraft -p pdfcraft-cli --target "$CROSS_TARGET")
+    (cd "$ROOT" && cargo build --release --locked -p psg-pdf -p pdfcraft-cli --target "$CROSS_TARGET")
   else
-    (cd "$ROOT" && cargo build --release --locked -p pdfcraft -p pdfcraft-cli)
+    (cd "$ROOT" && cargo build --release --locked -p psg-pdf -p pdfcraft-cli)
   fi
 fi
 BIN="$CARGO_TARGET_DIR/${CROSS_TARGET:+$CROSS_TARGET/}release"
@@ -65,9 +65,9 @@ STAGE="$WORK/root"
 rm -rf "$WORK"
 
 # ---- stage an FHS tree (shared by every format) -------------------------------------------------
-install -Dm755 "$BIN/pdfcraft" "$STAGE/usr/bin/pdfcraft"
+install -Dm755 "$BIN/psg-pdf" "$STAGE/usr/bin/psg-pdf"
 install -Dm755 "$BIN/pdfcraft-cli" "$STAGE/usr/bin/pdfcraft-cli"
-"${CROSS_COMPILE:-}strip" "$STAGE/usr/bin/pdfcraft" "$STAGE/usr/bin/pdfcraft-cli" 2>/dev/null || true
+"${CROSS_COMPILE:-}strip" "$STAGE/usr/bin/psg-pdf" "$STAGE/usr/bin/pdfcraft-cli" 2>/dev/null || true
 install -Dm644 "$HERE/$APP_ID.desktop" "$STAGE/usr/share/applications/$APP_ID.desktop"
 install -Dm644 "$HERE/$APP_ID.mime.xml" "$STAGE/usr/share/mime/packages/$APP_ID.xml"
 mkdir -p "$STAGE/usr/share/metainfo"
@@ -153,7 +153,7 @@ if has appimage; then
   fi
   APPDIR="$WORK/PdfCraft.AppDir"
   cp -R "$STAGE" "$APPDIR"
-  ln -s usr/bin/pdfcraft "$APPDIR/AppRun"
+  ln -s usr/bin/psg-pdf "$APPDIR/AppRun"
   cp "$HERE/$APP_ID.desktop" "$APPDIR/$APP_ID.desktop"
   cp "$ROOT/assets/app-icon/hicolor/256x256/apps/$APP_ID.png" "$APPDIR/$APP_ID.png"
   ln -s "$APP_ID.png" "$APPDIR/.DirIcon"
