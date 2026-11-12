@@ -4,6 +4,7 @@ description = "PSG Academic PDF: offline publication typesetting of accepted art
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish = false
 
 [lints]
 workspace = true

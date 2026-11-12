@@ -3341,7 +3341,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "f8efa455904fc0103e547a534eace2dca0cf19bdb335ab68a5f61bc04f15a085"
+sha256 = "8344b987a5120dad9e5c257f0b5168c5766bfdcafe402e2a5494b367e5c36f77"
 
 [[asset]]
 path = "templates/academic/psg-article/psg-metadata.tex"

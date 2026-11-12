@@ -118,11 +118,12 @@
 \fancyhead[RO]{\small\ifx\psg@shorttitle\@empty\psg@title\else\psg@shorttitle\fi}
 \fancyhead[LO,RE]{\small\thepage}
 \fancyfoot[C]{\footnotesize\ifx\psg@doi\@empty\else\href{https://doi.org/\psg@doi}{https://doi.org/\psg@doi}\fi}
+% No \par in a fancyhdr argument: fancyhdr before 4.0 (TeX Live 2021) reads it as a short macro.
 \fancypagestyle{psgfirst}{%
   \fancyhf{}%
   \renewcommand{\headrulewidth}{0pt}%
   \fancyfoot[C]{\parbox[b]{\textwidth}{\footnotesize\raggedright
-    \ifx\psg@copyright\@empty\else\psg@copyright\par\fi
+    \ifx\psg@copyright\@empty\else\psg@copyright\\\fi
     \psg@licence}}%
 }
 

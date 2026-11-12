@@ -4,6 +4,7 @@ description = "PSG Academic PDF core: local TeX detection, sandboxed latexmk/pdf
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+publish = false
 
 [lints]
 workspace = true
