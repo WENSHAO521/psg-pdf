@@ -241,11 +241,11 @@ fn the_languages_offered_are_the_embedded_ones_of_the_list() {
         return;
     }
     let listed: Vec<&str> = LANGUAGES.iter().map(|l| l.code).collect();
-    assert_eq!(all, listed, "every language PdfCraft lists has its catalog in craft-i18n");
+    assert_eq!(all, listed, "every language PSG PDF lists has its catalog in craft-i18n");
     assert!(Lang::from_code("pseudo").is_none(), "the pseudo locale is never a setting");
     // craft-i18n has catalogs PdfCraft doesn't offer (yet); they are never offered here.
     for code in CRAFT_I18N.iter().map(|(c, ..)| *c).filter(|c| !listed.contains(c)) {
-        assert_eq!(Lang::from_code(code), None, "{code} is not one of PdfCraft's languages");
+        assert_eq!(Lang::from_code(code), None, "{code} is not one of PSG PDF's languages");
     }
 }
 
@@ -632,7 +632,7 @@ fn plural_forms_follow_the_rules_pdfcraft_had() {
             (1..=6).map(|f| (f, fixture(f))).find(|(_, l)| trn(*l, 5, "{n} x", "{n} xs").starts_with('F')).expect("a form count loads");
         if forms != pdfcraft_forms {
             split.push((info.code, pdfcraft_forms, forms));
-            assert_eq!(pdfcraft_forms, 1, "{}: PdfCraft listed {pdfcraft_forms} forms, CLDR {forms}", info.code);
+            assert_eq!(pdfcraft_forms, 1, "{}: PSG PDF listed {pdfcraft_forms} forms, CLDR {forms}", info.code);
             continue;
         }
         for n in plural_counts() {
@@ -640,7 +640,7 @@ fn plural_forms_follow_the_rules_pdfcraft_had() {
         }
     }
     let codes: Vec<&str> = split.iter().map(|(c, ..)| *c).collect();
-    assert_eq!(codes, ["tr", "hi"], "the languages CLDR gives more forms than PdfCraft had");
+    assert_eq!(codes, ["tr", "hi"], "the languages CLDR gives more forms than PSG PDF had");
     if !needs_catalogs() {
         return;
     }
@@ -649,7 +649,7 @@ fn plural_forms_follow_the_rules_pdfcraft_had() {
         for (_, source, forms) in lang.catalog_texts().flat_map(rows).filter(|(c, ..)| c == "@plural") {
             let distinct: std::collections::BTreeSet<&str> = forms.split('|').collect();
             if distinct.len() > 1 {
-                println!("{code}: {source:?} has forms that differ, so PdfCraft's single form is no longer the only text: {forms:?}");
+                println!("{code}: {source:?} has forms that differ, so PSG PDF's single form is no longer the only text: {forms:?}");
             }
         }
     }
@@ -1296,7 +1296,7 @@ fn arabic_catalog_stays_logical() {
     needs_catalogs!();
     let ar = arabic();
     assert_eq!(tr(ar, "Save as…"), "حفظ باسم…");
-    assert_eq!(tr(ar, "About PdfCraft"), "حول PdfCraft");
+    assert_eq!(tr(ar, "About PSG PDF"), "حول PSG PDF");
     assert_eq!(tr(ar, "Name:"), "الاسم:");
     assert_eq!(tr(ar, "Issued by: "), "صادرة عن: ");
     // Placeholders survive in their logical positions.
@@ -1426,7 +1426,7 @@ fn unused_id_rows() -> String {
                 continue;
             }
             let Some(command) = pdfcraft_engine::commands::command(&id) else {
-                out.push(format!("{}: @id {id:?} names a command PdfCraft doesn't have", lang.code()));
+                out.push(format!("{}: @id {id:?} names a command PSG PDF doesn't have", lang.code()));
                 continue;
             };
             if !same_shape(&translation, command.label) {

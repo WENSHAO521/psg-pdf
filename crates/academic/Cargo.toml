@@ -1,0 +1,22 @@
+[package]
+name = "psg-academic"
+description = "PSG Academic PDF core: local TeX detection, sandboxed latexmk/pdfLaTeX compilation, journal templates and publication metadata"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+thiserror = { workspace = true }
+log = { workspace = true }
+# Publication dates are validated as calendar dates through chrono (no hand-rolled calendar code).
+chrono = { workspace = true }
+# Template manifests and saved projects are TOML; the same major version xtask and ui-egui use.
+toml = "1"
+
+[dev-dependencies]
+tempfile = "3.27"

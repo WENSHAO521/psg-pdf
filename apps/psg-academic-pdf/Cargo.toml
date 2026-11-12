@@ -1,0 +1,26 @@
+[package]
+name = "psg-academic-pdf"
+description = "PSG Academic PDF: offline publication typesetting of accepted articles with pdfLaTeX"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+# Templates, metadata, TeX detection and sandboxed latexmk compilation.
+psg-academic = { path = "../../crates/academic" }
+# The shared PdfCraft engine draws the PDF preview (the same renderer PSG PDF uses).
+pdfcraft-render = { workspace = true }
+eframe = { workspace = true, features = ["default_fonts", "wgpu", "glow", "accesskit", "wayland", "x11", "persistence"] }
+egui = { workspace = true, features = ["default_fonts"] }
+# Native open/save dialogs, as in PSG PDF.
+rfd = { workspace = true }
+log = { workspace = true }
+# Timestamped project folder names go through chrono.
+chrono = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3.27"

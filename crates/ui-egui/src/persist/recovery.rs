@@ -168,20 +168,20 @@ impl RecoveryStore {
     }
 
     /// `Recovery` in the portable data folder in portable mode ([`crate::portable`]), otherwise
-    /// the platform's per-user data folder: `~/Library/Application Support/PdfCraft/Recovery`
-    /// (macOS), `%LOCALAPPDATA%\PdfCraft\Recovery` (Windows), or
-    /// `$XDG_DATA_HOME/pdfcraft/recovery` / `~/.local/share/pdfcraft/recovery` (others).
+    /// the platform's per-user data folder: `~/Library/Application Support/PSG PDF/Recovery`
+    /// (macOS), `%LOCALAPPDATA%\PSG PDF\Recovery` (Windows), or
+    /// `$XDG_DATA_HOME/psgpdf/recovery` / `~/.local/share/psgpdf/recovery` (others).
     pub fn default_dir() -> Option<PathBuf> {
         if let Some(dir) = crate::portable::data_dir() {
             return Some(dir.join("Recovery"));
         }
         let env = |k: &str| std::env::var_os(k).filter(|v| !v.is_empty()).map(PathBuf::from);
         if cfg!(target_os = "macos") {
-            env("HOME").map(|h| h.join("Library/Application Support/PdfCraft/Recovery"))
+            env("HOME").map(|h| h.join("Library/Application Support/PSG PDF/Recovery"))
         } else if cfg!(windows) {
-            env("LOCALAPPDATA").map(|d| d.join("PdfCraft").join("Recovery"))
+            env("LOCALAPPDATA").map(|d| d.join(crate::brand::DATA_FOLDER).join("Recovery"))
         } else {
-            env("XDG_DATA_HOME").or_else(|| env("HOME").map(|h| h.join(".local/share"))).map(|d| d.join("pdfcraft/recovery"))
+            env("XDG_DATA_HOME").or_else(|| env("HOME").map(|h| h.join(".local/share"))).map(|d| d.join("psgpdf/recovery"))
         }
     }
 
@@ -192,7 +192,7 @@ impl RecoveryStore {
 
 /// The OCR Verify screen's per-language user dictionary folder, next to the recovery store:
 /// the portable data folder's `Dictionary` in portable mode ([`crate::portable`]), otherwise
-/// `…/PdfCraft/Dictionary` in the platform's per-user data folder. `None` where files are not
+/// `…/PSG PDF/Dictionary` in the platform's per-user data folder. `None` where files are not
 /// kept (the web build).
 pub fn default_dictionary_dir() -> Option<PathBuf> {
     if let Some(dir) = crate::portable::data_dir() {
@@ -200,11 +200,11 @@ pub fn default_dictionary_dir() -> Option<PathBuf> {
     }
     let env = |k: &str| std::env::var_os(k).filter(|v| !v.is_empty()).map(PathBuf::from);
     if cfg!(target_os = "macos") {
-        env("HOME").map(|h| h.join("Library/Application Support/PdfCraft/Dictionary"))
+        env("HOME").map(|h| h.join("Library/Application Support/PSG PDF/Dictionary"))
     } else if cfg!(windows) {
-        env("LOCALAPPDATA").map(|d| d.join("PdfCraft").join("Dictionary"))
+        env("LOCALAPPDATA").map(|d| d.join(crate::brand::DATA_FOLDER).join("Dictionary"))
     } else {
-        env("XDG_DATA_HOME").or_else(|| env("HOME").map(|h| h.join(".local/share"))).map(|d| d.join("pdfcraft/dictionary"))
+        env("XDG_DATA_HOME").or_else(|| env("HOME").map(|h| h.join(".local/share"))).map(|d| d.join("psgpdf/dictionary"))
     }
 }
 

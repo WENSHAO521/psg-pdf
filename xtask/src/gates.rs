@@ -652,9 +652,9 @@ mod tests {
     // The bundle id must match the app id the binary uses; renames change both (#174).
     #[test]
     fn macos_bundle_id_matches_app_id() {
-        assert!(read("packaging/macos/Info.plist.in").contains("<string>ai.storyteller.pdfcraft</string>"), "bundle id");
-        let main = read("apps/pdfcraft/src/main.rs");
-        assert!(main.contains(r#"const APP_ID: &str = "ai.storyteller.pdfcraft""#), "APP_ID drifted from the bundle id");
+        assert!(read("packaging/macos/Info.plist.in").contains("<string>com.panoramascholarly.psgpdf</string>"), "bundle id");
+        let main = read("apps/psg-pdf/src/main.rs");
+        assert!(main.contains(r#"const APP_ID: &str = "com.panoramascholarly.psgpdf""#), "APP_ID drifted from the bundle id");
     }
 
     // Committed file with `<!-- -->` comments stripped, so a commented-out claim cannot pass.

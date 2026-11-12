@@ -1,5 +1,5 @@
 //! Portable mode (#157): a marker file beside the executable ([`MARKERS`]) keeps the settings,
-//! log files, crash-recovery autosaves and new digital IDs in `<exe dir>/PdfCraftData`, so a
+//! log files, crash-recovery autosaves and new digital IDs in `<exe dir>/PSGPDFData`, so a
 //! portable copy (on a USB stick, say) writes nothing to `%APPDATA%`. In `%LOCALAPPDATA%` it keeps
 //! only its single-instance socket and lock, two empty files in `%LOCALAPPDATA%\PdfCraft` that
 //! must stay private to the user (#889, `apps/pdfcraft/src/single_instance.rs`). The Windows
@@ -15,12 +15,12 @@ use std::sync::OnceLock;
 /// Files beside the executable that switch on portable mode (either one; contents are ignored).
 pub const MARKERS: [&str; 2] = ["portable.txt", "PdfCraft.portable"];
 /// The data folder created beside the executable in portable mode.
-pub const DATA_DIR: &str = "PdfCraftData";
+pub const DATA_DIR: &str = "PSGPDFData";
 
 /// The outcome of looking for a portable marker.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Portable {
-    /// `<exe dir>/PdfCraftData` when portable mode is on, `None` otherwise.
+    /// `<exe dir>/PSGPDFData` when portable mode is on, `None` otherwise.
     pub dir: Option<PathBuf>,
     /// Set when a marker was found but its data folder can't be written.
     pub unwritable: Option<Unwritable>,
@@ -134,7 +134,7 @@ mod tests {
     #[test]
     fn an_existing_data_folder_is_reused() {
         let exe = temp("reuse");
-        std::fs::write(exe.join("portable.txt"), b"PdfCraft portable mode").unwrap();
+        std::fs::write(exe.join("portable.txt"), b"PSG PDF portable mode").unwrap();
         std::fs::create_dir_all(exe.join(DATA_DIR)).unwrap();
         std::fs::write(exe.join(DATA_DIR).join("app.ron"), b"()").unwrap();
         assert_eq!(resolve(Some(&exe)).dir, Some(exe.join(DATA_DIR)));

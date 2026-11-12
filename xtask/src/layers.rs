@@ -86,8 +86,11 @@ pub const TABLE: &[(&str, Class)] = &[
     // test support
     ("testkit", Class::Testkit),
     ("oracle", Class::Testkit),
+    // PSG Academic PDF's typesetting core (no UI; depends on no other workspace crate)
+    ("psg-academic", Class::Layer(4)),
     // L8 apps + tooling
-    ("pdfcraft", Class::Exempt),
+    ("psg-pdf", Class::Exempt),
+    ("psg-academic-pdf", Class::Exempt),
     ("cli", Class::Exempt),
     ("web", Class::Exempt),
     ("ocr-worker", Class::Exempt),
@@ -290,7 +293,7 @@ mod tests {
             c("pdfcraft-render", &[("hayro", Normal, false), ("lopdf", Normal, false)]),
             c("pdfcraft-engine", &[("pdfcraft-render", Normal, true)]),
             c("pdfcraft-ui-egui", &[("pdfcraft-engine", Normal, true), ("egui", Normal, false), ("egui_kittest", Dev, false)]),
-            c("pdfcraft", &[("pdfcraft-ui-egui", Normal, true)]),
+            c("psg-pdf", &[("pdfcraft-ui-egui", Normal, true)]),
         ];
         assert!(check(&g).is_empty(), "{:?}", check(&g));
     }
@@ -357,7 +360,7 @@ mod tests {
 
     #[test]
     fn apps_exempt() {
-        for app in ["pdfcraft", "pdfcraft-cli", "pdfcraft-web", "pdfcraft-ocr-worker", "xtask"] {
+        for app in ["psg-pdf", "psg-academic-pdf", "pdfcraft-cli", "pdfcraft-web", "pdfcraft-ocr-worker", "xtask"] {
             assert!(check(&[c(app, &[("egui", Normal, false), ("pdfcraft-ui-egui", Normal, true)])]).is_empty());
         }
     }

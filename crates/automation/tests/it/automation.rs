@@ -79,7 +79,7 @@ fn saving_a_pdf_keeps_the_destinations_extended_attributes() {
     use rustix::fs::{XattrFlags, getxattr, setxattr};
     let dir = workdir("save-xattrs");
     let target = dir.join("a.pdf");
-    let tags = b"<plist version=\"1.0\"><array><string>PdfCraft\n6</string></array></plist>";
+    let tags = b"<plist version=\"1.0\"><array><string>PSG PDF\n6</string></array></plist>";
     let binary = b"\0\xffpdfcraft\0";
     let attributes: &[(&str, &[u8])] = &[("com.apple.metadata:_kMDItemUserTags", tags), ("com.pdfcraft.test", binary)];
     for (name, value) in attributes {
@@ -6267,7 +6267,7 @@ fn printing_through_tools() {
     let mut a = auto(&dir);
     let doc = ok(&mut a, "doc_open", json!({ "path": "a.pdf" }))["doc"].as_u64().unwrap();
     assert!(ok(&mut a, "printers", json!({}))["printers"].is_array());
-    let none = ok(&mut a, "printer_options", json!({ "printer": "No_Such_Queue_PdfCraft" }));
+    let none = ok(&mut a, "printer_options", json!({ "printer": "No_Such_Queue_PSG PDF" }));
     assert_eq!((none["count"].as_u64(), none["options"].as_array().map(Vec::len)), (Some(0), Some(0)));
     assert!(matches!(a.call("printer_options", &json!({})), Err(ToolError::InvalidArgs(_))));
     assert!(matches!(
@@ -6296,7 +6296,7 @@ fn printing_through_tools() {
 fn printer_papers_through_tools() {
     let dir = workdir("printer-papers");
     let mut a = auto(&dir);
-    let none = ok(&mut a, "printer_papers", json!({ "printer": "No_Such_Queue_PdfCraft" }));
+    let none = ok(&mut a, "printer_papers", json!({ "printer": "No_Such_Queue_PSG PDF" }));
     assert_eq!((none["count"].as_u64(), none["papers"].as_array().map(Vec::len)), (Some(0), Some(0)));
     assert!(none["default"].is_null());
     assert!(matches!(a.call("printer_papers", &json!({})), Err(ToolError::InvalidArgs(_))));

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AppStream metadata. Template: package.sh substitutes @VERSION@ and @DATE@. -->
+<component type="desktop-application">
+  <id>com.panoramascholarly.psgacademicpdf</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT OR Apache-2.0</project_license>
+  <name>PSG Academic PDF</name>
+  <summary>Typeset journal articles to PDF with LaTeX</summary>
+  <developer id="com.panoramascholarly">
+    <name>Panorama Scholarly Group</name>
+  </developer>
+  <description>
+    <p>
+      PSG Academic PDF typesets final-publication journal articles: it fills a journal template with
+      the manuscript and its publication metadata, compiles it with the local TeX installation
+      (pdfLaTeX, latexmk, BibLaTeX and Biber) in an isolated project folder with shell escape off and
+      a time limit, and shows the PDF, the problems and the compile log. Pandoc, when installed,
+      converts DOCX manuscripts. It is part of the PSG PDF Suite and shares its core with PSG PDF.
+    </p>
+  </description>
+  <launchable type="desktop-id">com.panoramascholarly.psgacademicpdf.desktop</launchable>
+  <icon type="stock">com.panoramascholarly.psgacademicpdf</icon>
+  <url type="homepage">https://github.com/WENSHAO521/psg-pdf</url>
+  <url type="bugtracker">https://github.com/WENSHAO521/psg-pdf/issues</url>
+  <categories>
+    <category>Office</category>
+    <category>Publishing</category>
+  </categories>
+  <keywords>
+    <keyword>latex</keyword>
+    <keyword>journal</keyword>
+    <keyword>typesetting</keyword>
+  </keywords>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="@VERSION@" date="@DATE@"/>
+  </releases>
+  <provides>
+    <binary>psg-academic-pdf</binary>
+  </provides>
+</component>

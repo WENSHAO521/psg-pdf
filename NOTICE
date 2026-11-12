@@ -1,11 +1,17 @@
-PdfCraft
+PSG PDF and PSG Academic PDF
+Copyright (c) 2026 Panorama Scholarly Group and the PSG PDF contributors.
+
+Based on PdfCraft
 Copyright (c) 2026 ArtCraft Team and the PdfCraft contributors.
-Licensed under the MIT License or the Apache License, Version 2.0, at your option
+
+Both are licensed under the MIT License or the Apache License, Version 2.0, at your option
 (LICENSE-MIT, LICENSE-APACHE).
 
-The ArtCraft name, wordmark and logos in docs/brand/ are trademarks of the ArtCraft Team. They are
-not open source and are not covered by the license above; their terms are in
-docs/brand/LICENSE-brand.txt.
+PSG PDF is a modified version of PdfCraft. As PdfCraft's brand terms require of modified versions,
+the ArtCraft name, wordmark and logos have been removed from it; PSG PDF is not made, sponsored or
+endorsed by the ArtCraft Team. The PSG PDF and PSG Academic PDF icons (assets/app-icon/,
+assets/app-icon-academic/) and journal templates (templates/academic/) are original to this
+repository and licensed like the code.
 
 Third-party material
 
