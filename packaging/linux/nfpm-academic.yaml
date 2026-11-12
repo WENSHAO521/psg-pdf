@@ -1,0 +1,67 @@
+# .deb and .rpm packages of PSG Academic PDF (nfpm: https://nfpm.goreleaser.com). Run by
+# package-academic.sh, which stages the file tree, substitutes its path for ${STAGE} and exports
+# VERSION, RELEASE and NFPM_ARCH. A package of its own, so it installs, upgrades and uninstalls
+# independently of PSG PDF.
+name: psg-academic-pdf
+arch: ${NFPM_ARCH}
+platform: linux
+version: ${VERSION}
+version_schema: semver
+release: ${RELEASE}
+section: tex
+priority: optional
+maintainer: ${PDFCRAFT_MAINTAINER}
+vendor: Panorama Scholarly Group
+homepage: https://github.com/WENSHAO521/psg-pdf
+license: MIT OR Apache-2.0
+description: |-
+  Final-publication typesetting for journal articles: journal templates, publication
+  metadata, pdfLaTeX/latexmk/Biber compilation in an isolated project folder (shell
+  escape off, time limit), PDF preview, compile log and export. Uses the local TeX
+  installation; Pandoc, when installed, converts DOCX manuscripts.
+
+# Windowing and the GPU are loaded at runtime (as for PSG PDF). TeX is used from the PATH and is
+# never bundled, so it is a recommendation: the app says plainly what is missing.
+overrides:
+  deb:
+    depends:
+      - libc6 (>= 2.35)
+      - libgcc-s1
+      - libxkbcommon0
+      - libvulkan1 | libegl1
+    recommends:
+      - texlive-latex-recommended
+      - texlive-latex-extra
+      - texlive-bibtex-extra
+      - latexmk
+      - biber
+      - libwayland-client0
+      - libx11-6
+      - libxcursor1
+      - libxi6
+      - libxrandr2
+      - xdg-desktop-portal
+    suggests:
+      - pandoc
+  rpm:
+    depends:
+      - libc.so.6()(64bit)
+      - libm.so.6(GLIBC_2.35)(64bit)
+      - libgcc_s.so.1()(64bit)
+      - libxkbcommon.so.0()(64bit)
+      - (libvulkan.so.1()(64bit) or libEGL.so.1()(64bit))
+    recommends:
+      - texlive-scheme-medium
+      - latexmk
+      - biber
+      - xdg-desktop-portal
+    suggests:
+      - pandoc
+
+contents:
+  - src: ${STAGE}/usr/bin/psg-academic-pdf
+    dst: /usr/bin/psg-academic-pdf
+    file_info: { mode: 0755 }
+  - src: ${STAGE}/usr/share/
+    dst: /usr/share/
+    type: tree

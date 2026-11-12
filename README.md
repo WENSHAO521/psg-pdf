@@ -64,8 +64,34 @@ cargo build --release -p psg-academic-pdf
 cargo build --release
 ```
 
+Interface translations come from the craft-i18n catalogs, an optional build input. Without them
+PSG PDF is English only and the tests that need a translated interface say they are skipped.
+To embed them, check them out at the pinned commit and point the build at them:
+
+```sh
+packaging/fetch-craft-i18n.sh                 # clones storytold/craft-i18n at craft-i18n.rev into target/craft-i18n
+export CRAFT_I18N_DIR="$PWD/target/craft-i18n"
+```
+
+The catalogs are written for PdfCraft; the build embeds copies with the app name replaced, so the
+translated interface says PSG PDF (crates/ui-egui/build.rs).
+
 Japanese interface text and writing Japanese into PDFs need the optional `CRAFT_FONTS_DIR` build
 input, as in PdfCraft (see AGENTS.md §1.4). Without it everything else works.
+
+### Two independent apps
+
+The two apps build, install and run on their own. Neither needs the other installed; PSG Academic
+PDF's **Open in PSG PDF** button only works when PSG PDF is beside it.
+
+| | PSG PDF | PSG Academic PDF |
+|---|---|---|
+| Cargo package / binary | `psg-pdf` | `psg-academic-pdf` |
+| App ID (Linux desktop, macOS bundle) | `com.panoramascholarly.psgpdf` | `com.panoramascholarly.psgacademicpdf` |
+| Settings and data folders (Linux) | `~/.config/psg-pdf`, `~/.local/share/psgpdf` (logs, recovery) | `~/.local/share/com.panoramascholarly.psgacademicpdf` (window state), `~/.local/share/psgacademicpdf/projects` |
+| macOS bundle / DMG | `PSG PDF.app`, `psg-pdf-<v>-macos-<arch>.dmg` | `PSG Academic PDF.app`, `psg-academic-pdf-<v>-macos-<arch>.dmg` |
+| Linux packages | `packaging/linux/package.sh` (deb, rpm, AppImage, tar) | `packaging/linux/package-academic.sh` (deb, rpm, tar) |
+| Windows | `packaging/windows/package.ps1` (MSI, portable) | build only; no installer yet |
 
 ### TeX for PSG Academic PDF
 
@@ -108,6 +134,8 @@ psg-academic-pdf compile ./my-article --manuscript paper.tex --timeout 120 --out
 
 ## Testing
 
+Set `CRAFT_I18N_DIR` (above) to run the interface tests that need the translations too.
+
 ```sh
 cargo test -p psg-academic          # typesetting core; the TeX tests skip when TeX is missing
 cargo test -p psg-academic-pdf      # academic app
@@ -116,6 +144,10 @@ cargo test -p pdfcraft-ui-egui      # shared interface (long)
 cargo xtask layers                  # dependency layering
 cargo xtask assets                  # asset attribution (ATTRIBUTION.toml)
 ```
+
+`.github/workflows/psg-build.yml` builds both apps and the CLI on Linux, Windows and macOS, and on
+Linux runs the academic and app tests against a real TeX Live, latexmk, Biber and Pandoc. It
+builds no installer and publishes nothing.
 
 ## Licence and attribution
 

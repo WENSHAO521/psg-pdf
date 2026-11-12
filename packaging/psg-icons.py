@@ -145,8 +145,7 @@ def main():
         draw(1024, ed).save(os.path.join(out, f"{name}-1024.png"), optimize=True)
         draw(256, ed).save(os.path.join(out, f"{name}-256.png"), optimize=True)
         draw(256, ed).save(os.path.join(out, f"{name}.ico"), sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)])
-        if name == "psg-pdf":
-            draw(1024, ed).save(os.path.join(out, f"{name}.icns"))
+        draw(1024, ed).save(os.path.join(out, f"{name}.icns"))
         for px in ed["hicolor"]:
             d = os.path.join(out, "hicolor", f"{px}x{px}", "apps")
             os.makedirs(d, exist_ok=True)

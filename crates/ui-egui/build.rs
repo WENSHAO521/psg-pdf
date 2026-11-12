@@ -13,6 +13,9 @@
 //!   catalog) entry per locale that has a `pdfcraft.tsv`. Unset, or not a checkout (a warning),
 //!   it is empty and the interface is English only; with `CRAFT_I18N_REQUIRED=1` (CI and releases)
 //!   that is an error instead. Recipe: craft-i18n's `docs/integration.md`.
+//!   The catalogs are written for PdfCraft, so each is embedded from a copy in `OUT_DIR` with the
+//!   app name replaced ([`rebrand`]): the English keys then match this app's own strings, and the
+//!   translations name PSG PDF.
 
 use std::fmt::Write as _;
 
@@ -61,15 +64,47 @@ fn craft_i18n() -> String {
             Vec::new()
         }
     };
-    let mut o = String::from("/// (locale, shared catalog, PdfCraft's catalog), one entry per locale; `\"\"` for a missing file.\n");
-    o.push_str("pub static CRAFT_I18N: &craft_i18n::Embedded = &[\n");
+    let out_dir = std::path::PathBuf::from(std::env::var_os("OUT_DIR").unwrap_or_default()).join("craft-i18n");
+    let mut embedded = Vec::new();
     for (code, shared, app) in entries {
+        let copy = |path: &std::path::Path| rebrand(path, &out_dir.join(&code));
+        let shared = match shared.as_deref().map(copy) {
+            Some(Ok(p)) => Some(p),
+            Some(Err(e)) => {
+                println!("cargo::warning={e}; {code} is left out");
+                continue;
+            }
+            None => None,
+        };
+        match copy(&app) {
+            Ok(app) => embedded.push((code, shared, app)),
+            Err(e) => println!("cargo::warning={e}; {code} is left out"),
+        }
+    }
+    let mut o = String::from("/// (locale, shared catalog, PSG PDF's catalog), one entry per locale; `\"\"` for a missing file.\n");
+    o.push_str("pub static CRAFT_I18N: &craft_i18n::Embedded = &[\n");
+    for (code, shared, app) in embedded {
         // `{:?}` escapes the path (Windows backslashes) as a Rust string literal.
         let shared = shared.map_or_else(|| "\"\"".to_string(), |p| format!("include_str!({p:?})"));
         let _ = writeln!(o, "    ({code:?}, {shared}, include_str!({app:?})),");
     }
     o.push_str("];\n");
     o
+}
+
+/// The name the craft-i18n catalogs use for this app, and the name it carries here.
+const UPSTREAM_NAME: &str = "PdfCraft";
+const APP_NAME: &str = "PSG PDF";
+
+/// Copy the catalog at `path` into `dir` with every [`UPSTREAM_NAME`] replaced by [`APP_NAME`], in
+/// the English keys and the translations alike, and return the copy's path.
+fn rebrand(path: &std::path::Path, dir: &std::path::Path) -> Result<std::path::PathBuf, String> {
+    let name = path.file_name().ok_or_else(|| format!("{} has no file name", path.display()))?;
+    let text = std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
+    std::fs::create_dir_all(dir).map_err(|e| format!("{}: {e}", dir.display()))?;
+    let out = dir.join(name);
+    std::fs::write(&out, text.replace(UPSTREAM_NAME, APP_NAME)).map_err(|e| format!("{}: {e}", out.display()))?;
+    Ok(out)
 }
 
 /// One embedded locale: its code, its `common.tsv` if it has one, and its PdfCraft catalog.

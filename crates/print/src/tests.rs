@@ -457,10 +457,10 @@ fn a_job_names_its_title_and_owner_to_the_spooler() {
 
     let named = args_for("Q3 report: a/b=\"c\".pdf", None);
     assert_eq!(option(&named, "PMJobName").as_deref(), Some("Q3_report__a_b__c_.pdf"), "what lp can't be given becomes _");
-    assert_eq!(option(&named, "PMJobOwner").as_deref(), Some("PdfCraft"), "no owner known: the filter still gets one");
+    assert_eq!(option(&named, "PMJobOwner").as_deref(), Some("PSG-PDF"), "no owner known: the filter still gets one");
 
     for nothing_left in ["", "   ", "見積書", "/:=\""] {
-        assert_eq!(option(&args_for(nothing_left, Some("")), "PMJobName").as_deref(), Some("PdfCraft"), "{nothing_left:?}");
+        assert_eq!(option(&args_for(nothing_left, Some("")), "PMJobName").as_deref(), Some("PSG-PDF"), "{nothing_left:?}");
     }
     assert_eq!(option(&args_for("見積書2.pdf", None), "PMJobName").as_deref(), Some("___2.pdf"), "a part of it is kept");
     let long = option(&args_for(&format!("a{}", "é".repeat(200)), None), "PMJobName").unwrap_or_default();
@@ -471,8 +471,8 @@ fn a_job_names_its_title_and_owner_to_the_spooler() {
         assert_eq!(option(&args_for(title, None), "PMJobName").as_deref(), Some(name), "{title:?}");
     }
     for boolean in ["true", "TRUE", "false", "False"] {
-        assert_eq!(option(&args_for(boolean, Some(boolean)), "PMJobName").as_deref(), Some("PdfCraft"), "{boolean:?}");
-        assert_eq!(option(&args_for(boolean, Some(boolean)), "PMJobOwner").as_deref(), Some("PdfCraft"), "{boolean:?}");
+        assert_eq!(option(&args_for(boolean, Some(boolean)), "PMJobName").as_deref(), Some("PSG-PDF"), "{boolean:?}");
+        assert_eq!(option(&args_for(boolean, Some(boolean)), "PMJobOwner").as_deref(), Some("PSG-PDF"), "{boolean:?}");
     }
     assert_eq!(option(&args_for("true.pdf", None), "PMJobName").as_deref(), Some("true.pdf"), "only the bare word is a boolean");
 }
@@ -1707,7 +1707,7 @@ fn printing_without_the_print_dlls_is_refused_before_the_spooler() {
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).unwrap();
     SYSTEM32_FOR_TEST.with(|d| *d.borrow_mut() = Some(dir.clone()));
-    let job = crate::spool::Job { printer: Some("PdfCraft test: no such printer".into()), ..Default::default() };
+    let job = crate::spool::Job { printer: Some("PSG PDF test: no such printer".into()), ..Default::default() };
     let named = |r: Result<String, crate::PrintError>| match r {
         Err(crate::PrintError::Spool(m)) => m.contains(PRINT_DLLS[0]),
         _ => false,
@@ -1720,7 +1720,7 @@ fn printing_without_the_print_dlls_is_refused_before_the_spooler() {
     PRINTER_BACKEND_CALLS.with(|c| c.set(0));
     assert!(printers().is_empty(), "no printers are listed");
     assert!(printer_queues().is_empty(), "no queues are listed");
-    assert_eq!(two_sided("PdfCraft test: no such printer"), None, "two-sided support is unknown");
+    assert_eq!(two_sided("PSG PDF test: no such printer"), None, "two-sided support is unknown");
     assert_eq!(PRINTER_BACKEND_CALLS.with(|c| c.get()), 0, "the printer backend wasn't asked");
     SYSTEM32_FOR_TEST.with(|d| *d.borrow_mut() = None);
     let _ = std::fs::remove_dir_all(&dir);
@@ -1738,7 +1738,7 @@ fn paper_detection_without_print_dlls_never_reaches_the_driver() {
     for missing in PRINT_DLLS {
         SYSTEM32_FOR_TEST.with(|d| *d.borrow_mut() = Some(dir.clone()));
         PRINTER_BACKEND_CALLS.with(|c| c.set(0));
-        let name = "PdfCraft test: no such printer";
+        let name = "PSG PDF test: no such printer";
         let papers = crate::spool::printer_papers(name);
         let info = crate::spool::printer_paper_info(name);
         let default = crate::spool::printer_default_paper(name);

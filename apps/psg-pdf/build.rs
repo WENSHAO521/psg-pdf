@@ -38,7 +38,7 @@ fn main() {
         .set("ProductName", "PSG PDF")
         .set("FileDescription", "PSG PDF")
         .set("CompanyName", "Panorama Scholarly Group")
-        .set("LegalCopyright", "Copyright (c) Panorama Scholarly Group and the PSG PDF and PdfCraft contributors. MIT OR Apache-2.0.")
+        .set("LegalCopyright", "Copyright (c) Panorama Scholarly Group and the PSG PDF and PSG PDF contributors. MIT OR Apache-2.0.")
         .set("OriginalFilename", "psg-pdf.exe")
         .set("InternalName", "psg-pdf");
     if let Err(e) = res.compile() {

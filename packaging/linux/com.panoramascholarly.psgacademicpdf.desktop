@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=PSG Academic PDF
+GenericName=Academic Typesetting
+Comment=Typeset journal articles to PDF with LaTeX and journal templates
+Exec=psg-academic-pdf
+TryExec=psg-academic-pdf
+Icon=com.panoramascholarly.psgacademicpdf
+Terminal=false
+StartupNotify=true
+StartupWMClass=com.panoramascholarly.psgacademicpdf
+Categories=Office;Publishing;
+Keywords=latex;pdflatex;biber;journal;article;typesetting;pdf;

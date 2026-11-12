@@ -1,0 +1,96 @@
+name: PSG build check
+
+# Compile check of the PSG PDF Suite on Linux, Windows and macOS: both desktop apps (PSG PDF and
+# PSG Academic PDF) and the CLI, each built on its own so neither depends on the other being
+# built. Nothing is packaged, signed or published here; release.yml is untouched and not run.
+# On Linux the academic crates' tests also run against a real TeX Live, latexmk, Biber and Pandoc.
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: psg-build-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-latest, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - name: Linux build dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libgtk-3-dev
+      # The interface catalogs, at the commit in craft-i18n.rev (packaging/fetch-craft-i18n.sh).
+      - name: craft-i18n catalogs
+        shell: bash
+        run: |
+          packaging/fetch-craft-i18n.sh "$RUNNER_TEMP/craft-i18n"
+          echo "CRAFT_I18N_DIR=$RUNNER_TEMP/craft-i18n" >> "$GITHUB_ENV"
+      - name: Build PSG PDF
+        run: cargo build --locked -p psg-pdf
+      - name: Build PSG Academic PDF
+        run: cargo build --locked -p psg-academic-pdf
+      - name: Build pdfcraft-cli
+        run: cargo build --locked -p pdfcraft-cli
+      - name: Smoke test the binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./target/debug/psg-pdf --version
+          ./target/debug/psg-academic-pdf --version
+          ./target/debug/psg-academic-pdf templates
+          ./target/debug/psg-academic-pdf check-tex || true  # reports what is missing; TeX is not installed here
+          ./target/debug/pdfcraft-cli --version
+
+  academic-tests:
+    name: Academic tests with TeX Live (Linux)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - name: Build dependencies, TeX Live, latexmk, Biber and Pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libgtk-3-dev \
+            texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended \
+            texlive-bibtex-extra latexmk biber pandoc
+      - name: craft-i18n catalogs
+        run: |
+          packaging/fetch-craft-i18n.sh "$RUNNER_TEMP/craft-i18n"
+          echo "CRAFT_I18N_DIR=$RUNNER_TEMP/craft-i18n" >> "$GITHUB_ENV"
+      - name: Tests of the academic crates and both apps
+        run: cargo test --locked -p psg-academic -p psg-academic-pdf -p psg-pdf
+      - name: Compile the built-in template from the command line
+        run: |
+          set -euo pipefail
+          cargo run --locked -q -p psg-academic-pdf -- check-tex
+          cargo run --locked -q -p psg-academic-pdf -- new "$RUNNER_TEMP/article"
+          cargo run --locked -q -p psg-academic-pdf -- compile "$RUNNER_TEMP/article" --out "$RUNNER_TEMP/article.pdf"
+          test -s "$RUNNER_TEMP/article.pdf"
