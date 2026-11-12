@@ -3,7 +3,7 @@
   <?ifndef HasCraftFontLicences ?>
   <?define HasCraftFontLicences=0 ?>
   <?endif?>
-  <Package Name="PSG PDF" Manufacturer="Panorama Scholarly Group" Version="$(var.Version)" UpgradeCode="C984AB08-3E67-48B7-8DC2-6F1428165299" Scope="perUserOrMachine" Compressed="yes" Language="1033">
+  <Package Name="PSG PDF Suite" Manufacturer="Panorama Scholarly Group" Version="$(var.Version)" UpgradeCode="C984AB08-3E67-48B7-8DC2-6F1428165299" Scope="perUserOrMachine" Compressed="yes" Language="1033">
     <SummaryInformation Description="PSG PDF PDF workbench" Manufacturer="Panorama Scholarly Group" />
     <?include $(sys.SOURCEFILEDIR)install-policy.wxi?>
     <!-- HKLM registrations must never point into a per-user installation (#305). Allow removal
@@ -204,6 +204,17 @@
         <RegistryValue Root="HKMU" Key="Software\Classes\SystemFileAssociations\.jpx\shell\PSGPDF.CreatePdf" Value="Create PDF with PSG PDF…" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\Classes\SystemFileAssociations\.jpx\shell\PSGPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\Classes\SystemFileAssociations\.jpx\shell\PSGPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
+      </Component>
+
+      <!-- PSG Academic PDF, the suite's second app, beside psg-pdf.exe. Its built-in templates are
+           compiled in, and it registers no file types: PSG PDF stays the PDF handler. -->
+      <Component Id="PsgAcademicApp" Guid="F83C58EF-1BA7-47AD-9A51-076C8DAD4CF4">
+        <File Id="PsgAcademicExe" Source="$(var.BinDir)\psg-academic-pdf.exe" KeyPath="yes" />
+        <RegistryValue Root="HKMU" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\psg-academic-pdf.exe" Value="[#PsgAcademicExe]" Type="string" />
+      </Component>
+      <Component Id="PsgAcademicStartMenuShortcut" Directory="ProgramMenuFolder" Guid="7B40A9C4-E6A8-47F1-B02A-7D8EABB30E68">
+        <Shortcut Id="AcademicStartMenuShortcut" Name="PSG Academic PDF" Description="LaTeX papers with BibLaTeX and Pandoc" Target="[#PsgAcademicExe]" WorkingDirectory="INSTALLFOLDER" />
+        <RegistryValue Root="HKMU" Key="Software\PSG PDF\Shortcuts" Name="AcademicStartMenu" Type="integer" Value="1" KeyPath="yes" />
       </Component>
 
       <Component Id="PdfcraftCli">

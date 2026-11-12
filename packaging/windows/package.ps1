@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-  Build, sign and package PSG PDF for Windows.
+  Build, sign and package the PSG PDF Suite (PSG PDF and PSG Academic PDF) for Windows: one MSI and one portable zip carry both apps.
 
 .DESCRIPTION
   Produces, in $env:DIST (default: dist/release):
     psg-pdf-<version>-windows-<arch>.msi            per-machine installer (WiX v5)
-    psg-pdf-<version>-windows-<arch>-portable.zip   psg-pdf.exe + pdfcraft-cli.exe + models\ + portable.txt
+    psg-pdf-<version>-windows-<arch>-portable.zip   psg-pdf.exe + psg-academic-pdf.exe + pdfcraft-cli.exe + models\ + portable.txt
 
   The binaries link the C runtime statically (+crt-static), so neither the MSI nor the portable
   zip needs the Visual C++ redistributable. Signing is delegated to sign.ps1 (skipped with a
@@ -76,7 +76,7 @@ if (-not $SkipBuild) {
   [Environment]::SetEnvironmentVariable($flagVar, '-C target-feature=+crt-static')
   # Fail the build (rather than warn) if the icon/VERSIONINFO can't be embedded.
   $env:PDFCRAFT_REQUIRE_WINRES = '1'
-  Invoke-Native "cargo build ($Target)" { cargo build --release --locked -p psg-pdf -p pdfcraft-cli --target $Target }
+  Invoke-Native "cargo build ($Target)" { cargo build --release --locked -p psg-pdf -p psg-academic-pdf -p pdfcraft-cli --target $Target }
 }
 
 $Bin = Join-Path $TargetDir "$Target\release"
@@ -91,7 +91,7 @@ function Get-PeHeader([string] $Path) {
   return @{ Machine = [BitConverter]::ToUInt16($bytes, $pe + 4); Subsystem = [BitConverter]::ToUInt16($bytes, $pe + 0x5C) }
 }
 $Machine = switch ($Arch) { 'x64' { 0x8664 } 'x86' { 0x14C } 'arm64' { 0xAA64 } }
-foreach ($check in @(@('psg-pdf.exe', 2), @('pdfcraft-cli.exe', 3))) {
+foreach ($check in @(@('psg-pdf.exe', 2), @('psg-academic-pdf.exe', 2), @('pdfcraft-cli.exe', 3))) {
   $h = Get-PeHeader (Join-Path $Bin $check[0])
   if ($h.Machine -ne $Machine) { throw "$($check[0]) is for machine 0x$('{0:X}' -f $h.Machine), expected 0x$('{0:X}' -f $Machine) ($Arch)" }
   if ($h.Subsystem -ne $check[1]) { throw "$($check[0]) has PE subsystem $($h.Subsystem), expected $($check[1])" }
@@ -100,7 +100,7 @@ foreach ($check in @(@('psg-pdf.exe', 2), @('pdfcraft-cli.exe', 3))) {
 $Stage = Join-Path $TargetDir "windows-package\$Arch"
 Remove-Item -Recurse -Force $Stage -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $Stage | Out-Null
-Copy-Item (Join-Path $Bin 'psg-pdf.exe'), (Join-Path $Bin 'pdfcraft-cli.exe') $Stage
+Copy-Item (Join-Path $Bin 'psg-pdf.exe'), (Join-Path $Bin 'psg-academic-pdf.exe'), (Join-Path $Bin 'pdfcraft-cli.exe') $Stage
 # The document icon embeds Lucide artwork: carry its ISC notice and the project licences
 # beside the binaries in both distributions.
 foreach ($f in 'LICENSE-MIT', 'LICENSE-APACHE', 'NOTICE') {
@@ -108,7 +108,7 @@ foreach ($f in 'LICENSE-MIT', 'LICENSE-APACHE', 'NOTICE') {
 }
 Copy-Item (Join-Path $Root 'assets\app-icon\LICENSE-document.txt') $Stage
 
-& (Join-Path $PSScriptRoot 'sign.ps1') (Join-Path $Stage 'psg-pdf.exe') (Join-Path $Stage 'pdfcraft-cli.exe')
+& (Join-Path $PSScriptRoot 'sign.ps1') (Join-Path $Stage 'psg-pdf.exe') (Join-Path $Stage 'psg-academic-pdf.exe') (Join-Path $Stage 'pdfcraft-cli.exe')
 
 # OCR models (#103): the app looks in models\ beside psg-pdf.exe. `cargo xtask models` fetches every
 # ATTRIBUTION.toml `kind = "model"` file (verified by SHA-256) with its licence and ATTRIBUTION.txt;

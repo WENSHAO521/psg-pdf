@@ -89,6 +89,15 @@ foreach ($entry in @(@('StartMenuShortcut', 'ProgramMenuFolder', 'PdfcraftStartM
   Assert-Equal $component[0] $entry[1] "$($entry[2]) directory"
   Assert-Equal $component[1] $entry[3] "$($entry[2]) condition"
 }
+# The suite's second app: PSG Academic PDF beside psg-pdf.exe, with its own plain Start menu shortcut.
+$row = Read-Row 'SELECT `Directory_`, `Target`, `Icon_`, `WkDir`, `Component_` FROM `Shortcut` WHERE `Shortcut` = ''AcademicStartMenuShortcut''' 5
+Assert-Equal $row[0] 'ProgramMenuFolder' 'AcademicStartMenuShortcut directory'
+Assert-Equal $row[1] '[#PsgAcademicExe]' 'AcademicStartMenuShortcut target'
+Assert-Equal $row[2] '' 'AcademicStartMenuShortcut icon'
+Assert-Equal $row[3] 'INSTALLFOLDER' 'AcademicStartMenuShortcut working directory'
+$academic = Read-Row 'SELECT `Directory_` FROM `Component` WHERE `Component` = ''PsgAcademicApp''' 1
+Assert-Equal $academic[0] 'INSTALLFOLDER' 'PsgAcademicApp directory'
+
 # Defaults an update keeps (#1058, #305). No static default: a SetProperty after AppSearch turns it on
 # for a first install and, for an update from a release that offered it ($Release set), only while what
 # it installed is still there ($Found, from AppSearch). A command-line value is left alone. Windows

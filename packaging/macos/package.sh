@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Build, sign and (optionally) notarize the macOS release artifacts:
 #
-#   $DIST/psg-pdf-<version>-macos-<arch>.dmg           PSG PDF.app on a drag-to-Applications DMG
-#   $DIST/psg-academic-pdf-<version>-macos-<arch>.dmg  PSG Academic PDF.app on its own DMG
+#   $DIST/psg-pdf-suite-<version>-macos-<arch>.dmg     PSG PDF.app and PSG Academic PDF.app on one
+#                                                      drag-to-Applications DMG
 #   $DIST/pdfcraft-cli-<version>-macos-<arch>.zip      the headless CLI
 #
 # Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
@@ -41,9 +41,8 @@ IDENTITY="${MACOS_SIGN_IDENTITY:--}"
 SHORT_VERSION="${VERSION%%-*}"
 WORK="$CARGO_TARGET_DIR/macos-package"
 APP="$WORK/PSG PDF.app"
-DMG="$DIST/psg-pdf-$VERSION-macos-$ARCH.dmg"
 ACADEMIC_APP="$WORK/PSG Academic PDF.app"
-ACADEMIC_DMG="$DIST/psg-academic-pdf-$VERSION-macos-$ARCH.dmg"
+DMG="$DIST/psg-pdf-suite-$VERSION-macos-$ARCH.dmg"
 CLI_ZIP="$DIST/pdfcraft-cli-$VERSION-macos-$ARCH.zip"
 
 NOTARIZE=0
@@ -166,7 +165,7 @@ mkdir -p "$ACADEMIC_APP/Contents/MacOS/templates"
 cp -R "$ROOT/templates/academic" "$ACADEMIC_APP/Contents/MacOS/templates/academic"
 seal "$ACADEMIC_APP" "PSG Academic PDF"
 
-# ---- DMGs --------------------------------------------------------------------------------------
+# ---- DMG ---------------------------------------------------------------------------------------
 # `hdiutil create -srcfolder` writes the files as they are. `makehybrid -hfs` gave every file a
 # com.apple.FinderInfo (a Finder location of -1,-1), which `codesign --verify --strict` rejects as
 # "Finder information, or similar detritus" on the app in the image and on a copy installed from it,
@@ -188,42 +187,39 @@ hdiutil_retry() {
   done
 }
 
-# Usage: make_dmg <bundle> <volume name> <dmg> <background.tiff> <layout .DS_Store>
-# Window layout: background, icon size and positions (packaging/macos/dmg/README.md).
-make_dmg() {
-  local app="$1" volume="$2" dmg="$3" background="$4" layout="$5" stage mount
-  echo "==> building $dmg"
-  stage="$WORK/dmg-stage"
-  rm -rf "$stage"
-  mkdir -p "$stage/.background"
-  ditto "$app" "$stage/$(basename "$app")"
-  ln -s /Applications "$stage/Applications"
-  cp "$background" "$stage/.background/background.tiff"
-  cp "$layout" "$stage/.DS_Store"
-  rm -f "$dmg"
-  hdiutil_retry create create -srcfolder "$stage" -volname "$volume" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$dmg"
-  sign "$dmg"
-  codesign --verify --strict --verbose=2 "$dmg"
-  # The app inside the image must still pass --strict, so a makehybrid-style regression can't ship.
-  mount="$WORK/dmg-check"
-  rm -rf "$mount"
-  mkdir -p "$mount"
-  hdiutil_retry attach attach -nobrowse -readonly -mountpoint "$mount" "$dmg" >/dev/null
-  if ! codesign --verify --strict --deep --verbose=2 "$mount/$(basename "$app")"; then
-    hdiutil_retry detach detach "$mount" >/dev/null || true
+# One DMG for the suite: both apps beside the Applications link, with the window layout
+# (background, icon size and positions) from packaging/macos/dmg (README.md there).
+echo "==> building $DMG"
+STAGE="$WORK/dmg-stage"
+rm -rf "$STAGE"
+mkdir -p "$STAGE/.background"
+ditto "$APP" "$STAGE/$(basename "$APP")"
+ditto "$ACADEMIC_APP" "$STAGE/$(basename "$ACADEMIC_APP")"
+ln -s /Applications "$STAGE/Applications"
+cp "$HERE/dmg/background.tiff" "$STAGE/.background/background.tiff"
+cp "$HERE/dmg/dmg-layout.DS_Store" "$STAGE/.DS_Store"
+rm -f "$DMG"
+hdiutil_retry create create -srcfolder "$STAGE" -volname "PSG PDF Suite" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$DMG"
+sign "$DMG"
+codesign --verify --strict --verbose=2 "$DMG"
+# The apps inside the image must still pass --strict, so a makehybrid-style regression can't ship.
+MOUNT="$WORK/dmg-check"
+rm -rf "$MOUNT"
+mkdir -p "$MOUNT"
+hdiutil_retry attach attach -nobrowse -readonly -mountpoint "$MOUNT" "$DMG" >/dev/null
+for bundle in "$(basename "$APP")" "$(basename "$ACADEMIC_APP")"; do
+  if ! codesign --verify --strict --deep --verbose=2 "$MOUNT/$bundle"; then
+    hdiutil_retry detach detach "$MOUNT" >/dev/null || true
     exit 1
   fi
-  hdiutil_retry detach detach "$mount" >/dev/null
-  if [[ "$NOTARIZE" = 1 ]]; then
-    notarize "$dmg"
-    stapler_retry staple "$dmg"
-    stapler_retry validate "$dmg"
-    spctl --assess --type open --context context:primary-signature -vvv "$dmg"
-  fi
-}
-
-make_dmg "$APP" "PSG PDF" "$DMG" "$HERE/dmg/background.tiff" "$HERE/dmg/dmg-layout.DS_Store"
-make_dmg "$ACADEMIC_APP" "PSG Academic PDF" "$ACADEMIC_DMG" "$HERE/dmg/academic-background.tiff" "$HERE/dmg/academic-layout.DS_Store"
+done
+hdiutil_retry detach detach "$MOUNT" >/dev/null
+if [[ "$NOTARIZE" = 1 ]]; then
+  notarize "$DMG"
+  stapler_retry staple "$DMG"
+  stapler_retry validate "$DMG"
+  spctl --assess --type open --context context:primary-signature -vvv "$DMG"
+fi
 
 # ---- CLI ---------------------------------------------------------------------------------------
 echo "==> building $CLI_ZIP"
@@ -240,4 +236,4 @@ if [[ "$NOTARIZE" = 1 ]]; then notarize "$CLI_ZIP"; fi
 
 "$WORK/bin/pdfcraft-cli" --version
 echo "==> done"
-ls -lh "$DMG" "$ACADEMIC_DMG" "$CLI_ZIP"
+ls -lh "$DMG" "$CLI_ZIP"

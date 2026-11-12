@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- AppStream metadata. Template: package-academic.sh substitutes @VERSION@ and @DATE@. -->
+<!-- AppStream metadata. Template: package.sh substitutes @VERSION@ and @DATE@. -->
 <component type="desktop-application">
   <id>com.panoramascholarly.psgacademicpdf</id>
   <metadata_license>CC0-1.0</metadata_license>

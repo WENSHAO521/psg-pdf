@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Build and package PSG PDF for Linux (<arch> is x86_64 or aarch64, or riscv64 when cross-compiling):
+# Build and package the PSG PDF Suite for Linux (<arch> is x86_64 or aarch64, or riscv64 when
+# cross-compiling). Every package installs both apps, PSG PDF and PSG Academic PDF, each with its
+# own desktop entry, icon and app id; the AppImage starts PSG PDF.
 #
 #   $DIST/psg-pdf-<version>-linux-<arch>.AppImage  any distro with glibc >= the build host's
 #   $DIST/psg-pdf-<version>-linux-<arch>.AppImage.zsync  delta updates (needs zsyncmake)
@@ -27,6 +29,7 @@ set -euo pipefail
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
 HERE="$ROOT/packaging/linux"
 APP_ID=com.panoramascholarly.psgpdf
+ACADEMIC_ID=com.panoramascholarly.psgacademicpdf
 
 SKIP_BUILD=0
 FORMATS="appimage deb rpm tar cli"
@@ -54,9 +57,9 @@ echo "==> PSG PDF $VERSION$LABEL_SUFFIX for Linux $ARCH ($FORMATS)"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   if [[ -n "${CROSS_TARGET:-}" ]]; then
-    (cd "$ROOT" && cargo build --release --locked -p psg-pdf -p pdfcraft-cli --target "$CROSS_TARGET")
+    (cd "$ROOT" && cargo build --release --locked -p psg-pdf -p psg-academic-pdf -p pdfcraft-cli --target "$CROSS_TARGET")
   else
-    (cd "$ROOT" && cargo build --release --locked -p psg-pdf -p pdfcraft-cli)
+    (cd "$ROOT" && cargo build --release --locked -p psg-pdf -p psg-academic-pdf -p pdfcraft-cli)
   fi
 fi
 BIN="$CARGO_TARGET_DIR/${CROSS_TARGET:+$CROSS_TARGET/}release"
@@ -66,8 +69,9 @@ rm -rf "$WORK"
 
 # ---- stage an FHS tree (shared by every format) -------------------------------------------------
 install -Dm755 "$BIN/psg-pdf" "$STAGE/usr/bin/psg-pdf"
+install -Dm755 "$BIN/psg-academic-pdf" "$STAGE/usr/bin/psg-academic-pdf"
 install -Dm755 "$BIN/pdfcraft-cli" "$STAGE/usr/bin/pdfcraft-cli"
-"${CROSS_COMPILE:-}strip" "$STAGE/usr/bin/psg-pdf" "$STAGE/usr/bin/pdfcraft-cli" 2>/dev/null || true
+"${CROSS_COMPILE:-}strip" "$STAGE/usr/bin/psg-pdf" "$STAGE/usr/bin/psg-academic-pdf" "$STAGE/usr/bin/pdfcraft-cli" 2>/dev/null || true
 install -Dm644 "$HERE/$APP_ID.desktop" "$STAGE/usr/share/applications/$APP_ID.desktop"
 install -Dm644 "$HERE/$APP_ID.mime.xml" "$STAGE/usr/share/mime/packages/$APP_ID.xml"
 mkdir -p "$STAGE/usr/share/metainfo"
@@ -75,17 +79,27 @@ sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$PDFCRAFT_BUILD_DATE/g" \
   "$HERE/$APP_ID.metainfo.xml.in" >"$STAGE/usr/share/metainfo/$APP_ID.metainfo.xml"
 mkdir -p "$STAGE/usr/share/icons"
 cp -R "$ROOT/assets/app-icon/hicolor" "$STAGE/usr/share/icons/"
+# PSG Academic PDF, in the same package (the PSG PDF Suite): its own desktop entry, AppStream
+# metadata, icons and the journal templates, which it looks for in ../share/psg-academic-pdf.
+install -Dm644 "$HERE/$ACADEMIC_ID.desktop" "$STAGE/usr/share/applications/$ACADEMIC_ID.desktop"
+sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$PDFCRAFT_BUILD_DATE/g" \
+  "$HERE/$ACADEMIC_ID.metainfo.xml.in" >"$STAGE/usr/share/metainfo/$ACADEMIC_ID.metainfo.xml"
+cp -R "$ROOT/assets/app-icon-academic/hicolor" "$STAGE/usr/share/icons/"
+mkdir -p "$STAGE/usr/share/psg-academic-pdf"
+cp -R "$ROOT/templates/academic" "$STAGE/usr/share/psg-academic-pdf/templates"
 mkdir -p "$STAGE/usr/share/doc/psg-pdf"
 copy_docs "$STAGE/usr/share/doc/psg-pdf"
 # OCR models: the app finds them at <bin>/../share/pdfcraft/models, so in every format below.
 stage_models "$STAGE/usr/share/pdfcraft/models"
 
-if command -v desktop-file-validate >/dev/null; then
-  desktop-file-validate "$STAGE/usr/share/applications/$APP_ID.desktop"
-fi
-if command -v appstreamcli >/dev/null; then
-  appstreamcli validate --no-net --explain "$STAGE/usr/share/metainfo/$APP_ID.metainfo.xml"
-fi
+for id in "$APP_ID" "$ACADEMIC_ID"; do
+  if command -v desktop-file-validate >/dev/null; then
+    desktop-file-validate "$STAGE/usr/share/applications/$id.desktop"
+  fi
+  if command -v appstreamcli >/dev/null; then
+    appstreamcli validate --no-net --explain "$STAGE/usr/share/metainfo/$id.metainfo.xml"
+  fi
+done
 
 has() {
   local format="$1"

@@ -79,19 +79,26 @@ translated interface says PSG PDF (crates/ui-egui/build.rs).
 Japanese interface text and writing Japanese into PDFs need the optional `CRAFT_FONTS_DIR` build
 input, as in PdfCraft (see AGENTS.md §1.4). Without it everything else works.
 
-### Two independent apps
+### One suite installer, two separate apps
 
-The two apps build, install and run on their own. Neither needs the other installed; PSG Academic
-PDF's **Open in PSG PDF** button only works when PSG PDF is beside it.
+Each platform has one PSG PDF Suite package that installs both apps. Inside it they stay separate
+programs: each builds on its own (`cargo build -p psg-pdf` or `-p psg-academic-pdf`), runs on its
+own, and keeps its own app ID and settings folders, so they never share or overwrite each other's
+state. PSG Academic PDF's **Open in PSG PDF** button uses the PSG PDF installed beside it.
 
 | | PSG PDF | PSG Academic PDF |
 |---|---|---|
 | Cargo package / binary | `psg-pdf` | `psg-academic-pdf` |
 | App ID (Linux desktop, macOS bundle) | `com.panoramascholarly.psgpdf` | `com.panoramascholarly.psgacademicpdf` |
 | Settings and data folders (Linux) | `~/.config/psg-pdf`, `~/.local/share/psgpdf` (logs, recovery) | `~/.local/share/com.panoramascholarly.psgacademicpdf` (window state), `~/.local/share/psgacademicpdf/projects` |
-| macOS bundle / DMG | `PSG PDF.app`, `psg-pdf-<v>-macos-<arch>.dmg` | `PSG Academic PDF.app`, `psg-academic-pdf-<v>-macos-<arch>.dmg` |
-| Linux packages | `packaging/linux/package.sh` (deb, rpm, AppImage, tar) | `packaging/linux/package-academic.sh` (deb, rpm, tar) |
-| Windows | `packaging/windows/package.ps1` (MSI, portable) | build only; no installer yet |
+| macOS | `PSG PDF.app` | `PSG Academic PDF.app` |
+| Windows Start menu | PSG PDF | PSG Academic PDF |
+
+| Platform | Suite package | Script |
+|---|---|---|
+| macOS | `psg-pdf-suite-<v>-macos-<arch>.dmg`, both apps beside an Applications link | `packaging/macos/package.sh` |
+| Linux | deb, rpm and tar with both apps, desktop entries and icons (the AppImage starts PSG PDF) | `packaging/linux/package.sh` |
+| Windows | one MSI and one portable zip with `psg-pdf.exe`, `psg-academic-pdf.exe` and `pdfcraft-cli.exe` | `packaging/windows/package.ps1` |
 
 ### TeX for PSG Academic PDF
 
