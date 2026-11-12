@@ -202,3 +202,14 @@ PdfCraft opens files from strangers, and people trust it with their work. A malf
 - Workflows in `.github/workflows/` call the shared workflows in [`storytold/craft-common-actions`](https://github.com/storytold/craft-common-actions) at `@main`, with their inputs and secrets. No other jobs: if no shared workflow does what's needed, it doesn't go here.
 - Don't add or change CI in a feature or fix PR. If the existing workflows can't build or test a change, link an existing craft-common-actions issue or PR, or open a new issue, or a PR only for a small fix that is safe for every app and does not increase CI time.
 - Some workflow files here still run their own jobs. Don't add to them. Moving a job into craft-common-actions is its own task, never part of another PR, and the job stays here until a shared workflow runs it.
+
+## PSG release flow
+
+- Pull requests go into `beta`, not `main`. `main` changes only when `beta` is merged into it for a
+  release. Every push to `beta` publishes a pre-release; a release commit merged into `main`
+  publishes the stable release (`docs/releasing.md`, `.github/workflows/psg-release.yml`).
+- Commit subjects are Conventional Commits (`fix(academic): …`), worded as the user-facing change;
+  add a `Changelog:` trailer to reword or `Changelog: skip` to leave a commit out. The changelog
+  is generated from them (`cargo xtask changelog`).
+- Never cut a stable release (`cargo xtask changelog release`, merging `beta` into `main`) without
+  the owner's go-ahead.

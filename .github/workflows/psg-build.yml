@@ -3,10 +3,11 @@ name: PSG build check
 # Compile check of the PSG PDF Suite on Linux, Windows and macOS: both desktop apps (PSG PDF and
 # PSG Academic PDF) and the CLI, each built on its own so neither depends on the other being
 # built. Nothing is packaged, signed or published here; release.yml is untouched and not run.
-# On Linux the academic crates' tests also run against a real TeX Live, latexmk, Biber and Pandoc.
+# On Linux the academic crates' tests also run against a real TeX Live, latexmk, Biber and Pandoc,
+# and CHANGELOG.md and the commit subjects are checked (docs/releasing.md).
 on:
   push:
-    branches: [main]
+    branches: [main, beta]
   pull_request:
   workflow_dispatch:
 
@@ -63,6 +64,23 @@ jobs:
           ./target/debug/psg-academic-pdf templates
           ./target/debug/psg-academic-pdf check-tex || true  # reports what is missing; TeX is not installed here
           ./target/debug/pdfcraft-cli --version
+
+  changelog:
+    name: Changelog and commit subjects
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - name: CHANGELOG.md is well formed
+        run: cargo xtask changelog verify
+      # Warnings only: a subject that is not a Conventional Commit is left out of the changelog.
+      - name: Commit subjects since the last release
+        run: cargo xtask changelog lint
 
   academic-tests:
     name: Academic tests with TeX Live (Linux)

@@ -156,6 +156,14 @@ cargo xtask assets                  # asset attribution (ATTRIBUTION.toml)
 Linux runs the academic and app tests against a real TeX Live, latexmk, Biber and Pandoc. It
 builds no installer and publishes nothing.
 
+## Releases
+
+Pull requests go into `beta`. Every push to `beta` publishes a pre-release
+(`vX.Y.Z-beta.N`) with the suite installers for macOS, Windows and Linux; merging `beta` into
+`main` with a `chore(release): vX.Y.Z` commit publishes the stable release. Commit subjects are
+Conventional Commits, and `CHANGELOG.md` is generated from them. See
+[docs/releasing.md](docs/releasing.md).
+
 ## Licence and attribution
 
 The code is licensed MIT OR Apache-2.0 (LICENSE-MIT, LICENSE-APACHE), the same as PdfCraft. See

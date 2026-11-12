@@ -1,0 +1,204 @@
+name: PSG release
+
+# The suite's release rhythm, as in panorama-secure-access (docs/releasing.md):
+#   - every push to `beta` publishes a pre-release vX.Y.Z-beta.<run> with the changes since the
+#     last release as its notes;
+#   - a push to `main` whose CHANGELOG.md has a section for the Cargo.toml version, and which has
+#     no tag yet, publishes the stable release vX.Y.Z with that section as its notes.
+# packaging/release-tag.sh decides which (or neither). Each build packages one suite installer per
+# platform with both apps. Signing secrets are optional: without them the macOS DMG is ad-hoc
+# signed and the Windows files unsigned, and the job summary warns.
+on:
+  push:
+    branches: [beta, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: psg-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  release-tag:
+    name: Release tag
+    # Releases publish only from the suite's own repository, never from a fork.
+    if: github.repository == 'WENSHAO521/psg-pdf' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+      version: ${{ steps.tag.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Release tag
+        id: tag
+        run: |
+          set -euo pipefail
+          tag="$(packaging/release-tag.sh)"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+          echo "Release tag: ${tag:-none (nothing to publish)}" >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    name: Package (${{ matrix.platform }})
+    needs: release-tag
+    if: needs.release-tag.outputs.tag != ''
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-x86_64
+            os: ubuntu-22.04
+          - platform: macos-universal
+            os: macos-15
+          - platform: windows-x64
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 150
+    env:
+      VERSION: ${{ needs.release-tag.outputs.version }}
+      CRAFT_I18N_REQUIRED: '1'
+      CRAFT_FONTS_REQUIRED: '1'
+      DIST: ${{ github.workspace }}/dist/release
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+        with:
+          targets: ${{ matrix.platform == 'macos-universal' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: release-${{ matrix.platform }}
+      - name: Linux build dependencies and nfpm
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libgtk-3-dev \
+            desktop-file-utils zsync
+          # nfpm 2.43.0, checked against the release's checksums.txt.
+          curl -fsSL -o "$RUNNER_TEMP/nfpm.deb" https://github.com/goreleaser/nfpm/releases/download/v2.43.0/nfpm_2.43.0_amd64.deb
+          echo "4a4402f8f9ea87c669d6a62b333f8e268439974754dd886a01731ecaf9fa6d66  $RUNNER_TEMP/nfpm.deb" | sha256sum -c -
+          sudo dpkg -i "$RUNNER_TEMP/nfpm.deb"
+      - name: WiX
+        if: runner.os == 'Windows'
+        run: dotnet tool install --global wix --version 5.0.2
+      # Release builds embed the translations and the craft-fonts faces (AGENTS.md §1.4); the
+      # *_REQUIRED variables above make a missing one a build error.
+      - name: craft-i18n and craft-fonts
+        shell: bash
+        run: |
+          set -euo pipefail
+          packaging/fetch-craft-i18n.sh "$RUNNER_TEMP/craft-i18n"
+          packaging/fetch-craft-fonts.sh "$RUNNER_TEMP/craft-fonts"
+          echo "CRAFT_I18N_DIR=$RUNNER_TEMP/craft-i18n" >> "$GITHUB_ENV"
+          echo "CRAFT_FONTS_DIR=$RUNNER_TEMP/craft-fonts" >> "$GITHUB_ENV"
+      # A beta's binaries report the beta version; the change stays on the runner.
+      - name: Set the version
+        shell: bash
+        run: |
+          set -euo pipefail
+          current="$(cargo xtask version)"
+          if [[ "$current" != "$VERSION" ]]; then cargo xtask version set "$VERSION"; fi
+      - name: Package for Linux
+        if: runner.os == 'Linux'
+        run: packaging/linux/package.sh --formats "appimage deb rpm tar cli"
+      - name: Import the Developer ID certificate
+        if: runner.os == 'macOS'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: packaging/macos/import-cert.sh
+      - name: Package for macOS
+        if: runner.os == 'macOS'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: packaging/macos/package.sh --arch universal
+      - name: Package for Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+        run: packaging/windows/package.ps1 -Arch x64
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: suite-${{ matrix.platform }}
+          path: dist/release/*
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish ${{ needs.release-tag.outputs.tag }}
+    needs: [release-tag, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ needs.release-tag.outputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: release-notes
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          path: assets
+          merge-multiple: true
+      - name: Checksums
+        working-directory: assets
+        run: sha256sum -- * | tee SHA256SUMS.txt
+      - name: Release notes
+        run: |
+          set -euo pipefail
+          {
+            echo "PSG PDF Suite ${TAG}: PSG PDF and PSG Academic PDF in one installer per platform."
+            echo
+            if [[ "$TAG" == *-beta.* ]]; then
+              echo "This is a beta: a test build of the \`beta\` branch, not a stable release."
+              echo
+              echo "## Changes since the last release"
+              echo
+              cargo xtask changelog notes --unreleased
+            else
+              echo "## Changes"
+              echo
+              cargo xtask changelog notes --version "${TAG#v}"
+            fi
+            echo
+            echo "## Downloads"
+            echo
+            echo "- macOS 11+ (Apple silicon and Intel): \`psg-pdf-suite-*-macos-universal.dmg\`"
+            echo "- Windows 10+ x64: \`psg-pdf-*-windows-x64.msi\` (installer) or \`*-portable.zip\`"
+            echo "- Linux x86_64: \`.deb\`, \`.rpm\`, \`.tar.gz\` (both apps) or \`.AppImage\` (PSG PDF)"
+            echo
+            echo "PSG Academic PDF needs a TeX installation (pdflatex, latexmk, biber); see the README."
+            echo "\`SHA256SUMS.txt\` lists every file's SHA-256."
+          } > "$RUNNER_TEMP/notes.md"
+          cat "$RUNNER_TEMP/notes.md" >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish the release
+        run: |
+          set -euo pipefail
+          flags=(--latest)
+          if [[ "$TAG" == *-beta.* ]]; then flags=(--prerelease --latest=false); fi
+          gh release create "$TAG" assets/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "PSG PDF Suite $TAG" \
+            --notes-file "$RUNNER_TEMP/notes.md" \
+            "${flags[@]}"

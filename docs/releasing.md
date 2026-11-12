@@ -1,63 +1,96 @@
-# Releasing PdfCraft
+# Releasing the PSG PDF Suite
 
-Every push to the `release` branch runs `.github/workflows/release.yml`. It builds installers for
-macOS, Windows, Linux, FreeBSD and the web, signs the ones it has certificates for, and creates or
-updates a **draft** GitHub Release named `PdfCraft v<version>`. Nobody sees a draft until a
-maintainer publishes it.
+PSG PDF and PSG Academic PDF are released together, as one suite, on the rhythm
+panorama-secure-access uses: small pull requests into `beta`, a pre-release for every push to
+`beta`, and a stable release when `beta` is merged into `main` with a release commit.
+`.github/workflows/psg-release.yml` builds and publishes both; nobody pushes a tag by hand.
 
-The pipeline was ported from PhotoCraft's. User-facing names say **PdfCraft**; files, binaries and
-ids stay lowercase (`psg-pdf-<version>-<platform>-<arch>.<ext>`, `ai.storyteller.pdfcraft`).
+## Branches
 
-## Cutting a release
+- **Feature and fix branches** (`claude/…` or any other) open a pull request into `beta`.
+- **`beta`** collects the work for the next release. Every push publishes a pre-release
+  `vX.Y.Z-beta.<run number>`: a test build anyone can install, never marked "latest".
+- **`main`** holds released code only. It changes when `beta` is merged into it for a release
+  (and through no other pull request), and the push publishes the stable release `vX.Y.Z`.
 
-1. **Bump the version** on `main`. It lives only in `[workspace.package] version` in the root
-   `Cargo.toml`:
+`packaging/release-tag.sh` turns the branch and the `Cargo.toml` version into the tag:
+
+| Push to | Publishes | When |
+|---|---|---|
+| `beta` | `vX.Y.Z-beta.N` (pre-release) | always; once `vX.Y.Z` is out, betas are `vX.Y.(Z+1)-beta.N`, and a push whose tree is the release's own (main merged back) publishes nothing |
+| `main` | `vX.Y.Z` (latest) | `CHANGELOG.md` has a `## vX.Y.Z` section and `vX.Y.Z` isn't tagged yet; otherwise nothing |
+
+The publish job creates the tag on the pushed commit, uploads every installer with
+`SHA256SUMS.txt`, and writes the notes: for a beta the changes since the last release, for a
+stable release its `CHANGELOG.md` section.
+
+## Commit messages
+
+The changelog is built from [Conventional Commits](https://www.conventionalcommits.org/):
+`type(scope): description`, where `type` is `feat`, `fix`, `perf`, `revert`, `docs`, `style`,
+`refactor`, `test`, `build`, `ci` or `chore`, and the scope names the area (`academic`, `pdf`,
+`macos`, `windows`, `linux`, `release`, …). Write the description as the user-facing change.
+
+```text
+fix(academic): Show the Biber error when a citation key is missing
+
+Changelog: The compile log names the missing citation key
+```
+
+- `feat`, `fix`, `perf` and `revert` go into the changelog; other types only with a trailer.
+- `Changelog: <text>` replaces the subject's wording in the changelog; `Changelog: skip` leaves
+  the commit out.
+- `type!:` or a `BREAKING CHANGE: <text>` footer adds a **Breaking Changes** entry.
+- Merge commits and `chore(release)` commits are never listed.
+
+`cargo xtask changelog lint` names the commits since the last release that don't follow this
+(CI shows them as warnings), and `cargo xtask changelog notes --unreleased` previews the next
+release's notes.
+
+## Cutting a stable release
+
+1. On `beta` (or a branch from it), write the release commit:
 
    ```sh
-   cargo xtask version                 # prints the current version
-   cargo xtask version set 0.3.0       # or 0.3.0-rc.1; updates Cargo.toml and Cargo.lock
+   cargo xtask changelog release --version 0.19.0   # sets Cargo.toml + Cargo.lock, writes CHANGELOG.md
+   # read and, if needed, reword the new section; every entry keeps its commit hash
+   git commit -am "chore(release): v0.19.0"
    ```
 
-   Commit the change through the normal review flow (see the `Release: PdfCraft v0.2.1` PR).
-2. **Merge `main` into `release`** (or fast-forward it) and push. The workflow starts by itself.
-3. **Wait for the draft.** When every job has finished (notarization is the slow part), the
-   Releases page has a draft `PdfCraft v0.3.0` targeting the pushed commit, with every artifact
-   and `SHA256SUMS.txt`. The notes are generated from the merged PRs.
-4. **Check it.** Download an installer or two and read the job summaries. A `::warning::` there
-   means a signing secret was missing and that artifact is unsigned.
-5. **Publish** the draft in the GitHub UI. Publishing creates the `v0.3.0` tag. Versions with a
-   pre-release suffix (`-rc.1`) are marked as pre-releases.
+   Without `--version` it releases the current `Cargo.toml` version. A version that is already
+   tagged is refused.
+2. Merge it into `beta` (that push is the last beta of the release), then open the pull request
+   from `beta` into `main` and merge it with a merge commit.
+3. The push to `main` publishes `v0.19.0`. Check the Actions run and the release page.
+4. Merge `main` back into `beta` so both start the next version from the same tree; that push
+   publishes nothing.
 
-Pushing to `release` again before you publish rebuilds the same draft and replaces its assets.
-Once the draft is published, the workflow refuses to touch that version again, so bump it first.
-
-**Test runs:** *Actions ▸ Release ▸ Run workflow* runs the whole pipeline by hand. The optional
-`version` input (such as `0.3.0-rc.1`) overrides `Cargo.toml` for that run only; each job applies it
-with `cargo xtask version set` before building, so the binaries report it too. The signing jobs
-(macOS, Windows) and the draft-release job use the `release` environment, so pick the `release`
-branch in the dialog for a full run. On any other branch the same dispatch is a **dry run**: the
-Linux, Flatpak, FreeBSD and web jobs build and check everything, the signing jobs are refused by the
-environment's branch rule, and the draft-release job (which needs them) is skipped, so nothing is
-published (`gh workflow run release.yml --ref <branch>`).
+`CHANGELOG.md` starts at the `<!-- changelog-base: … -->` commit, where the suite forked from
+PdfCraft; history before it is never collected. `cargo xtask changelog verify` (CI) checks the
+headings are `## vX.Y.Z (YYYY-MM-DD)`, newest first.
 
 ## What gets built
 
 | Platform | Artifacts | Built on |
 |---|---|---|
-| macOS 11+ (universal: Apple silicon + Intel) | `psg-pdf-<v>-macos-universal.dmg`, `pdfcraft-cli-<v>-macos-universal.zip` | `macos-15` |
-| Windows 10+ x64 | `psg-pdf-<v>-windows-x64.msi`, `psg-pdf-<v>-windows-x64-portable.zip` | `windows-latest` |
-| Windows 10+ x86 (32-bit) | `psg-pdf-<v>-windows-x86.msi`, `psg-pdf-<v>-windows-x86-portable.zip` | `windows-latest` |
-| Windows 11 on ARM64 | `psg-pdf-<v>-windows-arm64.msi`, `psg-pdf-<v>-windows-arm64-portable.zip` | `windows-latest` (cross-compiled) |
-| Linux x86_64 | `psg-pdf-<v>-linux-x86_64.{AppImage,AppImage.zsync,deb,rpm,tar.gz}`, `pdfcraft-cli-<v>-linux-x86_64.tar.gz` | `ubuntu-22.04` |
-| Linux aarch64 | `psg-pdf-<v>-linux-aarch64.{AppImage,AppImage.zsync,deb,rpm,tar.gz}`, `pdfcraft-cli-<v>-linux-aarch64.tar.gz` | `ubuntu-22.04-arm` |
-| Linux riscv64 | `psg-pdf-<v>-linux-riscv64.tar.gz`, `pdfcraft-cli-<v>-linux-riscv64.tar.gz` (glibc 2.39+) | `ubuntu-24.04` (cross-compiled; CLI smoke-tested under QEMU) |
-| Flatpak x86_64 | `psg-pdf-<v>-linux-x86_64.flatpak` | `ubuntu-24.04` (repackages the Linux tarball) |
-| Flatpak aarch64 | `psg-pdf-<v>-linux-aarch64.flatpak` | `ubuntu-24.04-arm` (repackages the Linux tarball) |
-| FreeBSD 14 x86_64 | `psg-pdf-<v>-freebsd-x86_64.tar.gz` | FreeBSD VM on `ubuntu-latest` |
-| Web | `pdfcraft-web-<v>.zip` (a static site; see [`packaging/web/README.md`](../packaging/web/README.md)) | `ubuntu-latest` |
+| macOS 11+ (universal: Apple silicon + Intel) | `psg-pdf-suite-<v>-macos-universal.dmg` (both apps), `pdfcraft-cli-<v>-macos-universal.zip` | `macos-15` |
+| Windows 10+ x64 | `psg-pdf-<v>-windows-x64.msi`, `psg-pdf-<v>-windows-x64-portable.zip` (both apps) | `windows-latest` |
+| Linux x86_64 | `psg-pdf-<v>-linux-x86_64.{deb,rpm,tar.gz}` (both apps), `.AppImage` (PSG PDF), `pdfcraft-cli-<v>-linux-x86_64.tar.gz` | `ubuntu-22.04` |
 
-The ARM64 Windows build is cross-compiled on the x64 runner, so signing and WiX work as for the
-other Windows builds; `.github/workflows/windows-arm64.yml` installs and runs it on ARM64 hardware.
+**Signing** uses the repository secrets when they exist: `APPLE_CERTIFICATE`,
+`APPLE_CERTIFICATE_PASSWORD`, `KEYCHAIN_PASSWORD`, `APPLE_ID`, `APPLE_PASSWORD` and `APPLE_TEAM_ID`
+for macOS (Developer ID and notarization), `WINDOWS_CERTIFICATE` and
+`WINDOWS_CERTIFICATE_PASSWORD` for Windows. Without them the DMG is ad-hoc signed (macOS asks the
+user to allow it in *System Settings ▸ Privacy & Security*) and the Windows files are unsigned
+(SmartScreen warns), and the job prints a warning.
+
+**Fonts and translations:** each build checks out craft-fonts (`craft-fonts.rev`,
+`packaging/fetch-craft-fonts.sh`) and craft-i18n (`craft-i18n.rev`) and sets `CRAFT_*_REQUIRED=1`,
+so a release can't ship without them.
+
+The inherited `.github/workflows/release.yml` (PdfCraft's pipeline on the `release` branch, through
+craft-common-actions) is not part of this flow; the platform notes below describe the packaging
+scripts both use.
 
 Every binary reports its version (`pdfcraft --version`, `pdfcraft-cli --version`, *Help ▸ About*).
 The workflow sets `PDFCRAFT_BUILD_SHA` and `PDFCRAFT_BUILD_DATE` (`packaging/env.sh` fills them in
