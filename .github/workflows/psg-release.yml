@@ -1,16 +1,24 @@
 name: PSG release
 
-# The suite's release rhythm, as in panorama-secure-access (docs/releasing.md):
-#   - every push to `beta` publishes a pre-release vX.Y.Z-beta.<run> with the changes since the
-#     last release as its notes;
+# The one workflow that builds, checks and publishes the PSG PDF Suite installers (PSG PDF and
+# PSG Academic PDF in one package per platform). It replaces psg-build.yml, and the inherited
+# PdfCraft release.yml and windows-arm64.yml, so every installer comes from this file
+# (docs/releasing.md):
+#   - a pull request builds every installer and runs the checks; nothing is published, and the
+#     installers stay on the run as artifacts for a week;
+#   - every push to `beta` also publishes a pre-release vX.Y.Z-beta.<run> with the changes since
+#     the last release as its notes;
 #   - a push to `main` whose CHANGELOG.md has a section for the Cargo.toml version, and which has
 #     no tag yet, publishes the stable release vX.Y.Z with that section as its notes.
-# packaging/release-tag.sh decides which (or neither). Each build packages one suite installer per
-# platform with both apps. Signing secrets are optional: without them the macOS DMG is ad-hoc
-# signed and the Windows files unsigned, and the job summary warns.
+# packaging/release-tag.sh decides which (or neither). Nothing is published unless the changelog
+# and academic checks pass. Signing secrets are optional and only used on pushes: without them
+# the macOS DMG is ad-hoc signed and the Windows files unsigned, and the job summary warns.
+# The quality gates that are not about installers (ci.yml, fuzz, FreeBSD, Nix, SonarCloud, house
+# rules, packaging lint) stay in their own files: they run on other triggers and schedules.
 on:
   push:
     branches: [beta, main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -18,7 +26,8 @@ permissions:
 
 concurrency:
   group: psg-release-${{ github.ref }}
-  cancel-in-progress: false
+  # A newer push to a pull request replaces its older run; runs on beta and main always finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   CARGO_TERM_COLOR: always
@@ -27,27 +36,79 @@ env:
 jobs:
   release-tag:
     name: Release tag
-    # Releases publish only from the suite's own repository, never from a fork.
-    if: github.repository == 'WENSHAO521/psg-pdf' && github.event_name == 'push'
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
       version: ${{ steps.tag.outputs.version }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Releases publish only from pushes to the suite's own repository, never from a fork or a
+      # pull request. Without a tag the installers carry the Cargo.toml version.
       - name: Release tag
         id: tag
+        env:
+          PUBLISHES: ${{ github.repository == 'WENSHAO521/psg-pdf' && github.event_name == 'push' }}
         run: |
           set -euo pipefail
-          tag="$(packaging/release-tag.sh)"
+          tag=""
+          if [[ "$PUBLISHES" == "true" ]]; then tag="$(packaging/release-tag.sh)"; fi
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
-          echo "Release tag: ${tag:-none (nothing to publish)}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Release tag: ${tag:-none (builds and checks only, nothing is published)}" >> "$GITHUB_STEP_SUMMARY"
+
+  changelog:
+    name: Changelog and commit subjects
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - name: CHANGELOG.md is well formed
+        run: cargo xtask changelog verify
+      # Warnings only: a subject that is not a Conventional Commit is left out of the changelog.
+      - name: Commit subjects since the last release
+        run: cargo xtask changelog lint
+
+  academic-tests:
+    name: Academic tests with TeX Live (Linux)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - name: Build dependencies, TeX Live, latexmk, Biber and Pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libgtk-3-dev \
+            texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern \
+            texlive-bibtex-extra latexmk biber pandoc
+      - name: craft-i18n catalogs
+        run: |
+          packaging/fetch-craft-i18n.sh "$RUNNER_TEMP/craft-i18n"
+          echo "CRAFT_I18N_DIR=$RUNNER_TEMP/craft-i18n" >> "$GITHUB_ENV"
+      - name: Tests of the academic crates and both apps
+        run: cargo test --locked -p psg-academic -p psg-academic-pdf -p psg-pdf
+      - name: Compile the built-in template from the command line
+        run: |
+          set -euo pipefail
+          cargo run --locked -q -p psg-academic-pdf -- check-tex
+          cargo run --locked -q -p psg-academic-pdf -- new "$RUNNER_TEMP/article"
+          cargo run --locked -q -p psg-academic-pdf -- compile "$RUNNER_TEMP/article" --out "$RUNNER_TEMP/article.pdf"
+          test -s "$RUNNER_TEMP/article.pdf"
 
   build:
     name: Package (${{ matrix.platform }})
     needs: release-tag
-    if: needs.release-tag.outputs.tag != ''
     strategy:
       fail-fast: false
       matrix:
@@ -65,6 +126,8 @@ jobs:
       CRAFT_I18N_REQUIRED: '1'
       CRAFT_FONTS_REQUIRED: '1'
       DIST: ${{ github.workspace }}/dist/release
+      # Sign only what may be published: pull requests build unsigned installers.
+      SIGN: ${{ github.event_name == 'push' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -100,8 +163,10 @@ jobs:
           packaging/fetch-craft-fonts.sh "$RUNNER_TEMP/craft-fonts"
           echo "CRAFT_I18N_DIR=$RUNNER_TEMP/craft-i18n" >> "$GITHUB_ENV"
           echo "CRAFT_FONTS_DIR=$RUNNER_TEMP/craft-fonts" >> "$GITHUB_ENV"
-      # A beta's binaries report the beta version; the change stays on the runner.
+      # A beta's binaries report the beta version; the change stays on the runner. Without a tag
+      # (pull requests, manual runs) the Cargo.toml version is kept.
       - name: Set the version
+        if: env.VERSION != ''
         shell: bash
         run: |
           set -euo pipefail
@@ -113,24 +178,36 @@ jobs:
       - name: Import the Developer ID certificate
         if: runner.os == 'macOS'
         env:
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          APPLE_CERTIFICATE: ${{ env.SIGN == 'true' && secrets.APPLE_CERTIFICATE || '' }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ env.SIGN == 'true' && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
+          KEYCHAIN_PASSWORD: ${{ env.SIGN == 'true' && secrets.KEYCHAIN_PASSWORD || '' }}
         run: packaging/macos/import-cert.sh
       - name: Package for macOS
         if: runner.os == 'macOS'
         env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_ID: ${{ env.SIGN == 'true' && secrets.APPLE_ID || '' }}
+          APPLE_PASSWORD: ${{ env.SIGN == 'true' && secrets.APPLE_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ env.SIGN == 'true' && secrets.APPLE_TEAM_ID || '' }}
         run: packaging/macos/package.sh --arch universal
       - name: Package for Windows
         if: runner.os == 'Windows'
         shell: pwsh
         env:
-          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
-          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+          WINDOWS_CERTIFICATE: ${{ env.SIGN == 'true' && secrets.WINDOWS_CERTIFICATE || '' }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ env.SIGN == 'true' && secrets.WINDOWS_CERTIFICATE_PASSWORD || '' }}
         run: packaging/windows/package.ps1 -Arch x64
+      # The packaged binaries start and answer: both apps and the CLI.
+      - name: Smoke test the binaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          ext=""; [[ "$RUNNER_OS" == "Windows" ]] && ext=".exe"
+          find_bin() { compgen -G "target/release/$1$ext" || compgen -G "target/*/release/$1$ext" | head -n1; }
+          for bin in psg-pdf psg-academic-pdf pdfcraft-cli; do
+            path="$(find_bin "$bin")" || { echo "::error::$bin was not built"; exit 1; }
+            "$path" --version
+          done
+          "$(find_bin psg-academic-pdf)" templates
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: suite-${{ matrix.platform }}
@@ -140,7 +217,15 @@ jobs:
 
   publish:
     name: Publish ${{ needs.release-tag.outputs.tag }}
-    needs: [release-tag, build]
+    needs: [release-tag, changelog, academic-tests, build]
+    # Only with a tag, and only when the changelog and academic checks passed. A stable release
+    # needs every platform. A beta publishes what built: on this repository the macOS runners
+    # have often never started (the job is cancelled while still queued), and a missing platform
+    # shouldn't hold back the Linux and Windows test builds. The notes say what is missing.
+    if: >-
+      always() && needs.release-tag.outputs.tag != '' &&
+      needs.changelog.result == 'success' && needs.academic-tests.result == 'success' &&
+      (needs.build.result == 'success' || contains(needs.release-tag.outputs.tag, '-beta.'))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -162,7 +247,10 @@ jobs:
           merge-multiple: true
       - name: Checksums
         working-directory: assets
-        run: sha256sum -- * | tee SHA256SUMS.txt
+        run: |
+          set -euo pipefail
+          compgen -G '*' >/dev/null || { echo '::error::no platform built anything to publish'; exit 1; }
+          sha256sum -- * | tee SHA256SUMS.txt
       - name: Release notes
         run: |
           set -euo pipefail
@@ -183,9 +271,12 @@ jobs:
             echo
             echo "## Downloads"
             echo
-            echo "- macOS 11+ (Apple silicon and Intel): \`psg-pdf-suite-*-macos-universal.dmg\`"
-            echo "- Windows 10+ x64: \`psg-pdf-*-windows-x64.msi\` (installer) or \`*-portable.zip\`"
-            echo "- Linux x86_64: \`.deb\`, \`.rpm\`, \`.tar.gz\` (both apps) or \`.AppImage\` (PSG PDF)"
+            platform() { # <glob> <line>: the line when a file matches, else a note that it is missing
+              if compgen -G "assets/$1" >/dev/null; then echo "- $2"; else echo "- ${2%%:*}: not in this build"; fi
+            }
+            platform '*-macos-universal.dmg' "macOS 11+ (Apple silicon and Intel): \`psg-pdf-suite-*-macos-universal.dmg\`"
+            platform '*-windows-x64.msi' "Windows 10+ x64: \`psg-pdf-*-windows-x64.msi\` (installer) or \`*-portable.zip\`"
+            platform '*-linux-x86_64.deb' "Linux x86_64: \`.deb\`, \`.rpm\`, \`.tar.gz\` (both apps) or \`.AppImage\` (PSG PDF)"
             echo
             echo "PSG Academic PDF needs a TeX installation (pdflatex, latexmk, biber); see the README."
             echo "\`SHA256SUMS.txt\` lists every file's SHA-256."

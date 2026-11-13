@@ -206,7 +206,9 @@ pub fn discover(dirs: &[PathBuf]) -> (Vec<Template>, Vec<String>) {
 }
 
 /// Where template directories are looked for: `PSG_TEMPLATES_DIR`, then `templates/academic`
-/// beside the program and in `../share/psg-academic-pdf/templates` (Linux packages).
+/// beside the program (Windows, development builds), `../Resources/templates/academic` (the macOS
+/// app bundle, where `Contents/MacOS` may hold only signed code) and
+/// `../share/psg-academic-pdf/templates` (Linux packages).
 pub fn default_template_dirs() -> Vec<PathBuf> {
     let mut dirs = Vec::new();
     if let Some(dir) = std::env::var_os("PSG_TEMPLATES_DIR").filter(|d| !d.is_empty()) {
@@ -214,6 +216,7 @@ pub fn default_template_dirs() -> Vec<PathBuf> {
     }
     if let Some(exe_dir) = std::env::current_exe().ok().and_then(|p| p.parent().map(Path::to_path_buf)) {
         dirs.push(exe_dir.join("templates").join("academic"));
+        dirs.push(exe_dir.join("..").join("Resources").join("templates").join("academic"));
         dirs.push(exe_dir.join("..").join("share").join("psg-academic-pdf").join("templates"));
     }
     dirs
@@ -222,6 +225,12 @@ pub fn default_template_dirs() -> Vec<PathBuf> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn template_dirs_include_the_macos_bundle_resources() {
+        let resources = Path::new("..").join("Resources").join("templates").join("academic");
+        assert!(default_template_dirs().iter().any(|d| d.ends_with(&resources)));
+    }
 
     #[test]
     fn the_builtin_template_is_valid() {

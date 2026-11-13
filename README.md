@@ -152,9 +152,10 @@ cargo xtask layers                  # dependency layering
 cargo xtask assets                  # asset attribution (ATTRIBUTION.toml)
 ```
 
-`.github/workflows/psg-build.yml` builds both apps and the CLI on Linux, Windows and macOS, and on
-Linux runs the academic and app tests against a real TeX Live, latexmk, Biber and Pandoc. It
-builds no installer and publishes nothing.
+`.github/workflows/psg-release.yml` is the one workflow for the installers. On every pull request
+it packages the suite for Linux, Windows and macOS, smoke-tests the binaries and, on Linux, runs
+the academic and app tests against a real TeX Live, latexmk, Biber and Pandoc; it publishes only
+from pushes to `beta` and `main` ([docs/releasing.md](docs/releasing.md)).
 
 ## Releases
 
