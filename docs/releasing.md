@@ -3,7 +3,20 @@
 PSG PDF and PSG Academic PDF are released together, as one suite, on the rhythm
 panorama-secure-access uses: small pull requests into `beta`, a pre-release for every push to
 `beta`, and a stable release when `beta` is merged into `main` with a release commit.
-`.github/workflows/psg-release.yml` builds and publishes both; nobody pushes a tag by hand.
+`.github/workflows/psg-release.yml` builds, checks and publishes both; nobody pushes a tag by hand.
+It is the only workflow that makes installers:
+
+| Event | Packages all platforms | Checks (changelog, academic tests with TeX Live, smoke test) | Publishes |
+|---|---|---|---|
+| Pull request | yes, kept as run artifacts for 7 days, unsigned | yes | nothing |
+| Push to `beta` | yes, signed when the secrets exist | yes | pre-release `vX.Y.Z-beta.N` |
+| Push to `main` | yes, signed when the secrets exist | yes | `vX.Y.Z`, when `CHANGELOG.md` has its section |
+| Manual run | yes, unsigned | yes | nothing |
+
+Nothing is published unless the changelog and academic checks pass. The quality gates that are not
+about installers keep their own workflows: `ci.yml` (`cargo xtask ci`), `packaging-lint.yml`,
+`sonarcloud.yml`, `freebsd.yml`, `nix.yml`, `house-rules.yml`, and the scheduled `fuzz.yml` and
+`nightly-macos.yml`.
 
 ## Branches
 
@@ -92,9 +105,10 @@ user to allow it in *System Settings ▸ Privacy & Security*) and the Windows fi
 `packaging/fetch-craft-fonts.sh`) and craft-i18n (`craft-i18n.rev`) and sets `CRAFT_*_REQUIRED=1`,
 so a release can't ship without them.
 
-The inherited `.github/workflows/release.yml` (PdfCraft's pipeline on the `release` branch, through
-craft-common-actions) is not part of this flow; the platform notes below describe the packaging
-scripts both use.
+PdfCraft's own `release.yml` (its pipeline on the `release` branch) and `windows-arm64.yml` were
+removed: they built PdfCraft-named packages, and the suite has no Windows ARM64 build yet. The
+platform notes below describe the packaging scripts `psg-release.yml` runs; some passages still
+describe PdfCraft's pipeline.
 
 Every binary reports its version (`pdfcraft --version`, `pdfcraft-cli --version`, *Help ▸ About*).
 The workflow sets `PDFCRAFT_BUILD_SHA` and `PDFCRAFT_BUILD_DATE` (`packaging/env.sh` fills them in
@@ -270,10 +284,11 @@ covered in [`packaging/web/README.md`](../packaging/web/README.md).
 
 ## Secrets
 
-The signing secrets live in the repository's **`release` environment** (*Settings ▸ Environments ▸
-release*), restricted to the `release` branch; every job in `release.yml` declares
-`environment: release`. Each secret is optional: if one is missing, that platform's artifacts are
-unsigned and the run shows a warning.
+The signing secrets are repository secrets (*Settings ▸ Secrets and variables ▸ Actions*).
+`psg-release.yml` passes them to the packaging steps only on pushes to `beta` and `main`, never on
+pull requests. Each secret is optional: if one is missing, that platform's artifacts are unsigned
+and the run shows a warning. The Azure Trusted Signing secrets below were used by PdfCraft's
+pipeline; `psg-release.yml` signs Windows with the `.pfx` secrets only.
 
 | Secret | Used for |
 |---|---|
@@ -290,8 +305,8 @@ unsigned and the run shows a warning.
 
 `.github/workflows/packaging-lint.yml` runs on changes to `packaging/` and the workflows: actionlint, shellcheck,
 a PowerShell parse, xmllint (WiX, plist, MIME), `desktop-file-validate`, `appstreamcli validate`, and
-the MSI icon-id check. The FreeBSD and Windows ARM64 workflows also exercise their packaging before a
-release does.
+the MSI icon-id check. The FreeBSD workflow also exercises its packaging. Every pull request
+runs `psg-release.yml` without publishing, so the suite installers are built before a release is.
 
 ## Scanner detections
 

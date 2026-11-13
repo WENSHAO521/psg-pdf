@@ -60,7 +60,7 @@ echo "==> PSG PDF Suite $VERSION for macOS ($ARCH), identity: $IDENTITY, notariz
 if [[ "$SKIP_BUILD" = 0 ]]; then
   args=()
   for t in "${TARGETS[@]}"; do args+=(--target "$t"); done
-  (cd "$ROOT" && cargo build --release --locked -p psg-pdf -p pdfcraft-cli "${args[@]}")
+  (cd "$ROOT" && cargo build --release --locked -p psg-pdf -p psg-academic-pdf -p pdfcraft-cli "${args[@]}")
 fi
 
 rm -rf "$WORK"
