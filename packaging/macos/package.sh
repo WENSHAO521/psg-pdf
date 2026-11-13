@@ -159,10 +159,11 @@ stage_models "$APP/Contents/Resources/models"
 seal "$APP" "PSG PDF"
 
 assemble "$ACADEMIC_APP" psg-academic-pdf "PSG Academic PDF" "$ROOT/assets/app-icon-academic/psg-academic-pdf.icns" "$HERE/Info-academic.plist.in"
-# Journal templates beside the executable (templates/academic), where the app looks for them;
-# the PSG Research Article template is also compiled in.
-mkdir -p "$ACADEMIC_APP/Contents/MacOS/templates"
-cp -R "$ROOT/templates/academic" "$ACADEMIC_APP/Contents/MacOS/templates/academic"
+# Journal templates in Contents/Resources/templates/academic, where the app looks for them
+# (crates/academic/src/template.rs). Not in Contents/MacOS: codesign treats every file there as
+# code and refuses to seal the bundle. The PSG Research Article template is also compiled in.
+mkdir -p "$ACADEMIC_APP/Contents/Resources/templates"
+cp -R "$ROOT/templates/academic" "$ACADEMIC_APP/Contents/Resources/templates/academic"
 seal "$ACADEMIC_APP" "PSG Academic PDF"
 
 # ---- DMG ---------------------------------------------------------------------------------------
