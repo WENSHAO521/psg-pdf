@@ -15,7 +15,6 @@
     "LICENSE-document.txt",
     "NOTICE",
     "pdfcraft-cli.exe",
-    "psg-academic-pdf.exe",
     "psg-pdf.exe"
   ],
   "registry": [
@@ -326,5 +325,8 @@
       "\"[#PdfcraftExe]\" --create-images \"%1\""
     ]
   ],
-  "mode": "dualScope"
+  "mode": "dualScope",
+  "defines": [
+    "HasPdfContextMenu=1"
+  ]
 }

@@ -37,8 +37,9 @@ jobs:
           dotnet tool install --tool-path $tools wix --version 5.0.2
           if ($LASTEXITCODE -ne 0) { throw 'WiX installation failed.' }
           $tools >> $env:GITHUB_PATH
-          $policy = Get-Content -Raw -LiteralPath packaging/windows/install-policy.json | ConvertFrom-Json
-          foreach ($extension in @($policy.extensions)) {
+          # One policy per product (PSG PDF, PSG Academic PDF); install every extension either uses.
+          $extensions = @(Get-ChildItem packaging/windows/install-policy*.json | ForEach-Object { (Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json).extensions } | Sort-Object -Unique)
+          foreach ($extension in $extensions) {
             & (Join-Path $tools 'wix.exe') extension add -g "WixToolset.$extension.wixext/5.0.2"
             if ($LASTEXITCODE -ne 0) { throw "WiX extension $extension installation failed." }
           }

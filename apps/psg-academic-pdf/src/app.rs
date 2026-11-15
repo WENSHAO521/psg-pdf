@@ -16,7 +16,10 @@ use std::time::Instant;
 use psg_academic::pandoc::{ManuscriptImporter, PandocImporter};
 use psg_academic::{Author, CompileReport, Outcome, Project, PublicationMetadata, Severity, Template, TexEnvironment, compile, template};
 
+use crate::data_dir::DataDir;
+use crate::launch::{self, ManuscriptKind, Request};
 use crate::preview::{MAX_PREVIEW_PAGES, PageSlot, Preview};
+use crate::updates::Updates;
 
 /// The program's display name.
 pub const APP_NAME: &str = "PSG Academic PDF";
@@ -61,14 +64,18 @@ pub struct AcademicApp {
     tab: Tab,
     status: String,
     activity: Vec<String>,
+    updates: Updates,
+    /// Paths to open (command line, Open with, Finder, drops), handled once the TeX check is
+    /// done: a Word manuscript needs to know where Pandoc is.
+    pending: Vec<PathBuf>,
+    #[cfg(target_os = "macos")]
+    os_events: Option<crate::apple_events::OsEventsFn>,
 }
 
 impl AcademicApp {
-    pub fn new(ctx: &egui::Context) -> Self {
+    pub fn new(ctx: &egui::Context, data: DataDir, paths: Vec<PathBuf>) -> Self {
         let (templates, template_problems) = template::discover(&template::default_template_dirs());
-        let workspace = eframe::storage_dir(APP_NAME)
-            .map(|d| d.join("projects"))
-            .unwrap_or_else(|| std::env::temp_dir().join("psg-academic-pdf").join("projects"));
+        let workspace = data.projects();
         let mut app = Self {
             env: None,
             env_rx: None,
@@ -85,12 +92,102 @@ impl AcademicApp {
             tab: Tab::Preview,
             status: "Checking the TeX installation…".into(),
             activity: Vec::new(),
+            updates: Updates::default(),
+            pending: paths,
+            #[cfg(target_os = "macos")]
+            os_events: None,
         };
+        if data.portable {
+            app.note(format!("Portable mode: settings and projects are kept in {}.", data.root.display()));
+        }
+        if let Some(note) = data.note {
+            app.note(note);
+        }
         for p in app.template_problems.clone() {
             app.note(format!("Template skipped: {p}"));
         }
         app.detect_tex(ctx);
         app
+    }
+
+    /// Where Finder's open-documents events come from (macOS).
+    #[cfg(target_os = "macos")]
+    pub fn set_os_events(&mut self, events: crate::apple_events::OsEventsFn) {
+        self.os_events = Some(events);
+    }
+
+    /// Picks up paths from Finder and from files dropped on the window. True when macOS asks the
+    /// app to quit.
+    fn take_os_paths(&mut self, ctx: &egui::Context) -> bool {
+        #[cfg(target_os = "macos")]
+        let quit = {
+            let mut quit = false;
+            if let Some(events) = &mut self.os_events {
+                for event in events() {
+                    match event {
+                        crate::apple_events::OsEvent::Open(paths) => self.pending.extend(paths),
+                        crate::apple_events::OsEvent::Quit => quit = true,
+                    }
+                }
+            }
+            quit
+        };
+        #[cfg(not(target_os = "macos"))]
+        let quit = false;
+        let dropped: Vec<PathBuf> =
+            ctx.input(|i| i.raw.dropped_files.iter().map(|f| f.path().to_path_buf()).filter(|p| !p.as_os_str().is_empty()).collect());
+        self.pending.extend(dropped);
+        quit
+    }
+
+    /// Opens what was asked for, once TeX has been checked. One project is open at a time, so
+    /// of several paths the last one wins and the others are noted.
+    fn open_pending(&mut self) {
+        if self.pending.is_empty() || self.env.is_none() || self.running.is_some() {
+            return;
+        }
+        let mut paths = std::mem::take(&mut self.pending);
+        let Some(last) = paths.pop() else { return };
+        for p in paths {
+            self.note(format!("Not opened (one project at a time): {}", p.display()));
+        }
+        match launch::classify(&last) {
+            Ok(Request::Project(dir)) => match Project::open(&dir) {
+                Ok(p) => {
+                    self.status = format!("Opened {}.", p.dir.display());
+                    self.set_project(p);
+                }
+                Err(e) => self.fail(format!("Could not open the project: {e}")),
+            },
+            Ok(Request::Manuscript { path, kind }) => self.new_project_around(&path, kind),
+            Err(e) => self.fail(e),
+        }
+    }
+
+    /// A new project from the selected template, with `manuscript` imported as its body. The
+    /// original file is only read.
+    fn new_project_around(&mut self, manuscript: &std::path::Path, kind: ManuscriptKind) {
+        let pandoc = self.env.as_ref().and_then(|e| e.pandoc.path.clone());
+        if kind == ManuscriptKind::Docx && pandoc.is_none() {
+            self.fail(format!("{} is a Word manuscript; install Pandoc to import it.", manuscript.display()));
+            return;
+        }
+        let Some(t) = self.templates.get(self.selected_template).cloned() else {
+            self.fail("No template is available.");
+            return;
+        };
+        let name = launch::project_name(manuscript, &chrono::Local::now().format("%Y%m%d-%H%M%S").to_string());
+        let project = match Project::create(&self.workspace.join(name), &t, PublicationMetadata::sample()) {
+            Ok(p) => p,
+            Err(e) => return self.fail(format!("Could not create the project: {e}")),
+        };
+        let result = match (kind, pandoc) {
+            (ManuscriptKind::Docx, Some(pandoc)) => PandocImporter { pandoc }.import(manuscript, &project, None),
+            _ => project.import_manuscript(manuscript),
+        };
+        self.note(format!("New project from {} around {}.", t.manifest.name, manuscript.display()));
+        self.set_project(project);
+        self.after_import(result);
     }
 
     fn note(&mut self, text: impl Into<String>) {
@@ -258,8 +355,16 @@ impl AcademicApp {
     fn after_import(&mut self, result: Result<String, psg_academic::Error>) {
         match result {
             Ok(note) => {
-                self.status = note.clone();
-                self.note(note);
+                // The first line; what to fix before compiling follows in the Activity log.
+                let mut lines = note.lines();
+                let first = lines.next().unwrap_or_default().to_owned();
+                self.status = if lines.next().is_some() { format!("{first} Some things need fixing first: see Activity.") } else { first };
+                for line in note.lines() {
+                    self.note(line.to_owned());
+                }
+                if note.lines().count() > 1 {
+                    self.tab = Tab::Activity;
+                }
             }
             Err(e) => self.fail(format!("Import failed: {e}")),
         }
@@ -338,13 +443,13 @@ impl AcademicApp {
     fn open_in_psg_pdf(&mut self) {
         let Some(project) = &self.project else { return };
         let pdf = project.pdf_path();
-        let exe = std::env::current_exe().ok().and_then(|p| p.parent().map(|d| d.join(if cfg!(windows) { "psg-pdf.exe" } else { "psg-pdf" })));
-        match exe.filter(|e| e.is_file()) {
-            Some(exe) => match std::process::Command::new(&exe).arg("--new-window").arg(&pdf).spawn() {
-                Ok(_) => self.note(format!("Opened {} in PSG PDF.", pdf.display())),
-                Err(e) => self.fail(format!("Could not start PSG PDF: {e}")),
-            },
-            None => self.fail("PSG PDF was not found next to PSG Academic PDF. Build it with `cargo build -p psg-pdf`."),
+        match crate::psg_pdf::open(&pdf) {
+            Ok(crate::psg_pdf::Opened::InPsgPdf) => self.note(format!("Opened {} in PSG PDF.", pdf.display())),
+            Ok(crate::psg_pdf::Opened::InDefaultViewer) => {
+                self.status = "PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.".into();
+                self.note(format!("Opened {} in the default PDF viewer.", pdf.display()));
+            }
+            Err(e) => self.fail(e),
         }
     }
 
@@ -696,6 +801,9 @@ impl AcademicApp {
                     Severity::Warning => ui.visuals().warn_fg_color,
                 };
                 ui.colored_label(color, d.to_string());
+                if let Some(hint) = d.hint() {
+                    ui.indent(("hint", d.line, &d.message), |ui| ui.weak(hint));
+                }
             }
         });
     }
@@ -727,7 +835,13 @@ fn suggested_file_name(m: &PublicationMetadata) -> String {
 impl eframe::App for AcademicApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         let ctx = ui.ctx().clone();
+        let quit = self.take_os_paths(&ctx);
         self.poll(&ctx);
+        self.open_pending();
+        // A ready update waits while a compilation runs.
+        if self.updates.frame(&ctx, self.running.is_none()) || quit {
+            ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+        }
         if self.running.is_some() || self.preview.rendering || self.env_rx.is_some() {
             ctx.request_repaint_after(std::time::Duration::from_millis(200));
         }
@@ -744,9 +858,19 @@ impl eframe::App for AcademicApp {
                 ui.add_space(8.0);
                 ui.weak(format!("{APP_NAME} {} · {PUBLISHER}", env!("CARGO_PKG_VERSION")));
                 ui.weak("PDF engine: PdfCraft (MIT OR Apache-2.0)");
+                if ui.small_button("Check for updates…").clicked() {
+                    self.updates.request_check();
+                }
             });
         });
         self.central(ui);
+    }
+
+    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
+        if let Some(r) = &self.running {
+            r.cancel.store(true, Ordering::Relaxed);
+        }
+        self.updates.exiting();
     }
 }
 

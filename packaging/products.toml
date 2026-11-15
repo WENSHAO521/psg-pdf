@@ -1,0 +1,97 @@
+# PSG PDF and PSG Academic PDF are two independent products built from one Rust workspace and
+# one shared PdfCraft engine. This file is the single source of each product's identity: every
+# packaging script, installer source and the release workflow take their values from here or are
+# checked against it by `cargo xtask products check` (part of `cargo xtask ci`).
+#
+#   cargo xtask products check          every packaging file agrees with this file
+#   cargo xtask products matrix         the release workflow's product x platform matrix (JSON)
+#   cargo xtask products get <id> <key> one value, for scripts
+#
+# Changing an identity value (an upgrade code, an app id, a package name) breaks upgrades of
+# installed copies. Don't, unless a migration is written for it (docs/products.md).
+
+# The old combined installer, "PSG PDF Suite" (0.18.x betas): one package per platform that
+# installed both apps. Products from `split_version` on are separate, and their installers migrate
+# a suite install safely (docs/products.md, "Migrating from the suite").
+[legacy_suite]
+name = "PSG PDF Suite"
+# Every suite release is below this version; every independent release is at or above it.
+split_version = "0.19.0"
+# The suite MSI's UpgradeCode. PSG PDF continues it (its MSI replaces the suite);
+# PSG Academic PDF only detects it.
+msi_upgrade_code = "C984AB08-3E67-48B7-8DC2-6F1428165299"
+# The suite's deb/rpm package name (PSG PDF continues it).
+linux_package = "psg-pdf"
+# The suite's DMG name stem (psg-pdf-suite-<version>-macos-universal.dmg).
+dmg_stem = "psg-pdf-suite"
+
+[[product]]
+id = "psg-pdf"
+name = "PSG PDF"
+tagline = "Reading, organizing and protecting PDFs"
+# Cargo packages built into this product's installers; the first is the app.
+cargo_packages = ["psg-pdf", "pdfcraft-cli"]
+binaries = ["psg-pdf", "pdfcraft-cli"]
+# Freedesktop app id, macOS bundle id, hicolor icon name.
+app_id = "com.panoramascholarly.psgpdf"
+# Release asset stem: <stem>-<version>-<os>-<arch>.<ext>. The in-app updater (craft-update) picks
+# only assets with this stem, so each product has its own update channel in the shared releases.
+asset_stem = "psg-pdf"
+icon_dir = "assets/app-icon"
+icon_name = "psg-pdf"
+# Brand: deep blue, simple, professional, general purpose.
+accent = "#1e4384"
+# Windows
+msi_upgrade_code = "C984AB08-3E67-48B7-8DC2-6F1428165299"
+msi_source = "packaging/windows/psg-pdf.wxs"
+install_policy = "packaging/windows/install-policy.json"
+windows_folder = "PSG PDF"
+windows_registry_key = "Software\\PSG PDF"
+windows_progid = "PSGPDF.Document"
+# macOS
+bundle_name = "PSG PDF"
+info_plist = "packaging/macos/Info.plist.in"
+dmg_volume = "PSG PDF"
+dmg_layout = "packaging/macos/dmg/dmg-layout.DS_Store"
+dmg_background = "packaging/macos/dmg/background.tiff"
+# Linux
+linux_package = "psg-pdf"
+nfpm = "packaging/linux/nfpm.yaml"
+desktop_file = "packaging/linux/com.panoramascholarly.psgpdf.desktop"
+# File types the product registers as an option (never forced as the default).
+file_extensions = ["pdf"]
+mime_types = ["application/pdf"]
+# Update channels: the stable channel follows releases vX.Y.Z, the beta channel pre-releases
+# vX.Y.Z-beta.N from the beta branch (docs/releasing.md).
+update_channels = ["stable", "beta"]
+
+[[product]]
+id = "psg-academic-pdf"
+name = "PSG Academic PDF"
+tagline = "Typesetting accepted articles with pdfLaTeX"
+cargo_packages = ["psg-academic-pdf"]
+binaries = ["psg-academic-pdf"]
+app_id = "com.panoramascholarly.psgacademicpdf"
+asset_stem = "psg-academic-pdf"
+icon_dir = "assets/app-icon-academic"
+icon_name = "psg-academic-pdf"
+# Brand: academic purple, precise, elegant, publishing-minded.
+accent = "#5b2a78"
+msi_upgrade_code = "B43E2C11-55A0-457B-9A21-7582C52506D9"
+msi_source = "packaging/windows/psg-academic-pdf.wxs"
+install_policy = "packaging/windows/install-policy-academic.json"
+windows_folder = "PSG Academic PDF"
+windows_registry_key = "Software\\PSG Academic PDF"
+windows_progid = "PSGAcademicPDF.Manuscript"
+bundle_name = "PSG Academic PDF"
+info_plist = "packaging/macos/Info-academic.plist.in"
+dmg_volume = "PSG Academic PDF"
+dmg_layout = "packaging/macos/dmg/academic-layout.DS_Store"
+dmg_background = "packaging/macos/dmg/academic-background.tiff"
+linux_package = "psg-academic-pdf"
+nfpm = "packaging/linux/nfpm-academic.yaml"
+desktop_file = "packaging/linux/com.panoramascholarly.psgacademicpdf.desktop"
+# Manuscripts it opens: a LaTeX body or a Word manuscript start a new project around them.
+file_extensions = ["tex", "docx"]
+mime_types = ["text/x-tex", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
+update_channels = ["stable", "beta"]

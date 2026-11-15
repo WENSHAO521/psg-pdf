@@ -1,8 +1,8 @@
 ﻿<#
 .SYNOPSIS
-  Check the compiled MSI's install scope, publisher, shortcuts, native UI and OCR models, without installing it.
+  Check PSG PDF's compiled MSI: install scope, publisher, shortcuts, native UI and OCR models, without installing it.
 .EXAMPLE
-  pwsh packaging/windows/test-msi.ps1 dist/release/pdfcraft-0.2.1-windows-x64.msi
+  pwsh packaging/windows/test-msi.ps1 dist/release/psg-pdf-0.19.0-windows-x64.msi
 #>
 param(
   [Parameter(Mandatory)] [string] $Path,
@@ -40,7 +40,7 @@ function Assert-NoRow([string] $Sql, [string] $What) {
 
 # The shared compiled contract covers both scopes, duplicate guards and safe maintenance.
 # Keep it in a separate process because Windows Installer permits one session per process.
-& (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'check-install-policy.ps1') -MsiPath $Path
+& (Get-Process -Id $PID).Path -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'check-install-policy.ps1') -MsiPath $Path -PolicyPath (Join-Path $PSScriptRoot 'install-policy.json')
 if ($LASTEXITCODE -ne 0) { throw 'Dual-scope installer contract failed.' }
 $Installer.UILevel = 2
 $manufacturer = Read-Row 'SELECT `Value` FROM `Property` WHERE `Property` = ''Manufacturer''' 1
@@ -89,14 +89,19 @@ foreach ($entry in @(@('StartMenuShortcut', 'ProgramMenuFolder', 'PdfcraftStartM
   Assert-Equal $component[0] $entry[1] "$($entry[2]) directory"
   Assert-Equal $component[1] $entry[3] "$($entry[2]) condition"
 }
-# The suite's second app: PSG Academic PDF beside psg-pdf.exe, with its own plain Start menu shortcut.
-$row = Read-Row 'SELECT `Directory_`, `Target`, `Icon_`, `WkDir`, `Component_` FROM `Shortcut` WHERE `Shortcut` = ''AcademicStartMenuShortcut''' 5
-Assert-Equal $row[0] 'ProgramMenuFolder' 'AcademicStartMenuShortcut directory'
-Assert-Equal $row[1] '[#PsgAcademicExe]' 'AcademicStartMenuShortcut target'
-Assert-Equal $row[2] '' 'AcademicStartMenuShortcut icon'
-Assert-Equal $row[3] 'INSTALLFOLDER' 'AcademicStartMenuShortcut working directory'
-$academic = Read-Row 'SELECT `Directory_` FROM `Component` WHERE `Component` = ''PsgAcademicApp''' 1
-Assert-Equal $academic[0] 'INSTALLFOLDER' 'PsgAcademicApp directory'
+# PSG PDF's MSI carries PSG PDF only: PSG Academic PDF is its own product with its own MSI
+# (packaging/products.toml), so nothing of it may be in this package.
+# (MSI SQL has no LIKE: read every file name.)
+$filesView = $Database.OpenView('SELECT `FileName` FROM `File`')
+try {
+  [void] $filesView.Execute()
+  while ($record = $filesView.Fetch()) {
+    if (($record.StringData(1) -split '\|')[-1] -ieq 'psg-academic-pdf.exe') { throw 'PSG PDF MSI carries psg-academic-pdf.exe' }
+  }
+} finally { [void] $filesView.Close() }
+Assert-NoRow 'SELECT `Shortcut` FROM `Shortcut` WHERE `Shortcut` = ''AcademicStartMenuShortcut''' 'PSG Academic PDF shortcut'
+$productName = Read-Row 'SELECT `Value` FROM `Property` WHERE `Property` = ''ProductName''' 1
+Assert-Equal $productName[0] 'PSG PDF' 'Product name'
 
 # Defaults an update keeps (#1058, #305). No static default: a SetProperty after AppSearch turns it on
 # for a first install and, for an update from a release that offered it ($Release set), only while what

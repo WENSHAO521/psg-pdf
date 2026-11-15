@@ -134,6 +134,9 @@ fn compile(args: &[String]) -> Result<(), String> {
     let report = project.compile(&env, None).map_err(|e| e.to_string())?;
     for d in &report.diagnostics {
         complain(&d.to_string());
+        if let Some(hint) = d.hint() {
+            complain(&format!("  hint: {hint}"));
+        }
     }
     say(&report.summary());
     if report.outcome != Outcome::Succeeded {

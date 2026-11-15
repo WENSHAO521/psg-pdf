@@ -15,7 +15,8 @@
       the manuscript and its publication metadata, compiles it with the local TeX installation
       (pdfLaTeX, latexmk, BibLaTeX and Biber) in an isolated project folder with shell escape off and
       a time limit, and shows the PDF, the problems and the compile log. Pandoc, when installed,
-      converts DOCX manuscripts. It is part of the PSG PDF Suite and shares its core with PSG PDF.
+      converts DOCX manuscripts. It is installed and
+      updated on its own; PSG PDF, which shares its PDF engine, is a separate download.
     </p>
   </description>
   <launchable type="desktop-id">com.panoramascholarly.psgacademicpdf.desktop</launchable>

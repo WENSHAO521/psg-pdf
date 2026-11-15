@@ -5,10 +5,14 @@
   Uses Windows Installer's safe session (OpenPackage option 1). Only property-setting custom
   actions are exercised. No AppSearch, install, repair, removal or file-writing action runs.
 #>
-param([Parameter(Mandatory = $true)] [string] $MsiPath)
+param(
+  [Parameter(Mandatory = $true)] [string] $MsiPath,
+  # The product's policy: install-policy.json (PSG PDF) or install-policy-academic.json.
+  [string] $PolicyPath = (Join-Path $PSScriptRoot 'install-policy.json')
+)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
-$policy = Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'install-policy.json') | ConvertFrom-Json
+$policy = Get-Content -Raw -LiteralPath $PolicyPath | ConvertFrom-Json
 function Read-Rows($Database, [string] $Sql, [int] $Columns) {
   $view = $Database.OpenView($Sql)
   try {
