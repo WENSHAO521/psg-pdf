@@ -77,7 +77,9 @@ if (-not $env:PDFCRAFT_BUILD_DATE) { $env:PDFCRAFT_BUILD_DATE = (Get-Date).ToUni
 $IsPdf = $Product -eq 'psg-pdf'
 $ProductName = if ($IsPdf) { 'PSG PDF' } else { 'PSG Academic PDF' }
 # Program, PE subsystem (2 = Windows GUI, 3 = console).
-$Programs = if ($IsPdf) { @(@('psg-pdf.exe', 2), @('pdfcraft-cli.exe', 3)) } else { @(@('psg-academic-pdf.exe', 2)) }
+# Assigned inside the branches, and the one-program list built with the comma operator: an `if`
+# expression's output, and @(@(…)), both unroll a single pair into its two items.
+if ($IsPdf) { $Programs = @(@('psg-pdf.exe', 2), @('pdfcraft-cli.exe', 3)) } else { $Programs = @(, @('psg-academic-pdf.exe', 2)) }
 $CargoPackages = if ($IsPdf) { @('-p', 'psg-pdf', '-p', 'pdfcraft-cli') } else { @('-p', 'psg-academic-pdf') }
 $IconPath = if ($IsPdf) { Join-Path $Root 'assets\app-icon\psg-pdf.ico' } else { Join-Path $Root 'assets\app-icon-academic\psg-academic-pdf.ico' }
 
