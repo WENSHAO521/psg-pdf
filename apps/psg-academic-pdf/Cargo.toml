@@ -16,6 +16,10 @@ psg-academic = { path = "../../crates/academic" }
 pdfcraft-render = { workspace = true }
 eframe = { workspace = true, features = ["default_fonts", "wgpu", "glow", "accesskit", "wayland", "x11", "persistence"] }
 egui = { workspace = true, features = ["default_fonts"] }
+# Chinese, Japanese and Korean interface faces from the craft-fonts build input (OFL).
+pdfcraft-fonts = { workspace = true }
+# The system language picks the interface language (same version as PSG PDF).
+sys-locale = "0.3"
 # Native open/save dialogs, as in PSG PDF.
 rfd = { workspace = true }
 log = { workspace = true }

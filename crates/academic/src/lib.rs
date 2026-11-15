@@ -9,12 +9,15 @@
 //! - [`compile`] runs latexmk in the project directory with shell escape off, kpathsea's paranoid
 //!   file access, a time limit and cancellation, and turns the logs into [`diagnostics`].
 //! - [`template`] reads journal templates; [`metadata`] writes the metadata file they read.
+//! - [`bib`] checks the bibliography against the citations; [`scripts`] finds text the
+//!   pdfLaTeX templates can't set (Chinese, Japanese, Korean, …) and says what to do.
 //! - [`project`] keeps it together in one directory; [`pandoc`] is the (experimental) DOCX import.
 //!
 //! This crate has no user interface; the app is `apps/psg-academic-pdf`.
 
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
+pub mod bib;
 pub mod compile;
 pub mod diagnostics;
 pub mod metadata;
@@ -22,6 +25,7 @@ pub mod pandoc;
 pub mod paths;
 pub mod process;
 pub mod project;
+pub mod scripts;
 pub mod template;
 pub mod tex;
 

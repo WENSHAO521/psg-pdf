@@ -349,7 +349,7 @@ pub fn place(page: usize, info: &PageInfo, at: [f64; 2], sig: &SavedSig, initial
     }
 }
 
-/// The text in the script font as a picture (`w`×`h` px, black on transparent), for previews.
+/// The text in the signature faces as a picture (`w`×`h` px, black on transparent), for previews.
 pub(crate) fn script_preview(text: &str, w: usize, h: usize) -> egui::ColorImage {
     let o = pdfcraft_engine::script_outline(text);
     let mut img = egui::ColorImage::filled([w, h], Color32::TRANSPARENT);
@@ -773,6 +773,14 @@ pub(crate) fn signature_pad(
         }
         if let Some((_, tex)) = preview {
             painter.image(tex.id(), rect.shrink(4.0), egui::Rect::from_min_max(pos2(0.0, 0.0), pos2(1.0, 1.0)), Color32::WHITE);
+        }
+        // Say which character would be left out rather than letting the preview show a gap.
+        if let Some(c) = pdfcraft_engine::script_missing(&d.text) {
+            let text = crate::i18n::fmt(
+                tl!("No signature font can draw “{char}”. Use other letters, or draw or import your signature."),
+                &[("char", &c.to_string())],
+            );
+            ui.label(egui::RichText::new(text).color(ui.visuals().error_fg_color));
         }
         let (apply, cancel) = pad_buttons(ui, d);
         return (apply, cancel, false);

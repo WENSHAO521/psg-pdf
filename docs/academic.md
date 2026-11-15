@@ -70,7 +70,7 @@ templates are read from:
 
 A broken template is skipped and listed in the Activity tab or on standard error.
 
-## Status (phase one)
+## Status
 
 Implemented and tested:
 
@@ -82,7 +82,29 @@ Implemented and tested:
 - Publication metadata form, validation (DOI, ISSN and ORCID check digits, ISO dates) and
   escaping into `psg-metadata.tex`.
 - Projects: create, open, import a LaTeX manuscript, add bibliography and figure files.
-- Headless commands: `check-tex`, `templates`, `new`, `compile`.
+- Headless commands: `check-tex`, `templates`, `new`, `compile`, and `check` (the checks made
+  before compiling, exit status 1 on an error).
+
+Phase two:
+
+- **Source and PDF** tab: the manuscript body and the project's `.bib` files in an editor with
+  line numbers, next to the PDF. Lines with a problem are marked; Ctrl+S / ⌘S saves, and the
+  file is saved before every compilation.
+- **Problems** lists the checks made before compiling and the compiler's diagnostics; "Go to
+  line" opens the file at the line.
+- **Before compiling** (`Project::preflight`, `crates/academic/src/scripts.rs`): Chinese,
+  Japanese, Korean, Cyrillic, Greek, Arabic, Hebrew, Thai and Indic text in the body or the
+  metadata is named with its line, with what the limitation is and what to do. The pdfLaTeX
+  templates load T1 Latin Modern only, so these scripts cannot be typeset; this replaces TeX's
+  "Unicode character … not set up for use with LaTeX".
+- **References** (`crates/academic/src/bib.rs`): the `.bib` entries, and checks for duplicate
+  keys, missing required fields, malformed DOIs and years, citations without an entry and
+  entries nothing cites.
+- **Interface languages**: English, Simplified and Traditional Chinese, Japanese, Korean and
+  German (`i18n/psg-academic/<code>.tsv`), following the system language or the choice in the
+  side panel. Chinese, Japanese and Korean interface text uses the craft-fonts faces, so a build
+  without `CRAFT_FONTS_DIR` shows boxes for them (release builds set it). Messages produced by
+  TeX, and the generated details of the checks, stay in English; their hints are translated.
 
 Experimental:
 
@@ -94,6 +116,5 @@ Not implemented yet:
 - XeLaTeX/LuaLaTeX (CJK manuscripts); only pdfLaTeX is supported.
 - Journal-specific templates beyond the sample; template editing in the app.
 - JATS XML, Crossref deposit metadata, PDF/A output.
-- Jumping from a problem to the source line; an in-app source editor.
-- A translated (e.g. Chinese) interface for PSG Academic PDF; it is in English.
+- SyncTeX (clicking the PDF to reach the source, or the reverse).
 - Installers for PSG Academic PDF; PSG PDF's packaging scripts were renamed but not run.

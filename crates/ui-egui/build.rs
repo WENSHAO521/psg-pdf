@@ -76,7 +76,7 @@ fn craft_i18n() -> String {
             }
             None => None,
         };
-        match copy(&app) {
+        match copy(&app).and_then(|app| with_psg_rows(&app, &code)) {
             Ok(app) => embedded.push((code, shared, app)),
             Err(e) => println!("cargo::warning={e}; {code} is left out"),
         }
@@ -105,6 +105,23 @@ fn rebrand(path: &std::path::Path, dir: &std::path::Path) -> Result<std::path::P
     let out = dir.join(name);
     std::fs::write(&out, text.replace(UPSTREAM_NAME, APP_NAME)).map_err(|e| format!("{}: {e}", out.display()))?;
     Ok(out)
+}
+
+/// PSG's own interface strings, which craft-i18n doesn't carry: `i18n/psg/<locale>.tsv` at the
+/// repository root, in the same TSV format. They are appended to the (rebranded) app catalog, so
+/// they need the craft-i18n catalogs too; without them the interface is English, as before.
+fn with_psg_rows(app: &std::path::Path, code: &str) -> Result<std::path::PathBuf, String> {
+    let root = std::path::PathBuf::from(std::env::var_os("CARGO_MANIFEST_DIR").unwrap_or_default());
+    let rows = root.join("../../i18n/psg").join(format!("{code}.tsv"));
+    println!("cargo::rerun-if-changed={}", rows.display());
+    let Ok(extra) = std::fs::read_to_string(&rows) else { return Ok(app.to_path_buf()) };
+    let mut text = std::fs::read_to_string(app).map_err(|e| format!("{}: {e}", app.display()))?;
+    if !text.ends_with('\n') {
+        text.push('\n');
+    }
+    text.push_str(&extra);
+    std::fs::write(app, text).map_err(|e| format!("{}: {e}", app.display()))?;
+    Ok(app.to_path_buf())
 }
 
 /// One embedded locale: its code, its `common.tsv` if it has one, and its PdfCraft catalog.
