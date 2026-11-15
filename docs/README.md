@@ -1,7 +1,9 @@
 # PSG PDF and PSG Academic PDF documentation
 
 Documentation for the two products of Panorama Scholarly Group. For an overview and downloads,
-start at the [project page](../README.md).
+start at the [project page](../README.md). The product website is [`index.html`](index.html) in this
+folder, published with GitHub Pages from `docs/` on `main`; it is plain HTML and CSS with no build
+step, and `.nojekyll` keeps Pages from processing these notes.
 
 ## Using the products
 
