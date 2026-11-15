@@ -4489,6 +4489,7 @@ dependencies = [
  "pdfcraft-cos",
  "skrifa 0.44.0",
  "unicode-bidi",
+ "unicode-normalization",
 ]
 
 [[package]]
@@ -5308,9 +5309,11 @@ dependencies = [
  "egui",
  "fmv-macos-events",
  "log",
+ "pdfcraft-fonts",
  "pdfcraft-render",
  "psg-academic",
  "rfd",
+ "sys-locale",
  "tempfile",
 ]
 

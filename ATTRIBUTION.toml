@@ -2946,6 +2946,61 @@ kind = "model"
 usage = "Scan & OCR: reads the words it finds (cargo xtask models)"
 sha256 = "86c145c2edb96c8caed5b1ebb8f44d706408922211451c309c625157dd6061c5"
 
+[[asset]]
+path = "i18n/psg/de.tsv"
+title = "PSG PDF interface translation (de)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
+sha256 = "1832544ad650c0de5e252504b94ed9c148361730aef5ea75e3edcceb1ad9c27d"
+
+[[asset]]
+path = "i18n/psg/ja.tsv"
+title = "PSG PDF interface translation (ja)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
+sha256 = "c763eec74a25859eac12ccbdfec70da6dbfa3728893f0b15cc45580e0faef190"
+
+[[asset]]
+path = "i18n/psg/ko.tsv"
+title = "PSG PDF interface translation (ko)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
+sha256 = "4fb6a10ea505abd33d7a127a89b5e8cffe0a9c869ee41d2576f208f681010350"
+
+[[asset]]
+path = "i18n/psg/zh-hans.tsv"
+title = "PSG PDF interface translation (zh-hans)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
+sha256 = "30522e16dfd505e0eed8f0168f41ce3cd92e4465288575b9873e36bc40b64f26"
+
+[[asset]]
+path = "i18n/psg/zh-hant.tsv"
+title = "PSG PDF interface translation (zh-hant)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
+sha256 = "14c0a983f2afe632d86f67fc88ec2d2519dfa48b20640a4c5dc847f56ccd8510"
+
 [[build_input]]
 name = "craft-i18n"
 option = "CRAFT_I18N_DIR"
