@@ -16,6 +16,9 @@ param(
   [string] $SuiteMsi = ''
 )
 $ErrorActionPreference = 'Stop'
+# msiexec resolves a relative package path against its own working directory, not this script's,
+# and fails with 1619 ("could not be opened"): hand it an absolute path.
+if ($SuiteMsi) { $SuiteMsi = (Resolve-Path -LiteralPath $SuiteMsi).Path }
 $Logs = Join-Path ([IO.Path]::GetTempPath()) 'psg-install-logs'
 New-Item -ItemType Directory -Force -Path $Logs | Out-Null
 

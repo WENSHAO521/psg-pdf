@@ -35,10 +35,13 @@ install_dmg() { # <stem> <app name> <bundle id> <executable>
 }
 
 check_app() { # <stem> <app name> <bundle id> <executable>
-  local app="$APPS/$2.app" id
+  local app="$APPS/$2.app" id exe
   [[ -d "$app" ]] || fail "$app is missing"
   id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist")"
   [[ "$id" = "$3" ]] || fail "$2's bundle id is $id, expected $3"
+  # package.sh names the executable after the app (CFBundleExecutable), not after the cargo binary.
+  exe="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$app/Contents/Info.plist")"
+  [[ "$exe" = "$4" ]] || fail "$2's CFBundleExecutable is $exe, expected $4"
   [[ -x "$app/Contents/MacOS/$4" ]] || fail "$2 has no executable $4"
   codesign --verify --deep --strict --verbose=2 "$app"
   if [[ "${SIGNED:-0}" = 1 ]]; then
@@ -47,20 +50,20 @@ check_app() { # <stem> <app name> <bundle id> <executable>
   "$app/Contents/MacOS/$4" --version
 }
 
-install_dmg psg-pdf "PSG PDF" com.panoramascholarly.psgpdf psg-pdf
-install_dmg psg-academic-pdf "PSG Academic PDF" com.panoramascholarly.psgacademicpdf psg-academic-pdf
-"$APPS/PSG Academic PDF.app/Contents/MacOS/psg-academic-pdf" templates | grep -q '^psg-article ' || fail "PSG Academic PDF lists no templates"
-[[ ! -e "$APPS/PSG PDF.app/Contents/MacOS/psg-academic-pdf" ]] || fail "PSG PDF.app contains PSG Academic PDF"
-[[ ! -e "$APPS/PSG Academic PDF.app/Contents/MacOS/psg-pdf" ]] || fail "PSG Academic PDF.app contains PSG PDF"
+install_dmg psg-pdf "PSG PDF" com.panoramascholarly.psgpdf "PSG PDF"
+install_dmg psg-academic-pdf "PSG Academic PDF" com.panoramascholarly.psgacademicpdf "PSG Academic PDF"
+"$APPS/PSG Academic PDF.app/Contents/MacOS/PSG Academic PDF" templates | grep -q '^psg-article ' || fail "PSG Academic PDF lists no templates"
+[[ ! -e "$APPS/PSG PDF.app/Contents/MacOS/PSG Academic PDF" ]] || fail "PSG PDF.app contains PSG Academic PDF"
+[[ ! -e "$APPS/PSG Academic PDF.app/Contents/MacOS/PSG PDF" ]] || fail "PSG Academic PDF.app contains PSG PDF"
 
 step "Removing PSG Academic PDF leaves PSG PDF"
 rm -rf "$APPS/PSG Academic PDF.app"
-check_app psg-pdf "PSG PDF" com.panoramascholarly.psgpdf psg-pdf
+check_app psg-pdf "PSG PDF" com.panoramascholarly.psgpdf "PSG PDF"
 
 step "Removing PSG PDF leaves PSG Academic PDF"
-install_dmg psg-academic-pdf "PSG Academic PDF" com.panoramascholarly.psgacademicpdf psg-academic-pdf
+install_dmg psg-academic-pdf "PSG Academic PDF" com.panoramascholarly.psgacademicpdf "PSG Academic PDF"
 rm -rf "$APPS/PSG PDF.app"
-check_app psg-academic-pdf "PSG Academic PDF" com.panoramascholarly.psgacademicpdf psg-academic-pdf
+check_app psg-academic-pdf "PSG Academic PDF" com.panoramascholarly.psgacademicpdf "PSG Academic PDF"
 
 rm -rf "$APPS"
 echo "install tests passed"
