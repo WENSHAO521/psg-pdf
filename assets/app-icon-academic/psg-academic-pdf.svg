@@ -1,56 +1,75 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="4 4 112 112" width="512" height="512">
-<defs><linearGradient id="field" x1="0" y1="0" x2=".4" y2="1"><stop offset="0" stop-color="#6a2c7a"/><stop offset="1" stop-color="#2a1036"/></linearGradient><radialGradient id="halo"><stop offset="0" stop-color="#e6be6a" stop-opacity=".45"/><stop offset="1" stop-color="#e6be6a" stop-opacity="0"/></radialGradient></defs>
-<rect x="4" y="4" width="112" height="112" rx="24.5" fill="url(#field)"/>
-<g transform="translate(60 60) scale(0.8) translate(-60 -60)">
-<circle cx="60" cy="60" r="55" fill="none" stroke="#f3ecdc" stroke-width="0.9" stroke-opacity="0.4"/>
-<polyline points="111,60 115,60" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="112.19,69.2 114.16,69.55" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="109.8,78.13 111.68,78.81" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="104.17,85.5 107.63,87.5" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="100.6,94.07 102.13,95.35" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="94.07,100.6 95.35,102.13" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="85.5,104.17 87.5,107.63" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="78.13,109.8 78.81,111.68" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="69.2,112.19 69.55,114.16" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="60,111 60,115" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="50.8,112.19 50.45,114.16" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="41.87,109.8 41.19,111.68" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="34.5,104.17 32.5,107.63" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="25.93,100.6 24.65,102.13" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="19.4,94.07 17.87,95.35" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="15.83,85.5 12.37,87.5" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="10.2,78.13 8.32,78.81" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="7.81,69.2 5.84,69.55" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="9,60 5,60" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="7.81,50.8 5.84,50.45" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="10.2,41.87 8.32,41.19" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="15.83,34.5 12.37,32.5" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="19.4,25.93 17.87,24.65" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="25.93,19.4 24.65,17.87" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="34.5,15.83 32.5,12.37" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="41.87,10.2 41.19,8.32" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="50.8,7.81 50.45,5.84" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="60,9 60,5" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="69.2,7.81 69.55,5.84" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="78.13,10.2 78.81,8.32" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="85.5,15.83 87.5,12.37" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="94.07,19.4 95.35,17.87" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="100.6,25.93 102.13,24.65" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="104.17,34.5 107.63,32.5" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="109.8,41.87 111.68,41.19" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="112.19,50.8 114.16,50.45" fill="none" stroke="#f3ecdc" stroke-width="0.8" stroke-opacity="0.4" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="20.53,55.64 30.56,37.3 50.08,30.22 70.4,28.28 86.77,40.27 99.47,55.64" fill="none" stroke="#f3ecdc" stroke-width="1.4" stroke-opacity="0.6" stroke-linejoin="round" stroke-linecap="round"/>
-<polyline points="42,64 80,61 84,88 46,92 42,64" fill="none" stroke="#f3ecdc" stroke-width="1.3" stroke-opacity="0.55" stroke-linejoin="round" stroke-linecap="round"/>
-<circle cx="20.53" cy="55.64" r="3.4" fill="#f3ecdc"/>
-<circle cx="30.56" cy="37.3" r="2.2" fill="#f3ecdc"/>
-<circle cx="50.08" cy="30.22" r="2.8" fill="#f3ecdc"/>
-<circle cx="70.4" cy="28.28" r="2" fill="#f3ecdc"/>
-<circle cx="86.77" cy="40.27" r="2.6" fill="#f3ecdc"/>
-<circle cx="99.47" cy="55.64" r="2.3" fill="#f3ecdc"/>
-<circle cx="80" cy="61" r="2.8" fill="#f3ecdc"/>
-<circle cx="84" cy="88" r="2.4" fill="#f3ecdc"/>
-<circle cx="46" cy="92" r="2.6" fill="#f3ecdc"/>
-<circle cx="42" cy="64" r="19.5" fill="url(#halo)"/>
-<path d="M38.14,60.14 Q42,63.02 45.86,60.14 Q42.98,64 45.86,67.86 Q42,64.98 38.14,67.86 Q41.02,64 38.14,60.14Z" fill="#e6be6a" opacity=".85"/>
-<path d="M42,51 Q43.56,62.44 55,64 Q43.56,65.56 42,77 Q40.44,65.56 29,64 Q40.44,62.44 42,51Z" fill="#e6be6a"/>
-</g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Generated from assets/brand/psg-logo-master.svg (#psg-academic-pdf) by packaging/psg-icons.py; edit the master. -->
+  <defs>
+    <linearGradient id="pdf-field" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#1e4384" />
+      <stop offset="1" stop-color="#0b1d45" />
+    </linearGradient>
+    <radialGradient id="pdf-glow" cx="0.3" cy="0.18" r="0.75">
+      <stop offset="0" stop-color="#5d8fd6" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#5d8fd6" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="aca-field" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#5b2a78" />
+      <stop offset="1" stop-color="#26103a" />
+    </linearGradient>
+    <radialGradient id="aca-glow" cx="0.3" cy="0.18" r="0.75">
+      <stop offset="0" stop-color="#b07ad0" stop-opacity="0.3" />
+      <stop offset="1" stop-color="#b07ad0" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <g id="psg-academic-pdf">
+    <rect x="40" y="40" width="944" height="944" rx="208" fill="url(#aca-field)" />
+    <rect x="40" y="40" width="944" height="944" rx="208" fill="url(#aca-glow)" />
+    <rect class="detail" x="96" y="96" width="832" height="832" rx="156" fill="none" stroke="#d8ae5c" stroke-opacity="0.6" stroke-width="6" />
+    <g class="detail" fill="none" stroke="#d8ae5c" stroke-opacity="0.55" stroke-width="5" stroke-linecap="round">
+      <g transform="">
+        <path d="M150,262 C150,196 196,150 262,150" />
+        <path d="M150,262 C178,262 196,244 196,216 C196,198 184,188 172,188 C160,188 154,198 158,208" />
+        <path d="M262,150 C262,178 244,196 216,196 C198,196 188,184 188,172 C188,160 198,154 208,158" />
+        <path d="M206,206 l12,-12 12,12 -12,12 Z" fill="#d8ae5c" stroke="none" />
+      </g>
+      <g transform="translate(1024,0) scale(-1,1)">
+        <path d="M150,262 C150,196 196,150 262,150" />
+        <path d="M150,262 C178,262 196,244 196,216 C196,198 184,188 172,188 C160,188 154,198 158,208" />
+        <path d="M262,150 C262,178 244,196 216,196 C198,196 188,184 188,172 C188,160 198,154 208,158" />
+        <path d="M206,206 l12,-12 12,12 -12,12 Z" fill="#d8ae5c" stroke="none" />
+      </g>
+      <g transform="translate(0,1024) scale(1,-1)">
+        <path d="M150,262 C150,196 196,150 262,150" />
+        <path d="M150,262 C178,262 196,244 196,216 C196,198 184,188 172,188 C160,188 154,198 158,208" />
+        <path d="M262,150 C262,178 244,196 216,196 C198,196 188,184 188,172 C188,160 198,154 208,158" />
+        <path d="M206,206 l12,-12 12,12 -12,12 Z" fill="#d8ae5c" stroke="none" />
+      </g>
+      <g transform="translate(1024,1024) scale(-1,-1)">
+        <path d="M150,262 C150,196 196,150 262,150" />
+        <path d="M150,262 C178,262 196,244 196,216 C196,198 184,188 172,188 C160,188 154,198 158,208" />
+        <path d="M262,150 C262,178 244,196 216,196 C198,196 188,184 188,172 C188,160 198,154 208,158" />
+        <path d="M206,206 l12,-12 12,12 -12,12 Z" fill="#d8ae5c" stroke="none" />
+      </g>
+      <path d="M452,112 C476,112 492,128 512,146 C532,128 548,112 572,112" />
+      <path d="M452,912 C476,912 492,896 512,878 C532,896 548,912 572,912" />
+      <path d="M112,452 C112,476 128,492 146,512 C128,532 112,548 112,572" />
+      <path d="M912,452 C912,476 896,492 878,512 C896,532 912,548 912,572" />
+    </g>
+    <g class="detail" fill="none" stroke="#d8ae5c" stroke-opacity="0.16" stroke-width="5">
+      <path d="M512,330 C440,296 330,292 236,316 V720 C330,696 440,700 512,734 C584,700 694,696 788,720 V316 C694,292 584,296 512,330 Z M512,330 V734" />
+      <path d="M272,380 C340,364 410,366 470,384 M272,440 C340,424 410,426 470,444 M272,500 C340,484 410,486 470,504 M552,384 C612,366 682,364 752,380 M552,444 C612,426 682,424 752,440 M552,504 C612,486 682,484 752,500" />
+    </g>
+    <g transform="translate(-48,-28)">
+      <g class="detail" fill="none" stroke="#f5efe1" stroke-linecap="round">
+        <path d="M540,206 H604 C716,206 794,284 794,396 C794,508 716,590 604,590 H540" stroke-width="10" stroke-opacity="0.55" />
+        <path d="M580,184 H604 C730,184 818,272 818,396 C818,520 730,612 604,612 H560" stroke-width="7" stroke-opacity="0.3" />
+      </g>
+      <path d="M462,230 H600 C700,230 770,300 770,396 C770,492 700,566 600,566 H520 C506,566 496,556 496,542 V486 H596 C648,486 686,446 686,396 C686,346 648,310 596,310 H462 Z" fill="#f5efe1" />
+      <path d="M496,542 C496,520 512,506 532,506 C520,522 520,546 534,566 H520 C506,566 496,556 496,542 Z" fill="#d9ccb0" />
+      <path class="detail" d="M520,270 H600 C676,270 728,322 728,396" fill="none" stroke="#5b2a78" stroke-opacity="0.45" stroke-width="8" stroke-linecap="round" />
+      <rect x="362" y="230" width="100" height="400" rx="40" fill="#f5efe1" />
+      <rect class="detail" x="398" y="262" width="12" height="300" rx="6" fill="#d9ccb0" />
+      <rect x="352" y="630" width="120" height="40" rx="12" fill="#d8ae5c" />
+      <path d="M368,670 H456 V694 C456,752 432,806 412,856 C392,806 368,752 368,694 Z" fill="#f5efe1" />
+      <path d="M412,846 V746" stroke="#26103a" stroke-width="10" stroke-linecap="round" />
+      <circle cx="412" cy="730" r="15" fill="#26103a" />
+    </g>
+  </g>
+</svg>

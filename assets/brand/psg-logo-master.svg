@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PSG brand master: the PSG PDF and PSG Academic PDF app icons, side by side.
+
+  This is the one editable source of every icon, DMG background and installer image of both
+  products. Edit it in any SVG editor (Inkscape, Illustrator, Figma, a text editor), keep the ids
+  below, then run `python3 packaging/psg-icons.py`, which writes every platform's files
+  (assets/brand/README.md).
+
+  Ids the generator reads:
+    #psg-pdf, #psg-academic-pdf  one 1024 x 1024 icon each (their translate() is only for this
+                                 side-by-side view and is dropped)
+    class="detail"               drawn at 64 px and up, left out of the 16-48 px icons, where
+                                 hairlines turn into noise
+    class="compact"              drawn only in the 16-48 px icons (a filled stand-in for line art);
+                                 this side-by-side view hides it
+  Shared brand rules: the same rounded tile, the same gold keyline and gold accent, cream ink.
+  Each product keeps its own field colour and mark.
+
+  Contributor-original artwork, no fonts, no third-party graphics. MIT OR Apache-2.0.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="2176" height="1088" viewBox="0 0 2176 1088">
+  <style>.compact { display: none; }</style>
+  <defs>
+    <!-- Shared brand colours: cream ink #f5efe1, gold #d8ae5c. -->
+    <!-- PSG PDF: deep blue, simple and general. -->
+    <linearGradient id="pdf-field" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#1e4384"/>
+      <stop offset="1" stop-color="#0b1d45"/>
+    </linearGradient>
+    <radialGradient id="pdf-glow" cx="0.3" cy="0.18" r="0.75">
+      <stop offset="0" stop-color="#5d8fd6" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#5d8fd6" stop-opacity="0"/>
+    </radialGradient>
+    <!-- PSG Academic PDF: academic purple, precise and publishing-minded. -->
+    <linearGradient id="aca-field" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#5b2a78"/>
+      <stop offset="1" stop-color="#26103a"/>
+    </linearGradient>
+    <radialGradient id="aca-glow" cx="0.3" cy="0.18" r="0.75">
+      <stop offset="0" stop-color="#b07ad0" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#b07ad0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <g id="psg-pdf" transform="translate(32,32)">
+    <!-- Tile -->
+    <rect x="40" y="40" width="944" height="944" rx="208" fill="url(#pdf-field)"/>
+    <rect x="40" y="40" width="944" height="944" rx="208" fill="url(#pdf-glow)"/>
+    <!-- Mark, 64 px and up: a gold line-drawn page with its corner folded, inside a gold hexagon
+         (the sheet, and the six faces of a well-made tool). Simple, professional, general. -->
+    <g class="detail" fill="none" stroke="#d8ae5c" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M472.2,175.0 Q512.0,152.0 551.8,175.0 L783.9,309.0 Q823.8,332.0 823.8,378.0 L823.8,646.0 Q823.8,692.0 783.9,715.0 L551.8,849.0 Q512.0,872.0 472.2,849.0 L240.1,715.0 Q200.2,692.0 200.2,646.0 L200.2,378.0 Q200.2,332.0 240.1,309.0 Z" stroke-width="16"/>
+      <path d="M392,330 a24,24 0 0 1 24,-24 H566 L650,390 V694 a24,24 0 0 1 -24,24 H416 a24,24 0 0 1 -24,-24 Z" stroke-width="20"/>
+      <path d="M566,306 V366 a24,24 0 0 0 24,24 H650" stroke-width="20"/>
+      <path d="M446,476 H596 M446,548 H596 M446,620 H540" stroke-width="16" stroke-opacity="0.7"/>
+    </g>
+    <!-- Mark, 16-48 px: the same page filled, since hairlines vanish at that size. -->
+    <g class="compact">
+      <path d="M296,236 a48,48 0 0 1 48,-48 H600 L728,316 V780 a48,48 0 0 1 -48,48 H344 a48,48 0 0 1 -48,-48 Z" fill="#d8ae5c"/>
+      <path d="M600,188 V284 a32,32 0 0 0 32,32 H728 Z" fill="#f5efe1"/>
+    </g>
+  </g>
+
+  <g id="psg-academic-pdf" transform="translate(1120,32)">
+    <!-- Tile -->
+    <rect x="40" y="40" width="944" height="944" rx="208" fill="url(#aca-field)"/>
+    <rect x="40" y="40" width="944" height="944" rx="208" fill="url(#aca-glow)"/>
+    <!-- Gold keyline (shared brand frame) with hand-drawn scrollwork: the publishing edition -->
+    <rect class="detail" x="96" y="96" width="832" height="832" rx="156" fill="none" stroke="#d8ae5c" stroke-opacity="0.6" stroke-width="6"/>
+    <g class="detail" fill="none" stroke="#d8ae5c" stroke-opacity="0.55" stroke-width="5" stroke-linecap="round">
+      <g transform="">
+        <path d="M150,262 C150,196 196,150 262,150"/>
+        <path d="M150,262 C178,262 196,244 196,216 C196,198 184,188 172,188 C160,188 154,198 158,208"/>
+        <path d="M262,150 C262,178 244,196 216,196 C198,196 188,184 188,172 C188,160 198,154 208,158"/>
+        <path d="M206,206 l12,-12 12,12 -12,12 Z" fill="#d8ae5c" stroke="none"/>
+      </g>
+      <g transform="translate(1024,0) scale(-1,1)">
+        <path d="M150,262 C150,196 196,150 262,150"/>
+        <path d="M150,262 C178,262 196,244 196,216 C196,198 184,188 172,188 C160,188 154,198 158,208"/>
+        <path d="M262,150 C262,178 244,196 216,196 C198,196 188,184 188,172 C188,160 198,154 208,158"/>
+        <path d="M206,206 l12,-12 12,12 -12,12 Z" fill="#d8ae5c" stroke="none"/>
+      </g>
+      <g transform="translate(0,1024) scale(1,-1)">
+        <path d="M150,262 C150,196 196,150 262,150"/>
+        <path d="M150,262 C178,262 196,244 196,216 C196,198 184,188 172,188 C160,188 154,198 158,208"/>
+        <path d="M262,150 C262,178 244,196 216,196 C198,196 188,184 188,172 C188,160 198,154 208,158"/>
+        <path d="M206,206 l12,-12 12,12 -12,12 Z" fill="#d8ae5c" stroke="none"/>
+      </g>
+      <g transform="translate(1024,1024) scale(-1,-1)">
+        <path d="M150,262 C150,196 196,150 262,150"/>
+        <path d="M150,262 C178,262 196,244 196,216 C196,198 184,188 172,188 C160,188 154,198 158,208"/>
+        <path d="M262,150 C262,178 244,196 216,196 C198,196 188,184 188,172 C188,160 198,154 208,158"/>
+        <path d="M206,206 l12,-12 12,12 -12,12 Z" fill="#d8ae5c" stroke="none"/>
+      </g>
+      <path d="M452,112 C476,112 492,128 512,146 C532,128 548,112 572,112"/>
+      <path d="M452,912 C476,912 492,896 512,878 C532,896 548,912 572,912"/>
+      <path d="M112,452 C112,476 128,492 146,512 C128,532 112,548 112,572"/>
+      <path d="M912,452 C912,476 896,492 878,512 C896,532 912,548 912,572"/>
+    </g>
+    <!-- A faint open book behind the mark -->
+    <g class="detail" fill="none" stroke="#d8ae5c" stroke-opacity="0.16" stroke-width="5">
+      <path d="M512,330 C440,296 330,292 236,316 V720 C330,696 440,700 512,734 C584,700 694,696 788,720 V316 C694,292 584,296 512,330 Z M512,330 V734"/>
+      <path d="M272,380 C340,364 410,366 470,384 M272,440 C340,424 410,426 470,444 M272,500 C340,484 410,486 470,504 M552,384 C612,366 682,364 752,380 M552,444 C612,426 682,424 752,440 M552,504 C612,486 682,484 752,500"/>
+    </g>
+    <!-- Mark: the PSG "P". Its stem is a fountain pen, nib down, writing; its bowl is a stack of
+         book pages curling out from the top of the pen. -->
+    <g transform="translate(-48,-28)">
+      <!-- page edges behind the bowl -->
+      <g class="detail" fill="none" stroke="#f5efe1" stroke-linecap="round">
+        <path d="M540,206 H604 C716,206 794,284 794,396 C794,508 716,590 604,590 H540" stroke-width="10" stroke-opacity="0.55"/>
+        <path d="M580,184 H604 C730,184 818,272 818,396 C818,520 730,612 604,612 H560" stroke-width="7" stroke-opacity="0.3"/>
+      </g>
+      <!-- the bowl: a page, curling at its foot -->
+      <path d="M462,230 H600 C700,230 770,300 770,396 C770,492 700,566 600,566 H520 C506,566 496,556 496,542 V486 H596 C648,486 686,446 686,396 C686,346 648,310 596,310 H462 Z" fill="#f5efe1"/>
+      <path d="M496,542 C496,520 512,506 532,506 C520,522 520,546 534,566 H520 C506,566 496,556 496,542 Z" fill="#d9ccb0"/>
+      <path class="detail" d="M520,270 H600 C676,270 728,322 728,396" fill="none" stroke="#5b2a78" stroke-opacity="0.45" stroke-width="8" stroke-linecap="round"/>
+      <!-- the pen: cap, gold ring, barrel, nib -->
+      <rect x="362" y="230" width="100" height="400" rx="40" fill="#f5efe1"/>
+      <rect class="detail" x="398" y="262" width="12" height="300" rx="6" fill="#d9ccb0"/>
+      <rect x="352" y="630" width="120" height="40" rx="12" fill="#d8ae5c"/>
+      <path d="M368,670 H456 V694 C456,752 432,806 412,856 C392,806 368,752 368,694 Z" fill="#f5efe1"/>
+      <path d="M412,846 V746" stroke="#26103a" stroke-width="10" stroke-linecap="round"/>
+      <circle cx="412" cy="730" r="15" fill="#26103a"/>
+    </g>
+  </g>
+</svg>
