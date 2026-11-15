@@ -131,14 +131,14 @@ mod tests {
 
     #[test]
     fn the_page_names_the_loader_once() {
-        let html = "<html>\n  <head>\n    <title>PdfCraft</title>\n  </head>\n  <body></body>\n</html>\n";
+        let html = "<html>\n  <head>\n    <title>PSG PDF</title>\n  </head>\n  <body></body>\n</html>\n";
         let once = add_worker_meta(html, "pdfcraft-ocr-worker-9f8e_loader.js").unwrap();
         assert!(once.contains("<meta name=\"pdfcraft-ocr-worker\" content=\"./pdfcraft-ocr-worker-9f8e_loader.js\" />\n  </head>"), "{once}");
         // Running again replaces the tag rather than adding another.
         let twice = add_worker_meta(&once, "pdfcraft-ocr-worker-7777_loader.js").unwrap();
         assert_eq!(twice.matches("pdfcraft-ocr-worker").count(), 2, "{twice}");
         assert!(twice.contains("./pdfcraft-ocr-worker-7777_loader.js"));
-        assert!(twice.contains("<title>PdfCraft</title>") && twice.ends_with("</html>\n"));
+        assert!(twice.contains("<title>PSG PDF</title>") && twice.ends_with("</html>\n"));
         assert!(add_worker_meta(html, "pdfcraft-ocr-worker-\"x_loader.js").is_err());
         assert!(add_worker_meta("<body></body>", "pdfcraft-ocr-worker_loader.js").is_err());
     }

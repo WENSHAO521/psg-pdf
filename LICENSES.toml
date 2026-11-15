@@ -16,7 +16,7 @@ sha256 = "cd7032ea33b71427f188e34ffb4aee9d6868a57fd196037c5c8b2be03a2a0352"
 [[document]]
 source = "NOTICE"
 destination = "NOTICE"
-sha256 = "a7620386409bc691c7e223917db186ec447362f655fd81a1196d9853dcac1330"
+sha256 = "8ad431c4205d6bbbdb5ddf8db3c806a620a0a87b4aa025c814f04ed64450a237"
 
 [[document]]
 source = "vendor/edit-session/LICENSE-MIT"
@@ -38,7 +38,17 @@ sha256 = "64a3137e3d5cc41e5b78d2ad8dd9ddddd6588283f9f7b3128aa6a8a50852fb9a"
 [[document]]
 source = "assets/app-icon/LICENSE.txt"
 destination = "assets/app-icon/LICENSE.txt"
-sha256 = "b768acafe6cbad8247eedf86b5b5381feefcd4ee0f8c7808b86811bc687cf37b"
+sha256 = "28f6fa7bb375df2c4080579ad26e67156dcf8b4e1e509daee450f06c808c4e82"
+
+[[document]]
+source = "assets/app-icon-academic/LICENSE.txt"
+destination = "assets/app-icon-academic/LICENSE.txt"
+sha256 = "08815b4684f7fa8966758497ca301d63faf1a79262fcbb7f9deb77592b89e6af"
+
+[[document]]
+source = "templates/academic/LICENSE.txt"
+destination = "templates/academic/LICENSE.txt"
+sha256 = "7df98ade4f6f26547320b7102683d8809c61f921567b50986c3c1675486e14b0"
 
 [[document]]
 source = "assets/fonts/OFL-DancingScript.txt"
@@ -59,11 +69,6 @@ sha256 = "a76abf002c49097d146e86740a3105a5d00450b1592e820a1109a8c5680cd697"
 source = "assets/icons/LICENSE-lucide.txt"
 destination = "assets/icons/LICENSE-lucide.txt"
 sha256 = "b495047bd93a9b06913511076f504daba17d5bbeb3e0650f3bb53a4220329c57"
-
-[[document]]
-source = "docs/brand/LICENSE-brand.txt"
-destination = "docs/brand/LICENSE-brand.txt"
-sha256 = "0f33f48e7a96cd359d4e4e5b11424b13cebeb59cc70c77928186695e4173585c"
 
 [[document]]
 source = "licenses/CMap-LICENSE.txt"

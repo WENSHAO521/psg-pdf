@@ -22,6 +22,8 @@ craft-i18n = { workspace = true }
 craft-quit = { workspace = true, features = ["egui"] }
 pdfcraft-fonts = { workspace = true }
 pdfcraft-engine = { workspace = true }
+# The PSG design system: product names, brand colours and the release badge (docs/brand.md).
+psg-brand = { workspace = true }
 pdfcraft-cos = { workspace = true }
 pdfcraft-content = { workspace = true }
 pdfcraft-ocr = { workspace = true }

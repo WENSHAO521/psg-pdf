@@ -1,0 +1,12 @@
+# PSG Academic PDF template manifest. See templates/academic/README.md for the format.
+id = "psg-humanities"
+name = "PSG Humanities and Social Sciences Article"
+description = "Single-column article with author-year citations and footnotes for PSG humanities and social sciences journals: pdfLaTeX, BibLaTeX with Biber, A4."
+version = "1.0.0"
+licence = "MIT OR Apache-2.0"
+engine = "pdflatex"
+bibliography = "biber"
+main = "main.tex"
+body = "body.tex"
+metadata = "psg-metadata.tex"
+files = ["main.tex", "psg-article.cls", "body.tex", "references.bib", "psg-metadata.tex"]

@@ -1,0 +1,13 @@
+% Main file of the PSG Research Article template (PSG Academic PDF).
+% PSG Academic PDF regenerates psg-metadata.tex from the publication metadata and replaces
+% body.tex with the imported manuscript. Licensed MIT OR Apache-2.0.
+\documentclass{psg-article}
+\input{psg-metadata}
+\addbibresource{references.bib}
+
+\begin{document}
+\psgmaketitle
+\input{body}
+
+\printbibliography
+\end{document}

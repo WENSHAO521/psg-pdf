@@ -129,17 +129,17 @@ Implemented: `initialize` (protocol 2025-06-18, 2025-03-26, 2024-11-05), `ping`,
 
 ### From an installed release
 
-The release packages ship `pdfcraft-cli` alongside the desktop app, so no build is needed:
+PSG PDF's release packages ship `pdfcraft-cli` alongside the desktop app, so no build is needed:
 
 | Install | CLI |
 |---|---|
-| Windows (MSI) | `%LOCALAPPDATA%\Programs\ArtCraft\PdfCraft\pdfcraft-cli.exe` by default (`C:\Program Files\ArtCraft\PdfCraft\pdfcraft-cli.exe` for an all-users install, under `Program Files (x86)` instead for the 32-bit build, or wherever you installed it otherwise), not on `PATH` |
+| Windows (PSG PDF MSI) | `%LOCALAPPDATA%\Programs\Panorama Scholarly Group\PSG PDF\pdfcraft-cli.exe` by default (`C:\Program Files\Panorama Scholarly Group\PSG PDF\pdfcraft-cli.exe` for an all-users install, or wherever you installed it otherwise), not on `PATH` |
 | Linux (deb, rpm) | `/usr/bin/pdfcraft-cli` |
 | macOS | the separate `pdfcraft-cli-<version>-macos-<arch>.zip` release asset (the `.app` holds only the desktop app) |
 
 ```sh
 # Windows (PowerShell), default install folder
-claude mcp add pdfcraft -- "$env:LOCALAPPDATA\Programs\ArtCraft\PdfCraft\pdfcraft-cli.exe" mcp --root <dir>
+claude mcp add pdfcraft -- "$env:LOCALAPPDATA\Programs\Panorama Scholarly Group\PSG PDF\pdfcraft-cli.exe" mcp --root <dir>
 # Linux, or macOS with the CLI unzipped onto PATH
 claude mcp add pdfcraft -- pdfcraft-cli mcp --root <dir>
 ```

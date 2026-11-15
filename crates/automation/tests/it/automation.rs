@@ -79,7 +79,7 @@ fn saving_a_pdf_keeps_the_destinations_extended_attributes() {
     use rustix::fs::{XattrFlags, getxattr, setxattr};
     let dir = workdir("save-xattrs");
     let target = dir.join("a.pdf");
-    let tags = b"<plist version=\"1.0\"><array><string>PdfCraft\n6</string></array></plist>";
+    let tags = b"<plist version=\"1.0\"><array><string>PSG PDF\n6</string></array></plist>";
     let binary = b"\0\xffpdfcraft\0";
     let attributes: &[(&str, &[u8])] = &[("com.apple.metadata:_kMDItemUserTags", tags), ("com.pdfcraft.test", binary)];
     for (name, value) in attributes {
@@ -6267,7 +6267,7 @@ fn printing_through_tools() {
     let mut a = auto(&dir);
     let doc = ok(&mut a, "doc_open", json!({ "path": "a.pdf" }))["doc"].as_u64().unwrap();
     assert!(ok(&mut a, "printers", json!({}))["printers"].is_array());
-    let none = ok(&mut a, "printer_options", json!({ "printer": "No_Such_Queue_PdfCraft" }));
+    let none = ok(&mut a, "printer_options", json!({ "printer": "No_Such_Queue_PSG PDF" }));
     assert_eq!((none["count"].as_u64(), none["options"].as_array().map(Vec::len)), (Some(0), Some(0)));
     assert!(matches!(a.call("printer_options", &json!({})), Err(ToolError::InvalidArgs(_))));
     assert!(matches!(
@@ -6296,7 +6296,7 @@ fn printing_through_tools() {
 fn printer_papers_through_tools() {
     let dir = workdir("printer-papers");
     let mut a = auto(&dir);
-    let none = ok(&mut a, "printer_papers", json!({ "printer": "No_Such_Queue_PdfCraft" }));
+    let none = ok(&mut a, "printer_papers", json!({ "printer": "No_Such_Queue_PSG PDF" }));
     assert_eq!((none["count"].as_u64(), none["papers"].as_array().map(Vec::len)), (Some(0), Some(0)));
     assert!(none["default"].is_null());
     assert!(matches!(a.call("printer_papers", &json!({})), Err(ToolError::InvalidArgs(_))));
@@ -7913,8 +7913,14 @@ fn text_the_standard_fonts_cannot_draw_is_never_silent_through_tools() {
     // A sticky note draws an icon, not its text: nothing to say.
     let out = ok(&mut a, "comment_add", json!({ "doc": doc, "page": 1, "type": "note", "at": [40, 40], "contents": "签名 OK", "author": "Ada" }));
     assert!(out.get("warnings").is_none(), "{out}");
-    // Permanent `?`: refused.
-    refused(&mut a, "fill_sign_add", json!({ "doc": doc, "page": 1, "type": "signature", "at": [20, 340], "text": "张三" }), "pass `path`");
+    // A Chinese signature is drawn from craft-fonts' OFL faces as outlines; without them it is
+    // refused rather than drawn with a gap.
+    let chinese = json!({ "doc": doc, "page": 1, "type": "signature", "at": [20, 340], "text": "张三" });
+    if pdfcraft_engine::script_missing("张三").is_some() {
+        refused(&mut a, "fill_sign_add", chinese, "pass `path`");
+    } else {
+        ok(&mut a, "fill_sign_add", chinese);
+    }
     // Cyrillic comes from the script font's Inter fallback (#963), so it isn't refused.
     ok(&mut a, "fill_sign_add", json!({ "doc": doc, "page": 1, "type": "signature", "at": [20, 380], "text": "Саша" }));
     refused(&mut a, "redact_mark", json!({ "doc": doc, "page": 1, "rect": [10, 400, 190, 420], "overlay": "机密" }), "\"机\" (U+673A)");
@@ -8160,7 +8166,7 @@ fn signing_with_an_image_typed_or_drawn_graphic_through_tools() {
         (json!("logo.png"), "not an object"),
         (json!({ "image": "broken.png" }), "not an image"),
         (json!({ "text": "   " }), "nothing to draw"),
-        (json!({ "text": "张三" }), "a name the script font and its fallback can't draw"),
+        (json!({ "text": "\u{10fffd}" }), "a name no signature face can draw"),
         (json!({ "strokes": [[[0, 0], ["x", 1]]] }), "malformed strokes"),
         (json!({ "strokes": [] }), "empty strokes"),
     ] {
@@ -8197,6 +8203,13 @@ fn signing_with_an_image_typed_or_drawn_graphic_through_tools() {
     let inked = |y0: usize, y1: usize| (y0..y1).any(|y| (23..97).any(|x| px(x, y).iter().all(|c| *c < 100)));
     assert!(inked(130, 180), "the typed name is drawn");
     assert!(inked(60, 110), "the strokes are drawn");
+    // A Chinese name signs with craft-fonts' faces, and is refused (not drawn with gaps) without them.
+    let chinese = sign(&mut a, [20.0, 200.0, 180.0, 250.0], json!({ "text": "张三" }), "chinese.pdf");
+    if pdfcraft_engine::script_missing("张三").is_some() {
+        assert!(matches!(chinese, Err(ToolError::InvalidArgs(_))), "{chinese:?}");
+    } else {
+        assert!(chinese.is_ok(), "{chinese:?}");
+    }
 }
 
 /// Signing a dynamic form's signature box through sign_document runs its XFA signing scripts only

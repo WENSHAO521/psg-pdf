@@ -1,0 +1,172 @@
+# PSG Academic PDF interface in zh-hans. Columns, separated by a TAB: context <TAB> English <TAB> translation.
+# No escapes: a backslash is a backslash. Embedded by apps/psg-academic-pdf/src/i18n.rs; a missing row shows in English.
+# Written from the plain meaning of the English; no other product's translations were consulted.
+	(none)	（无）
+	A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it.	命令拼写有误，或需要期刊模板未加载的宏包。请检查这一行的命令，或将其删除。
+	A file the manuscript uses is not in the project. Add it with "Bibliography / figures…" and check the spelling: file names are case-sensitive.	稿件用到的某个文件不在项目中。请用“参考文献 / 图片…”添加，并检查拼写：文件名区分大小写。
+	A line sticks out into the margin. Rephrase it, allow a hyphenation with \-, or break a long URL or formula.	有一行伸进了页边距。请改写，用 \- 允许断词，或拆分过长的网址或公式。
+	Abbreviation	缩写
+	Abstract	摘要
+	Accepted	接受日期
+	Activity	活动记录
+	Add affiliation	添加单位
+	Add author	添加作者
+	Add bibliography, figures or other files	添加参考文献、图片或其他文件
+	Added {path} as {name}	已将 {path} 添加为 {name}
+	Affiliation numbers, e.g. 1, 2	单位编号，例如 1, 2
+	Affiliations	单位
+	Article	文章
+	Article no.	文章编号
+	Author {n}	作者 {n}
+	Authors and affiliations	作者与单位
+	Before compiling	编译前检查
+	Biber could not read the bibliography file. Check that the .bib file named in main.tex is in the project.	Biber 无法读取参考文献文件。请确认 main.tex 中指定的 .bib 文件在项目中。
+	Bibliography / figures…	参考文献 / 图片…
+	Cancel	取消
+	Cancelling…	正在取消…
+	Check again	重新检查
+	Check for updates…	检查更新…
+	Checking the TeX installation…	正在检查 TeX 安装…
+	Checking…	正在检查…
+	Choose an empty folder for the project	为项目选择一个空文件夹
+	Compilation started.	已开始编译。
+	Compile	编译
+	Compile output	编译输出
+	Compile the project to see the PDF here.	编译项目后在此查看 PDF。
+	Compile to see errors and warnings here.	编译后在此查看错误和警告。
+	Compile to see latexmk's output here.	编译后在此查看 latexmk 的输出。
+	Compiling with latexmk and pdfLaTeX…	正在用 latexmk 和 pdfLaTeX 编译…
+	Copyright	版权
+	Corresponding author	通讯作者
+	Could not check the TeX installation: {error}	无法检查 TeX 安装：{error}
+	Could not create the project: {error}	无法创建项目：{error}
+	Could not open the project: {error}	无法打开项目：{error}
+	Could not read {path}: {error}	无法读取 {path}：{error}
+	Could not save the project: {error}	无法保存项目：{error}
+	Could not save {file}: {error}	无法保存 {file}：{error}
+	Could not start the compilation: {error}	无法开始编译：{error}
+	Create the project in {path}	在 {path} 中创建项目
+	DOI	DOI
+	Dates and licence	日期与许可
+	Discard unsaved changes and read the file again	放弃未保存的更改并重新读取文件
+	Email	电子邮件
+	Engine	引擎
+	Entry	条目
+	Experimental: converts with the local Pandoc	实验功能：使用本机 Pandoc 转换
+	Export PDF…	导出 PDF…
+	Export failed: {error}	导出失败：{error}
+	Export the PDF	导出 PDF
+	Exported {path}.	已导出 {path}。
+	Files added; see Activity for their names in the project.	文件已添加；在“活动记录”中查看它们在项目中的名称。
+	Filter	筛选
+	From the last compilation	上次编译的结果
+	Go to line	转到该行
+	ISSN	ISSN
+	Import	导入
+	Import a Word manuscript (experimental, via Pandoc)	导入 Word 稿件（实验功能，使用 Pandoc）
+	Import failed: {error}	导入失败：{error}
+	Import the manuscript body (LaTeX)	导入稿件正文（LaTeX）
+	Install Pandoc to import .docx (experimental)	安装 Pandoc 后可导入 .docx（实验功能）
+	Issue	期
+	Journal	期刊
+	Journal and issue	期刊与期号
+	Journal template	期刊模板
+	Key	引用键
+	Keywords	关键词
+	Language	界面语言
+	Licence statement	许可声明
+	Manuscript (.tex)…	稿件（.tex）…
+	Mathematics outside a formula, or a stray _ or ^ in text. Put formulas in $…$, and write \_ for an underscore in text.	公式之外出现了数学内容，或正文中有多余的 _ 或 ^。请把公式放在 $…$ 中，正文中的下划线写作 \_。
+	New in folder…	在文件夹中新建…
+	New project	新建项目
+	New project from {template} around {path}.	已用 {template} 围绕 {path} 新建项目。
+	New project from {template} in {path}.	已用 {template} 在 {path} 中新建项目。
+	No TeX log yet.	还没有 TeX 日志。
+	No \label with this name. Check the spelling of the \ref and the \label.	没有这个名称的 \label。请检查 \ref 和 \label 的拼写。
+	No errors or warnings.	没有错误或警告。
+	No problems in the manuscript's scripts or the bibliography.	稿件文字和参考文献中没有发现问题。
+	No project yet. Choose a template and press New project.	还没有项目。请选择模板，然后点击“新建项目”。
+	No template is available.	没有可用的模板。
+	Not added: {error}	未添加：{error}
+	Not opened (one project at a time): {path}	未打开（一次只能打开一个项目）：{path}
+	ORCID iD	ORCID iD
+	Open a PSG Academic PDF project folder	打开 PSG Academic PDF 项目文件夹
+	Open file	打开文件
+	Open in PSG PDF	在 PSG PDF 中打开
+	Open or create a project to check it.	请打开或新建项目以进行检查。
+	Open or create a project to edit its manuscript.	请打开或新建项目以编辑稿件。
+	Open or create a project to see its bibliography.	请打开或新建项目以查看参考文献。
+	Open or create a project, and wait for the TeX check, before compiling.	编译前请先打开或新建项目，并等待 TeX 检查完成。
+	Open the compiled PDF in PSG PDF for review, annotation and further editing	在 PSG PDF 中打开编译好的 PDF，进行审阅、批注和进一步编辑
+	Opened {path} in PSG PDF.	已在 PSG PDF 中打开 {path}。
+	Opened {path} in the default PDF viewer.	已在默认 PDF 阅读器中打开 {path}。
+	Opened {path}.	已打开 {path}。
+	Open…	打开…
+	PDF engine: PdfCraft (MIT OR Apache-2.0)	PDF 引擎：PdfCraft（MIT OR Apache-2.0）
+	PDF preview	PDF 预览
+	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	未安装 PSG PDF，因此已在默认阅读器中打开 PDF。PSG PDF 需要单独下载。
+	Page {n}: {error}	第 {n} 页：{error}
+	Pages	页码
+	Portable mode: settings and projects are kept in {path}.	便携模式：设置和项目保存在 {path}。
+	Preview zoom	预览缩放
+	Problems ({n})	问题（{n}）
+	Project	项目
+	Project: {path} (template {template})	项目：{path}（模板 {template}）
+	Publication metadata	出版元数据
+	Published	出版日期
+	Rebuild everything each time	每次都完整重建
+	Received	收稿日期
+	Redraw preview	重新绘制预览
+	References ({n})	参考文献（{n}）
+	Reload from disk	从磁盘重新载入
+	Remove	移除
+	Replaces the article body; a full document keeps only its body	替换文章正文；完整文档只保留其正文部分
+	Revised	修回日期
+	Save	保存
+	Save the file (Ctrl+S / ⌘S)	保存文件（Ctrl+S / ⌘S）
+	Saved {file}.	已保存 {file}。
+	Separate keywords with ; or ,	用 ; 或 , 分隔关键词
+	Short title	短标题
+	Showing the first {shown} of {total} pages.	显示 {total} 页中的前 {shown} 页。
+	Some citations or cross-references could not be resolved; the warnings above name them.	部分引用或交叉引用无法解析；上方的警告列出了它们。
+	Source and PDF	源码与 PDF
+	Supported files	支持的文件
+	TeX installation	TeX 安装
+	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX 尚未就绪：未找到 {tools}。请安装含 latexmk 和 biber 的 TeX Live，然后点击“重新检查”。
+	TeX is ready.	TeX 已就绪。
+	TeX log	TeX 日志
+	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX 遇到致命错误而停止。请先修正列表中的第一个错误，后面的错误往往由它引起。
+	Template skipped: {problem}	已跳过模板：{problem}
+	Text before \begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed.	\begin{document} 之前有文字：正文文件只能包含文章正文。请重新导入稿件，以移除其导言区。
+	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	.bib 文件在此处所列条目附近有语法错误：缺少逗号、括号或引号。
+	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	pdfLaTeX 期刊模板无法排版中文、日文或韩文（需要 XeLaTeX 或 LuaLaTeX 加 CJK 字体，而这些模板不使用它们）。请用拉丁字母（罗马化，原文保留在源数据中）给出标题、姓名和参考文献，或在 PSG Academic PDF 之外使用支持 CJK 的模板排版。
+	The project folder: compilation happens here and only here	项目文件夹：编译只在这里进行
+	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	模板没有西里尔字母字体（T2A 编码）。请按多数英文期刊的要求，将西里尔字母的姓名和标题转写为拉丁字母。
+	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	模板没有希腊文正文字体。公式中请用命令书写希腊字母（$\alpha$、$\Omega$）；正文中的希腊文单词必须转写。
+	The templates have no font for this script. Transliterate the text.	模板没有这种文字的字体。请将文字转写为拉丁字母。
+	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	此 Pandoc 版本过旧：导入 DOCX 需要 Pandoc 2.15 或更新版本
+	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	参考文献中没有这个引用键。请在 .bib 文件中添加该条目，或更正引用键。
+	This template doesn't use a bibliography file.	此模板不使用参考文献文件。
+	Time limit	时间限制
+	Title	标题
+	Type	类型
+	Typeset with latexmk and pdfLaTeX	用 latexmk 和 pdfLaTeX 排版
+	Typesetting	排版
+	Unbalanced braces: a { without its } (or the other way round) near this line.	括号不配对：这一行附近有 { 缺少对应的 }（或相反）。
+	Unsaved changes; they are saved before compiling.	有未保存的更改；编译前会自动保存。
+	Volume	卷
+	Word (.docx)…	Word（.docx）…
+	Year	年份
+	found	已找到
+	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk 通常会重复运行直到这条消失。如果一直存在，请开启“每次都完整重建”后重新编译。
+	not found	未找到
+	not found (optional, for DOCX import)	未找到（可选，用于导入 DOCX）
+	pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX.	使用这些模板时，pdfLaTeX 无法排版从右到左书写的文字。请转写文字，或使用 XeLaTeX 或 LuaLaTeX 模板准备文章。
+	pdfLaTeX via latexmk (shell escape off)	通过 latexmk 调用 pdfLaTeX（已关闭 shell escape）
+	pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\alpha$, for example).	pdfLaTeX 的字体没有这个字符的字形。请替换它，或写成 LaTeX 命令（例如希腊字母写作 $\alpha$）。
+	{file} is not UTF-8 text; save it as UTF-8 and try again.	{file} 不是 UTF-8 文本；请另存为 UTF-8 后重试。
+	{file} is too large to edit here.	{file} 太大，无法在此编辑。
+	{first} Some things need fixing first: see Activity.	{first} 有些问题需要先修正：见“活动记录”。
+	{id} · {engine} · bibliography: {bibliography}	{id} · {engine} · 参考文献：{bibliography}
+	{n} problems found before compiling; see Problems.	编译前发现 {n} 个问题；见“问题”。
+	{path} is a Word manuscript; install Pandoc to import it.	{path} 是 Word 稿件；请安装 Pandoc 后导入。

@@ -94,3 +94,34 @@ Error details that come from the operating system, and faults rather than mistak
 The Preferences dropdown, the system-language match and the translation gaps report then pick it up.
 
 The egui 0.37 migration pins craft-fonts `b076417b5880bd4154bd22f00695b1d28c6bea83`. That manifest supplies Arabic, Hebrew, Thai and Devanagari faces selected for the web payload, but contains no Telugu face. The build code accepts a `Telu` row when a future input provides one; it does not establish Telugu glyph coverage with the current pin.
+
+## PSG's own interface strings
+
+craft-i18n carries PdfCraft's catalogs. Strings that only PSG PDF has live in
+`i18n/psg/<code>.tsv` (same columns as craft-i18n) and are appended to the app catalog by
+`crates/ui-egui/build.rs`, so they need `CRAFT_I18N_DIR` like every other translation. PSG
+Academic PDF has its own catalogs in `i18n/psg-academic/` (see `docs/academic.md`). Each file has
+an `ATTRIBUTION.toml` entry; run `cargo xtask assets --write` after editing one.
+
+## Typed signatures in other scripts
+
+A typed signature or initials is drawn as glyph outlines, not as text in an embedded font, so it
+looks the same after saving, reopening, printing and in other viewers, and no font is substituted.
+The faces are tried in order (`crates/fonts/src/script.rs`):
+
+1. Dancing Script (Latin and Vietnamese, handwriting style);
+2. Inter, slanted (Cyrillic, Greek and other letters Dancing Script lacks);
+3. the craft-fonts faces, all OFL-1.1: LXGW WenKai Lite (Chinese characters, kana), the Japanese
+   faces, NanumGothic (Hangul), then Noto Sans Arabic, Hebrew, Thai, Devanagari and Georgian,
+   shaped with HarfRust.
+
+Text is normalised to NFC first, so a name typed with combining accents uses the precomposed
+letters, and laid out in Unicode bidirectional order, so Arabic and Hebrew read right to left
+inside a left-to-right line. Fonts installed on the user's machine are never used for a
+signature (AGENTS.md §1.4). A build without `CRAFT_FONTS_DIR` has no Chinese, Japanese, Korean,
+Arabic or Hebrew face: the dialog names the first character it can't draw, and the automation
+tools refuse such a name rather than leave a gap. Release builds always embed craft-fonts.
+
+A typed, drawn or image signature placed with Fill & Sign is an annotation, not a digital
+signature. Certificate signatures (Sign ▸ Digital ID) can use the same typed name as their
+picture; that only changes the appearance, not the signing.

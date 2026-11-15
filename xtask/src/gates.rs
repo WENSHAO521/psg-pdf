@@ -115,6 +115,7 @@ pub fn ci(_: &[String]) -> anyhow::Result<()> {
         ("test", Box::new(|| test(&[]))),
         ("i18n-report", Box::new(|| i18n_report(&["--workspace".to_string()]))),
         ("layers", Box::new(|| layers(&[]))),
+        ("products", Box::new(|| crate::products::run(&[]))),
         ("wasm", Box::new(|| wasm(&[]))),
         ("license-check", Box::new(|| crate::license_check::run(&[]))),
         ("deny", Box::new(|| deny(&[]))),
@@ -652,9 +653,9 @@ mod tests {
     // The bundle id must match the app id the binary uses; renames change both (#174).
     #[test]
     fn macos_bundle_id_matches_app_id() {
-        assert!(read("packaging/macos/Info.plist.in").contains("<string>ai.storyteller.pdfcraft</string>"), "bundle id");
-        let main = read("apps/pdfcraft/src/main.rs");
-        assert!(main.contains(r#"const APP_ID: &str = "ai.storyteller.pdfcraft""#), "APP_ID drifted from the bundle id");
+        assert!(read("packaging/macos/Info.plist.in").contains("<string>com.panoramascholarly.psgpdf</string>"), "bundle id");
+        let main = read("apps/psg-pdf/src/main.rs");
+        assert!(main.contains(r#"const APP_ID: &str = "com.panoramascholarly.psgpdf""#), "APP_ID drifted from the bundle id");
     }
 
     // Committed file with `<!-- -->` comments stripped, so a commented-out claim cannot pass.

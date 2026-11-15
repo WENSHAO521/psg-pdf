@@ -9,13 +9,19 @@
 // The settings object in `persist` is one `json!` literal past the default limit of 128.
 #![recursion_limit = "256"]
 
-/// PdfCraft as craft-update knows it, with its 128 px icon and accent colour: the update
-/// prompt shows both, and an AppImage's menu entry gets the icon.
+/// PSG PDF as craft-update knows it: releases come only from PSG PDF's own repository, never
+/// from PdfCraft's, so an update can't replace PSG PDF with PdfCraft. Nothing is checked at
+/// startup (the app works offline); Help ▸ Check for updates asks when the user chooses to.
 #[cfg(not(target_arch = "wasm32"))]
 pub const UPDATE_APP: craft_update::app::App = craft_update::app::App {
-    icon_png: Some(include_bytes!("../../../assets/app-icon/hicolor/128x128/apps/ai.storyteller.pdfcraft.png")),
-    accent: Some([0xb7, 0x02, 0x28]),
-    ..craft_update::suite::PDFCRAFT
+    icon_png: Some(include_bytes!("../../../assets/app-icon/hicolor/128x128/apps/com.panoramascholarly.psgpdf.png")),
+    // packaging/products.toml `accent`, through the PSG design system.
+    accent: Some(brand::PRODUCT.brand()),
+    developer: brand::PUBLISHER,
+    // PSG PDF continues the 0.18.x "PSG PDF Suite" MSI (same UpgradeCode), so its updater
+    // recognises that install as its own (docs/products.md, "Migrating from the suite").
+    former_names: &["PSG PDF Suite"],
+    ..craft_update::app::App::new("psg-pdf", brand::APP_NAME, brand::PRODUCT.tagline(), "WENSHAO521/psg-pdf")
 };
 
 use crate::control::Host as _;
@@ -34,6 +40,7 @@ macro_rules! tl_ctx {
         $crate::i18n::tr_ctx($crate::i18n::current(), $context, $s)
     };
 }
+pub mod brand;
 pub mod canvas;
 mod chrome;
 mod image_engine;

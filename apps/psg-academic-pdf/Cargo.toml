@@ -1,0 +1,44 @@
+[package]
+name = "psg-academic-pdf"
+description = "PSG Academic PDF: offline publication typesetting of accepted articles with pdfLaTeX"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+# The PSG design system: name, brand colours, release badge (docs/brand.md).
+psg-brand = { workspace = true }
+# Templates, metadata, TeX detection and sandboxed latexmk compilation.
+psg-academic = { path = "../../crates/academic" }
+# The shared PdfCraft engine draws the PDF preview (the same renderer PSG PDF uses).
+pdfcraft-render = { workspace = true }
+eframe = { workspace = true, features = ["default_fonts", "wgpu", "glow", "accesskit", "wayland", "x11", "persistence"] }
+egui = { workspace = true, features = ["default_fonts"] }
+# Chinese, Japanese and Korean interface faces from the craft-fonts build input (OFL).
+pdfcraft-fonts = { workspace = true }
+# The system language picks the interface language (same version as PSG PDF).
+sys-locale = "0.3"
+# Native open/save dialogs, as in PSG PDF.
+rfd = { workspace = true }
+log = { workspace = true }
+# Timestamped project folder names go through chrono.
+chrono = { workspace = true }
+# Check for updates on this product's own channel (`psg-academic-pdf-*` release assets).
+craft-update = { workspace = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# Finder "Open With" and Dock drops arrive as Apple events (src/apple_events.rs). Same pinned
+# version as PSG PDF.
+fmv-macos-events = "=0.1.0"
+
+[dev-dependencies]
+tempfile = "3.27"
+
+[build-dependencies]
+# Icon + VERSIONINFO for psg-academic-pdf.exe; build.rs only uses it when targeting Windows.
+# Same version as PSG PDF.
+winresource = "0.1"
