@@ -1,55 +1,55 @@
-# PdfCraft app icon
+# PSG PDF and PSG Academic PDF app icons
 
-<img src="pdfcraft-small.svg" alt="PdfCraft app icon: an engraved lion's head on red" width="128">
+<img src="psg-pdf.svg" alt="PSG PDF app icon: a gold line-drawn page with a folded corner inside a rounded hexagon, on deep blue" width="128">
+<img src="../app-icon-academic/psg-academic-pdf.svg" alt="PSG Academic PDF app icon: a cream P whose stem is a fountain pen and whose bowl is a curling page, in a gold keyline with corner ornaments, on academic purple" width="128">
 
-**Creature:** a lion, in a frontal head-and-shoulders portrait, mane running off the bottom of the tile.
+Both icons are rendered from one editable master, [`assets/brand/psg-logo-master.svg`](../brand/README.md).
+They share the tile shape, the cream and the gold, and differ in field colour and motif:
 
-**Style:** an engraving (woodcut-weight line work) portrait in the Crafting Apps "owl template" framing:
-a full-bleed colour field, no frame or roundel, the animal looking at the viewer and filling the tile.
+- **PSG PDF** (deep blue: simple, professional, general purpose): a page with a folded corner and three
+  text lines, drawn in a single gold line inside a rounded hexagon.
+- **PSG Academic PDF** (academic purple: precise, elegant, publishing-minded): a P monogram whose stem is a
+  fountain pen (gold ring and nib) and whose bowl is a curling page, inside a fine gold keyline with corner
+  scrollwork and a faint open-book watermark.
 
-**Palette:** exactly three colours.
+At 48 px and below the generator uses each product's compact variant (`class="compact"` in the master): a
+filled page for PSG PDF, and the P without the ornament for PSG Academic PDF, so small icons stay legible.
 
 | Colour | Hex | Used for |
 |---|---|---|
-| Ink | `#0b0b0c` | line work and the figure's contour |
-| Paper | `#efe9dc` | the figure (the lion's silhouette) |
-| PdfCraft red (app colour) | `#b70228` | the full-bleed field |
+| Cream | `#f5efe1` | the P monogram, the compact page |
+| Gold | `#d8ae5c` | line work, the pen's ring and nib, ornament |
+| Deep blue | `#1e4384` → `#0b1d45` | PSG PDF field |
+| Academic purple | `#5b2a78` → `#26103a` | PSG Academic PDF field |
 
-**Tile:** `viewBox="0 0 512 512"`, a rounded square with `rx=112` that clips everything. Windows and Linux
-icons use the full-bleed tile. macOS icons put it on Apple's grid (an 824 px body centred on a transparent
-1024 px canvas).
-
-**Provenance:** the project owner's original drawing, made in ArtCraft (2880 px, keyed to the palette), then
-vectorised (potrace; no filtering or warping).
-Licence: [LICENSE.txt](LICENSE.txt) (`MIT OR Apache-2.0`, like the repo).
+**Provenance:** contributor-original artwork drawn as SVG for this project, inspired only by the general
+style the owner chose (gold line art on a dark tile; a book-and-pen monogram); nothing was traced or copied,
+and no fonts or third-party graphics are used. Licence: [LICENSE.txt](LICENSE.txt) (`MIT OR Apache-2.0`,
+like the repo).
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `pdfcraft.svg` | the master vector (traced at 2048 px); every PNG, `.ico` and `.icns` is rendered from it |
-| `pdfcraft-small.svg` | a lighter vector (traced at 1024 px) for places where size matters, such as this README |
-| `pdfcraft-1024.png` | 1024 px on Apple's grid; also the runtime Dock icon on macOS |
-| `pdfcraft.icns` | macOS icon (16–1024 px) |
-| `pdfcraft.ico` | Windows icon (16–256 px), embedded in `pdfcraft.exe` by `apps/pdfcraft/build.rs` |
-| `pdfcraft-document.svg` | Windows PDF file icon master: a Lucide document outline, red badge and outlined PDF lettering; no font dependency |
-| `pdfcraft-document.ico` | Windows PDF file icon (16–256 px), embedded as resource 2 in `pdfcraft.exe` |
-| `hicolor/<n>x<n>/apps/ai.storyteller.pdfcraft.png` | Linux hicolor theme, 16–512 px; the 256 px one is the runtime icon on Windows and Linux |
-| `hicolor/scalable/apps/ai.storyteller.pdfcraft.svg` | Linux scalable icon (copy of the master) |
+| `psg-pdf.svg` | the product's icon, cut from the brand master |
+| `psg-pdf-1024.png`, `psg-pdf-256.png` | rasters; the 256 px one is the runtime window icon |
+| `psg-pdf.icns` | macOS icon |
+| `psg-pdf.ico` | Windows icon (16–256 px) |
+| `hicolor/<n>x<n>/apps/com.panoramascholarly.psgpdf.png` | Linux hicolor theme, 16–512 px |
+| `hicolor/scalable/apps/com.panoramascholarly.psgpdf.svg` | Linux scalable icon (copy of `psg-pdf.svg`) |
+| `pdfcraft-document.svg`, `pdfcraft-document.ico` | Windows PDF file icon (see below) |
 
-Where it shows: `apps/pdfcraft/src/main.rs` sets the window icon (Dock, taskbar, Alt-Tab, launcher) and the
-Wayland app id `ai.storyteller.pdfcraft`; `packaging/linux/ai.storyteller.pdfcraft.desktop` names the
-hicolor icon.
+`assets/app-icon-academic/` holds the same set for PSG Academic PDF (`psg-academic-pdf.*`,
+`com.panoramascholarly.psgacademicpdf`).
 
-Windows PDF files use resource 2 (`"pdfcraft.exe",-2`) when PdfCraft is chosen as the default
-reader; the app keeps resource 1. The document outline is adapted from Lucide `file-text`
-1.49.0 (ISC); its badge and outlined lettering are original (`MIT OR Apache-2.0`), covered by
-[LICENSE-document.txt](LICENSE-document.txt). Both icons are embedded, requiring no runtime
-sidecar. This provides a file type icon; first-page thumbnails still need a thumbnail provider.
+Windows PDF files use resource 2 when the app is chosen as the default reader. That document outline is
+adapted from Lucide `file-text` 1.49.0 (ISC); its badge and outlined lettering are original
+(`MIT OR Apache-2.0`), covered by [LICENSE-document.txt](LICENSE-document.txt).
 
 ## Regenerate
 
 ```sh
-packaging/icons.sh        # needs resvg and python3; iconutil (macOS) for the .icns
-cargo xtask assets        # then update the sha256 values in ATTRIBUTION.toml and run with --write
+python3 packaging/psg-icons.py            # needs resvg on PATH and Pillow; edit the master, never the outputs
+python3 packaging/macos/dmg/generate.py   # the DMG backgrounds use the icons
+cargo xtask assets                        # then update the sha256 values in ATTRIBUTION.toml and run with --write
 ```

@@ -4,24 +4,28 @@
 #>
 param(
   [Parameter(Mandatory = $true)] [string] $OutputDirectory,
-  [ValidateSet('x64','x86','arm64')] [string[]] $Architectures = @('x64','x86','arm64')
+  [ValidateSet('x64','x86','arm64')] [string[]] $Architectures = @('x64','x86','arm64'),
+  # One policy per product: PSG PDF and PSG Academic PDF are separate MSIs.
+  [string[]] $Policies = @('install-policy.json', 'install-policy-academic.json')
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
-$policy = Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot 'install-policy.json') | ConvertFrom-Json
 [void](New-Item -ItemType Directory -Force -Path $OutputDirectory)
 $output = (Resolve-Path -LiteralPath $OutputDirectory).Path
 Add-Type -AssemblyName System.Drawing
+foreach ($policyFile in $Policies) {
+$policyPath = Join-Path $PSScriptRoot $policyFile
+$policy = Get-Content -Raw -LiteralPath $policyPath | ConvertFrom-Json
 foreach ($arch in $Architectures) {
-  $stage = Join-Path $output $arch
+  $stage = Join-Path (Join-Path $output $policy.id) $arch
   [void](New-Item -ItemType Directory -Force -Path $stage)
   foreach ($name in $policy.payloads) {
     $destination = Join-Path $stage $name
     [void](New-Item -ItemType Directory -Force -Path ([IO.Path]::GetDirectoryName($destination)))
     Set-Content -LiteralPath $destination -Encoding Ascii -Value 'NON-EXECUTABLE MSI METADATA TEST FIXTURE'
   }
-  foreach ($folder in @('docs','models','notices')) {
+  foreach ($folder in @('docs','models','notices','templates')) {
     $path = Join-Path $stage $folder
     [void](New-Item -ItemType Directory -Force -Path $path)
     Set-Content -LiteralPath (Join-Path $path "$folder-fixture.txt") -Value 'Metadata test fixture, not a user file or model.'
@@ -38,17 +42,19 @@ foreach ($arch in $Architectures) {
   $sources = @($policy.sources | ForEach-Object { Join-Path $PSScriptRoot $_ })
   $msi = Join-Path $stage "$($policy.id)-NOT-INSTALLABLE.msi"
   $extensions = @($policy.extensions | ForEach-Object { '-ext'; "WixToolset.$_.wixext" })
+  $defines = @($policy.defines | ForEach-Object { '-d'; $_ })
   & wix build @sources -arch $arch @extensions `
     -culture en-US -d 'Version=0.0.1' -d 'DisplayVersion=0.0.1-metadata-test' `
     -d "BinDir=$stage" -d "IconPath=$(Join-Path $root $policy.icon)" `
-    -d "DocsDir=$(Join-Path $stage 'docs')" -d "ModelsDir=$(Join-Path $stage 'models')" `
+    -d "DocsDir=$(Join-Path $stage 'docs')" -d "ModelsDir=$(Join-Path $stage 'models')" -d "TemplatesDir=$(Join-Path $stage 'templates')" @defines `
     -d "AppNoticesDir=$(Join-Path $stage 'notices')" -d 'HasCraftFontLicences=1' -d 'HasCli=1' `
     -d "BannerBmp=$(Join-Path $stage 'banner.bmp')" -d "DialogBmp=$(Join-Path $stage 'dialog.bmp')" `
     -d "UiBannerBmp=$(Join-Path $stage 'banner.bmp')" -d "UiDialogBmp=$(Join-Path $stage 'dialog.bmp')" `
     -d "LicenseRtf=$(Join-Path $stage 'licence.rtf')" -o $msi @($policy.localization | ForEach-Object { '-loc'; Join-Path $PSScriptRoot $_ })
   if ($LASTEXITCODE -ne 0) { throw "WiX validation failed for $arch (exit $LASTEXITCODE)." }
   $shell = (Get-Process -Id $PID).Path
-  & $shell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'check-install-policy.ps1') -MsiPath $msi
-  if ($LASTEXITCODE -ne 0) { throw "Compiled installer policy failed for $arch (exit $LASTEXITCODE)." }
-  Write-Output "PASS $arch metadata-only package. This is not an executable installer."
+  & $shell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $PSScriptRoot 'check-install-policy.ps1') -MsiPath $msi -PolicyPath $policyPath
+  if ($LASTEXITCODE -ne 0) { throw "Compiled installer policy failed for $($policy.name) $arch (exit $LASTEXITCODE)." }
+  Write-Output "PASS $($policy.name) $arch metadata-only package. This is not an executable installer."
+}
 }

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <?ifndef HasPdfContextMenu ?>
+  <?define HasPdfContextMenu=0 ?>
+  <?endif?>
   <Fragment>
     <UI Id="PdfcraftInstallerUI">
       <TextStyle Id="InstallerNormal" FaceName="Segoe UI" Size="9" />
@@ -19,7 +22,10 @@
           <Publish Event="SpawnDialog" Value="BrowseFolder" />
         </Control>
         <Control Id="DesktopShortcut" Type="CheckBox" X="20" Y="126" Width="330" Height="17" Property="INSTALLDESKTOPSHORTCUT" CheckBoxValue="1" Text="Create a &amp;desktop shortcut" />
+        <!-- PSG PDF only (package.ps1 passes -d HasPdfContextMenu=1); PSG Academic PDF adds no menu. -->
+        <?if $(var.HasPdfContextMenu) = 1 ?>
         <Control Id="PdfContextMenu" Type="CheckBox" X="20" Y="144" Width="330" Height="17" Property="INSTALLPDFCONTEXTMENU" CheckBoxValue="1" Text="Add &amp;Edit and Combine files to the right-click menu of PDF files" />
+        <?endif?>
         <Control Id="Install" Type="PushButton" X="195" Y="175" Width="75" Height="23" Default="yes" DefaultCondition="ALLUSERS = 1" ElevationShield="yes" HideCondition="ALLUSERS &lt;&gt; 1" ShowCondition="ALLUSERS = 1" Text="&amp;Install">
           <Publish Event="SetTargetPath" Value="INSTALLFOLDER" Order="1" />
           <Publish Event="EndDialog" Value="Return" Order="2" />
@@ -134,7 +140,7 @@
       </Dialog>
 
       <!-- Shown by Windows Installer (Restart Manager) when an upgrade or repair must replace files
-           that a running PdfCraft holds open. OK closes those programs (MSIRMSHUTDOWN=2) and
+           that a running PSG PDF holds open. OK closes those programs (MSIRMSHUTDOWN=2) and
            continues; Cancel ends setup. -->
       <Dialog Id="MsiRMFilesInUse" Width="370" Height="200" Title="[ProductName] Setup" KeepModeless="yes">
         <Control Id="Title" Type="Text" X="20" Y="15" Width="330" Height="25" Text="{\InstallerTitle}Files in use" />

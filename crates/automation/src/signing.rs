@@ -353,13 +353,9 @@ impl Automation {
         }
         if let Some(text) = o.get("text") {
             let text = text.as_str().ok_or_else(|| bad("graphic.text must be a string"))?;
-            // Nobody sees a preview here: refuse what the script font and its fallback would leave out.
+            // Nobody sees a preview here: refuse what no signature face would draw.
             if let Some(c) = pdfcraft_engine::script_missing(text) {
-                return Err(bad(format!(
-                    "the signature script font can't draw \"{}\" (U+{:04X}) in graphic.text; type it in Latin, Cyrillic or Greek letters, or pass graphic.image instead",
-                    c.escape_debug(),
-                    u32::from(c)
-                )));
+                return Err(bad(format!("{}, or pass graphic.image", pdfcraft_engine::signature_missing_message(c, "graphic.text"))));
             }
             return pdfcraft_engine::typed_signature_graphic(text).ok_or_else(|| {
                 bad(format!(

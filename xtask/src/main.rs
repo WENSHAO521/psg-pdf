@@ -3,6 +3,7 @@
 use std::process::ExitCode;
 
 mod assets;
+mod changelog;
 mod corpus;
 mod demo_pdf;
 mod fuzz;
@@ -12,6 +13,7 @@ mod license_check;
 mod macos_integration;
 mod netcheck;
 mod parity;
+mod products;
 mod screenshots;
 mod version;
 mod web;
@@ -21,6 +23,16 @@ type Command = fn(&[String]) -> anyhow::Result<()>;
 /// Every subcommand: name, one-line summary, entry point.
 const COMMANDS: &[(&str, &str, Command)] = &[
     ("version", "Print the workspace version, or `version set X.Y.Z[-pre]` to change it and refresh Cargo.lock", version_cmd),
+    (
+        "changelog",
+        "The suite changelog from Conventional Commits: `release [--version X.Y.Z]`, `notes (--version X.Y.Z | --unreleased)`, `verify`, `lint`",
+        changelog::run,
+    ),
+    (
+        "products",
+        "PSG PDF and PSG Academic PDF identities (packaging/products.toml): `check` (default), `matrix` (release workflow JSON), `get <id> <key>`",
+        products::run,
+    ),
     ("layers", "Enforce the crate dependency layering (plan/architecture.md §3)", gates::layers),
     ("wasm", "cargo check --target wasm32-unknown-unknown for every crate below L8, in one call", gates::wasm),
     ("deny", "Dependency licences, bans, sources and advisories (deny.toml; needs cargo-deny)", gates::deny),

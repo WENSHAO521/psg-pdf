@@ -15,3 +15,5 @@ skrifa = "0.44"
 # Arabic shaping for text written into PDFs; already in the tree via egui, on the same read-fonts.
 harfrust = "0.12"
 unicode-bidi = "0.3"
+# NFC for typed signatures (names typed with combining accents); already in the tree via pdfcraft-redact.
+unicode-normalization = "0.1"

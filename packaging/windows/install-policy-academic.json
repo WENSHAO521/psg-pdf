@@ -1,0 +1,130 @@
+{
+  "id": "psg-academic-pdf",
+  "name": "PSG Academic PDF",
+  "upgradeCode": "B43E2C11-55A0-457B-9A21-7582C52506D9",
+  "sources": [
+    "psg-academic-pdf.wxs",
+    "installer-ui.wxs"
+  ],
+  "icon": "assets/app-icon-academic/psg-academic-pdf.ico",
+  "localization": [],
+  "extensions": [],
+  "defines": [],
+  "payloads": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+    "NOTICE",
+    "psg-academic-pdf.exe"
+  ],
+  "registry": [
+    [
+      "-1",
+      "Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\psg-academic-pdf.exe",
+      "",
+      "[#AcademicExe]"
+    ],
+    [
+      "-1",
+      "Software\\Classes\\PSGAcademicPDF.Manuscript",
+      "",
+      "Manuscript for PSG Academic PDF"
+    ],
+    [
+      "-1",
+      "Software\\Classes\\PSGAcademicPDF.Manuscript\\DefaultIcon",
+      "",
+      "\"[#AcademicExe]\",0"
+    ],
+    [
+      "-1",
+      "Software\\Classes\\PSGAcademicPDF.Manuscript\\shell\\open\\command",
+      "",
+      "\"[#AcademicExe]\" \"%1\""
+    ],
+    [
+      "-1",
+      "Software\\Classes\\.tex\\OpenWithProgids",
+      "PSGAcademicPDF.Manuscript",
+      ""
+    ],
+    [
+      "-1",
+      "Software\\Classes\\.docx\\OpenWithProgids",
+      "PSGAcademicPDF.Manuscript",
+      ""
+    ],
+    [
+      "-1",
+      "Software\\Classes\\Applications\\psg-academic-pdf.exe",
+      "FriendlyAppName",
+      "PSG Academic PDF"
+    ],
+    [
+      "-1",
+      "Software\\Classes\\Applications\\psg-academic-pdf.exe\\SupportedTypes",
+      ".tex",
+      ""
+    ],
+    [
+      "-1",
+      "Software\\Classes\\Applications\\psg-academic-pdf.exe\\SupportedTypes",
+      ".docx",
+      ""
+    ],
+    [
+      "-1",
+      "Software\\Classes\\Applications\\psg-academic-pdf.exe\\shell\\open\\command",
+      "",
+      "\"[#AcademicExe]\" \"%1\""
+    ],
+    [
+      "-1",
+      "Software\\PSG Academic PDF\\Capabilities",
+      "ApplicationName",
+      "PSG Academic PDF"
+    ],
+    [
+      "-1",
+      "Software\\PSG Academic PDF\\Capabilities",
+      "ApplicationDescription",
+      "Typesetting accepted articles with pdfLaTeX"
+    ],
+    [
+      "-1",
+      "Software\\PSG Academic PDF\\Capabilities",
+      "ApplicationIcon",
+      "[#AcademicExe],0"
+    ],
+    [
+      "-1",
+      "Software\\PSG Academic PDF\\Capabilities\\FileAssociations",
+      ".tex",
+      "PSGAcademicPDF.Manuscript"
+    ],
+    [
+      "-1",
+      "Software\\PSG Academic PDF\\Capabilities\\FileAssociations",
+      ".docx",
+      "PSGAcademicPDF.Manuscript"
+    ],
+    [
+      "-1",
+      "Software\\RegisteredApplications",
+      "PSG Academic PDF",
+      "Software\\PSG Academic PDF\\Capabilities"
+    ],
+    [
+      "-1",
+      "Software\\PSG Academic PDF\\Shortcuts",
+      "StartMenu",
+      "#1"
+    ],
+    [
+      "-1",
+      "Software\\PSG Academic PDF\\Shortcuts",
+      "Desktop",
+      "#1"
+    ]
+  ],
+  "mode": "dualScope"
+}

@@ -1,0 +1,172 @@
+# PSG Academic PDF interface in ko. Columns, separated by a TAB: context <TAB> English <TAB> translation.
+# No escapes: a backslash is a backslash. Embedded by apps/psg-academic-pdf/src/i18n.rs; a missing row shows in English.
+# Written from the plain meaning of the English; no other product's translations were consulted.
+	(none)	(없음)
+	A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it.	명령의 철자가 틀렸거나 학술지 템플릿이 불러오지 않는 패키지가 필요합니다. 이 줄의 명령을 확인하거나 삭제하세요.
+	A file the manuscript uses is not in the project. Add it with "Bibliography / figures…" and check the spelling: file names are case-sensitive.	원고에서 쓰는 파일이 프로젝트에 없습니다. '참고문헌 / 그림…'으로 추가하고 철자를 확인하세요. 파일 이름은 대소문자를 구분합니다.
+	A line sticks out into the margin. Rephrase it, allow a hyphenation with \-, or break a long URL or formula.	한 줄이 여백으로 튀어나왔습니다. 문장을 바꾸거나 \-로 하이픈 분리를 허용하거나 긴 URL이나 수식을 나누세요.
+	Abbreviation	약칭
+	Abstract	초록
+	Accepted	게재 승인일
+	Activity	활동 기록
+	Add affiliation	소속 추가
+	Add author	저자 추가
+	Add bibliography, figures or other files	참고문헌, 그림 또는 기타 파일 추가
+	Added {path} as {name}	{path}을(를) {name}(으)로 추가했습니다
+	Affiliation numbers, e.g. 1, 2	소속 번호 (예: 1, 2)
+	Affiliations	소속
+	Article	논문
+	Article no.	논문 번호
+	Author {n}	저자 {n}
+	Authors and affiliations	저자 및 소속
+	Before compiling	컴파일 전 확인
+	Biber could not read the bibliography file. Check that the .bib file named in main.tex is in the project.	Biber가 참고문헌 파일을 읽지 못했습니다. main.tex에 지정한 .bib 파일이 프로젝트에 있는지 확인하세요.
+	Bibliography / figures…	참고문헌 / 그림…
+	Cancel	취소
+	Cancelling…	취소하는 중…
+	Check again	다시 확인
+	Check for updates…	업데이트 확인…
+	Checking the TeX installation…	TeX 설치를 확인하는 중…
+	Checking…	확인하는 중…
+	Choose an empty folder for the project	프로젝트용 빈 폴더 선택
+	Compilation started.	컴파일을 시작했습니다.
+	Compile	컴파일
+	Compile output	컴파일 출력
+	Compile the project to see the PDF here.	프로젝트를 컴파일하면 여기에 PDF가 표시됩니다.
+	Compile to see errors and warnings here.	컴파일하면 여기에 오류와 경고가 표시됩니다.
+	Compile to see latexmk's output here.	컴파일하면 여기에 latexmk 출력이 표시됩니다.
+	Compiling with latexmk and pdfLaTeX…	latexmk와 pdfLaTeX로 컴파일하는 중…
+	Copyright	저작권
+	Corresponding author	교신저자
+	Could not check the TeX installation: {error}	TeX 설치를 확인할 수 없습니다: {error}
+	Could not create the project: {error}	프로젝트를 만들 수 없습니다: {error}
+	Could not open the project: {error}	프로젝트를 열 수 없습니다: {error}
+	Could not read {path}: {error}	{path}을(를) 읽을 수 없습니다: {error}
+	Could not save the project: {error}	프로젝트를 저장할 수 없습니다: {error}
+	Could not save {file}: {error}	{file}을(를) 저장할 수 없습니다: {error}
+	Could not start the compilation: {error}	컴파일을 시작할 수 없습니다: {error}
+	Create the project in {path}	{path}에 프로젝트 만들기
+	DOI	DOI
+	Dates and licence	날짜 및 라이선스
+	Discard unsaved changes and read the file again	저장하지 않은 변경 사항을 버리고 파일을 다시 읽기
+	Email	이메일
+	Engine	엔진
+	Entry	항목
+	Experimental: converts with the local Pandoc	실험 기능: 로컬 Pandoc으로 변환합니다
+	Export PDF…	PDF 내보내기…
+	Export failed: {error}	내보내기 실패: {error}
+	Export the PDF	PDF 내보내기
+	Exported {path}.	{path}을(를) 내보냈습니다.
+	Files added; see Activity for their names in the project.	파일을 추가했습니다. 프로젝트 안의 이름은 '활동 기록'에서 확인하세요.
+	Filter	필터
+	From the last compilation	마지막 컴파일 결과
+	Go to line	해당 줄로 이동
+	ISSN	ISSN
+	Import	가져오기
+	Import a Word manuscript (experimental, via Pandoc)	Word 원고 가져오기 (실험 기능, Pandoc 사용)
+	Import failed: {error}	가져오기 실패: {error}
+	Import the manuscript body (LaTeX)	원고 본문 가져오기 (LaTeX)
+	Install Pandoc to import .docx (experimental)	.docx를 가져오려면 Pandoc을 설치하세요 (실험 기능)
+	Issue	호
+	Journal	학술지
+	Journal and issue	학술지 및 호
+	Journal template	학술지 템플릿
+	Key	키
+	Keywords	키워드
+	Language	언어
+	Licence statement	라이선스 고지
+	Manuscript (.tex)…	원고 (.tex)…
+	Mathematics outside a formula, or a stray _ or ^ in text. Put formulas in $…$, and write \_ for an underscore in text.	수식 밖에 수학 기호가 있거나 본문에 불필요한 _ 또는 ^가 있습니다. 수식은 $…$ 안에 넣고 본문의 밑줄은 \_로 쓰세요.
+	New in folder…	폴더에 새로 만들기…
+	New project	새 프로젝트
+	New project from {template} around {path}.	{template}(으)로 {path}을(를) 바탕으로 새 프로젝트를 만들었습니다.
+	New project from {template} in {path}.	{template}(으)로 {path}에 새 프로젝트를 만들었습니다.
+	No TeX log yet.	아직 TeX 로그가 없습니다.
+	No \label with this name. Check the spelling of the \ref and the \label.	이 이름의 \label이 없습니다. \ref와 \label의 철자를 확인하세요.
+	No errors or warnings.	오류나 경고가 없습니다.
+	No problems in the manuscript's scripts or the bibliography.	원고의 문자와 참고문헌에 문제가 없습니다.
+	No project yet. Choose a template and press New project.	아직 프로젝트가 없습니다. 템플릿을 고른 뒤 '새 프로젝트'를 누르세요.
+	No template is available.	사용할 수 있는 템플릿이 없습니다.
+	Not added: {error}	추가하지 않음: {error}
+	Not opened (one project at a time): {path}	열지 않음 (프로젝트는 한 번에 하나만 열 수 있음): {path}
+	ORCID iD	ORCID iD
+	Open a PSG Academic PDF project folder	PSG Academic PDF 프로젝트 폴더 열기
+	Open file	파일 열기
+	Open in PSG PDF	PSG PDF에서 열기
+	Open or create a project to check it.	확인하려면 프로젝트를 열거나 만드세요.
+	Open or create a project to edit its manuscript.	원고를 편집하려면 프로젝트를 열거나 만드세요.
+	Open or create a project to see its bibliography.	참고문헌을 보려면 프로젝트를 열거나 만드세요.
+	Open or create a project, and wait for the TeX check, before compiling.	컴파일하기 전에 프로젝트를 열거나 만들고 TeX 확인이 끝날 때까지 기다리세요.
+	Open the compiled PDF in PSG PDF for review, annotation and further editing	컴파일한 PDF를 PSG PDF에서 열어 검토, 주석, 추가 편집하기
+	Opened {path} in PSG PDF.	{path}을(를) PSG PDF에서 열었습니다.
+	Opened {path} in the default PDF viewer.	{path}을(를) 기본 PDF 뷰어에서 열었습니다.
+	Opened {path}.	{path}을(를) 열었습니다.
+	Open…	열기…
+	PDF engine: PdfCraft (MIT OR Apache-2.0)	PDF 엔진: PdfCraft (MIT OR Apache-2.0)
+	PDF preview	PDF 미리보기
+	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF가 설치되어 있지 않아 기본 뷰어에서 PDF를 열었습니다. PSG PDF는 별도로 내려받아야 합니다.
+	Page {n}: {error}	{n}쪽: {error}
+	Pages	쪽
+	Portable mode: settings and projects are kept in {path}.	휴대 모드: 설정과 프로젝트는 {path}에 저장됩니다.
+	Preview zoom	미리보기 확대
+	Problems ({n})	문제 ({n})
+	Project	프로젝트
+	Project: {path} (template {template})	프로젝트: {path} (템플릿 {template})
+	Publication metadata	출판 메타데이터
+	Published	출판일
+	Rebuild everything each time	매번 전체 다시 빌드
+	Received	접수일
+	Redraw preview	미리보기 다시 그리기
+	References ({n})	참고문헌 ({n})
+	Reload from disk	디스크에서 다시 불러오기
+	Remove	제거
+	Replaces the article body; a full document keeps only its body	논문 본문을 바꿉니다. 완전한 문서는 본문만 남습니다
+	Revised	수정일
+	Save	저장
+	Save the file (Ctrl+S / ⌘S)	파일 저장 (Ctrl+S / ⌘S)
+	Saved {file}.	{file}을(를) 저장했습니다.
+	Separate keywords with ; or ,	키워드는 ; 또는 ,로 구분하세요
+	Short title	짧은 제목
+	Showing the first {shown} of {total} pages.	전체 {total}쪽 중 처음 {shown}쪽을 표시합니다.
+	Some citations or cross-references could not be resolved; the warnings above name them.	일부 인용이나 상호 참조를 해결하지 못했습니다. 위의 경고에 이름이 나옵니다.
+	Source and PDF	소스와 PDF
+	Supported files	지원되는 파일
+	TeX installation	TeX 설치
+	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX가 준비되지 않았습니다: {tools}을(를) 찾을 수 없습니다. latexmk와 biber가 포함된 TeX Live를 설치한 뒤 '다시 확인'을 누르세요.
+	TeX is ready.	TeX가 준비되었습니다.
+	TeX log	TeX 로그
+	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX가 치명적 오류로 멈췄습니다. 목록의 첫 번째 오류를 고치세요. 뒤의 오류는 대개 그것 때문에 생깁니다.
+	Template skipped: {problem}	템플릿을 건너뜀: {problem}
+	Text before \begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed.	\begin{document} 앞에 텍스트가 있습니다. 본문 파일에는 논문 본문만 있어야 합니다. 프리앰블이 제거되도록 원고를 다시 가져오세요.
+	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	.bib 파일의 여기 표시된 항목 근처에 구문 오류가 있습니다. 쉼표, 중괄호 또는 따옴표가 빠졌습니다.
+	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	pdfLaTeX 학술지 템플릿은 중국어, 일본어, 한국어를 조판할 수 없습니다 (CJK 글꼴을 쓰는 XeLaTeX나 LuaLaTeX가 필요하지만 이 템플릿은 사용하지 않습니다). 제목, 이름, 참고문헌을 라틴 문자(로마자 표기, 원문은 원본 데이터에 보관)로 쓰거나, PSG Academic PDF 밖에서 CJK를 지원하는 템플릿으로 준비하세요.
+	The project folder: compilation happens here and only here	프로젝트 폴더: 컴파일은 여기에서만 이루어집니다
+	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	템플릿에 키릴 문자 글꼴(T2A 인코딩)이 없습니다. 대부분의 영문 학술지가 요구하듯 키릴 문자 이름과 제목을 음역하세요.
+	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	템플릿에 그리스 문자 본문 글꼴이 없습니다. 수식에서는 그리스 문자를 명령($\alpha$, $\Omega$)으로 쓰고, 본문의 그리스어 단어는 음역하세요.
+	The templates have no font for this script. Transliterate the text.	템플릿에 이 문자의 글꼴이 없습니다. 음역하세요.
+	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	이 Pandoc은 너무 오래되었습니다. DOCX를 가져오려면 Pandoc 2.15 이상이 필요합니다
+	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	이 인용 키가 참고문헌에 없습니다. .bib 파일에 항목을 추가하거나 키를 고치세요.
+	This template doesn't use a bibliography file.	이 템플릿은 참고문헌 파일을 사용하지 않습니다.
+	Time limit	시간 제한
+	Title	제목
+	Type	유형
+	Typeset with latexmk and pdfLaTeX	latexmk와 pdfLaTeX로 조판
+	Typesetting	조판
+	Unbalanced braces: a { without its } (or the other way round) near this line.	중괄호 짝이 맞지 않습니다. 이 줄 근처에 }가 없는 {(또는 그 반대)가 있습니다.
+	Unsaved changes; they are saved before compiling.	저장하지 않은 변경 사항이 있습니다. 컴파일 전에 저장됩니다.
+	Volume	권
+	Word (.docx)…	Word (.docx)…
+	Year	연도
+	found	찾음
+	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk는 보통 이 메시지가 사라질 때까지 다시 실행합니다. 계속 남으면 '매번 전체 다시 빌드'를 켜고 다시 컴파일하세요.
+	not found	찾을 수 없음
+	not found (optional, for DOCX import)	찾을 수 없음 (선택 사항, DOCX 가져오기용)
+	pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX.	이 템플릿으로는 pdfLaTeX가 오른쪽에서 왼쪽으로 쓰는 문자를 조판할 수 없습니다. 음역하거나 XeLaTeX 또는 LuaLaTeX용 템플릿으로 준비하세요.
+	pdfLaTeX via latexmk (shell escape off)	latexmk를 통한 pdfLaTeX (shell escape 꺼짐)
+	pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\alpha$, for example).	pdfLaTeX 글꼴에 이 문자의 글리프가 없습니다. 바꾸거나 LaTeX 명령으로 쓰세요 (예: 그리스 문자는 $\alpha$).
+	{file} is not UTF-8 text; save it as UTF-8 and try again.	{file}은(는) UTF-8 텍스트가 아닙니다. UTF-8로 저장한 뒤 다시 시도하세요.
+	{file} is too large to edit here.	{file}은(는) 너무 커서 여기서 편집할 수 없습니다.
+	{first} Some things need fixing first: see Activity.	{first} 먼저 고칠 것이 있습니다. '활동 기록'을 확인하세요.
+	{id} · {engine} · bibliography: {bibliography}	{id} · {engine} · 참고문헌: {bibliography}
+	{n} problems found before compiling; see Problems.	컴파일 전에 문제 {n}개를 찾았습니다. '문제'를 확인하세요.
+	{path} is a Word manuscript; install Pandoc to import it.	{path}은(는) Word 원고입니다. 가져오려면 Pandoc을 설치하세요.

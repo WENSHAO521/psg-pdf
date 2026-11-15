@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
-# Build, sign and (optionally) notarize the macOS release artifacts:
+# Build, sign and (optionally) notarize one PSG product for macOS. PSG PDF and PSG Academic PDF
+# are independent products (packaging/products.toml), each on its own DMG:
 #
-#   $DIST/pdfcraft-<version>-macos-<arch>.dmg          PdfCraft.app on a drag-to-Applications DMG
-#   $DIST/pdfcraft-cli-<version>-macos-<arch>.zip      the headless CLI
+#   --product psg-pdf:
+#     $DIST/psg-pdf-<version>-macos-<arch>.dmg           PSG PDF.app, drag-to-Applications
+#     $DIST/pdfcraft-cli-<version>-macos-<arch>.zip      the headless CLI
+#   --product psg-academic-pdf:
+#     $DIST/psg-academic-pdf-<version>-macos-<arch>.dmg  PSG Academic PDF.app, drag-to-Applications
 #
-# Usage: packaging/macos/package.sh [--arch universal|aarch64|x86_64] [--skip-build]
+# Usage: packaging/macos/package.sh [--product psg-pdf|psg-academic-pdf] [--arch universal|aarch64|x86_64] [--skip-build]
 #
 # Signing (env):
 #   MACOS_SIGN_IDENTITY   codesign identity (name or SHA-1). Default "-" = ad-hoc (local testing;
@@ -18,12 +22,14 @@ set -euo pipefail
 HERE="$ROOT/packaging/macos"
 
 ARCH=universal
+PRODUCT=psg-pdf
 SKIP_BUILD=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --product) PRODUCT="$2"; shift 2 ;;
     --arch) ARCH="$2"; shift 2 ;;
     --skip-build) SKIP_BUILD=1; shift ;;
-    -h | --help) sed -n '2,16p' "$0"; exit 0 ;;
+    -h | --help) sed -n '2,21p' "$0"; exit 0 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
@@ -34,13 +40,27 @@ case "$ARCH" in
   *) echo "unknown --arch $ARCH" >&2; exit 2 ;;
 esac
 
+# Each product's bundle, icon, Info.plist, DMG window and the programs it builds (keep in sync with
+# packaging/products.toml; `cargo xtask products check` compares them).
+case "$PRODUCT" in
+  psg-pdf)
+    NAME="PSG PDF"; BIN=psg-pdf; PACKAGES=(psg-pdf pdfcraft-cli)
+    ICNS="$ROOT/assets/app-icon/psg-pdf.icns"; PLIST="$HERE/Info.plist.in"
+    LAYOUT="$HERE/dmg/dmg-layout.DS_Store"; BACKGROUND="$HERE/dmg/background.tiff" ;;
+  psg-academic-pdf)
+    NAME="PSG Academic PDF"; BIN=psg-academic-pdf; PACKAGES=(psg-academic-pdf)
+    ICNS="$ROOT/assets/app-icon-academic/psg-academic-pdf.icns"; PLIST="$HERE/Info-academic.plist.in"
+    LAYOUT="$HERE/dmg/academic-layout.DS_Store"; BACKGROUND="$HERE/dmg/academic-background.tiff" ;;
+  *) echo "unknown --product $PRODUCT (psg-pdf or psg-academic-pdf)" >&2; exit 2 ;;
+esac
+
 # Keep in sync with LSMinimumSystemVersion in Info.plist.in.
 export MACOSX_DEPLOYMENT_TARGET=11.0
 IDENTITY="${MACOS_SIGN_IDENTITY:--}"
 SHORT_VERSION="${VERSION%%-*}"
-WORK="$CARGO_TARGET_DIR/macos-package"
-APP="$WORK/PdfCraft.app"
-DMG="$DIST/pdfcraft-$VERSION-macos-$ARCH.dmg"
+WORK="$CARGO_TARGET_DIR/macos-package/$PRODUCT"
+APP="$WORK/$NAME.app"
+DMG="$DIST/$PRODUCT-$VERSION-macos-$ARCH.dmg"
 CLI_ZIP="$DIST/pdfcraft-cli-$VERSION-macos-$ARCH.zip"
 
 NOTARIZE=0
@@ -52,18 +72,19 @@ else
   warn "macOS: APPLE_ID / APPLE_PASSWORD / APPLE_TEAM_ID incomplete; signed but not notarized"
 fi
 
-echo "==> PdfCraft $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
+echo "==> $NAME $VERSION for macOS ($ARCH), identity: $IDENTITY, notarize: $NOTARIZE"
 
 # ---- build -------------------------------------------------------------------------------------
 if [[ "$SKIP_BUILD" = 0 ]]; then
   args=()
   for t in "${TARGETS[@]}"; do args+=(--target "$t"); done
-  (cd "$ROOT" && cargo build --release --locked -p pdfcraft -p pdfcraft-cli "${args[@]}")
+  for pkg in "${PACKAGES[@]}"; do args+=(-p "$pkg"); done
+  (cd "$ROOT" && cargo build --release --locked "${args[@]}")
 fi
 
 rm -rf "$WORK"
 mkdir -p "$WORK/bin"
-for bin in pdfcraft pdfcraft-cli; do
+for bin in "${PACKAGES[@]}"; do
   inputs=()
   for t in "${TARGETS[@]}"; do inputs+=("$CARGO_TARGET_DIR/$t/release/$bin"); done
   lipo -create -output "$WORK/bin/$bin" "${inputs[@]}"
@@ -112,56 +133,65 @@ notarize() {
   fi
 }
 
-# ---- PdfCraft.app ----------------------------------------------------------------------------
-echo "==> assembling $APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+# ---- app bundles -------------------------------------------------------------------------------
+# Usage: assemble <bundle> <binary> <display name> <icns> <Info.plist template>
 # Executable and icon carry the display name (CFBundleExecutable / CFBundleIconFile).
-cp "$WORK/bin/pdfcraft" "$APP/Contents/MacOS/PdfCraft"
-cp "$ROOT/assets/app-icon/pdfcraft.icns" "$APP/Contents/Resources/PdfCraft.icns"
-# Required embedded-font notices are independent of optional font inputs.
-cp "$ROOT/NOTICE" "$APP/Contents/Resources/NOTICE"
-# The standard About panel (PdfCraft menu > About PdfCraft) shows Credits.rtf under the version:
-# the website and Discord links the in-app About dialog has (#1287).
-cp "$HERE/Credits.rtf" "$APP/Contents/Resources/Credits.rtf"
-copy_font_licences "$APP/Contents/Resources"
-# OCR models: the app finds them at Contents/MacOS/../Resources/models. Before signing, so the
-# bundle's seal covers them.
-stage_models "$APP/Contents/Resources/models"
-sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
-  -e "s/@BUILD_SHA@/${PDFCRAFT_BUILD_SHA:-unknown}/g" \
-  "$HERE/Info.plist.in" >"$APP/Contents/Info.plist"
-plutil -lint "$APP/Contents/Info.plist"
-printf 'APPL????' >"$APP/Contents/PkgInfo"
+assemble() {
+  local app="$1" bin="$2" name="$3" icns="$4" plist="$5"
+  echo "==> assembling $app"
+  mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
+  cp "$WORK/bin/$bin" "$app/Contents/MacOS/$name"
+  cp "$icns" "$app/Contents/Resources/$name.icns"
+  # Required embedded-font notices are independent of optional font inputs.
+  cp "$ROOT/NOTICE" "$app/Contents/Resources/NOTICE"
+  # The standard About panel (app menu > About) shows Credits.rtf under the version, naming
+  # the product it is in (one template for both products).
+  sed -e "s/@NAME@/$name/g" "$HERE/Credits.rtf" >"$app/Contents/Resources/Credits.rtf"
+  if grep -q '@NAME@' "$app/Contents/Resources/Credits.rtf"; then echo "error: Credits.rtf still has @NAME@" >&2; exit 1; fi
+  copy_font_licences "$app/Contents/Resources"
+  sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
+    -e "s/@BUILD_SHA@/${PDFCRAFT_BUILD_SHA:-unknown}/g" \
+    "$plist" >"$app/Contents/Info.plist"
+  plutil -lint "$app/Contents/Info.plist"
+  printf 'APPL????' >"$app/Contents/PkgInfo"
+}
 
-# Sign inside-out: nested code first, then the bundle itself (no --deep on the final signature).
-# Today the only nested code is the main executable; frameworks/helpers would be signed here too.
-sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP/Contents/MacOS/PdfCraft"
-sign --options runtime --entitlements "$HERE/entitlements.plist" "$APP"
-codesign --verify --strict --deep --verbose=2 "$APP"
+# Usage: seal <bundle> <display name>: sign inside-out (nested code first, then the bundle itself,
+# no --deep on the final signature), then notarize and staple when configured.
+seal() {
+  local app="$1" name="$2"
+  sign --options runtime --entitlements "$HERE/entitlements.plist" "$app/Contents/MacOS/$name"
+  sign --options runtime --entitlements "$HERE/entitlements.plist" "$app"
+  codesign --verify --strict --deep --verbose=2 "$app"
+  if [[ "$NOTARIZE" = 1 ]]; then
+    ditto -c -k --keepParent "$app" "$WORK/notarize.zip"
+    notarize "$WORK/notarize.zip"
+    rm -f "$WORK/notarize.zip"
+    stapler_retry staple "$app"
+    stapler_retry validate "$app"
+    spctl --assess --type execute -vvv "$app"
+  fi
+}
 
-if [[ "$NOTARIZE" = 1 ]]; then
-  ditto -c -k --keepParent "$APP" "$WORK/PdfCraft-notarize.zip"
-  notarize "$WORK/PdfCraft-notarize.zip"
-  stapler_retry staple "$APP"
-  stapler_retry validate "$APP"
-  spctl --assess --type execute -vvv "$APP"
+assemble "$APP" "$BIN" "$NAME" "$ICNS" "$PLIST"
+if [[ "$PRODUCT" = psg-pdf ]]; then
+  # OCR models: the app finds them at Contents/MacOS/../Resources/models. Before signing, so the
+  # bundle's seal covers them.
+  stage_models "$APP/Contents/Resources/models"
+else
+  # Journal templates in Contents/Resources/templates/academic, where the app looks for them
+  # (crates/academic/src/template.rs). Not in Contents/MacOS: codesign treats every file there as
+  # code and refuses to seal the bundle. The PSG Research Article template is also compiled in.
+  mkdir -p "$APP/Contents/Resources/templates"
+  cp -R "$ROOT/templates/academic" "$APP/Contents/Resources/templates/academic"
 fi
+seal "$APP" "$NAME"
 
 # ---- DMG ---------------------------------------------------------------------------------------
-echo "==> building $DMG"
-STAGE="$WORK/dmg"
-mkdir -p "$STAGE"
-ditto "$APP" "$STAGE/PdfCraft.app"
-ln -s /Applications "$STAGE/Applications"
-# Finder window layout: background, icon size and positions (packaging/macos/dmg/README.md).
-mkdir -p "$STAGE/.background"
-cp "$HERE/dmg/background.tiff" "$STAGE/.background/background.tiff"
-cp "$HERE/dmg/dmg-layout.DS_Store" "$STAGE/.DS_Store"
-rm -f "$DMG"
 # `hdiutil create -srcfolder` writes the files as they are. `makehybrid -hfs` gave every file a
 # com.apple.FinderInfo (a Finder location of -1,-1), which `codesign --verify --strict` rejects as
 # "Finder information, or similar detritus" on the app in the image and on a copy installed from it,
-# so MDM and compliance checks reported a correctly notarized app as damaged (#390). `create`
+# so MDM and compliance checks reported a correctly notarized app as damaged. `create`
 # attaches a device while it copies, which fails now and then on CI runners ("Resource busy"), so
 # it gets a few tries. The volume name has no version: .DS_Store finds the background through an
 # alias that includes it.
@@ -178,15 +208,27 @@ hdiutil_retry() {
     sleep $((attempt * 10))
   done
 }
-hdiutil_retry create create -srcfolder "$STAGE" -volname "PdfCraft" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$DMG"
+
+# One DMG per product: the app beside the Applications link, with the product's window layout
+# (background, icon size and positions) from packaging/macos/dmg (README.md there).
+echo "==> building $DMG"
+STAGE="$WORK/dmg-stage"
+rm -rf "$STAGE"
+mkdir -p "$STAGE/.background"
+ditto "$APP" "$STAGE/$(basename "$APP")"
+ln -s /Applications "$STAGE/Applications"
+cp "$BACKGROUND" "$STAGE/.background/background.tiff"
+cp "$LAYOUT" "$STAGE/.DS_Store"
+rm -f "$DMG"
+hdiutil_retry create create -srcfolder "$STAGE" -volname "$NAME" -fs HFS+ -format UDZO -imagekey zlib-level=9 -ov "$DMG"
 sign "$DMG"
 codesign --verify --strict --verbose=2 "$DMG"
-# The app inside the image must still pass --strict, so a makehybrid-style regression can't ship.
+# The apps inside the image must still pass --strict, so a makehybrid-style regression can't ship.
 MOUNT="$WORK/dmg-check"
 rm -rf "$MOUNT"
 mkdir -p "$MOUNT"
 hdiutil_retry attach attach -nobrowse -readonly -mountpoint "$MOUNT" "$DMG" >/dev/null
-if ! codesign --verify --strict --deep --verbose=2 "$MOUNT/PdfCraft.app"; then
+if ! codesign --verify --strict --deep --verbose=2 "$MOUNT/$(basename "$APP")"; then
   hdiutil_retry detach detach "$MOUNT" >/dev/null || true
   exit 1
 fi
@@ -198,7 +240,13 @@ if [[ "$NOTARIZE" = 1 ]]; then
   spctl --assess --type open --context context:primary-signature -vvv "$DMG"
 fi
 
-# ---- CLI ---------------------------------------------------------------------------------------
+# ---- CLI (PSG PDF) -----------------------------------------------------------------------------
+if [[ "$PRODUCT" != psg-pdf ]]; then
+  "$APP/Contents/MacOS/$NAME" --version
+  echo "==> done"
+  ls -lh "$DMG"
+  exit 0
+fi
 echo "==> building $CLI_ZIP"
 CLI_DIR="$WORK/pdfcraft-cli-$VERSION-macos-$ARCH"
 mkdir -p "$CLI_DIR"

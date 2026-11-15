@@ -1,9 +1,11 @@
-# .deb and .rpm packages (nfpm: https://nfpm.goreleaser.com). Run by package.sh, which stages
-# the file tree, substitutes its path for ${STAGE} (nfpm doesn't expand env vars in `src`) and
+# PSG PDF's .deb and .rpm packages (nfpm: https://nfpm.goreleaser.com). Run by package.sh, which
+# stages the file tree, substitutes its path for ${STAGE} (nfpm doesn't expand env vars in `src`) and
 # exports VERSION, RELEASE and NFPM_ARCH.
 #
 #   nfpm package -f packaging/linux/nfpm.yaml -p deb -t dist/release/
-name: pdfcraft
+# The package name continues the 0.18.x "PSG PDF Suite" package, so an upgrade replaces it; its
+# PSG Academic PDF files then belong to the psg-academic-pdf package (docs/products.md).
+name: psg-pdf
 arch: ${NFPM_ARCH}
 platform: linux
 version: ${VERSION}
@@ -15,13 +17,14 @@ release: ${RELEASE}
 section: graphics
 priority: optional
 maintainer: ${PDFCRAFT_MAINTAINER}
-vendor: Learning Machines LLC
-homepage: https://getartcraft.com/apps/pdfcraft
+vendor: Panorama Scholarly Group
+homepage: https://github.com/WENSHAO521/psg-pdf
 license: MIT OR Apache-2.0
 description: |-
-  Open-source, native PDF workbench: read, comment, fill and sign forms,
-  organize, combine, split, edit, redact, protect and export PDFs.
+  PSG PDF: an open-source, native PDF workbench to read, comment, fill and
+  sign forms, organize, combine, split, edit, redact, protect and export PDFs.
   Includes pdfcraft-cli, a headless command runner and opt-in MCP server.
+  PSG Academic PDF is a separate package (psg-academic-pdf).
 
 # The binaries link only glibc and libgcc_s directly. Windowing (X11/Wayland, xkbcommon) and the
 # GPU (Vulkan, EGL/GL) are loaded at runtime, so they are dependencies/recommendations here
@@ -45,6 +48,8 @@ overrides:
       - libxrandr2
       - mesa-vulkan-drivers
       - xdg-desktop-portal
+    suggests:
+      - psg-academic-pdf
   rpm:
     # Library sonames rather than package names, so the same requirements resolve on Fedora/RHEL
     # and openSUSE (which has no libxkbcommon, vulkan-loader or libglvnd-egl package). The glibc
@@ -65,10 +70,12 @@ overrides:
       - libXrandr
       - mesa-vulkan-drivers
       - xdg-desktop-portal
+    suggests:
+      - psg-academic-pdf
 
 contents:
-  - src: ${STAGE}/usr/bin/pdfcraft
-    dst: /usr/bin/pdfcraft
+  - src: ${STAGE}/usr/bin/psg-pdf
+    dst: /usr/bin/psg-pdf
     file_info: { mode: 0755 }
   - src: ${STAGE}/usr/bin/pdfcraft-cli
     dst: /usr/bin/pdfcraft-cli

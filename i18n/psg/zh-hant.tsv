@@ -1,0 +1,4 @@
+# PSG PDF's own interface strings in zh-hant, appended to the craft-i18n catalog at build time
+# (crates/ui-egui/build.rs). Same format: context <TAB> English source <TAB> translation.
+# Written from the plain meaning of the English; no other product's translations were consulted.
+	No signature font can draw “{char}”. Use other letters, or draw or import your signature.	沒有簽名字型能繪製「{char}」。請改用其他文字，或手寫簽名、匯入簽名圖片。

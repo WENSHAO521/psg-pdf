@@ -643,7 +643,7 @@ mod tests {
     /// leniency is not a guess: Apple's "Fonts included with macOS Tahoe" page (support.apple.com/122869)
     /// titles its list "Installed or downloadable fonts" and says most install automatically while
     /// others download on demand via Font Book — without marking which is which, so no entry in these
-    /// lists can be assumed present on a given Mac. CI has no macOS runner (`.github/workflows/ci.yml`
+    /// lists can be assumed present on a given Mac. CI has no macOS runner (`.github/workflows/build.yaml`
     /// keeps the org's Mac slots for release builds), so this runs on contributors' and
     /// maintainers' machines.
     #[cfg(target_os = "macos")]

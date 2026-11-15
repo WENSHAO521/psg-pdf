@@ -1,0 +1,42 @@
+% Sample manuscript body for the PSG Research Article template.
+% Written for this template; licensed MIT OR Apache-2.0. Replace it by importing a manuscript.
+\section{Introduction}
+This sample article shows the PSG Research Article template. It is typeset with pdf\LaTeX{},
+and its references are processed by Biber through Bib\LaTeX{}~\cite{psg-sample-handbook,psg-sample-article}.
+The title block, running headers, licence line and DOI link all come from the publication
+metadata that PSG Academic PDF writes to \texttt{psg-metadata.tex}.
+
+\section{Methods}
+Inline mathematics such as $E = mc^2$ and displayed equations are supported:
+\begin{equation}
+  \int_0^1 x^n \, \mathrm{d}x = \frac{1}{n+1}, \qquad n \geq 0.
+  \label{eq:integral}
+\end{equation}
+Equation~\eqref{eq:integral} is numbered automatically.
+
+\subsection{Data}
+Tables use the \texttt{booktabs} rules, as Table~\ref{tab:sample} shows.
+\begin{table}[ht]
+  \centering
+  \caption{A sample table.}
+  \label{tab:sample}
+  \begin{tabular}{lrr}
+    \toprule
+    Group & Size & Mean \\
+    \midrule
+    A & 24 & 3.1 \\
+    B & 31 & 2.7 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Results}
+The results section would report the findings~\cite{psg-sample-article}. Lists work as usual:
+\begin{itemize}
+  \item the first point;
+  \item the second point.
+\end{itemize}
+
+\section{Conclusion}
+This template compiles offline with a local \TeX{} Live installation using \texttt{latexmk},
+\texttt{pdflatex} and \texttt{biber}.

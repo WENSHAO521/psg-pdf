@@ -160,7 +160,7 @@ pub fn build(doc: &mut Document, annotator: &mut Annotator, inputs: FormInputs<'
         "hello",
         "Run JavaScript: app.alert",
         Rect::new(LEFT, 184.0, 250.0, 206.0),
-        "app.alert(\"Hello from the PdfCraft showcase! This alert is a JavaScript action on a push button.\", 3);",
+        "app.alert(\"Hello from the PSG PDF showcase! This alert is a JavaScript action on a push button.\", 3);",
     );
     c.fill_color(colors::INK_3).text(Font::Helv, 7.0, LEFT, 172.0, "JavaScript: shows app.alert(...) in viewers that run document scripts.");
     label(&mut c, COL2, 212.0, "Signature  (unsigned /Sig field)");

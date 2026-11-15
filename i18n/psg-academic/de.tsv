@@ -1,0 +1,172 @@
+# PSG Academic PDF interface in de. Columns, separated by a TAB: context <TAB> English <TAB> translation.
+# No escapes: a backslash is a backslash. Embedded by apps/psg-academic-pdf/src/i18n.rs; a missing row shows in English.
+# Written from the plain meaning of the English; no other product's translations were consulted.
+	(none)	(keine)
+	A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it.	Ein Befehl ist falsch geschrieben oder braucht ein Paket, das die Vorlage nicht lädt. Prüfen Sie den Befehl in dieser Zeile oder entfernen Sie ihn.
+	A file the manuscript uses is not in the project. Add it with "Bibliography / figures…" and check the spelling: file names are case-sensitive.	Eine Datei, die das Manuskript verwendet, fehlt im Projekt. Fügen Sie sie mit „Literatur / Abbildungen…“ hinzu und prüfen Sie die Schreibweise: Groß- und Kleinschreibung zählt.
+	A line sticks out into the margin. Rephrase it, allow a hyphenation with \-, or break a long URL or formula.	Eine Zeile ragt in den Rand. Formulieren Sie um, erlauben Sie eine Trennung mit \- oder brechen Sie eine lange URL oder Formel um.
+	Abbreviation	Abkürzung
+	Abstract	Zusammenfassung
+	Accepted	Angenommen
+	Activity	Aktivität
+	Add affiliation	Institution hinzufügen
+	Add author	Autor hinzufügen
+	Add bibliography, figures or other files	Literatur, Abbildungen oder andere Dateien hinzufügen
+	Added {path} as {name}	{path} als {name} hinzugefügt
+	Affiliation numbers, e.g. 1, 2	Nummern der Institutionen, z. B. 1, 2
+	Affiliations	Institutionen
+	Article	Artikel
+	Article no.	Artikelnr.
+	Author {n}	Autor {n}
+	Authors and affiliations	Autoren und Institutionen
+	Before compiling	Vor dem Kompilieren
+	Biber could not read the bibliography file. Check that the .bib file named in main.tex is in the project.	Biber konnte die Literaturdatei nicht lesen. Prüfen Sie, ob die in main.tex genannte .bib-Datei im Projekt liegt.
+	Bibliography / figures…	Literatur / Abbildungen…
+	Cancel	Abbrechen
+	Cancelling…	Wird abgebrochen…
+	Check again	Erneut prüfen
+	Check for updates…	Nach Updates suchen…
+	Checking the TeX installation…	TeX-Installation wird geprüft…
+	Checking…	Wird geprüft…
+	Choose an empty folder for the project	Leeren Ordner für das Projekt wählen
+	Compilation started.	Kompilierung gestartet.
+	Compile	Kompilieren
+	Compile output	Kompilierausgabe
+	Compile the project to see the PDF here.	Kompilieren Sie das Projekt, um hier das PDF zu sehen.
+	Compile to see errors and warnings here.	Kompilieren Sie, um hier Fehler und Warnungen zu sehen.
+	Compile to see latexmk's output here.	Kompilieren Sie, um hier die Ausgabe von latexmk zu sehen.
+	Compiling with latexmk and pdfLaTeX…	Kompilieren mit latexmk und pdfLaTeX…
+	Copyright	Copyright
+	Corresponding author	Korrespondierender Autor
+	Could not check the TeX installation: {error}	TeX-Installation konnte nicht geprüft werden: {error}
+	Could not create the project: {error}	Projekt konnte nicht erstellt werden: {error}
+	Could not open the project: {error}	Projekt konnte nicht geöffnet werden: {error}
+	Could not read {path}: {error}	{path} konnte nicht gelesen werden: {error}
+	Could not save the project: {error}	Projekt konnte nicht gespeichert werden: {error}
+	Could not save {file}: {error}	{file} konnte nicht gespeichert werden: {error}
+	Could not start the compilation: {error}	Kompilierung konnte nicht gestartet werden: {error}
+	Create the project in {path}	Projekt in {path} erstellen
+	DOI	DOI
+	Dates and licence	Daten und Lizenz
+	Discard unsaved changes and read the file again	Ungespeicherte Änderungen verwerfen und Datei neu einlesen
+	Email	E-Mail
+	Engine	Engine
+	Entry	Eintrag
+	Experimental: converts with the local Pandoc	Experimentell: Umwandlung mit dem lokalen Pandoc
+	Export PDF…	PDF exportieren…
+	Export failed: {error}	Export fehlgeschlagen: {error}
+	Export the PDF	PDF exportieren
+	Exported {path}.	{path} exportiert.
+	Files added; see Activity for their names in the project.	Dateien hinzugefügt; ihre Namen im Projekt stehen unter Aktivität.
+	Filter	Filter
+	From the last compilation	Aus der letzten Kompilierung
+	Go to line	Zur Zeile
+	ISSN	ISSN
+	Import	Importieren
+	Import a Word manuscript (experimental, via Pandoc)	Word-Manuskript importieren (experimentell, mit Pandoc)
+	Import failed: {error}	Import fehlgeschlagen: {error}
+	Import the manuscript body (LaTeX)	Manuskripttext importieren (LaTeX)
+	Install Pandoc to import .docx (experimental)	Installieren Sie Pandoc, um .docx zu importieren (experimentell)
+	Issue	Heft
+	Journal	Zeitschrift
+	Journal and issue	Zeitschrift und Heft
+	Journal template	Zeitschriftenvorlage
+	Key	Schlüssel
+	Keywords	Schlagwörter
+	Language	Sprache
+	Licence statement	Lizenzhinweis
+	Manuscript (.tex)…	Manuskript (.tex)…
+	Mathematics outside a formula, or a stray _ or ^ in text. Put formulas in $…$, and write \_ for an underscore in text.	Mathematik außerhalb einer Formel oder ein verirrtes _ oder ^ im Text. Setzen Sie Formeln in $…$ und schreiben Sie \_ für einen Unterstrich im Text.
+	New in folder…	Neu in Ordner…
+	New project	Neues Projekt
+	New project from {template} around {path}.	Neues Projekt aus {template} für {path}.
+	New project from {template} in {path}.	Neues Projekt aus {template} in {path}.
+	No TeX log yet.	Noch kein TeX-Protokoll.
+	No \label with this name. Check the spelling of the \ref and the \label.	Kein \label mit diesem Namen. Prüfen Sie die Schreibweise von \ref und \label.
+	No errors or warnings.	Keine Fehler oder Warnungen.
+	No problems in the manuscript's scripts or the bibliography.	Keine Probleme mit den Schriftsystemen des Manuskripts oder der Literatur.
+	No project yet. Choose a template and press New project.	Noch kein Projekt. Wählen Sie eine Vorlage und klicken Sie auf „Neues Projekt“.
+	No template is available.	Keine Vorlage verfügbar.
+	Not added: {error}	Nicht hinzugefügt: {error}
+	Not opened (one project at a time): {path}	Nicht geöffnet (immer nur ein Projekt): {path}
+	ORCID iD	ORCID iD
+	Open a PSG Academic PDF project folder	PSG-Academic-PDF-Projektordner öffnen
+	Open file	Datei öffnen
+	Open in PSG PDF	In PSG PDF öffnen
+	Open or create a project to check it.	Öffnen oder erstellen Sie ein Projekt, um es zu prüfen.
+	Open or create a project to edit its manuscript.	Öffnen oder erstellen Sie ein Projekt, um sein Manuskript zu bearbeiten.
+	Open or create a project to see its bibliography.	Öffnen oder erstellen Sie ein Projekt, um seine Literatur zu sehen.
+	Open or create a project, and wait for the TeX check, before compiling.	Öffnen oder erstellen Sie vor dem Kompilieren ein Projekt und warten Sie die TeX-Prüfung ab.
+	Open the compiled PDF in PSG PDF for review, annotation and further editing	Das kompilierte PDF zum Prüfen, Kommentieren und Bearbeiten in PSG PDF öffnen
+	Opened {path} in PSG PDF.	{path} in PSG PDF geöffnet.
+	Opened {path} in the default PDF viewer.	{path} im Standard-PDF-Betrachter geöffnet.
+	Opened {path}.	{path} geöffnet.
+	Open…	Öffnen…
+	PDF engine: PdfCraft (MIT OR Apache-2.0)	PDF-Engine: PdfCraft (MIT OR Apache-2.0)
+	PDF preview	PDF-Vorschau
+	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF ist nicht installiert, daher wurde das PDF im Standardbetrachter geöffnet. PSG PDF gibt es als eigenen Download.
+	Page {n}: {error}	Seite {n}: {error}
+	Pages	Seiten
+	Portable mode: settings and projects are kept in {path}.	Portabler Modus: Einstellungen und Projekte liegen in {path}.
+	Preview zoom	Vorschau-Zoom
+	Problems ({n})	Probleme ({n})
+	Project	Projekt
+	Project: {path} (template {template})	Projekt: {path} (Vorlage {template})
+	Publication metadata	Publikationsmetadaten
+	Published	Veröffentlicht
+	Rebuild everything each time	Jedes Mal alles neu erstellen
+	Received	Eingegangen
+	Redraw preview	Vorschau neu zeichnen
+	References ({n})	Literatur ({n})
+	Reload from disk	Von der Festplatte neu laden
+	Remove	Entfernen
+	Replaces the article body; a full document keeps only its body	Ersetzt den Artikeltext; von einem vollständigen Dokument bleibt nur der Textteil
+	Revised	Überarbeitet
+	Save	Speichern
+	Save the file (Ctrl+S / ⌘S)	Datei speichern (Strg+S / ⌘S)
+	Saved {file}.	{file} gespeichert.
+	Separate keywords with ; or ,	Schlagwörter mit ; oder , trennen
+	Short title	Kurztitel
+	Showing the first {shown} of {total} pages.	Die ersten {shown} von {total} Seiten werden angezeigt.
+	Some citations or cross-references could not be resolved; the warnings above name them.	Einige Zitate oder Querverweise konnten nicht aufgelöst werden; die Warnungen oben nennen sie.
+	Source and PDF	Quelltext und PDF
+	Supported files	Unterstützte Dateien
+	TeX installation	TeX-Installation
+	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX ist nicht bereit: {tools} nicht gefunden. Installieren Sie TeX Live mit latexmk und biber und klicken Sie dann auf „Erneut prüfen“.
+	TeX is ready.	TeX ist bereit.
+	TeX log	TeX-Protokoll
+	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX hat bei einem schweren Fehler angehalten. Beheben Sie den ersten Fehler der Liste; die späteren folgen oft daraus.
+	Template skipped: {problem}	Vorlage übersprungen: {problem}
+	Text before \begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed.	Text vor \begin{document}: Die Textdatei darf nur den Artikeltext enthalten. Importieren Sie das Manuskript erneut, damit die Präambel entfernt wird.
+	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	Die .bib-Datei hat nahe dem hier genannten Eintrag einen Syntaxfehler: ein fehlendes Komma, eine Klammer oder ein Anführungszeichen.
+	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	Die pdfLaTeX-Zeitschriftenvorlagen können kein Chinesisch, Japanisch oder Koreanisch setzen (dafür braucht es XeLaTeX oder LuaLaTeX mit einer CJK-Schrift, die diese Vorlagen nicht verwenden). Geben Sie Titel, Namen und Literatur in lateinischer Schrift an (romanisiert, das Original in den Quelldaten), oder setzen Sie den Artikel außerhalb von PSG Academic PDF mit einer CJK-fähigen Vorlage.
+	The project folder: compilation happens here and only here	Der Projektordner: Kompiliert wird hier und nur hier
+	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	Die Vorlagen haben keine kyrillische Schrift (T2A-Kodierung). Transliterieren Sie kyrillische Namen und Titel, wie es die meisten englischsprachigen Zeitschriften verlangen.
+	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	Die Vorlagen haben keine griechische Textschrift. Schreiben Sie griechische Buchstaben in Formeln als Befehle ($\alpha$, $\Omega$); griechische Wörter im Fließtext müssen transliteriert werden.
+	The templates have no font for this script. Transliterate the text.	Die Vorlagen haben keine Schrift für dieses Schriftsystem. Transliterieren Sie den Text.
+	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	Dieses Pandoc ist zu alt: Der DOCX-Import braucht Pandoc 2.15 oder neuer
+	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	Dieser Zitierschlüssel fehlt in der Literatur. Fügen Sie den Eintrag der .bib-Datei hinzu oder korrigieren Sie den Schlüssel.
+	This template doesn't use a bibliography file.	Diese Vorlage verwendet keine Literaturdatei.
+	Time limit	Zeitlimit
+	Title	Titel
+	Type	Typ
+	Typeset with latexmk and pdfLaTeX	Mit latexmk und pdfLaTeX setzen
+	Typesetting	Satz
+	Unbalanced braces: a { without its } (or the other way round) near this line.	Unausgeglichene Klammern: ein { ohne sein } (oder umgekehrt) nahe dieser Zeile.
+	Unsaved changes; they are saved before compiling.	Ungespeicherte Änderungen; sie werden vor dem Kompilieren gespeichert.
+	Volume	Band
+	Word (.docx)…	Word (.docx)…
+	Year	Jahr
+	found	gefunden
+	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk wiederholt normalerweise, bis dies verschwindet. Bleibt es, schalten Sie „Jedes Mal alles neu erstellen“ ein und kompilieren Sie erneut.
+	not found	nicht gefunden
+	not found (optional, for DOCX import)	nicht gefunden (optional, für DOCX-Import)
+	pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX.	Mit diesen Vorlagen kann pdfLaTeX keine linksläufigen Schriften setzen. Transliterieren Sie den Text oder setzen Sie den Artikel mit einer Vorlage für XeLaTeX oder LuaLaTeX.
+	pdfLaTeX via latexmk (shell escape off)	pdfLaTeX über latexmk (Shell-Escape aus)
+	pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\alpha$, for example).	Die Schriften von pdfLaTeX haben kein Zeichen dafür. Ersetzen Sie es oder schreiben Sie es als LaTeX-Befehl (einen griechischen Buchstaben etwa als $\alpha$).
+	{file} is not UTF-8 text; save it as UTF-8 and try again.	{file} ist kein UTF-8-Text; speichern Sie ihn als UTF-8 und versuchen Sie es erneut.
+	{file} is too large to edit here.	{file} ist zu groß, um hier bearbeitet zu werden.
+	{first} Some things need fixing first: see Activity.	{first} Einiges muss zuerst behoben werden: siehe Aktivität.
+	{id} · {engine} · bibliography: {bibliography}	{id} · {engine} · Literatur: {bibliography}
+	{n} problems found before compiling; see Problems.	{n} Probleme vor dem Kompilieren gefunden; siehe Probleme.
+	{path} is a Word manuscript; install Pandoc to import it.	{path} ist ein Word-Manuskript; installieren Sie Pandoc, um es zu importieren.

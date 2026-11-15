@@ -1,0 +1,14 @@
+% Main file of the PSG Humanities and Social Sciences Article template (PSG Academic PDF).
+% The same class as the PSG Research Article, with author-year citations. PSG Academic PDF
+% regenerates psg-metadata.tex from the publication metadata and replaces body.tex with the
+% imported manuscript. Licensed MIT OR Apache-2.0.
+\documentclass[authoryear]{psg-article}
+\input{psg-metadata}
+\addbibresource{references.bib}
+
+\begin{document}
+\psgmaketitle
+\input{body}
+
+\printbibliography
+\end{document}

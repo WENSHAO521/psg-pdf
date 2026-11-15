@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=PSG PDF
+GenericName=PDF Editor
+Comment=Read, organize, combine, split and secure PDFs
+Exec=psg-pdf %U
+TryExec=psg-pdf
+Icon=com.panoramascholarly.psgpdf
+Terminal=false
+StartupNotify=true
+StartupWMClass=com.panoramascholarly.psgpdf
+Categories=Office;Viewer;
+Keywords=pdf;viewer;editor;annotate;sign;forms;merge;split;
+MimeType=application/pdf;

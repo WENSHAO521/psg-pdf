@@ -1,11 +1,15 @@
 <#
 .SYNOPSIS
-  Build, sign and package PdfCraft for Windows.
+  Build, sign and package one PSG product for Windows: PSG PDF or PSG Academic PDF. They are
+  independent products, each with its own MSI and portable zip (packaging/products.toml).
 
 .DESCRIPTION
-  Produces, in $env:DIST (default: dist/release):
-    pdfcraft-<version>-windows-<arch>.msi            per-machine installer (WiX v5)
-    pdfcraft-<version>-windows-<arch>-portable.zip   pdfcraft.exe + pdfcraft-cli.exe + models\ + portable.txt
+  Produces, in $env:DIST (default: dist/release), for -Product psg-pdf:
+    psg-pdf-<version>-windows-<arch>.msi            dual-scope installer (WiX v5)
+    psg-pdf-<version>-windows-<arch>-portable.zip   psg-pdf.exe + pdfcraft-cli.exe + models\ + portable.txt
+  and for -Product psg-academic-pdf:
+    psg-academic-pdf-<version>-windows-<arch>.msi
+    psg-academic-pdf-<version>-windows-<arch>-portable.zip   psg-academic-pdf.exe + templates\academic + portable.txt
 
   The binaries link the C runtime statically (+crt-static), so neither the MSI nor the portable
   zip needs the Visual C++ redistributable. Signing is delegated to sign.ps1 (skipped with a
@@ -15,11 +19,13 @@
   and WiX v5: dotnet tool install --global wix --version 5.0.2
 
 .EXAMPLE
-  pwsh packaging/windows/package.ps1 -Arch x64
+  pwsh packaging/windows/package.ps1 -Product psg-pdf -Arch x64
+  pwsh packaging/windows/package.ps1 -Product psg-academic-pdf -Arch x64
   pwsh packaging/windows/package.ps1 -Arch x86 -SkipBuild   # set CRAFT_FONTS_DIR, or -BuiltWithoutCraftFonts
   pwsh packaging/windows/package.ps1 -Arch arm64     # cross-compiled; needs the MSVC ARM64 build tools
 #>
 param(
+  [ValidateSet('psg-pdf', 'psg-academic-pdf')] [string] $Product = 'psg-pdf',
   [ValidateSet('x64', 'x86', 'arm64')] [string] $Arch = 'x64',
   [switch] $SkipBuild,
   # -SkipBuild only: the existing binaries were built without CRAFT_FONTS_DIR, so they embed no
@@ -67,7 +73,17 @@ New-Item -ItemType Directory -Force -Path $Dist | Out-Null
 if (-not $env:PDFCRAFT_BUILD_SHA) { $env:PDFCRAFT_BUILD_SHA = (git -C $Root rev-parse HEAD 2>$null) }
 if (-not $env:PDFCRAFT_BUILD_DATE) { $env:PDFCRAFT_BUILD_DATE = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd') }
 
-Write-Output "PdfCraft $Version for Windows $Arch ($Target)"
+# Each product builds and ships only its own programs (packaging/products.toml).
+$IsPdf = $Product -eq 'psg-pdf'
+$ProductName = if ($IsPdf) { 'PSG PDF' } else { 'PSG Academic PDF' }
+# Program, PE subsystem (2 = Windows GUI, 3 = console).
+# Assigned inside the branches, and the one-program list built with the comma operator: an `if`
+# expression's output, and @(@(…)), both unroll a single pair into its two items.
+if ($IsPdf) { $Programs = @(@('psg-pdf.exe', 2), @('pdfcraft-cli.exe', 3)) } else { $Programs = @(, @('psg-academic-pdf.exe', 2)) }
+$CargoPackages = if ($IsPdf) { @('-p', 'psg-pdf', '-p', 'pdfcraft-cli') } else { @('-p', 'psg-academic-pdf') }
+$IconPath = if ($IsPdf) { Join-Path $Root 'assets\app-icon\psg-pdf.ico' } else { Join-Path $Root 'assets\app-icon-academic\psg-academic-pdf.ico' }
+
+Write-Output "$ProductName $Version for Windows $Arch ($Target)"
 
 if (-not $SkipBuild) {
   # Static CRT: no VC++ redistributable needed. Scoped to the target so host build scripts and
@@ -76,7 +92,7 @@ if (-not $SkipBuild) {
   [Environment]::SetEnvironmentVariable($flagVar, '-C target-feature=+crt-static')
   # Fail the build (rather than warn) if the icon/VERSIONINFO can't be embedded.
   $env:PDFCRAFT_REQUIRE_WINRES = '1'
-  Invoke-Native "cargo build ($Target)" { cargo build --release --locked -p pdfcraft -p pdfcraft-cli --target $Target }
+  Invoke-Native "cargo build $Product ($Target)" { cargo build --release --locked @CargoPackages --target $Target }
 }
 
 $Bin = Join-Path $TargetDir "$Target\release"
@@ -91,35 +107,44 @@ function Get-PeHeader([string] $Path) {
   return @{ Machine = [BitConverter]::ToUInt16($bytes, $pe + 4); Subsystem = [BitConverter]::ToUInt16($bytes, $pe + 0x5C) }
 }
 $Machine = switch ($Arch) { 'x64' { 0x8664 } 'x86' { 0x14C } 'arm64' { 0xAA64 } }
-foreach ($check in @(@('pdfcraft.exe', 2), @('pdfcraft-cli.exe', 3))) {
+foreach ($check in $Programs) {
   $h = Get-PeHeader (Join-Path $Bin $check[0])
   if ($h.Machine -ne $Machine) { throw "$($check[0]) is for machine 0x$('{0:X}' -f $h.Machine), expected 0x$('{0:X}' -f $Machine) ($Arch)" }
   if ($h.Subsystem -ne $check[1]) { throw "$($check[0]) has PE subsystem $($h.Subsystem), expected $($check[1])" }
   Write-Output "ok $($check[0]): $Arch, PE subsystem $($h.Subsystem)"
 }
-$Stage = Join-Path $TargetDir "windows-package\$Arch"
+$Stage = Join-Path $TargetDir "windows-package\$Product\$Arch"
 Remove-Item -Recurse -Force $Stage -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $Stage | Out-Null
-Copy-Item (Join-Path $Bin 'pdfcraft.exe'), (Join-Path $Bin 'pdfcraft-cli.exe') $Stage
-# The document icon embeds Lucide artwork: carry its ISC notice and the project licences
-# beside the binaries in both distributions.
+$Exes = @($Programs | ForEach-Object { Join-Path $Stage $_[0] })
+foreach ($p in $Programs) { Copy-Item (Join-Path $Bin $p[0]) $Stage }
+# The project licences travel beside the binaries in both distributions; PSG PDF's document icon
+# embeds Lucide artwork, so it also carries that ISC notice.
 foreach ($f in 'LICENSE-MIT', 'LICENSE-APACHE', 'NOTICE') {
   Copy-Item (Join-Path $Root $f) $Stage
 }
-Copy-Item (Join-Path $Root 'assets\app-icon\LICENSE-document.txt') $Stage
+if ($IsPdf) { Copy-Item (Join-Path $Root 'assets\app-icon\LICENSE-document.txt') $Stage }
 
-& (Join-Path $PSScriptRoot 'sign.ps1') (Join-Path $Stage 'pdfcraft.exe') (Join-Path $Stage 'pdfcraft-cli.exe')
+& (Join-Path $PSScriptRoot 'sign.ps1') @Exes
 
-# OCR models (#103): the app looks in models\ beside pdfcraft.exe. `cargo xtask models` fetches every
+# OCR models (#103): the app looks in models\ beside psg-pdf.exe. `cargo xtask models` fetches every
 # ATTRIBUTION.toml `kind = "model"` file (verified by SHA-256) with its licence and ATTRIBUTION.txt;
 # the MSI and the portable zip take the whole folder, so new models ship without naming them here.
+# PSG Academic PDF has no OCR and ships no models; it ships the journal templates instead.
 $Models = Join-Path $Stage 'models'
-New-Item -ItemType Directory -Force -Path $Models | Out-Null
-Push-Location $Root
-try { Invoke-Native 'cargo xtask models' { cargo xtask models $Models } } finally { Pop-Location }
-Remove-Item -Force (Join-Path $Models '*.part') -ErrorAction SilentlyContinue
-if (-not (Test-Path (Join-Path $Models 'ATTRIBUTION.txt')) -or -not (Get-ChildItem (Join-Path $Models '*.LICENCE.txt'))) {
-  throw "no OCR models in $Models after cargo xtask models"
+$Templates = Join-Path $Stage 'templates\academic'
+if ($IsPdf) {
+  New-Item -ItemType Directory -Force -Path $Models | Out-Null
+  Push-Location $Root
+  try { Invoke-Native 'cargo xtask models' { cargo xtask models $Models } } finally { Pop-Location }
+  Remove-Item -Force (Join-Path $Models '*.part') -ErrorAction SilentlyContinue
+  if (-not (Test-Path (Join-Path $Models 'ATTRIBUTION.txt')) -or -not (Get-ChildItem (Join-Path $Models '*.LICENCE.txt'))) {
+    throw "no OCR models in $Models after cargo xtask models"
+  }
+} else {
+  New-Item -ItemType Directory -Force -Path (Split-Path $Templates) | Out-Null
+  Copy-Item -Recurse (Join-Path $Root 'templates\academic') $Templates
+  if (-not (Test-Path (Join-Path $Templates 'psg-article\template.toml'))) { throw "no journal templates in $Templates" }
 }
 
 # ---- font notices for the MSI ------------------------------------------------------------------
@@ -140,35 +165,45 @@ if ($env:CRAFT_FONTS_DIR) {
 # ---- end font notices for the MSI --------------------------------------------------------------
 
 # ---- MSI ---------------------------------------------------------------------------------------
-$Msi = Join-Path $Dist "pdfcraft-$Version-windows-$Arch.msi"
+$Msi = Join-Path $Dist "$Product-$Version-windows-$Arch.msi"
+$Policy = Join-Path $PSScriptRoot $(if ($IsPdf) { 'install-policy.json' } else { 'install-policy-academic.json' })
+$ProductDefines = if ($IsPdf) { @('-d', "ModelsDir=$Models", '-d', 'HasPdfContextMenu=1') } else { @('-d', "TemplatesDir=$Templates") }
 Invoke-Native 'wix build' {
-  wix build (Join-Path $PSScriptRoot 'pdfcraft.wxs') -arch $Arch `
+  wix build (Join-Path $PSScriptRoot "$Product.wxs") -arch $Arch `
     (Join-Path $PSScriptRoot 'installer-ui.wxs') `
-    -d "Version=$MsiVersion" -d "BinDir=$Stage" -d "ModelsDir=$Models" -d "IconPath=$(Join-Path $Root 'assets\app-icon\pdfcraft.ico')" `
+    -d "Version=$MsiVersion" -d "BinDir=$Stage" -d "IconPath=$IconPath" @ProductDefines `
     -d "DocsDir=$Docs" -d "HasCraftFontLicences=$HasCraftFontLicences" `
     -o $Msi
 }
 # Inspect the built MSI, not just the XML, before signing/publishing it. In a child process, so
 # its Windows Installer database handle is gone before signtool opens the MSI.
-Invoke-Native 'test-msi' {
-  & (Get-Process -Id $PID).Path -NoProfile -File (Join-Path $PSScriptRoot 'test-msi.ps1') $Msi `
-    -CraftFontLicences $HasCraftFontLicences -ExpectedFontNoticesDirectory $Docs
+if ($IsPdf) {
+  Invoke-Native 'test-msi' {
+    & (Get-Process -Id $PID).Path -NoProfile -File (Join-Path $PSScriptRoot 'test-msi.ps1') $Msi `
+      -CraftFontLicences $HasCraftFontLicences -ExpectedFontNoticesDirectory $Docs
+  }
+} else {
+  Invoke-Native 'test-msi-academic' { & (Get-Process -Id $PID).Path -NoProfile -File (Join-Path $PSScriptRoot 'test-msi-academic.ps1') $Msi }
 }
 # Check the compiled scope, path and registration contract before signing.
-& (Join-Path $PSScriptRoot 'check-install-policy.ps1') -MsiPath $Msi
+& (Join-Path $PSScriptRoot 'check-install-policy.ps1') -MsiPath $Msi -PolicyPath $Policy
 # wix writes its debug symbols (.wixpdb) next to the MSI; keep them out of the release assets.
 Remove-Item -Force -ErrorAction SilentlyContinue ([IO.Path]::ChangeExtension($Msi, '.wixpdb'))
 & (Join-Path $PSScriptRoot 'sign.ps1') $Msi
 
 # ---- portable zip ------------------------------------------------------------------------------
-$Portable = Join-Path $TargetDir "windows-package\pdfcraft-$Version-windows-$Arch-portable"
+$Portable = Join-Path $TargetDir "windows-package\$Product\$Product-$Version-windows-$Arch-portable"
 Remove-Item -Recurse -Force $Portable -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force -Path $Portable | Out-Null
 Copy-Item (Join-Path $Stage '*.exe') $Portable
-foreach ($f in 'NOTICE', 'LICENSE-document.txt') {
-  Copy-Item (Join-Path $Stage $f) $Portable
+Copy-Item (Join-Path $Stage 'NOTICE') $Portable
+if ($IsPdf) {
+  Copy-Item (Join-Path $Stage 'LICENSE-document.txt') $Portable
+  Copy-Item -Recurse $Models (Join-Path $Portable 'models')
+} else {
+  New-Item -ItemType Directory -Force -Path (Join-Path $Portable 'templates') | Out-Null
+  Copy-Item -Recurse $Templates (Join-Path $Portable 'templates\academic')
 }
-Copy-Item -Recurse $Models (Join-Path $Portable 'models')
 foreach ($f in 'README.md', 'LICENSE', 'LICENSE-MIT', 'LICENSE-APACHE') {
   $p = Join-Path $Root $f
   if (Test-Path $p) { Copy-Item $p $Portable }
@@ -178,20 +213,26 @@ foreach ($f in 'README.md', 'LICENSE', 'LICENSE-MIT', 'LICENSE-APACHE') {
 if ($HasCraftFontLicences -eq 1) {
   Copy-Item (Join-Path $Docs 'OFL-*.txt') $Portable
 }
-# portable.txt beside pdfcraft.exe switches on portable mode: settings, logs, recovery files and new
-# digital IDs go to PdfCraftData\ next to the exe instead of %APPDATA% (#157; see
-# crates/ui-egui/src/portable.rs).
-Copy-Item (Join-Path $PSScriptRoot 'portable.txt') $Portable
-$Zip = Join-Path $Dist "pdfcraft-$Version-windows-$Arch-portable.zip"
+# portable.txt beside the exe switches on portable mode: PSG PDF keeps settings, logs, recovery
+# files and new digital IDs in PSGPDFData\ (#157; crates/ui-egui/src/portable.rs), PSG Academic
+# PDF its settings and projects in PSGAcademicPDFData\ (apps/psg-academic-pdf/src/data_dir.rs).
+Copy-Item (Join-Path $PSScriptRoot $(if ($IsPdf) { 'portable.txt' } else { 'portable-academic.txt' })) (Join-Path $Portable 'portable.txt')
+$Zip = Join-Path $Dist "$Product-$Version-windows-$Arch-portable.zip"
 Remove-Item -Force $Zip -ErrorAction SilentlyContinue
 Compress-Archive -Path $Portable -DestinationPath $Zip
 
 # Smoke-test the CLI when this machine can run it. An ARM64 build made on an x64 runner can't run
-# here; .github/workflows/windows-arm64.yml installs and runs it on ARM64 instead.
+# here, and no workflow runs an ARM64 build at the moment (.github/workflows/build.yaml builds x64).
 $HostArch = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString().ToLowerInvariant()
 if ($Arch -ne 'arm64' -or $HostArch -eq 'arm64') {
-  Invoke-Native 'pdfcraft-cli --version' { & (Join-Path $Stage 'pdfcraft-cli.exe') --version }
+  if ($IsPdf) {
+    Invoke-Native 'pdfcraft-cli --version' { & (Join-Path $Stage 'pdfcraft-cli.exe') --version }
+  } else {
+    # A GUI-subsystem exe doesn't wait for its console; Start-Process does.
+    $p = Start-Process -FilePath (Join-Path $Stage 'psg-academic-pdf.exe') -ArgumentList 'templates' -NoNewWindow -Wait -PassThru
+    if ($p.ExitCode -ne 0) { throw "psg-academic-pdf templates exited with $($p.ExitCode)" }
+  }
 } else {
-  Write-Output "skipping pdfcraft-cli --version: an $Arch build doesn't run on this $HostArch machine"
+  Write-Output "skipping the smoke test: an $Arch build doesn't run on this $HostArch machine"
 }
 Get-Item $Msi, $Zip | Format-Table Name, Length

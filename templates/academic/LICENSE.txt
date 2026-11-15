@@ -1,0 +1,9 @@
+The PSG Academic PDF journal templates in this directory (class files, main files, sample
+manuscript bodies, sample bibliographies and sample metadata) were written for PSG Academic PDF
+by its contributors. The sample bibliography entries are fictitious. Licensed like the rest of
+the repository, under either of
+
+  * Apache License, Version 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+  * MIT license (https://opensource.org/licenses/MIT)
+
+at your option.

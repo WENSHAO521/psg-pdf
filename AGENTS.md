@@ -122,7 +122,7 @@ Anything else is forbidden, including assets whose licence you cannot prove from
 ### 1.4 Fonts live in craft-fonts
 
 - Font assets shared by the Crafting Apps, including every Japanese font, live in [`storytold/craft-fonts`](https://github.com/storytold/craft-fonts), not here. **Never commit a font file to this repository**; adding a font means adding it to craft-fonts. (The Latin UI fonts already in `assets/fonts/` — Inter, JetBrains Mono, Dancing Script — stay.)
-- craft-fonts is an **optional build input**, never a Cargo dependency: `CRAFT_FONTS_DIR=<checkout> cargo build` makes `crates/fonts/build.rs` embed its fonts as `pdfcraft_fonts::CRAFT_FONTS`. Without it PdfCraft builds, tests and runs, but has no Japanese face (Japanese UI text shows replacement boxes, and writing Japanese into a PDF returns a clear error). Release builds always set it (`.github/workflows/release.yml`), and `ATTRIBUTION.toml` lists it as a `[[build_input]]`.
+- craft-fonts is an **optional build input**, never a Cargo dependency: `CRAFT_FONTS_DIR=<checkout> cargo build` makes `crates/fonts/build.rs` embed its fonts as `pdfcraft_fonts::CRAFT_FONTS`. Without it PdfCraft builds, tests and runs, but has no Japanese face (Japanese UI text shows replacement boxes, and writing Japanese into a PDF returns a clear error). Release builds always set it (`.github/workflows/build.yaml`), and `ATTRIBUTION.toml` lists it as a `[[build_input]]`.
 - The desktop app may read one font **already installed on the user's machine** at runtime, as the last interface fallback for characters no embedded face has (`crates/ui-egui/src/system_fonts.rs`). That font is never embedded, shipped, committed or copied, and never appears in published screenshots (`PDFCRAFT_SYSTEM_FONTS=0`, which `cargo xtask screenshots` sets). It is not a way around §1.2: nothing from it may enter a PDF, a package or the repository.
 - The page viewer may also draw a CID font of an Adobe CJK collection (Japan1, GB1, CNS1, Korea1) that a PDF does **not embed** with one face already installed on the machine (`crates/render/src/system_font.rs`), **on screen only**. `RenderConfig::system_fonts` is off by default and is enabled only for on-screen viewer and preview rasters (`RenderConfig::on_screen`, used by the engine viewer, Combine thumbnails and accessibility figure previews), so exports, printing, OCR and the automation tools never use it. Like the interface font it is read at runtime and never embedded, shipped, committed or copied; Noto CJK and Source Han are never candidates (§1.1), nor is any Adobe family; and `PDFCRAFT_SYSTEM_FONTS=0` turns it off. It is not a way around §1.2 either: nothing drawn with it may be saved or printed.
 
@@ -202,3 +202,16 @@ PdfCraft opens files from strangers, and people trust it with their work. A malf
 - Workflows in `.github/workflows/` call the shared workflows in [`storytold/craft-common-actions`](https://github.com/storytold/craft-common-actions) at `@main`, with their inputs and secrets. No other jobs: if no shared workflow does what's needed, it doesn't go here.
 - Don't add or change CI in a feature or fix PR. If the existing workflows can't build or test a change, link an existing craft-common-actions issue or PR, or open a new issue, or a PR only for a small fix that is safe for every app and does not increase CI time.
 - Some workflow files here still run their own jobs. Don't add to them. Moving a job into craft-common-actions is its own task, never part of another PR, and the job stays here until a shared workflow runs it.
+
+## PSG release flow
+
+- Pull requests go into `beta`, not `main`. `main` changes only when `beta` is merged into it for a
+  release. Every push to `beta` publishes a pre-release; a release commit merged into `main`
+  publishes the stable release (`docs/releasing.md`). `.github/workflows/build.yaml` is the
+  repository's only workflow: it checks, builds, install-tests and publishes both products, and
+  runs only the quick checks on pull requests unless they carry the `full-ci` label (`docs/ci.md`).
+- Commit subjects are Conventional Commits (`fix(academic): …`), worded as the user-facing change;
+  add a `Changelog:` trailer to reword or `Changelog: skip` to leave a commit out. The changelog
+  is generated from them (`cargo xtask changelog`).
+- Never cut a stable release (`cargo xtask changelog release`, merging `beta` into `main`) without
+  the owner's go-ahead.
