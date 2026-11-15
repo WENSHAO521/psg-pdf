@@ -3607,3 +3607,36 @@ kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
 sha256 = "955aa1600a81912a57e3625a59237c30d1c081a03e968945e0a2b7e7bfecbcc6"
 
+
+[[asset]]
+path = "docs/images/psg/psg-pdf.svg"
+title = "PSG PDF app icon (website copy)"
+author = "PSG PDF contributors"
+source = "Contributor-original, a copy of assets/app-icon/psg-pdf.svg, rendered from assets/brand/psg-logo-master.svg"
+licence = "MIT OR Apache-2.0"
+licence_file = "assets/app-icon/LICENSE.txt"
+kind = "icon"
+usage = "Logo and favicon on the product website (docs/index.html, GitHub Pages)"
+sha256 = "40e47428806cce9b5e5ccab3a6463c8974d268354a19d78a6bed4ff1367cb19a"
+
+[[asset]]
+path = "docs/images/psg/psg-academic-pdf.svg"
+title = "PSG Academic PDF app icon (website copy)"
+author = "PSG PDF contributors"
+source = "Contributor-original, a copy of assets/app-icon-academic/psg-academic-pdf.svg, rendered from assets/brand/psg-logo-master.svg"
+licence = "MIT OR Apache-2.0"
+licence_file = "assets/app-icon-academic/LICENSE.txt"
+kind = "icon"
+usage = "Logo on the product website (docs/index.html, GitHub Pages)"
+sha256 = "fd15f143a2ebd79f4b6f1056a47c8d19026d14a023017d89d895b6778aa473b6"
+
+[[asset]]
+path = "docs/images/psg/social-preview.png"
+title = "PSG social preview card (1280x640)"
+author = "PSG PDF contributors"
+source = "Contributor-original, rendered with Chromium from the two app icons and text set in Inter (OFL-1.1)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "image"
+usage = "Open Graph image of the product website and the repository's social preview"
+sha256 = "399a6271b29706f897002fd31aa039b61699f178ab617aa0ac00e95248e4d8f3"
