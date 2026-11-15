@@ -19,6 +19,7 @@
 </p>
 
 <p align="center">
+  <a href="https://pdf.panorama-sg.com/"><b>pdf.panorama-sg.com</b></a> ·
   <a href="#psg-pdf">PSG PDF</a> ·
   <a href="#psg-academic-pdf">PSG Academic PDF</a> ·
   <a href="#which-one-do-i-need">Compare</a> ·
@@ -141,6 +142,7 @@ your settings; see [migrating from the suite](docs/products.md#migrating-from-th
 
 ## Documentation and support
 
+- **[Website](https://pdf.panorama-sg.com/)**: the product site, with downloads for every platform.
 - **[Documentation](docs/README.md)**: user guides, the products and their installers,
   building from source, and the engine's technical notes.
 - **[PSG Academic PDF guide](docs/academic-guide.md)**: what it needs and how to make an

@@ -213,3 +213,40 @@ fn later_on_the_startup_prompt(h: &mut Harness<'static, PdfCraftApp>) {
     h.get_by_label("LATER").click();
     h.run_steps(3);
 }
+
+/// The beta channel: Preferences asks a second time before joining or leaving, and keeps it.
+#[test]
+fn preferences_join_and_leave_the_beta_channel_only_once_confirmed() {
+    let (mut h, _calls) = started_with(r#"{"update_check_at_start": false}"#);
+    assert!(!h.state().beta_updates, "stable by default");
+    h.state_mut().execute("app.preferences");
+    h.run_steps(3);
+
+    h.get_by_label("Get beta updates").click();
+    h.run_steps(3);
+    assert!(!h.state().beta_updates, "ticking only asks");
+    h.get_by_label("Cancel").click();
+    h.run_steps(3);
+    assert!(!h.state().beta_updates, "Cancel keeps the stable channel");
+
+    h.get_by_label("Get beta updates").click();
+    h.run_steps(3);
+    h.get_by_label("Join beta").click();
+    h.run_steps(3);
+    assert!(h.state().beta_updates);
+    let mut restarted = PdfCraftApp::new();
+    restarted.restore(&h.state().persist());
+    assert!(restarted.beta_updates, "the channel is kept");
+
+    h.get_by_label("Get beta updates").click();
+    h.run_steps(3);
+    assert!(h.state().beta_updates, "unticking only asks");
+    h.get_by_label("Leave beta").click();
+    h.run_steps(3);
+    assert!(!h.state().beta_updates);
+
+    // The control channel's option, as an agent sets it.
+    h.state_mut().set_option("beta_updates", "true").unwrap();
+    assert!(h.state().beta_updates);
+    assert!(h.state_mut().set_option("beta_updates", "maybe").is_err());
+}

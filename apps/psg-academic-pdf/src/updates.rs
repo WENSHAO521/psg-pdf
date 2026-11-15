@@ -9,7 +9,10 @@ use craft_update::app::App;
 use craft_update::updater::{Action, Status, Updater};
 use craft_update::{CheckResultDialog, CheckResultResponse};
 
+use std::path::PathBuf;
+
 use crate::app::{APP_NAME, PUBLISHER};
+use crate::i18n::t;
 
 /// PSG Academic PDF as its releases and installers know it.
 pub const UPDATE_APP: App = App {
@@ -17,6 +20,10 @@ pub const UPDATE_APP: App = App {
     // packaging/products.toml `accent`.
     accent: Some(crate::theme::PRODUCT.brand()),
     developer: PUBLISHER,
+    // packaging/products.toml `app_id`.
+    app_id: Some("com.panoramascholarly.psgacademicpdf"),
+    // Releases are signed with PSG's own key (docs/update-signing.md).
+    update_key: Some(include_str!("../../../packaging/update-signing-key.txt")),
     ..App::new("psg-academic-pdf", APP_NAME, crate::theme::PRODUCT.tagline(), "WENSHAO521/psg-pdf")
 };
 
@@ -25,15 +32,82 @@ pub struct Updates {
     /// The result dialog is showing.
     open: bool,
     check_requested: bool,
+    /// The beta channel: updates offer the newest release, betas included.
+    beta: bool,
+    /// A channel change waiting for its confirmation (`Some(true)` joining the betas).
+    pending: Option<bool>,
+    /// Where the channel is kept ("beta", or anything else for stable). `None`: not kept (tests).
+    channel_file: Option<PathBuf>,
 }
 
 impl Default for Updates {
     fn default() -> Self {
-        Self { updater: Updater::new(&UPDATE_APP, env!("CARGO_PKG_VERSION")), open: false, check_requested: false }
+        Self {
+            updater: Updater::new(&UPDATE_APP, env!("CARGO_PKG_VERSION")),
+            open: false,
+            check_requested: false,
+            beta: false,
+            pending: None,
+            channel_file: None,
+        }
     }
 }
 
 impl Updates {
+    /// Updates whose channel is kept in `channel_file`.
+    pub fn with_channel_file(channel_file: PathBuf) -> Self {
+        let beta = std::fs::read_to_string(&channel_file).is_ok_and(|text| text.trim() == "beta");
+        let mut updates = Self { beta, channel_file: Some(channel_file), ..Self::default() };
+        updates.updater.set_prereleases(beta);
+        updates
+    }
+
+    #[cfg(test)]
+    pub fn beta(&self) -> bool {
+        self.beta
+    }
+
+    fn set_beta(&mut self, on: bool) -> Result<(), String> {
+        self.beta = on;
+        self.updater.set_prereleases(on);
+        match &self.channel_file {
+            Some(file) => std::fs::write(file, if on { "beta" } else { "stable" }).map_err(|e| format!("{}: {e}", file.display())),
+            None => Ok(()),
+        }
+    }
+
+    /// The beta channel switch. Joining and leaving each wait for a second, explicit
+    /// confirmation that says what the change means. Returns an error to show when the choice
+    /// couldn't be kept.
+    pub fn channel_ui(&mut self, ui: &mut egui::Ui) -> Option<String> {
+        let mut shown = self.pending.unwrap_or(self.beta);
+        // egui's square checkbox, as everywhere in this window (app.rs explains the allow).
+        #[allow(clippy::disallowed_methods)]
+        let changed = ui.checkbox(&mut shown, t("Get beta updates")).changed();
+        if changed {
+            self.pending = (shown != self.beta).then_some(shown);
+        }
+        let join = self.pending?;
+        let mut error = None;
+        egui::Frame::group(ui.style()).show(ui, |ui| {
+            ui.label(if join {
+                t("Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.")
+            } else {
+                t("Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.")
+            });
+            ui.horizontal(|ui| {
+                if ui.button(if join { t("Join beta") } else { t("Leave beta") }).clicked() {
+                    self.pending = None;
+                    error = self.set_beta(join).err();
+                }
+                if ui.button(t("Cancel")).clicked() {
+                    self.pending = None;
+                }
+            });
+        });
+        error
+    }
+
     /// The "Check for updates" button.
     pub fn request_check(&mut self) {
         self.open = true;
@@ -82,6 +156,20 @@ impl Updates {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_beta_channel_is_kept_and_read_back() {
+        let dir = tempfile::tempdir().unwrap();
+        let file = dir.path().join("update-channel.txt");
+        assert!(!Updates::with_channel_file(file.clone()).beta(), "stable unless chosen");
+        let mut updates = Updates::with_channel_file(file.clone());
+        updates.set_beta(true).unwrap();
+        assert!(updates.updater.prereleases());
+        let again = Updates::with_channel_file(file.clone());
+        assert!(again.beta() && again.updater.prereleases());
+        updates.set_beta(false).unwrap();
+        assert!(!Updates::with_channel_file(file).beta());
+    }
 
     #[test]
     fn the_update_channel_is_this_products_own() {
