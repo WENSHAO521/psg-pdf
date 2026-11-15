@@ -183,6 +183,7 @@ impl PdfCraftApp {
         // Not `check_updates_at_start`: that key was an opt-in of its own, off unless chosen, and
         // settings written then would turn this off unasked.
         v["update_check_at_start"] = self.update_check_at_start.into();
+        v["beta_updates"] = self.beta_updates.into();
         v["hotbar"] = serde_json::to_value(&self.hotbar).unwrap_or_default();
         v["comment_tool_pinned"] = serde_json::Value::Bool(self.comment_prefs.pinned);
         v["show_secured_notice"] = serde_json::Value::Bool(self.show_secured_notice);
@@ -267,6 +268,9 @@ impl PdfCraftApp {
         }
         if let Some(on) = v["update_check_at_start"].as_bool() {
             self.update_check_at_start = on;
+        }
+        if let Some(on) = v["beta_updates"].as_bool() {
+            self.beta_updates = on;
         }
         if let Some(on) = v["show_secured_notice"].as_bool() {
             self.show_secured_notice = on;

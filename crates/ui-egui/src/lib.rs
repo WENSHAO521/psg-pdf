@@ -21,6 +21,11 @@ pub const UPDATE_APP: craft_update::app::App = craft_update::app::App {
     // PSG PDF continues the 0.18.x "PSG PDF Suite" MSI (same UpgradeCode), so its updater
     // recognises that install as its own (docs/products.md, "Migrating from the suite").
     former_names: &["PSG PDF Suite"],
+    // packaging/products.toml `app_id`: what the macOS bundle and Linux packages are called.
+    app_id: Some("com.panoramascholarly.psgpdf"),
+    // Releases are signed with PSG's own key, so updates need no paid certificate
+    // (docs/update-signing.md).
+    update_key: Some(include_str!("../../../packaging/update-signing-key.txt")),
     ..craft_update::app::App::new("psg-pdf", brand::APP_NAME, brand::PRODUCT.tagline(), "WENSHAO521/psg-pdf")
 };
 
@@ -484,6 +489,12 @@ pub struct PdfCraftApp {
     /// Preferences: ask for a newer release when the desktop app starts (#5737). Off, the app
     /// asks only from Help ▸ Check for updates.
     pub update_check_at_start: bool,
+    /// Preferences: the beta channel. Updates offer the newest release, betas included; off,
+    /// only stable releases. Kept in the settings.
+    pub beta_updates: bool,
+    /// Preferences: the beta channel choice waiting for its confirmation (`Some(true)` joining,
+    /// `Some(false)` leaving). Not kept.
+    pub(crate) beta_updates_pending: Option<bool>,
     /// Preferences: tell the user, above the pages, that a document is secured (its security
     /// settings restrict changes). Off only hides that notice (#4035); kept in the settings.
     pub show_secured_notice: bool,

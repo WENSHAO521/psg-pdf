@@ -410,6 +410,9 @@ jobs:
           pattern: psg-*
           path: release-files
       - name: Checksums, notes and the release
+        env:
+          # Signs SHA256SUMS.txt for the in-app updaters (docs/update-signing.md).
+          UPDATE_SIGNING_KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
         run: |
           set -euo pipefail
           packaging/ci/release-files.sh "$TAG" release-files

@@ -314,7 +314,8 @@ pipeline; `build.yaml` signs Windows with the `.pfx` secrets only.
 | `APPLE_CERTIFICATE`, `APPLE_CERTIFICATE_PASSWORD` | base64 Developer ID Application `.p12` and its password |
 | `KEYCHAIN_PASSWORD` | the temporary CI keychain (random if unset) |
 | `APPLE_ID`, `APPLE_PASSWORD`, `APPLE_TEAM_ID` | `notarytool` (an app-specific password) |
-| `WINDOWS_CERTIFICATE`, `WINDOWS_CERTIFICATE_PASSWORD` | base64 `.pfx` code-signing certificate and its password; a free self-signed one works for updates on computers that trust it ([`signing-self-signed.md`](signing-self-signed.md)) |
+| `WINDOWS_CERTIFICATE`, `WINDOWS_CERTIFICATE_PASSWORD` | base64 `.pfx` code-signing certificate and its password |
+| `UPDATE_SIGNING_KEY` | Ed25519 private key (PEM) that signs `SHA256SUMS.txt` for the in-app updaters; required once `packaging/update-signing-key.txt` holds the public key ([`update-signing.md`](update-signing.md)) |
 | `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET` | service principal for Azure Trusted Signing (instead of a `.pfx`) |
 | `AZURE_SIGNING_ENDPOINT`, `AZURE_SIGNING_ACCOUNT`, `AZURE_CERT_PROFILE` | Trusted Signing endpoint, account and certificate profile |
 

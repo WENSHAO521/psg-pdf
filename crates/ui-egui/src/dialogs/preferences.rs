@@ -661,6 +661,8 @@ fn card_general(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens, ctx: &mut 
     ctx.checkbox(ui, &mut app.reload_changed_files, tl!("Reload documents when their files change on disk"), t);
     #[cfg(not(target_arch = "wasm32"))]
     ctx.checkbox(ui, &mut app.update_check_at_start, tl!("Check for updates when PSG PDF starts"), t);
+    #[cfg(not(target_arch = "wasm32"))]
+    beta_channel(ui, app, t, ctx);
     ctx.checkbox(ui, &mut app.show_secured_notice, tl!("Show a notice when a document is secured"), t);
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -677,6 +679,50 @@ fn card_general(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens, ctx: &mut 
             "Show a basic title bar for the window buttons instead of the tab strip. GNOME doesn't draw title bars for apps, so this one doesn't follow its theme."
         ));
     }
+}
+
+/// Updates ▸ the beta channel. Joining and leaving each wait for a second, explicit confirmation
+/// below the checkbox, which says what the change means.
+#[cfg(not(target_arch = "wasm32"))]
+fn beta_channel(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens, ctx: &mut PrefSearchContext) {
+    let mut shown = app.beta_updates_pending.unwrap_or(app.beta_updates);
+    if ctx.checkbox(ui, &mut shown, tl!("Get beta updates"), t).changed() {
+        // Unticking a pending choice before confirming it cancels it.
+        app.beta_updates_pending = (shown != app.beta_updates).then_some(shown);
+    }
+    ctx.label_secondary(
+        ui,
+        tl!("Betas update to the newest release, beta or stable, and get new features first. Off, only stable releases are installed."),
+        t,
+    );
+    let Some(join) = app.beta_updates_pending else { return };
+    egui::Frame::group(ui.style()).show(ui, |ui| {
+        let (question, confirm) = if join {
+            (
+                tl!(
+                    "Join the beta channel? Betas can have unfinished features and bugs. PSG PDF then updates to every new beta, and to each stable release as soon as it is newer."
+                ),
+                tl!("Join beta"),
+            )
+        } else {
+            (
+                tl!(
+                    "Leave the beta channel? PSG PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version."
+                ),
+                tl!("Leave beta"),
+            )
+        };
+        ui.label(question);
+        ui.horizontal(|ui| {
+            if ui.button(confirm).clicked() {
+                app.beta_updates = join;
+                app.beta_updates_pending = None;
+            }
+            if ui.button(tl!("Cancel")).clicked() {
+                app.beta_updates_pending = None;
+            }
+        });
+    });
 }
 
 /// Content for Card 2: Appearance & Theme

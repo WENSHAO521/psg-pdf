@@ -8,8 +8,6 @@
     2. Azure Trusted Signing:             AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_SECRET,
                                           AZURE_SIGNING_ENDPOINT (e.g. https://eus.codesigning.azure.net),
                                           AZURE_SIGNING_ACCOUNT, AZURE_CERT_PROFILE
-  The certificate may be self-signed (packaging/windows/new-signing-cert.ps1, free): Windows and
-  the updater then accept the files only on machines that trust it (docs/signing-self-signed.md).
   With neither, it prints a warning and leaves the files unsigned (exit code 0), so test builds
   still produce installers.
 
@@ -70,24 +68,6 @@ try {
     $signArgs = $common + @('/tr', $ts, '/f', $pfx)
     if ($env:WINDOWS_CERTIFICATE_PASSWORD) { $signArgs += @('/p', $env:WINDOWS_CERTIFICATE_PASSWORD) }
     Invoke-SignTool ($signArgs + $Files)
-    # A self-signed certificate (packaging/windows/new-signing-cert.ps1) chains to no public root,
-    # so `signtool verify /pa` below and verify-signatures.sh would call every file untrusted.
-    # Trust its public half on the CI runner only (a throwaway machine), so both checks still
-    # prove the files carry a valid signature from this certificate. Never on a person's machine:
-    # trusting a root is their decision (docs/signing-self-signed.md).
-    $cert = [Security.Cryptography.X509Certificates.X509Certificate2]::new($pfx, $env:WINDOWS_CERTIFICATE_PASSWORD)
-    if ($cert.Subject -eq $cert.Issuer) {
-      if ($env:GITHUB_ACTIONS -eq 'true') {
-        $cer = Join-Path $tmp 'cert.cer'
-        [IO.File]::WriteAllBytes($cer, $cert.Export([Security.Cryptography.X509Certificates.X509ContentType]::Cert))
-        Write-Output "Self-signed certificate ($($cert.Subject), $($cert.Thumbprint)): trusting it on this runner to verify"
-        & certutil.exe -f -addstore Root $cer | Out-Null
-        if ($LASTEXITCODE -ne 0) { throw "certutil couldn't trust the self-signed certificate on this runner" }
-      }
-      else {
-        Write-Warn "Self-signed certificate ($($cert.Subject)): signtool verify passes only where it is trusted (docs/signing-self-signed.md)"
-      }
-    }
   }
   else {
     Write-Output "Signing with Azure Trusted Signing ($env:AZURE_SIGNING_ACCOUNT / $env:AZURE_CERT_PROFILE): $($Files -join ', ')"

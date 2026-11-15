@@ -139,6 +139,8 @@ impl PdfCraftApp {
     pub(crate) fn poll_updates(&mut self) {
         #[cfg(not(target_arch = "wasm32"))]
         {
+            // The channel the next check uses (Preferences ▸ Get beta updates).
+            self.updates.updater.set_prereleases(self.beta_updates);
             let Some(ctx) = self.ctx.clone() else { return };
             // Settled on the first frame: a preference turned on later waits for the next start.
             let at_start = std::mem::take(&mut self.updates.startup_check) && self.update_check_at_start;
@@ -248,6 +250,20 @@ mod tests {
         assert!(app.apply_edit(Edit::SetFieldValue { name: "name".into(), value: FieldValue::Text("Changed".into()) }));
         app.updates.open = true;
         (app, path)
+    }
+
+    /// Preferences ▸ Get beta updates decides which releases the next check looks at.
+    #[test]
+    fn the_beta_preference_sets_the_channel_of_the_next_check() {
+        let mut app = PdfCraftApp::new();
+        app.poll_updates();
+        assert!(!app.updates.updater.prereleases(), "stable by default");
+        app.beta_updates = true;
+        app.poll_updates();
+        assert!(app.updates.updater.prereleases());
+        app.beta_updates = false;
+        app.poll_updates();
+        assert!(!app.updates.updater.prereleases());
     }
 
     #[test]
