@@ -41,8 +41,15 @@ downloads under its own heading: for a beta the changes since the last release, 
 stable release its `CHANGELOG.md` section.
 
 A stable release is published only when every platform built. A beta is published with the
-platforms that did, and its notes name any that is missing (the macOS runners have at times never
-started for this repository).
+platforms that did, and both its title and the warning at the top of its notes name any that is
+missing (the macOS runners have at times never started for this repository), so it can't pass for
+a complete cross-platform release.
+
+Release titles follow the PSG brand guide ([brand.md](brand.md#release-badge)):
+`PSG PDF & PSG Academic PDF 0.19.0` for a stable release, `PSG PDF & PSG Academic PDF 0.19.0 Beta 3`
+for a beta, with `(no macOS)` appended when a platform is missing. `packaging/ci/release-notes.sh`
+writes the title (`--title`) and the notes: one section per product with its icon, tagline and a
+download table per platform, then the changes, checksums and the suite migration note.
 
 ## Commit messages
 

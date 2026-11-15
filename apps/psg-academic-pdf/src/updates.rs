@@ -15,9 +15,9 @@ use crate::app::{APP_NAME, PUBLISHER};
 pub const UPDATE_APP: App = App {
     icon_png: Some(include_bytes!("../../../assets/app-icon-academic/hicolor/128x128/apps/com.panoramascholarly.psgacademicpdf.png")),
     // packaging/products.toml `accent`.
-    accent: Some([0x5b, 0x2a, 0x78]),
+    accent: Some(crate::theme::PRODUCT.brand()),
     developer: PUBLISHER,
-    ..App::new("psg-academic-pdf", APP_NAME, "Typesetting accepted articles with pdfLaTeX", "WENSHAO521/psg-pdf")
+    ..App::new("psg-academic-pdf", APP_NAME, crate::theme::PRODUCT.tagline(), "WENSHAO521/psg-pdf")
 };
 
 pub struct Updates {

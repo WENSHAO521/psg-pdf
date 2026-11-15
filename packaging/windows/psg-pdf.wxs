@@ -30,7 +30,7 @@
     <Icon Id="PdfcraftIcon.ico" SourceFile="$(var.IconPath)" />
     <Property Id="ARPPRODUCTICON" Value="PdfcraftIcon.ico" />
     <Property Id="ARPURLINFOABOUT" Value="https://github.com/WENSHAO521/psg-pdf" />
-    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/WENSHAO521/psg-pdf" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/WENSHAO521/psg-pdf/releases" />
     <Property Id="ARPHELPLINK" Value="https://github.com/WENSHAO521/psg-pdf/issues" />
     <!-- Desktop shortcut (#143): on by default for a first install, a checkbox in the full-UI
          welcome dialog, and INSTALLDESKTOPSHORTCUT=0 on the msiexec command line for unattended

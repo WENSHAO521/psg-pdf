@@ -1,0 +1,66 @@
+name: Report a problem
+description: Something in PSG PDF or PSG Academic PDF doesn't work as it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a problem. Please don't attach documents that contain personal or
+        confidential information; a small sample that shows the problem is best.
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product
+      options:
+        - PSG PDF
+        - PSG Academic PDF
+        - Both
+        - The pdfcraft-cli command-line tool
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown in the About window, for example "0.19.0" or "0.19.0 Beta 3".
+      placeholder: 0.19.0
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Windows
+        - macOS
+        - Linux
+    validations:
+      required: true
+  - type: input
+    id: platform-version
+    attributes:
+      label: Operating system version and how you installed it
+      placeholder: Windows 11 23H2, MSI installer / macOS 15, DMG / Ubuntu 24.04, .deb
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open …
+        2. Choose …
+        3. …
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log or error message
+      description: |
+        For PSG Academic PDF, the Problems tab or the Compile output. For PSG PDF, the log file
+        named in docs/development.md ("Logs"). Remove anything personal first.
+      render: text

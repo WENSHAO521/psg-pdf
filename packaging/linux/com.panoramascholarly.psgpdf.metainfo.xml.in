@@ -34,13 +34,14 @@
   </keywords>
   <screenshots>
     <screenshot type="default">
-      <caption>A PDF open with its threaded comments</caption>
-      <image>https://raw.githubusercontent.com/WENSHAO521/psg-pdf/main/docs/images/pdfcraft-viewer.png</image>
+      <caption>A sample article open with the All tools panel and its bookmarks</caption>
+      <image>https://raw.githubusercontent.com/WENSHAO521/psg-pdf/main/docs/images/psg/psg-pdf.png</image>
     </screenshot>
   </screenshots>
   <branding>
-    <color type="primary" scheme_preference="light">#9fd0ff</color>
-    <color type="primary" scheme_preference="dark">#1f64ba</color>
+    <!-- PSG design system (crates/brand, docs/brand.md): PSG PDF deep blue. -->
+    <color type="primary" scheme_preference="light">#dce5f3</color>
+    <color type="primary" scheme_preference="dark">#1e4384</color>
   </branding>
   <requires>
     <display_length compare="ge">760</display_length>

@@ -1,195 +1,163 @@
 <p align="center">
-  <img src="assets/app-icon/hicolor/128x128/apps/com.panoramascholarly.psgpdf.png" width="96" height="96" alt="PSG PDF icon">
-  &nbsp;&nbsp;
-  <img src="assets/app-icon-academic/hicolor/128x128/apps/com.panoramascholarly.psgacademicpdf.png" width="96" height="96" alt="PSG Academic PDF icon">
+  <img src="assets/app-icon/hicolor/128x128/apps/com.panoramascholarly.psgpdf.png" width="112" height="112" alt="PSG PDF logo">
+  &nbsp;&nbsp;&nbsp;
+  <img src="assets/app-icon-academic/hicolor/128x128/apps/com.panoramascholarly.psgacademicpdf.png" width="112" height="112" alt="PSG Academic PDF logo">
 </p>
 
-<h1 align="center">PSG PDF · PSG Academic PDF</h1>
+<h1 align="center">PSG PDF &amp; PSG Academic PDF</h1>
 
 <p align="center">
-  <b>PSG PDF</b> and <b>PSG Academic PDF</b>, native desktop PDF software from Panorama Scholarly Group.<br>
-  Rust · egui/eframe · offline · Windows, macOS and Linux
+  <b>Professional PDF workflows and scholarly typesetting, on your own computer.</b><br>
+  Two open-source desktop applications from Panorama Scholarly Group.
 </p>
 
-Two independent desktop products, built from one Rust workspace, that share one PDF engine. That engine is
-[PdfCraft](https://github.com/storytold/pdfcraft) (MIT OR Apache-2.0), kept in this repository's
-`crates/` and not duplicated.
+<p align="center">
+  <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/WENSHAO521/psg-pdf?label=release&amp;color=1e4384&amp;style=flat-square"></a>
+  <a href="https://github.com/WENSHAO521/psg-pdf/releases"><img alt="Latest beta" src="https://img.shields.io/github/v/release/WENSHAO521/psg-pdf?include_prereleases&amp;label=beta&amp;color=5b2a78&amp;style=flat-square"></a>
+  <img alt="Windows, macOS and Linux" src="https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-desktop-1e4384?style=flat-square">
+  <img alt="License: MIT OR Apache-2.0" src="https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-5b2a78?style=flat-square">
+</p>
 
-| Program | Binary | What it does |
-|---|---|---|
-| **PSG PDF** | `psg-pdf` (`apps/psg-pdf`) | The general PDF app. It keeps every PdfCraft feature: reading, annotation, editing, organizing pages, combining, splitting, converting, forms, signing, redaction, OCR and printing. |
-| **PSG Academic PDF** | `psg-academic-pdf` (`apps/psg-academic-pdf`) | Production typesetting for **accepted** articles. It combines a journal template, publication metadata and the manuscript, compiles them with **pdfLaTeX** through **latexmk** and **BibLaTeX/Biber** from the local TeX Live, then lets you preview and export the PDF. It has no submission, peer-review or editorial workflow. |
+<p align="center">
+  <a href="#psg-pdf">PSG PDF</a> ·
+  <a href="#psg-academic-pdf">PSG Academic PDF</a> ·
+  <a href="#which-one-do-i-need">Compare</a> ·
+  <a href="#downloads">Downloads</a> ·
+  <a href="#documentation-and-support">Documentation</a> ·
+  <a href="#about-and-license">About</a>
+</p>
 
-Each product is installed, updated and uninstalled on its own, and either works without the
-other. Both run fully offline: neither uploads anything, and neither checks for updates unless you
-ask it to (**Help ▸ Check for updates** in PSG PDF, **Check for updates…** in PSG Academic PDF).
+## Two products, one family
 
-## Repository layout
+Panorama Scholarly Group makes two PDF applications for people who work with documents
+seriously. **PSG PDF** is the everyday PDF workbench: read, comment on, fill in, sign, organize
+and protect PDFs. **PSG Academic PDF** is for the last step of scholarly publishing: it turns an
+accepted manuscript and its publication metadata into a journal-ready PDF.
 
-```text
-Cargo.toml                  workspace: crates/*, apps/*, xtask
-apps/
-  psg-pdf/                  PSG PDF desktop app (formerly apps/pdfcraft)
-  psg-academic-pdf/         PSG Academic PDF desktop app + headless commands
-  pdfcraft-cli/             headless CLI and MCP server (shared engine)
-  pdfcraft-web/             web build of the viewer
-  pdfcraft-ocr-worker/      OCR helper process
-crates/
-  academic/                 psg-academic: TeX detection, sandboxed latexmk compilation,
-                            log diagnostics, templates, publication metadata, projects,
-                            DOCX import interface (Pandoc, experimental)
-  engine/ render/ cos/ …    the PdfCraft PDF engine, shared by both programs
-  ui-egui/                  PSG PDF's user interface (brand.rs holds the PSG name)
-templates/academic/         journal templates (both are also compiled into the app)
-assets/brand/               the editable PSG logo master (one SVG for both products)
-assets/app-icon/            PSG PDF icons, generated from the master (packaging/psg-icons.py)
-assets/app-icon-academic/   PSG Academic PDF icons, generated from the master
-packaging/products.toml     each product's identity: ids, upgrade codes, packages, associations
-docs/products.md            the two products, their installers and migrating from the old suite
-docs/academic.md            PSG Academic PDF: architecture, security, templates
-docs/upstream/              the upstream PdfCraft README, kept for reference
-```
+They are separate products. Each has its own installer, updates, settings and uninstaller, and
+either works without the other. Both are native apps built in Rust on one shared PDF engine. Both
+work offline: neither needs an account, neither sends your documents anywhere, and neither
+checks for updates unless you ask it to.
 
-## Building
+## PSG PDF
 
-You need Rust 1.95 or newer (`rust-toolchain` is not pinned; the workspace sets `rust-version`).
-On Linux, eframe also needs the usual X11/Wayland development packages.
+<img src="assets/app-icon/hicolor/64x64/apps/com.panoramascholarly.psgpdf.png" width="40" height="40" align="left" alt="">
 
-```sh
-# PSG PDF (the general app)
-cargo build --release -p psg-pdf
-./target/release/psg-pdf [file.pdf]
+**Reading, organizing and protecting PDFs.** A fast desktop app for the PDF work of every day.
 
-# PSG Academic PDF
-cargo build --release -p psg-academic-pdf
-./target/release/psg-academic-pdf
+<br clear="left">
 
-# both, plus the CLI (the default members)
-cargo build --release
-```
+<p align="center">
+  <img src="docs/images/psg/psg-pdf.png" alt="PSG PDF with a sample article open, the All tools panel on the left and the article's bookmarks on the right" width="100%">
+</p>
 
-Interface translations come from the craft-i18n catalogs, an optional build input. Without them
-PSG PDF is English only and the tests that need a translated interface say they are skipped.
-To embed them, check them out at the pinned commit and point the build at them:
+- **Read** with sharp rendering at any zoom, continuous, single-page and two-up layouts, full
+  screen, light and dark themes, search, bookmarks, thumbnails and layers.
+- **Comment** with highlights, sticky notes, shapes, drawings and stamps, in threaded comments.
+- **Fill and sign** forms, author form fields, and add typed signatures in Latin, Chinese,
+  Japanese, Korean, Arabic and Hebrew scripts, or a certificate signature.
+- **Organize** pages like cards: reorder, rotate, insert, delete, crop; combine files and split
+  documents.
+- **Protect** documents with passwords and permissions, redaction and removal of hidden
+  information.
+- **Edit** text and images on the page, add headers, footers, watermarks and backgrounds.
+- **Convert and export** pages to images and documents to Word, RTF, HTML and Markdown, and
+  print.
+- **Scan and OCR**: recognise the text of scanned pages and review it before it is applied.
+- **Automate** with the `pdfcraft-cli` command-line tool, which ships with PSG PDF.
 
-```sh
-packaging/fetch-craft-i18n.sh                 # clones storytold/craft-i18n at craft-i18n.rev into target/craft-i18n
-export CRAFT_I18N_DIR="$PWD/target/craft-i18n"
-```
+Some areas are still maturing, and we say so: editing existing text works best on Latin-script
+documents, the built-in OCR reads Latin script, Word export does not yet keep the original layout, and there
+is no import of Office documents to PDF yet. The [engine's status](docs/gaps.md) lists what is
+missing.
 
-The catalogs are written for PdfCraft; the build embeds copies with the app name replaced, so the
-translated interface says PSG PDF (crates/ui-egui/build.rs).
+## PSG Academic PDF
 
-Japanese interface text and writing Japanese into PDFs need the optional `CRAFT_FONTS_DIR` build
-input, as in PdfCraft (see AGENTS.md §1.4). Without it everything else works.
+<img src="assets/app-icon-academic/hicolor/64x64/apps/com.panoramascholarly.psgacademicpdf.png" width="40" height="40" align="left" alt="">
 
-### Two independent products
+**Typesetting accepted articles with pdfLaTeX.** From manuscript to the journal's final PDF.
 
-PSG PDF and PSG Academic PDF are separate products with separate installers. Each has its own
-identity, recorded once in [`packaging/products.toml`](packaging/products.toml) and checked
-against every packaging file by `cargo xtask products check`. They never share or overwrite each
-other's files, settings or updates. See [docs/products.md](docs/products.md).
+<br clear="left">
+
+<p align="center">
+  <img src="docs/images/psg/psg-academic-pdf.png" alt="PSG Academic PDF with a sample article: publication metadata on the left, the LaTeX source in the middle and the typeset PDF on the right" width="100%">
+</p>
+
+- **Journal templates**: start from the PSG Research Article (numbered citations) or the PSG
+  Humanities and Social Sciences Article (author-year citations and footnotes) template.
+- **Manuscripts**: import a LaTeX manuscript, or a Word manuscript (experimental, through
+  Pandoc), with its bibliography and figures.
+- **Publication metadata**: journal, volume, issue, pages, DOI, authors, affiliations, ORCID
+  iDs, abstract, keywords, dates, licence and copyright, checked as you type (DOI, ISSN and ORCID
+  check digits, dates).
+- **References**: BibLaTeX with Biber, with checks for duplicate keys, missing fields, malformed
+  DOIs, citations without an entry and entries nothing cites.
+- **Typesetting**: pdfLaTeX through latexmk, using the TeX installation on your computer, in a
+  sandbox with shell escape off and a time limit you can cancel.
+- **Source and PDF side by side**, with problems marked on their lines and plain-language hints
+  for common TeX errors.
+- **Interface languages**: English, Simplified Chinese, Traditional Chinese, Japanese, Korean
+  and German.
+
+PSG Academic PDF needs a TeX installation (TeX Live or MacTeX with latexmk and Biber). It
+typesets Latin-script articles with pdfLaTeX; XeLaTeX and LuaLaTeX, and with them Chinese,
+Japanese and Korean manuscripts, are not supported yet. It has no submission or peer-review
+workflow. See the [PSG Academic PDF guide](docs/academic-guide.md).
+
+## Which one do I need?
 
 | | PSG PDF | PSG Academic PDF |
 |---|---|---|
-| Cargo package / binary | `psg-pdf` (and `pdfcraft-cli`) | `psg-academic-pdf` |
-| App ID (Linux desktop, macOS bundle) | `com.panoramascholarly.psgpdf` | `com.panoramascholarly.psgacademicpdf` |
-| Windows install folder | `Panorama Scholarly Group\PSG PDF` | `Panorama Scholarly Group\PSG Academic PDF` |
-| Linux package | `psg-pdf` | `psg-academic-pdf` |
-| Opens | PDF (offered, never forced) | `.tex` and `.docx` manuscripts (each starts a new project) |
-| Update channel | release files named `psg-pdf-…` | release files named `psg-academic-pdf-…` |
-| Brand colour | deep blue `#1e4384` | academic purple `#5b2a78` |
+| **For** | Anyone who reads, reviews, fills in, signs or prepares PDFs | Journal editors, production editors and authors preparing accepted articles |
+| **Starts from** | An existing PDF | A manuscript (`.tex`, experimental `.docx`) and a journal template |
+| **Produces** | The same PDF, commented, filled, signed, reorganized or protected | A new, typeset article PDF with its publication metadata |
+| **Main tools** | Viewer, comments, forms, signatures, page organizer, redaction, OCR, export | Templates, metadata form, bibliography checks, source editor, pdfLaTeX preview |
+| **Needs** | Nothing else | A local TeX installation (pdfLaTeX, latexmk, Biber) |
+| **Opens** | `.pdf` | `.tex` and `.docx` manuscripts, PSG Academic PDF projects |
+| **Colour** | Deep blue | Academic purple |
+
+They work well together: PSG Academic PDF's **Open in PSG PDF** hands the finished article to
+PSG PDF for review, when both are installed.
+
+## Downloads
+
+Every release on the [releases page](https://github.com/WENSHAO521/psg-pdf/releases) has both
+products, each in its own section, with SHA-256 checksums. Stable releases are marked
+**Latest**; betas are marked **Pre-release**, and the apps show **Beta** beside their name.
 
 | Platform | PSG PDF | PSG Academic PDF |
 |---|---|---|
-| Windows | `psg-pdf-<v>-windows-x64.msi`, `…-portable.zip` | `psg-academic-pdf-<v>-windows-x64.msi`, `…-portable.zip` |
-| macOS | `psg-pdf-<v>-macos-universal.dmg` | `psg-academic-pdf-<v>-macos-universal.dmg` |
-| Linux | `psg-pdf-<v>-linux-x86_64.deb` / `.rpm` / `.AppImage` / `.tar.gz` | `psg-academic-pdf-<v>-linux-x86_64.deb` / `.rpm` / `.AppImage` / `.tar.gz` |
-| Script | `packaging/<os>/package.* --product psg-pdf` | `packaging/<os>/package.* --product psg-academic-pdf` |
+| **Windows** 10 and 11, x64 | `psg-pdf-<version>-windows-x64.msi`, portable `.zip` | `psg-academic-pdf-<version>-windows-x64.msi`, portable `.zip` |
+| **macOS** 11 or later, Apple silicon and Intel | `psg-pdf-<version>-macos-universal.dmg` | `psg-academic-pdf-<version>-macos-universal.dmg` |
+| **Linux** x86_64 | `.deb`, `.rpm`, `.AppImage`, `.tar.gz` | `.deb`, `.rpm`, `.AppImage`, `.tar.gz` |
 
-PSG Academic PDF's **Open in PSG PDF** finds a separately installed PSG PDF (and falls back to the
-system's PDF viewer without it). Installs of the old combined **PSG PDF Suite** (0.18.x) are
-migrated safely: see [docs/products.md](docs/products.md#migrating-from-the-suite).
+<p align="center">
+  <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest"><b>Download the latest release</b></a> ·
+  <a href="https://github.com/WENSHAO521/psg-pdf/releases">All releases and betas</a>
+</p>
 
-### TeX for PSG Academic PDF
+Upgrading from the old combined **PSG PDF Suite** (0.18)? The new PSG PDF replaces it and keeps
+your settings; see [migrating from the suite](docs/products.md#migrating-from-the-suite).
 
-PSG Academic PDF uses the TeX installation that is already on the machine and never downloads one.
-It needs `pdflatex`, `latexmk` and `biber` on the `PATH`. `pandoc` is optional and is used only for
-the experimental `.docx` import.
+## Documentation and support
 
-| System | Install |
-|---|---|
-| Debian/Ubuntu | `sudo apt install texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern latexmk biber texlive-bibtex-extra` |
-| macOS | MacTeX (includes latexmk and biber) |
-| Windows | TeX Live (includes latexmk and biber). MiKTeX also works, but see the security note in docs/academic.md. |
+- **[Documentation](docs/README.md)**: user guides, the products and their installers,
+  building from source, and the engine's technical notes.
+- **[PSG Academic PDF guide](docs/academic-guide.md)**: what it needs and how to make an
+  article.
+- **[Report a problem or suggest an improvement](https://github.com/WENSHAO521/psg-pdf/issues/new/choose)**:
+  please say which product and version you use.
+- **[Release history](https://github.com/WENSHAO521/psg-pdf/releases)** and the
+  **[changelog](CHANGELOG.md)**.
 
-Run `psg-academic-pdf check-tex` to see what was found.
+## About and license
 
-## Using PSG Academic PDF
+PSG PDF and PSG Academic PDF are made by **Panorama Scholarly Group** and contributors. The
+[PSG brand guide](docs/brand.md) describes the names, logos and colours.
 
-1. Choose a journal template (**PSG Research Article**, numbered citations, or **PSG Humanities
-   and Social Sciences Article**, author-year citations and footnotes) and press **New project**.
-   Opening a `.tex` or `.docx` file with PSG Academic PDF (double-click, Open with, or a drop on
-   the window) starts a new project around it from the selected template. This creates a project folder from the
-   template, filled with sample metadata.
-2. Import the manuscript with **Manuscript (.tex)…**. If the file is a complete LaTeX document, only
-   its body is kept, because the template supplies the preamble and the title block. You can
-   also try **Word (.docx)…**, an experimental import through the local Pandoc; afterwards the
-   Activity log names anything pdfLaTeX can't typeset as it is (characters its fonts lack, EMF or
-   TIFF figures). Add
-   bibliographies and figures with **Bibliography / figures…**.
-3. Fill in the **publication metadata**: journal, volume, issue, pages, DOI, title, authors,
-   affiliations, ORCID iDs, abstract, keywords, dates, licence and copyright. Problems are shown
-   under the form.
-4. Press **▶ Compile**. latexmk runs pdfLaTeX and Biber in the project folder, with a time limit
-   that you can cancel. When it succeeds the PDF opens in **PDF preview**, drawn by the shared
-   PdfCraft renderer. Errors appear under **Problems** with file and line and, for the common
-   ones, what usually causes them and how to fix them; the full
-   latexmk output and TeX log have their own tabs.
-5. **Export PDF…** saves the result. **Open in PSG PDF** opens it in the general app for review.
-
-The same steps work without a window, for scripts:
-
-```sh
-psg-academic-pdf templates
-psg-academic-pdf new ./my-article --template psg-article
-psg-academic-pdf compile ./my-article --manuscript paper.tex --timeout 120 --out article.pdf
-```
-
-## Testing
-
-Set `CRAFT_I18N_DIR` (above) to run the interface tests that need the translations too.
-
-```sh
-cargo test -p psg-academic          # typesetting core; the TeX tests skip when TeX is missing
-cargo test -p psg-academic-pdf      # academic app
-cargo test -p psg-pdf               # PSG PDF app
-cargo test -p pdfcraft-ui-egui      # shared interface (long)
-cargo xtask layers                  # dependency layering
-cargo xtask products check          # the two products' identities agree everywhere
-cargo xtask assets                  # asset attribution (ATTRIBUTION.toml)
-```
-
-`.github/workflows/build.yaml` ("PSG PDF — Build & Release") is the repository's only workflow
-([docs/ci.md](docs/ci.md)). Every pull request runs the quick checks: `cargo xtask ci` (format,
-clippy, tests, cargo-deny, assets, layers) with the academic tests against a real TeX Live,
-latexmk, Biber and Pandoc. Pushes to `beta` and `main`, and pull requests that change the
-packaging or carry the `full-ci` label, also build both products for Linux, Windows and macOS (one
-job per platform), verify signatures and checksums, install both products alone and side by side,
-uninstall them one at a time, and migrate a 0.18 suite install (Windows and Linux). It publishes
-only from pushes to `beta` and `main` ([docs/releasing.md](docs/releasing.md)).
-
-## Releases
-
-Pull requests go into `beta`. Every push to `beta` publishes a pre-release
-(`vX.Y.Z-beta.N`) with both products' installers for macOS, Windows and Linux; merging `beta` into
-`main` with a `chore(release): vX.Y.Z` commit publishes the stable release. Commit subjects are
-Conventional Commits, and `CHANGELOG.md` is generated from them. See
-[docs/releasing.md](docs/releasing.md).
-
-## Licence and attribution
-
-The code is licensed MIT OR Apache-2.0 (LICENSE-MIT, LICENSE-APACHE), the same as PdfCraft. See
-NOTICE. PSG PDF is a modified version of PdfCraft by the ArtCraft team. As PdfCraft's brand terms
-require of modified versions, the ArtCraft name, wordmark and logos have been removed. Every
-asset is listed in ATTRIBUTION.toml, and ATTRIBUTION.md is generated from it.
+The code is licensed under the [MIT License](LICENSE-MIT) or the
+[Apache License 2.0](LICENSE-APACHE), at your option. Both products are built on the
+[PdfCraft](https://github.com/storytold/pdfcraft) PDF engine by the ArtCraft team (MIT OR
+Apache-2.0); as PdfCraft's terms require of modified versions, they carry none of its brand.
+Third-party notices are in [NOTICE](NOTICE), and every bundled asset and its licence is listed in
+[ATTRIBUTION.md](ATTRIBUTION.md).

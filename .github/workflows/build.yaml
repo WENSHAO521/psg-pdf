@@ -414,12 +414,13 @@ jobs:
           set -euo pipefail
           packaging/ci/release-files.sh "$TAG" release-files
           packaging/ci/release-notes.sh "$TAG" release-files > "$RUNNER_TEMP/notes.md"
+          title="$(packaging/ci/release-notes.sh --title "$TAG" release-files)"
           cat "$RUNNER_TEMP/notes.md" >> "$GITHUB_STEP_SUMMARY"
           flags=(--latest)
           if [[ "$TAG" == *-beta.* ]]; then flags=(--prerelease --latest=false); fi
           gh release create "$TAG" release-files/* \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "PSG PDF and PSG Academic PDF $TAG" \
+            --title "$title" \
             --notes-file "$RUNNER_TEMP/notes.md" \
             "${flags[@]}"

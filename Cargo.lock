@@ -4782,6 +4782,7 @@ dependencies = [
  "png 0.18.1",
  "pollster 1.0.1",
  "proptest",
+ "psg-brand",
  "rfd",
  "rustix 1.1.6",
  "serde",
@@ -5312,10 +5313,16 @@ dependencies = [
  "pdfcraft-fonts",
  "pdfcraft-render",
  "psg-academic",
+ "psg-brand",
  "rfd",
  "sys-locale",
  "tempfile",
+ "winresource",
 ]
+
+[[package]]
+name = "psg-brand"
+version = "0.19.0"
 
 [[package]]
 name = "psg-pdf"

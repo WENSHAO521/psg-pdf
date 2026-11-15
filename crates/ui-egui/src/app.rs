@@ -44,7 +44,7 @@ impl PdfCraftApp {
         let mark = if dirty { " •" } else { "" };
         let titled = |name: Option<String>| {
             name.or_else(|| self.combine_showing().then(|| tl!("Combine files").to_owned()))
-                .map_or_else(|| crate::brand::APP_NAME.to_owned(), |name| format!("{name}{mark} — {}", crate::brand::APP_NAME))
+                .map_or_else(crate::brand::window_title, |name| format!("{name}{mark} — {}", crate::brand::window_title()))
         };
         let title = titled(front.and_then(|i| crate::canvas::tab_label(self, i)));
         // The web page's title is what an embedding host reads to tell which file opened, so it

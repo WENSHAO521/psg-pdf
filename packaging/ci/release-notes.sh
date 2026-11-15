@@ -1,48 +1,130 @@
 #!/usr/bin/env bash
 # The notes of release <tag> (.github/workflows/build.yaml, job "Release"), in Markdown on stdout:
-# the changes from CHANGELOG.md, then each product's downloads, listed separately, with a note for
-# any platform this build did not produce (a beta may publish without macOS).
+# a header naming both products, a warning when the build lacks a platform, then each product in
+# its own section with its downloads, the changes from CHANGELOG.md, and how to check the files.
 #
 #   packaging/ci/release-notes.sh <tag> <folder with the release files>
+#   packaging/ci/release-notes.sh --title <tag> <folder>   the release's title, one line
+#
+# Titles read "PSG PDF & PSG Academic PDF 0.19.0" for a stable release and
+# "PSG PDF & PSG Academic PDF 0.19.0 Beta 3" for a beta. A beta that published without a
+# platform (release-files.sh allows only macOS to be missing, and only for a beta) says so in its
+# title and at the top of its notes, so it can't pass for a complete cross-platform release.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
-TAG="${1:?usage: release-notes.sh <tag> <folder>}"
+title_only=false
+if [[ "${1:-}" == --title ]]; then title_only=true; shift; fi
+TAG="${1:?usage: release-notes.sh [--title] <tag> <folder>}"
 FILES="${2:?}"
+REPO="${GITHUB_REPOSITORY:-WENSHAO521/psg-pdf}"
 
-echo "PSG ${TAG}: PSG PDF and PSG Academic PDF, two independent products. Install either"
-echo "or both; each has its own installers, updates and uninstaller."
+version="${TAG#v}"
+if [[ "$version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-beta\.([0-9]+)$ ]]; then
+  shown="${BASH_REMATCH[1]} Beta ${BASH_REMATCH[2]}"
+  beta=true
+else
+  shown="$version"
+  beta=false
+fi
+
+read -r -a products <<<"$(cargo xtask products ids 2>/dev/null)"
+declare -A stem name tagline
+for product in "${products[@]}"; do
+  stem[$product]="$(cargo xtask products get "$product" asset_stem 2>/dev/null)"
+  name[$product]="$(cargo xtask products get "$product" name 2>/dev/null)"
+  tagline[$product]="$(cargo xtask products get "$product" tagline 2>/dev/null)"
+done
+
+# <os label>|<file glob after the stem>: the platforms every release is meant to have.
+platforms=("macOS|-[0-9]*-macos-universal.dmg" "Windows|-[0-9]*-windows-x64.msi" "Linux|-[0-9]*-linux-x86_64.deb")
+has() { compgen -G "$FILES/$1" >/dev/null; }
+missing=()
+for entry in "${platforms[@]}"; do
+  label="${entry%%|*}" glob="${entry#*|}"
+  for product in "${products[@]}"; do
+    if ! has "${stem[$product]}$glob"; then missing+=("$label"); break; fi
+  done
+done
+
+title="PSG PDF & PSG Academic PDF $shown"
+if [[ ${#missing[@]} -gt 0 ]]; then title+=" (no ${missing[*]})"; fi
+if $title_only; then
+  echo "$title"
+  exit 0
+fi
+
+icon() { # <product>: the product's 64 px icon at this tag
+  local dir
+  dir="$(cargo xtask products get "$1" icon_dir 2>/dev/null)"
+  local app_id
+  app_id="$(cargo xtask products get "$1" app_id 2>/dev/null)"
+  echo "https://raw.githubusercontent.com/$REPO/$TAG/$dir/hicolor/64x64/apps/$app_id.png"
+}
+
+echo "# $title"
 echo
-if [[ "$TAG" == *-beta.* ]]; then
-  echo "This is a beta: a test build of the \`beta\` branch, not a stable release."
+if $beta; then
+  echo "> [!NOTE]"
+  echo "> **Beta.** A test build of the \`beta\` branch, not a stable release. Both apps show"
+  echo "> **Beta** beside their name. Use it to try what is coming; keep the stable release for"
+  echo "> work that matters."
   echo
+fi
+if [[ ${#missing[@]} -gt 0 ]]; then
+  echo "> [!WARNING]"
+  echo "> **Incomplete build:** this beta has no ${missing[*]} installers (that platform did not"
+  echo "> finish building or testing). It is not a complete cross-platform release."
+  echo
+fi
+echo "Two independent desktop applications from Panorama Scholarly Group. Install either or both:"
+echo "each has its own installer, updates and uninstaller, and neither needs the other."
+echo
+for product in "${products[@]}"; do
+  s="${stem[$product]}"
+  echo "## <img src=\"$(icon "$product")\" width=\"28\" height=\"28\" alt=\"\"> ${name[$product]}"
+  echo
+  echo "_${tagline[$product]}_"
+  echo
+  echo "| Platform | Download |"
+  echo "|---|---|"
+  if has "$s-[0-9]*-windows-x64.msi"; then
+    echo "| Windows 10 and 11 (x64) | \`$s-$version-windows-x64.msi\` (installer) · \`$s-$version-windows-x64-portable.zip\` (portable) |"
+  else
+    echo "| Windows 10 and 11 (x64) | not in this build |"
+  fi
+  if has "$s-[0-9]*-macos-universal.dmg"; then
+    echo "| macOS 11 or later (Apple silicon and Intel) | \`$s-$version-macos-universal.dmg\` |"
+  else
+    echo "| macOS 11 or later (Apple silicon and Intel) | not in this build |"
+  fi
+  if has "$s-[0-9]*-linux-x86_64.deb"; then
+    echo "| Linux (x86_64) | \`.deb\` (Debian, Ubuntu) · \`.rpm\` (Fedora, openSUSE) · \`.AppImage\` · \`.tar.gz\` |"
+  else
+    echo "| Linux (x86_64) | not in this build |"
+  fi
+  echo
+  echo "SHA-256 checksums: \`SHA256SUMS-$s.txt\`"
+  echo
+done
+echo "PSG Academic PDF typesets with the TeX installation already on your computer (pdfLaTeX,"
+echo "latexmk and Biber); see the [PSG Academic PDF guide](https://github.com/$REPO/blob/$TAG/docs/academic-guide.md)."
+echo
+if $beta; then
   echo "## Changes since the last release"
   echo
   cargo xtask changelog notes --unreleased 2>/dev/null
 else
   echo "## Changes"
   echo
-  cargo xtask changelog notes --version "${TAG#v}" 2>/dev/null
+  cargo xtask changelog notes --version "$version" 2>/dev/null
 fi
 echo
-echo "## Downloads"
+echo "## Checking your download"
 echo
-platform() { # <glob> <line>: the line when a file matches, else a note that it is missing
-  if compgen -G "$FILES/$1" >/dev/null; then echo "- $2"; else echo "- ${2%%:*}: not in this build"; fi
-}
-for product in $(cargo xtask products ids 2>/dev/null); do
-  stem="$(cargo xtask products get "$product" asset_stem 2>/dev/null)"
-  echo "### $(cargo xtask products get "$product" name 2>/dev/null): $(cargo xtask products get "$product" tagline 2>/dev/null)"
-  echo
-  platform "$stem-[0-9]*-macos-universal.dmg" "macOS 11+ (Apple silicon and Intel): \`$stem-*-macos-universal.dmg\`"
-  platform "$stem-[0-9]*-windows-x64.msi" "Windows 10+ x64: \`$stem-*-windows-x64.msi\` (installer) or \`$stem-*-windows-x64-portable.zip\`"
-  platform "$stem-[0-9]*-linux-x86_64.deb" "Linux x86_64: \`$stem-*.deb\`, \`.rpm\`, \`.AppImage\` or \`.tar.gz\`"
-  echo "- Checksums: \`SHA256SUMS-$stem.txt\`"
-  echo
-done
-echo "PSG Academic PDF needs a TeX installation (pdflatex, latexmk, biber); see the README."
-echo "\`SHA256SUMS.txt\` lists every file's SHA-256."
+echo "\`SHA256SUMS.txt\` lists the SHA-256 of every file in this release, and each product has its own"
+echo "list. Whether this build was code-signed is shown in the release workflow's summary (docs/releasing.md)."
 echo
-echo "### Coming from the PSG PDF Suite (0.18)"
+echo "## Coming from the PSG PDF Suite (0.18)"
 echo
 echo "The new PSG PDF replaces the suite and keeps your settings. If you used PSG Academic PDF,"
 echo "install it as well: your projects stay where they were. On Windows, install PSG PDF first;"

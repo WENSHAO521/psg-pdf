@@ -1,5 +1,11 @@
 # PdfCraft roadmap
 
+> [!NOTE]
+> This is the roadmap of the PdfCraft engine that PSG PDF and PSG Academic PDF share, kept from
+> the upstream project. What the two PSG products ship is described in the [README](README.md)
+> and the [documentation](docs/README.md); PSG Academic PDF's status is in
+> [docs/academic.md](docs/academic.md#status).
+
 > **Last reviewed:** 2026-10-31 | **Last updated:** 2026-10-31 | **Change:** patch (M6, PR #4166/#4088: integrate main f137a289 at 0.16.1; retain automatic-field Print suppression, explicit button/console printing and document-error provenance; 761 scoped tests and verification gates passed; 13-step CLI exercise and render inspection passed; existing warnings retained; estimates unchanged)
 > **Last reviewed:** 2026-11-09 | **Last updated:** 2026-11-09 | **Change:** patch (M10 #5130: preserve manual duplex defaults; validate DocumentDuplex review fix and CI formatting; estimates unchanged)
 >

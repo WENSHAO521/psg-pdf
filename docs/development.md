@@ -1,4 +1,7 @@
-# Developing PdfCraft
+# Development notes
+
+These notes describe the shared PdfCraft engine and PSG PDF's interface; building both products is
+in [building.md](building.md).
 
 Working instructions for agents and contributors are in `AGENTS.md` and `CLAUDE.md`. This page
 collects what the desktop app reads from its environment and where it writes its diagnostics.

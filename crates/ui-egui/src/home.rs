@@ -94,10 +94,13 @@ pub fn show(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                         ui.horizontal(|ui| {
                             widgets::psg_mark(ui, 28.0);
                             ui.vertical(|ui| {
-                                ui.label(
-                                    egui::RichText::new(format!("{} · {}", crate::brand::APP_NAME, crate::brand::PUBLISHER))
-                                        .font(theme::semibold(15.0)),
-                                );
+                                ui.horizontal(|ui| {
+                                    ui.label(
+                                        egui::RichText::new(format!("{} · {}", crate::brand::APP_NAME, crate::brand::PUBLISHER))
+                                            .font(theme::semibold(15.0)),
+                                    );
+                                    crate::brand::badge(ui);
+                                });
                                 ui.label(egui::RichText::new(crate::brand::BASED_ON).color(t.text_muted));
                             });
                             // Closed for this run only: the card is back on the next launch.

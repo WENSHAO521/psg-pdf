@@ -1670,8 +1670,11 @@ fn dialog_about(ui: &mut egui::Ui, req: &mut Pending) -> bool {
             ui.horizontal(|ui| {
                 widgets::psg_mark(ui, 40.0);
                 ui.vertical(|ui| {
-                    ui.label(egui::RichText::new(crate::brand::APP_NAME).font(theme::semibold(20.0)));
-                    ui.label(crate::i18n::fmt(tl!("Version {v}"), &[("v", &pdfcraft_engine::build_info::version())]));
+                    ui.horizontal(|ui| {
+                        ui.label(egui::RichText::new(crate::brand::APP_NAME).font(theme::semibold(20.0)));
+                        crate::brand::badge(ui);
+                    });
+                    ui.label(crate::i18n::fmt(tl!("Version {v}"), &[("v", &crate::brand::display_version())]));
                 });
             });
             ui.add_space(6.0);

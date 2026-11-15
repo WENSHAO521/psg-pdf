@@ -117,4 +117,3 @@ Not implemented yet:
 - Journal-specific templates beyond the sample; template editing in the app.
 - JATS XML, Crossref deposit metadata, PDF/A output.
 - SyncTeX (clicking the PDF to reach the source, or the reverse).
-- Installers for PSG Academic PDF; PSG PDF's packaging scripts were renamed but not run.

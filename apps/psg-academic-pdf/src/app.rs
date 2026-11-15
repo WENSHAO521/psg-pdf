@@ -24,10 +24,10 @@ use crate::preview::{MAX_PREVIEW_PAGES, PageSlot, Preview};
 use crate::source::SourceEditor;
 use crate::updates::Updates;
 
-/// The program's display name.
-pub const APP_NAME: &str = "PSG Academic PDF";
+/// The program's display name (PSG design system, `psg-brand`).
+pub const APP_NAME: &str = crate::theme::PRODUCT.name();
 /// The organisation that publishes it.
-pub const PUBLISHER: &str = "Panorama Scholarly Group";
+pub const PUBLISHER: &str = psg_brand::PUBLISHER;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Tab {
@@ -93,6 +93,7 @@ impl AcademicApp {
         let chosen = std::fs::read_to_string(&language_file).unwrap_or_default();
         crate::i18n::set(if chosen.trim().is_empty() { crate::i18n::system() } else { chosen.trim() });
         crate::fonts::install(ctx, crate::i18n::current());
+        crate::theme::apply(ctx);
         let mut app = Self {
             env: None,
             env_rx: None,
@@ -552,20 +553,20 @@ impl AcademicApp {
         let ctx = ui.ctx().clone();
         egui::Panel::top("psg-top").show(ui, |ui| {
             ui.horizontal_wrapped(|ui| {
-                ui.strong(APP_NAME);
+                crate::theme::product_heading(ui);
                 ui.separator();
                 let busy = self.running.is_some();
                 let can_compile = self.project.is_some()
                     && self.env.as_ref().is_some_and(|e| e.missing(self.project.as_ref().is_none_or(|p| p.file.uses_biber)).is_empty());
                 if ui
-                    .add_enabled(can_compile && !busy, egui::Button::new(format!("▶ {}", t("Compile"))))
+                    .add_enabled(can_compile && !busy, crate::theme::primary_button(ui, t("Compile")))
                     .on_hover_text(t("Typeset with latexmk and pdfLaTeX"))
                     .clicked()
                 {
                     self.start_compile(&ctx);
                 }
                 if busy
-                    && ui.button(format!("■ {}", t("Cancel"))).clicked()
+                    && ui.button(t("Cancel")).clicked()
                     && let Some(r) = &self.running
                 {
                     r.cancel.store(true, Ordering::Relaxed);
@@ -1138,7 +1139,7 @@ impl eframe::App for AcademicApp {
                 ui.separator();
                 self.language_picker(ui);
                 ui.add_space(8.0);
-                ui.weak(format!("{APP_NAME} {} · {PUBLISHER}", env!("CARGO_PKG_VERSION")));
+                ui.weak(format!("{APP_NAME} {} · {PUBLISHER}", crate::theme::display_version()));
                 ui.weak(t("PDF engine: PdfCraft (MIT OR Apache-2.0)"));
                 if ui.small_button(t("Check for updates…")).clicked() {
                     self.updates.request_check();

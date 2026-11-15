@@ -86,6 +86,8 @@ pub const TABLE: &[(&str, Class)] = &[
     // test support
     ("testkit", Class::Testkit),
     ("oracle", Class::Testkit),
+    // The PSG design system (names, brand colours, release labels; no dependencies)
+    ("psg-brand", Class::Standalone(0)),
     // PSG Academic PDF's typesetting core (no UI; depends on no other workspace crate)
     ("psg-academic", Class::Layer(4)),
     // L8 apps + tooling
