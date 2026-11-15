@@ -19,6 +19,27 @@ use crate::project::{MAX_IMPORT, Project};
 /// The time limit for one conversion.
 pub const TIMEOUT: Duration = Duration::from_secs(120);
 
+/// The oldest Pandoc with `--sandbox`, which keeps a conversion from reading or writing any file
+/// but the ones named. An older Pandoc is refused rather than run without it.
+pub const MIN_PANDOC: (u32, u32) = (2, 15);
+
+/// Whether the Pandoc whose `--version` first line is `version_line` (`pandoc 3.1.3`) can convert
+/// sandboxed; `None` when the line names no version.
+pub fn sandbox_supported(version_line: &str) -> Option<bool> {
+    let number = version_line.split_whitespace().find(|w| w.starts_with(|c: char| c.is_ascii_digit()))?;
+    let mut parts = number.split('.').map(|p| p.chars().take_while(char::is_ascii_digit).collect::<String>().parse::<u32>().ok());
+    let major = parts.next().flatten()?;
+    let minor = parts.next().flatten().unwrap_or(0);
+    Some((major, minor) >= MIN_PANDOC)
+}
+
+fn too_old(version: &str) -> Error {
+    Error::Project(format!(
+        "{version} is too old for DOCX import: it needs Pandoc {}.{} or newer, which converts without access to any other file. Install a newer Pandoc from pandoc.org.",
+        MIN_PANDOC.0, MIN_PANDOC.1
+    ))
+}
+
 /// Converts a word-processor manuscript into the project's LaTeX body. Later importers (a
 /// native DOCX reader, a JATS reader) implement the same trait.
 pub trait ManuscriptImporter {
@@ -59,6 +80,11 @@ impl ManuscriptImporter for PandocImporter {
         if !bytes.starts_with(b"PK") {
             return Err(Error::Project(format!("{} is not a .docx file", source.display())));
         }
+        if let Some(version) = process::version_line(&self.pandoc)
+            && sandbox_supported(&version) == Some(false)
+        {
+            return Err(too_old(&version));
+        }
         write_atomic(&project.dir.join(DOCX_COPY), &bytes)?;
         let mut cmd = Command::new(&self.pandoc);
         cmd.current_dir(&project.dir);
@@ -70,6 +96,8 @@ impl ManuscriptImporter for PandocImporter {
                 "it took too long".to_owned()
             } else if run.cancelled {
                 "it was cancelled".to_owned()
+            } else if run.stderr.contains("--sandbox") {
+                return Err(too_old("This Pandoc"));
             } else {
                 run.stderr.trim().to_owned()
             };
@@ -200,6 +228,17 @@ mod tests {
         assert_eq!(problems.len(), 2, "{problems:?}");
         assert!(problems[0].contains("image2.emf") && problems[0].contains(".emf"));
         assert!(problems[1].contains("scan.tiff"));
+    }
+
+    #[test]
+    fn only_a_pandoc_that_can_sandbox_is_used() {
+        assert_eq!(sandbox_supported("pandoc 2.9.2.1"), Some(false));
+        assert_eq!(sandbox_supported("pandoc 2.14"), Some(false));
+        assert_eq!(sandbox_supported("pandoc 2.15"), Some(true));
+        assert_eq!(sandbox_supported("pandoc.exe 3.1.3"), Some(true));
+        assert_eq!(sandbox_supported("pandoc 10"), Some(true));
+        assert_eq!(sandbox_supported("pandoc"), None);
+        assert!(too_old("pandoc 2.9.2.1").to_string().contains("2.15 or newer"));
     }
 
     #[test]

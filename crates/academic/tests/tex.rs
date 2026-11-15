@@ -104,6 +104,10 @@ fn an_imported_word_manuscript_compiles() {
         eprintln!("skipped: pandoc not installed");
         return;
     };
+    if env.pandoc.version.as_deref().and_then(psg_academic::pandoc::sandbox_supported) == Some(false) {
+        eprintln!("skipped: {} can't convert sandboxed", env.pandoc.version.as_deref().unwrap_or("pandoc"));
+        return;
+    }
     let root = tempfile::tempdir().unwrap();
     let src = root.path().join("src");
     std::fs::create_dir(&src).unwrap();

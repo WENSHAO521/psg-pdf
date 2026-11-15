@@ -556,7 +556,9 @@ impl AcademicApp {
             .on_hover_text("The project folder: compilation happens here and only here");
         ui.add_space(4.0);
         ui.label("Import");
-        let pandoc = self.env.as_ref().is_some_and(|e| e.pandoc.found());
+        let pandoc_version = self.env.as_ref().and_then(|e| e.pandoc.version.clone());
+        let pandoc_too_old = pandoc_version.as_deref().and_then(psg_academic::pandoc::sandbox_supported) == Some(false);
+        let pandoc = self.env.as_ref().is_some_and(|e| e.pandoc.found()) && !pandoc_too_old;
         ui.horizontal_wrapped(|ui| {
             if ui.button("Manuscript (.tex)…").on_hover_text("Replaces the article body; a full document keeps only its body").clicked() {
                 self.import_manuscript();
@@ -564,7 +566,11 @@ impl AcademicApp {
             if ui
                 .add_enabled(pandoc, egui::Button::new("Word (.docx)…"))
                 .on_hover_text("Experimental: converts with the local Pandoc")
-                .on_disabled_hover_text("Install Pandoc to import .docx (experimental)")
+                .on_disabled_hover_text(if pandoc_too_old {
+                    "This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer"
+                } else {
+                    "Install Pandoc to import .docx (experimental)"
+                })
                 .clicked()
             {
                 self.import_docx();
