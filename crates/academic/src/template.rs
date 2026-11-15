@@ -117,12 +117,22 @@ const PSG_ARTICLE: &[(&str, &str)] = &[
     ("psg-metadata.tex", include_str!("../../../templates/academic/psg-article/psg-metadata.tex")),
 ];
 
+/// The Humanities and Social Sciences template: the same class, with author-year citations.
+const PSG_HUMANITIES: &[(&str, &str)] = &[
+    ("template.toml", include_str!("../../../templates/academic/psg-humanities/template.toml")),
+    ("main.tex", include_str!("../../../templates/academic/psg-humanities/main.tex")),
+    ("psg-article.cls", include_str!("../../../templates/academic/psg-humanities/psg-article.cls")),
+    ("body.tex", include_str!("../../../templates/academic/psg-humanities/body.tex")),
+    ("references.bib", include_str!("../../../templates/academic/psg-humanities/references.bib")),
+    ("psg-metadata.tex", include_str!("../../../templates/academic/psg-humanities/psg-metadata.tex")),
+];
+
 impl Template {
     /// The templates compiled into the program.
     pub fn builtin() -> Vec<Template> {
         let mut out = Vec::new();
         // One entry per built-in template; more are added here.
-        let builtins: &[&'static [(&'static str, &'static str)]] = &[PSG_ARTICLE];
+        let builtins: &[&'static [(&'static str, &'static str)]] = &[PSG_ARTICLE, PSG_HUMANITIES];
         for &files in builtins {
             let manifest = files.iter().find(|(n, _)| *n == MANIFEST).map(|(_, t)| Manifest::parse(t));
             match manifest {
@@ -233,18 +243,39 @@ mod tests {
     }
 
     #[test]
-    fn the_builtin_template_is_valid() {
+    fn the_builtin_templates_are_valid() {
         let t = Template::builtin();
-        assert_eq!(t.len(), 1);
-        assert_eq!(t[0].manifest.id, "psg-article");
-        assert!(t[0].manifest.uses_biber());
+        let ids: Vec<&str> = t.iter().map(|t| t.manifest.id.as_str()).collect();
+        assert_eq!(ids, ["psg-article", "psg-humanities"]);
+        assert!(t.iter().all(|t| t.manifest.uses_biber()));
     }
 
     #[test]
-    fn the_builtin_template_matches_its_directory() {
-        let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../templates/academic/psg-article");
-        let from_dir = Template::from_dir(&dir).unwrap();
-        assert_eq!(from_dir.manifest, Template::builtin()[0].manifest);
+    fn the_builtin_templates_match_their_directories() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../templates/academic");
+        for builtin in Template::builtin() {
+            let dir = root.join(&builtin.manifest.id);
+            let from_dir = Template::from_dir(&dir).unwrap();
+            assert_eq!(from_dir.manifest, builtin.manifest);
+            let Source::Builtin(files) = builtin.source else { panic!("not built in") };
+            for (name, text) in files {
+                assert_eq!(std::fs::read_to_string(dir.join(name)).unwrap(), *text, "{}/{name}", builtin.manifest.id);
+            }
+        }
+    }
+
+    /// The templates that share psg-article.cls carry the same copy of it: a fix to the class
+    /// goes into every copy.
+    #[test]
+    fn every_copy_of_the_shared_class_is_the_same() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../templates/academic");
+        let reference = std::fs::read_to_string(root.join("psg-article/psg-article.cls")).unwrap();
+        for entry in std::fs::read_dir(&root).unwrap() {
+            let copy = entry.unwrap().path().join("psg-article.cls");
+            if copy.is_file() {
+                assert_eq!(std::fs::read_to_string(&copy).unwrap(), reference, "{} differs from psg-article's", copy.display());
+            }
+        }
     }
 
     #[test]
@@ -272,7 +303,7 @@ mod tests {
         std::fs::write(bad.join(MANIFEST), "id = \"bad\"\n").unwrap();
         let (templates, problems) = discover(&[root.path().to_path_buf()]);
         let ids: Vec<&str> = templates.iter().map(|t| t.manifest.id.as_str()).collect();
-        assert_eq!(ids, vec!["psg-article", "good"]);
+        assert_eq!(ids, vec!["psg-article", "psg-humanities", "good"]);
         assert_eq!(problems.len(), 1);
     }
 }

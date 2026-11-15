@@ -39,8 +39,24 @@ The rules:
 
 ## `psg-article`
 
-The built-in template is a single-column A4 research article. It uses Latin Modern (T1),
+The PSG Research Article is a single-column A4 research article. It uses Latin Modern (T1),
 microtype, amsmath, graphicx, booktabs, longtable, xcolor, caption, fancyhdr, hyperref, and
 BibLaTeX (`numeric-comp`) with Biber. Its files are compiled into PSG Academic PDF
-(`crates/academic/src/template.rs`). The test `the_builtin_template_matches_its_directory` keeps
-the built-in copy and this folder in step.
+(`crates/academic/src/template.rs`), like `psg-humanities`'s. The test
+`the_builtin_templates_match_their_directories` keeps the built-in copies and these folders in step.
+
+## `psg-humanities`
+
+The PSG Humanities and Social Sciences Article: the same `psg-article.cls` with the `authoryear`
+class option, which switches BibLaTeX to author-year citations (`\textcite`, `\parencite`,
+`authoryear-comp`, references sorted by author and year). The sample body shows footnotes, block
+quotations and compressed citation lists. Its copy of `psg-article.cls` must stay identical to
+`psg-article`'s (a test checks it), so a fix to the class goes into both.
+
+## Word manuscripts
+
+`psg-article.cls` defines the commands Pandoc's LaTeX writer uses in a converted `.docx`
+(`\tightlist`, `\passthrough`, `\pandocbounded`, and `\st`/`\ul` when TeX Live has no `soul`),
+so a converted body compiles in any template built on it. A template with its own class must
+define them too.
+
