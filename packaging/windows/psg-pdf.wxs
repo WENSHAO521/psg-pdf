@@ -134,7 +134,7 @@
         <RegistryValue Root="HKMU" Key="Software\Classes\Applications\psg-pdf.exe\SupportedTypes" Name=".pdf" Value="" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\Classes\Applications\psg-pdf.exe\shell\open\command" Value="&quot;[#PdfcraftExe]&quot; &quot;%1&quot;" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\PSG PDF\Capabilities" Name="ApplicationName" Value="PSG PDF" Type="string" />
-        <RegistryValue Root="HKMU" Key="Software\PSG PDF\Capabilities" Name="ApplicationDescription" Value="Reading, organizing and protecting PDFs" Type="string" />
+        <RegistryValue Root="HKMU" Key="Software\PSG PDF\Capabilities" Name="ApplicationDescription" Value="Open-source PDF workbench" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\PSG PDF\Capabilities" Name="ApplicationIcon" Value="[#PdfcraftExe],0" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\PSG PDF\Capabilities\FileAssociations" Name=".pdf" Value="PSGPDF.Document" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\RegisteredApplications" Name="PSG PDF" Value="Software\PSG PDF\Capabilities" Type="string" />
