@@ -1,10 +1,10 @@
 <!--
-Thanks for contributing to PdfCraft.
+Thanks for contributing to PSG PDF and PSG Academic PDF.
 
-Base this on `main` — it is the only integration branch. `main` moves fast (it took
-396 commits in the three days to 2026-10-12), so a PR that sits for a day usually needs
-a rebase. Rebasing the same day you are asked keeps the work from dying of conflicts.
-Delete any section below that does not apply.
+Base this on `beta`: pull requests go into `beta`, and `main` changes only when a release
+merges `beta` into it (docs/releasing.md). Use a Conventional Commit subject worded as the change
+users see, such as `fix(academic): …`; the changelog is generated from it.
+Say which product the change is for. Delete any section below that does not apply.
 -->
 
 ## What this changes
