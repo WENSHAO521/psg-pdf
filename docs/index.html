@@ -167,6 +167,10 @@ section { padding: 104px 0; border-top: 1px solid var(--line); }
 .alts { list-style: none; padding: 0; margin: 18px 0 0; border-top: 1px solid var(--line); }
 .alts li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
 .alts code { color: var(--ink-2); font-size: 12px; text-align: right; overflow-wrap: anywhere; }
+.alts .fmt { text-align: right; }
+.alts a { color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; }
+.alts a:hover { color: var(--ink); }
+#dl-version { font-size: 12px; font-weight: 500; color: var(--ink-3); margin-left: 6px; }
 .dl-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 20px; padding: 18px 22px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; color: var(--ink-2); }
 .dl-foot .btns { display: flex; gap: 8px; flex-wrap: wrap; }
 .build { margin-top: 56px; }
@@ -401,7 +405,7 @@ footer .fine { display: flex; justify-content: space-between; gap: 16px; flex-wr
     <div class="dl-top">
       <div class="opt rec">
         <span class="rib" data-zh="建議">Recommended</span>
-        <h3 data-zh="正式版">Stable release</h3>
+        <h3><span data-zh="正式版">Stable release</span> <code id="dl-version" hidden></code></h3>
         <p data-zh="適合日常工作。三個平台的兩款產品都建置並測試成功才會發布。">For everyday work. Published only when both products built and passed their install tests on every platform.</p>
         <ul>
           <li data-zh="Windows 安裝程式（MSI）與免安裝 .zip">Windows installers (MSI) and portable .zip</li>
@@ -425,31 +429,31 @@ footer .fine { display: flex; justify-content: space-between; gap: 16px; flex-wr
       <div class="plat" data-os="windows">
         <div class="os"><svg><use href="#i-win"/></svg><b>Windows</b><span class="here" data-zh="你的系統">Your system</span></div>
         <p class="req" data-zh="Windows 10 與 11，x64">Windows 10 and 11, x64</p>
-        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest"><svg><use href="#i-download"/></svg>PSG PDF · MSI</a>
-        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest"><svg><use href="#i-download"/></svg>PSG Academic PDF · MSI</a>
+        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-windows-x64.msi"><svg><use href="#i-download"/></svg>PSG PDF · MSI</a>
+        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-windows-x64.msi"><svg><use href="#i-download"/></svg>PSG Academic PDF · MSI</a>
         <ul class="alts">
-          <li><span data-zh="安裝程式">Installer</span><code>…-windows-x64.msi</code></li>
-          <li><span data-zh="免安裝">Portable</span><code>…-windows-x64.zip</code></li>
+          <li><span data-zh="安裝程式">Installer</span><span class="fmt"><code>.msi</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-windows-x64.msi">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-windows-x64.msi">Academic</a></span></li>
+          <li><span data-zh="免安裝">Portable</span><span class="fmt"><code>.zip</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-windows-x64-portable.zip">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-windows-x64-portable.zip">Academic</a></span></li>
         </ul>
       </div>
       <div class="plat" data-os="mac">
         <div class="os"><svg><use href="#i-mac"/></svg><b>macOS</b><span class="here" data-zh="你的系統">Your system</span></div>
         <p class="req" data-zh="macOS 11 或更新，Apple 晶片與 Intel">macOS 11 or later, Apple silicon and Intel</p>
-        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest"><svg><use href="#i-download"/></svg>PSG PDF · DMG</a>
-        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest"><svg><use href="#i-download"/></svg>PSG Academic PDF · DMG</a>
+        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-macos-universal.dmg"><svg><use href="#i-download"/></svg>PSG PDF · DMG</a>
+        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-macos-universal.dmg"><svg><use href="#i-download"/></svg>PSG Academic PDF · DMG</a>
         <ul class="alts">
-          <li><span data-zh="通用版">Universal</span><code>…-macos-universal.dmg</code></li>
+          <li><span data-zh="通用版">Universal</span><span class="fmt"><code>.dmg</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-macos-universal.dmg">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-macos-universal.dmg">Academic</a></span></li>
         </ul>
       </div>
       <div class="plat" data-os="linux">
         <div class="os"><svg><use href="#i-linux"/></svg><b>Linux</b><span class="here" data-zh="你的系統">Your system</span></div>
         <p class="req">x86_64</p>
-        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest"><svg><use href="#i-download"/></svg>PSG PDF · AppImage</a>
-        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest"><svg><use href="#i-download"/></svg>PSG Academic PDF · AppImage</a>
+        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.AppImage"><svg><use href="#i-download"/></svg>PSG PDF · AppImage</a>
+        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.AppImage"><svg><use href="#i-download"/></svg>PSG Academic PDF · AppImage</a>
         <ul class="alts">
-          <li><span>Debian, Ubuntu</span><code>.deb</code></li>
-          <li><span>Fedora, openSUSE</span><code>.rpm</code></li>
-          <li><span data-zh="任何發行版">Any distribution</span><code>.AppImage · .tar.gz</code></li>
+          <li><span>Debian, Ubuntu</span><span class="fmt"><code>.deb</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.deb">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.deb">Academic</a></span></li>
+          <li><span>Fedora, openSUSE</span><span class="fmt"><code>.rpm</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.rpm">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.rpm">Academic</a></span></li>
+          <li><span data-zh="任何發行版">Any distribution</span><span class="fmt"><code>.tar.gz</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.tar.gz">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.tar.gz">Academic</a></span></li>
         </ul>
       </div>
     </div>
@@ -603,6 +607,29 @@ footer .fine { display: flex; justify-content: space-between; gap: 16px; flex-wr
       });
     });
   });
+
+  // Download buttons go straight to the file of the latest stable release. The names carry the
+  // version (psg-pdf-0.19.0-windows-x64.msi), so ask GitHub which files the latest release has;
+  // if it can't answer (offline, rate limit), each link keeps the release page it already has.
+  var assetLinks = Array.prototype.slice.call(document.querySelectorAll('a[data-asset]'));
+  function esc(t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  if (assetLinks.length && window.fetch) {
+    fetch('https://api.github.com/repos/WENSHAO521/psg-pdf/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (rel) {
+        var assets = (rel && rel.assets) || [];
+        var prefix = 'https://github.com/WENSHAO521/psg-pdf/releases/download/';
+        assetLinks.forEach(function (a) {
+          var parts = a.getAttribute('data-asset').split('|');
+          var want = new RegExp('^' + esc(parts[0]) + '-[0-9][^/]*' + esc(parts[1]) + '$');
+          var hit = assets.filter(function (x) { return want.test(x.name) && String(x.browser_download_url).indexOf(prefix) === 0; })[0];
+          if (hit) { a.href = hit.browser_download_url; a.setAttribute('download', ''); a.title = hit.name; }
+        });
+        var tag = document.getElementById('dl-version');
+        if (tag && rel.tag_name) { tag.textContent = rel.tag_name; tag.hidden = false; }
+      })
+      .catch(function () {});
+  }
 
   // Mark the visitor's platform.
   var ua = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '';
