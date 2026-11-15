@@ -4,7 +4,8 @@
 # checked against it by `cargo xtask products check` (part of `cargo xtask ci`).
 #
 #   cargo xtask products check          every packaging file agrees with this file
-#   cargo xtask products matrix         the release workflow's product x platform matrix (JSON)
+#   cargo xtask products matrix         the build workflow's platform matrix, every product per leg (JSON)
+#   cargo xtask products ids            every product id, for scripts
 #   cargo xtask products get <id> <key> one value, for scripts
 #
 # Changing an identity value (an upgrade code, an app id, a package name) breaks upgrades of

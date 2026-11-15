@@ -90,6 +90,10 @@ pub fn run(args: &[String]) -> anyhow::Result<()> {
             println!("{}", matrix(&manifest));
             Ok(())
         }
+        Some("ids") => {
+            println!("{}", ids(&manifest));
+            Ok(())
+        }
         Some("get") => {
             let (Some(id), Some(key)) = (args.get(1), args.get(2)) else {
                 bail!("usage: cargo xtask products get <product id | legacy_suite> <key>")
@@ -97,20 +101,24 @@ pub fn run(args: &[String]) -> anyhow::Result<()> {
             println!("{}", get(&manifest, id, key)?);
             Ok(())
         }
-        Some(other) => bail!("unknown `products` subcommand `{other}`; use check, matrix or get"),
+        Some(other) => bail!("unknown `products` subcommand `{other}`; use check, matrix, ids or get"),
     }
 }
 
-/// `{"include":[{"product":…,"name":…,"platform":…,"os":…}, …]}` for `strategy.matrix`.
+/// `{"include":[{"platform":…,"os":…,"products":"psg-pdf psg-academic-pdf"}, …]}` for
+/// `strategy.matrix`: one build job per platform, each building every product in turn on one
+/// shared Cargo target directory, so the engine they share is compiled once per platform. Each
+/// product is still packaged, checked and uploaded on its own (`.github/workflows/build.yaml`).
 pub fn matrix(m: &Manifest) -> String {
-    let include: Vec<serde_json::Value> = m
-        .products
-        .iter()
-        .flat_map(|p| {
-            PLATFORMS.iter().map(move |(platform, os)| serde_json::json!({ "product": p.id, "name": p.name, "platform": platform, "os": os }))
-        })
-        .collect();
+    let products = ids(m);
+    let include: Vec<serde_json::Value> =
+        PLATFORMS.iter().map(|(platform, os)| serde_json::json!({ "platform": platform, "os": os, "products": products })).collect();
     serde_json::json!({ "include": include }).to_string()
+}
+
+/// Every product id, in manifest order, separated by spaces.
+pub fn ids(m: &Manifest) -> String {
+    m.products.iter().map(|p| p.id.as_str()).collect::<Vec<_>>().join(" ")
 }
 
 /// One value of one product, or of `legacy_suite` (the old combined installer, which the release
@@ -431,10 +439,15 @@ mod tests {
     }
 
     #[test]
-    fn the_matrix_covers_every_product_on_every_platform() {
+    fn the_matrix_builds_every_product_on_every_platform() {
         let m = load(&repo()).unwrap();
         let v: serde_json::Value = serde_json::from_str(&matrix(&m)).unwrap();
-        assert_eq!(v["include"].as_array().unwrap().len(), m.products.len() * PLATFORMS.len());
+        let include = v["include"].as_array().unwrap();
+        assert_eq!(include.len(), PLATFORMS.len());
+        for leg in include {
+            assert_eq!(leg["products"].as_str().unwrap(), "psg-pdf psg-academic-pdf");
+        }
+        assert_eq!(ids(&m), "psg-pdf psg-academic-pdf");
         assert_eq!(get(&m, "psg-academic-pdf", "binaries").unwrap(), "psg-academic-pdf");
         assert!(get(&m, "psg-pdf", "nope").is_err());
     }

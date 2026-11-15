@@ -6,7 +6,7 @@
 # MIME type, AppStream metadata and icons are the freedesktop ones Linux uses.
 #
 # Usage: packaging/freebsd/package.sh [--skip-build]
-# Needs: bash, a Rust toolchain, curl and the network (the OCR models), and the GUI libraries in .github/workflows/freebsd.yml.
+# Needs: bash, a Rust toolchain, curl and the network (the OCR models), and the GUI libraries the FreeBSD job of .github/workflows/build.yaml installs.
 set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"

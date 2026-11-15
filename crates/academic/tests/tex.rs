@@ -1,5 +1,12 @@
 //! End-to-end compilation with the local TeX installation. Each test returns early (and says so)
 //! when pdflatex, latexmk or biber is not installed, so the suite passes on machines without TeX.
+//! CI sets `PSG_ACADEMIC_TEX_REQUIRED=1` (.github/workflows/build.yaml), which turns a missing tool
+//! into a failure: a skipped TeX test there would read as a pass.
+
+/// Whether a missing TeX tool or Pandoc must fail the test instead of skipping it.
+fn required() -> bool {
+    std::env::var_os("PSG_ACADEMIC_TEX_REQUIRED").is_some_and(|v| v == "1")
+}
 
 use std::time::Duration;
 
@@ -11,6 +18,7 @@ fn tex() -> Option<TexEnvironment> {
     if missing.is_empty() {
         Some(env)
     } else {
+        assert!(!required(), "PSG_ACADEMIC_TEX_REQUIRED=1 but {} not installed", missing.join(", "));
         eprintln!("skipped: {} not installed", missing.join(", "));
         None
     }
@@ -101,10 +109,12 @@ fn an_imported_word_manuscript_compiles() {
     use psg_academic::pandoc::{ManuscriptImporter, PandocImporter};
     let Some(env) = tex() else { return };
     let Some(pandoc) = env.pandoc.path.clone() else {
+        assert!(!required(), "PSG_ACADEMIC_TEX_REQUIRED=1 but pandoc is not installed");
         eprintln!("skipped: pandoc not installed");
         return;
     };
     if env.pandoc.version.as_deref().and_then(psg_academic::pandoc::sandbox_supported) == Some(false) {
+        assert!(!required(), "PSG_ACADEMIC_TEX_REQUIRED=1 but this Pandoc can't convert sandboxed");
         eprintln!("skipped: {} can't convert sandboxed", env.pandoc.version.as_deref().unwrap_or("pandoc"));
         return;
     }

@@ -170,12 +170,14 @@ cargo xtask products check          # the two products' identities agree everywh
 cargo xtask assets                  # asset attribution (ATTRIBUTION.toml)
 ```
 
-`.github/workflows/psg-release.yml` is the one workflow for the installers. On every pull request
-it builds each product for Linux, Windows and macOS (a product × platform matrix), verifies
-signatures and checksums, installs both products alone and side by side and uninstalls them one
-at a time, migrates a 0.18 suite install (Windows and Linux), and runs the academic and app tests
-against a real TeX Live, latexmk, Biber and Pandoc; it publishes only from pushes to `beta` and
-`main` ([docs/releasing.md](docs/releasing.md)).
+`.github/workflows/build.yaml` ("PSG PDF — Build & Release") is the repository's only workflow
+([docs/ci.md](docs/ci.md)). Every pull request runs the quick checks: `cargo xtask ci` (format,
+clippy, tests, cargo-deny, assets, layers) with the academic tests against a real TeX Live,
+latexmk, Biber and Pandoc. Pushes to `beta` and `main`, and pull requests that change the
+packaging or carry the `full-ci` label, also build both products for Linux, Windows and macOS (one
+job per platform), verify signatures and checksums, install both products alone and side by side,
+uninstall them one at a time, and migrate a 0.18 suite install (Windows and Linux). It publishes
+only from pushes to `beta` and `main` ([docs/releasing.md](docs/releasing.md)).
 
 ## Releases
 

@@ -2874,7 +2874,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "logo"
 usage = "The one editable source of both product logos; packaging/psg-icons.py renders every platform icon from it (assets/brand/README.md)"
-sha256 = "cc9b5f901668c334b6e78f788cd08915d54dc1c01d720eaede0654800510744b"
+sha256 = "5816507aee6284300054929d6a138618ecba4d95d3155a0b9dc09cea84767448"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/24x24/apps/com.panoramascholarly.psgacademicpdf.png"
@@ -2885,7 +2885,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "065350f51d03370ff971793ab5c0ea16628cecfd060a5af91268380d3a68d717"
+sha256 = "c22e5506b4639713bdbf3569ee41559bfae8fc2bb07c12f13c782c0d91ae5b87"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/512x512/apps/com.panoramascholarly.psgacademicpdf.png"
@@ -3072,7 +3072,7 @@ name = "craft-fonts"
 option = "CRAFT_FONTS_DIR"
 title = "Japanese fonts: BIZ UDPGothic (Regular, Bold), Shippori Mincho, BIZ UDMincho; native Simplified Chinese font: LXGW WenKai Lite; Arabic font: Noto Sans Arabic"
 author = "The BIZ UDGothic and BIZ UDMincho Project Authors (Morisawa Inc.), The Shippori Mincho Project Authors (FONTDASU), LXGW and the original Klee Project Authors / Fontworks (LXGW WenKai Lite), The Noto Project Authors (Noto Sans Arabic)"
-source = "https://github.com/storytold/craft-fonts (pinned by commit in craft-fonts.rev, fetched by packaging/fetch-craft-fonts.sh for .github/workflows/psg-release.yml, and in .github/workflows/ci.yml); LXGW WenKai Lite from https://github.com/lxgw/LxgwWenKai-Lite/releases/tag/v1.530 (commit b712c83d98acf977bacfb7fb010207802808bda9)"
+source = "https://github.com/storytold/craft-fonts (pinned by commit in craft-fonts.rev, fetched by packaging/fetch-craft-fonts.sh for the release builds and checked out by the gate in .github/workflows/build.yaml); LXGW WenKai Lite from https://github.com/lxgw/LxgwWenKai-Lite/releases/tag/v1.530 (commit b712c83d98acf977bacfb7fb010207802808bda9)"
 licence = "OFL-1.1"
 attribution = "https://github.com/storytold/craft-fonts/blob/main/ATTRIBUTION.md"
 kind = "font"
@@ -3187,7 +3187,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "2c6d128dbf69225cd61fa18e46410e13f0cdafc0a861c319e743c49e27a31d0c"
+sha256 = "d7fd7b7c02afa48a45ca91ad110c3a602a10b3312970a2076c1c2ec9edbc3a0a"
 
 [[asset]]
 path = "assets/app-icon/hicolor/24x24/apps/com.panoramascholarly.psgpdf.png"
@@ -3198,7 +3198,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "cd1d7548f0eaa0ca3b5312134ab27581623a63d9760fecbb8aa51f319ae15f2b"
+sha256 = "e2c450bd77c233b1eeffc917cab2188eb314c83f708bd88879427b19aaa2183f"
 
 [[asset]]
 path = "assets/app-icon/hicolor/256x256/apps/com.panoramascholarly.psgpdf.png"
@@ -3220,7 +3220,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "9fd47e057b5f3b7f3b9a6b5e96678942d2a2cbef5af4f084c54ee4586f868da0"
+sha256 = "880dc3dd3369650bef53184a2af04fb5ac90a35bd773b3ee932c79148faf9a93"
 
 [[asset]]
 path = "assets/app-icon/hicolor/48x48/apps/com.panoramascholarly.psgpdf.png"
@@ -3231,7 +3231,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "a0a298899b861001fb3387abca69741cfd4011b69fbe4f14248e4aca584fd402"
+sha256 = "a5d21d3d537c77a5f1385b0955e9697de18f623029f0977c8241341c0a1c1495"
 
 [[asset]]
 path = "assets/app-icon/hicolor/512x512/apps/com.panoramascholarly.psgpdf.png"
@@ -3297,7 +3297,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "9bf3d7d9190183b6b21ce913eb05c0402ae1797418178e0f005cd77eff6c824e"
+sha256 = "6ccc86290f9d031f9c0711b76b71512c52b622eed4e4fa8c62d97213e26f1ddc"
 
 [[asset]]
 path = "assets/app-icon/psg-pdf.ico"
@@ -3308,7 +3308,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon/LICENSE.txt"
 kind = "icon"
 usage = "PSG PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "704dde0e6c433f518dd2740da60db3d45a12f79b20522c9b25a478c268d1b21e"
+sha256 = "48a27d8a92c0eeb93a7ae1ab03ebfdd2aeac2c7c27e9762eec717dee376e1628"
 
 [[asset]]
 path = "assets/app-icon/psg-pdf.svg"
@@ -3341,7 +3341,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "e42226e887d65116a4ae567de4b06e16f6373861443207639581b602fe1a26bc"
+sha256 = "e8ba21a4eabbd8e60805312040374bccab9f608e52779c19cf772dc1c4f1856b"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/256x256/apps/com.panoramascholarly.psgacademicpdf.png"
@@ -3363,7 +3363,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "f2781013ed6df7aa7f4df0b615e9c4854943e14bbe913b9c188a4cc13d41043f"
+sha256 = "f5e527b1150b6f17c300f947c54c165c1190c40da414d694128ae40d7e8c950b"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/48x48/apps/com.panoramascholarly.psgacademicpdf.png"
@@ -3374,7 +3374,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "7862da3c4afeae8cec560509ad25aac74325b5f63db57eb560df8f3cdfda9ac9"
+sha256 = "a77c7952325ed9f1f5d95edfd69ff26fbd2cd6032de3ce67ccd956bb3658bc13"
 
 [[asset]]
 path = "assets/app-icon-academic/hicolor/64x64/apps/com.panoramascholarly.psgacademicpdf.png"
@@ -3429,7 +3429,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
-sha256 = "147a254bf0a150d4bb90eb9f961f24ce20486a59ce8710f7af53d496ebf58142"
+sha256 = "481daf7c63f8e4c590984da87e73045fd88407a2205105496498d47eeb002317"
 
 [[asset]]
 path = "assets/app-icon-academic/psg-academic-pdf.icns"
@@ -3440,7 +3440,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "assets/app-icon-academic/LICENSE.txt"
 kind = "icon"
 usage = "PSG Academic PDF macOS app bundle icon"
-sha256 = "5feff59b1306b7fc2df231ac6bee6b3ddc2a6d9e0e963c56e00ed3afd3906bc6"
+sha256 = "63ff1a0652de0721ff266177d3dc2fda2422529ec631173b37c370aa427ddee5"
 
 [[asset]]
 path = "assets/app-icon-academic/psg-academic-pdf.svg"

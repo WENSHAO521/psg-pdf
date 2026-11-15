@@ -12,7 +12,8 @@ and writes, per product:
     <dir>/hicolor/<n>x<n>/apps/<app id>.png  Linux icon theme, and hicolor/scalable/apps/<app id>.svg
 
 Sizes up to SMALL px leave out the master's `class="detail"` elements (keylines, ornaments,
-hairlines), which turn into noise at that size, and use its `class="compact"` stand-ins instead.
+hairlines), which turn into noise at that size, and use its `class="compact"` elements instead:
+the same line art with heavier strokes, so a 16 px icon is still the approved design.
 
 Contributor-original artwork, MIT OR Apache-2.0, like the repository.
 
