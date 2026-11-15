@@ -9,6 +9,17 @@ History before the line below belongs to PdfCraft, the project both products are
 
 <!-- changelog-base: d2916decb3d948b7e404ee839d7542692bf18d92 -->
 
+## v0.20.0 (2026-11-15)
+
+**Features**
+
+- **update** PSG PDF and PSG Academic PDF download and install their own updates: each release is signed with PSG's key, and an update installs only after its signature and checksum check out (b39c3c4c)
+- **update** Get beta updates: an opt-in beta channel in both apps, confirmed a second time, that updates to the newest release, beta or stable (b39c3c4c)
+
+**Bug Fixes**
+
+- **website** The download buttons download the right file for each product and platform directly (3415365b)
+
 ## v0.19.0 (2026-11-15)
 
 **Breaking Changes**
