@@ -4,14 +4,14 @@
   <img src="assets/app-icon-academic/hicolor/128x128/apps/com.panoramascholarly.psgacademicpdf.png" width="96" height="96" alt="PSG Academic PDF icon">
 </p>
 
-<h1 align="center">PSG PDF Suite</h1>
+<h1 align="center">PSG PDF · PSG Academic PDF</h1>
 
 <p align="center">
   <b>PSG PDF</b> and <b>PSG Academic PDF</b>, native desktop PDF software from Panorama Scholarly Group.<br>
   Rust · egui/eframe · offline · Windows, macOS and Linux
 </p>
 
-The suite has two separate desktop programs that share one PDF engine. That engine is
+Two independent desktop products, built from one Rust workspace, that share one PDF engine. That engine is
 [PdfCraft](https://github.com/storytold/pdfcraft) (MIT OR Apache-2.0), kept in this repository's
 `crates/` and not duplicated.
 
@@ -20,8 +20,9 @@ The suite has two separate desktop programs that share one PDF engine. That engi
 | **PSG PDF** | `psg-pdf` (`apps/psg-pdf`) | The general PDF app. It keeps every PdfCraft feature: reading, annotation, editing, organizing pages, combining, splitting, converting, forms, signing, redaction, OCR and printing. |
 | **PSG Academic PDF** | `psg-academic-pdf` (`apps/psg-academic-pdf`) | Production typesetting for **accepted** articles. It combines a journal template, publication metadata and the manuscript, compiles them with **pdfLaTeX** through **latexmk** and **BibLaTeX/Biber** from the local TeX Live, then lets you preview and export the PDF. It has no submission, peer-review or editorial workflow. |
 
-Both programs run fully offline. Neither one uploads anything, and PSG PDF does not check for
-updates at startup.
+Each product is installed, updated and uninstalled on its own, and either works without the
+other. Both run fully offline: neither uploads anything, and neither checks for updates unless you
+ask it to (**Help ▸ Check for updates** in PSG PDF, **Check for updates…** in PSG Academic PDF).
 
 ## Repository layout
 
@@ -39,9 +40,12 @@ crates/
                             DOCX import interface (Pandoc, experimental)
   engine/ render/ cos/ …    the PdfCraft PDF engine, shared by both programs
   ui-egui/                  PSG PDF's user interface (brand.rs holds the PSG name)
-templates/academic/         journal templates (psg-article is compiled into the app)
-assets/app-icon/            PSG PDF icon (original; packaging/psg-icons.py)
-assets/app-icon-academic/   PSG Academic PDF icon (original; packaging/psg-icons.py)
+templates/academic/         journal templates (both are also compiled into the app)
+assets/brand/               the editable PSG logo master (one SVG for both products)
+assets/app-icon/            PSG PDF icons, generated from the master (packaging/psg-icons.py)
+assets/app-icon-academic/   PSG Academic PDF icons, generated from the master
+packaging/products.toml     each product's identity: ids, upgrade codes, packages, associations
+docs/products.md            the two products, their installers and migrating from the old suite
 docs/academic.md            PSG Academic PDF: architecture, security, templates
 docs/upstream/              the upstream PdfCraft README, kept for reference
 ```
@@ -79,26 +83,33 @@ translated interface says PSG PDF (crates/ui-egui/build.rs).
 Japanese interface text and writing Japanese into PDFs need the optional `CRAFT_FONTS_DIR` build
 input, as in PdfCraft (see AGENTS.md §1.4). Without it everything else works.
 
-### One suite installer, two separate apps
+### Two independent products
 
-Each platform has one PSG PDF Suite package that installs both apps. Inside it they stay separate
-programs: each builds on its own (`cargo build -p psg-pdf` or `-p psg-academic-pdf`), runs on its
-own, and keeps its own app ID and settings folders, so they never share or overwrite each other's
-state. PSG Academic PDF's **Open in PSG PDF** button uses the PSG PDF installed beside it.
+PSG PDF and PSG Academic PDF are separate products with separate installers. Each has its own
+identity, recorded once in [`packaging/products.toml`](packaging/products.toml) and checked
+against every packaging file by `cargo xtask products check`. They never share or overwrite each
+other's files, settings or updates. See [docs/products.md](docs/products.md).
 
 | | PSG PDF | PSG Academic PDF |
 |---|---|---|
-| Cargo package / binary | `psg-pdf` | `psg-academic-pdf` |
+| Cargo package / binary | `psg-pdf` (and `pdfcraft-cli`) | `psg-academic-pdf` |
 | App ID (Linux desktop, macOS bundle) | `com.panoramascholarly.psgpdf` | `com.panoramascholarly.psgacademicpdf` |
-| Settings and data folders (Linux) | `~/.config/psg-pdf`, `~/.local/share/psgpdf` (logs, recovery) | `~/.local/share/com.panoramascholarly.psgacademicpdf` (window state), `~/.local/share/psgacademicpdf/projects` |
-| macOS | `PSG PDF.app` | `PSG Academic PDF.app` |
-| Windows Start menu | PSG PDF | PSG Academic PDF |
+| Windows install folder | `Panorama Scholarly Group\PSG PDF` | `Panorama Scholarly Group\PSG Academic PDF` |
+| Linux package | `psg-pdf` | `psg-academic-pdf` |
+| Opens | PDF (offered, never forced) | `.tex` and `.docx` manuscripts (each starts a new project) |
+| Update channel | release files named `psg-pdf-…` | release files named `psg-academic-pdf-…` |
+| Brand colour | deep blue `#1e4384` | academic purple `#5b2a78` |
 
-| Platform | Suite package | Script |
+| Platform | PSG PDF | PSG Academic PDF |
 |---|---|---|
-| macOS | `psg-pdf-suite-<v>-macos-<arch>.dmg`, both apps beside an Applications link | `packaging/macos/package.sh` |
-| Linux | deb, rpm and tar with both apps, desktop entries and icons (the AppImage starts PSG PDF) | `packaging/linux/package.sh` |
-| Windows | one MSI and one portable zip with `psg-pdf.exe`, `psg-academic-pdf.exe` and `pdfcraft-cli.exe` | `packaging/windows/package.ps1` |
+| Windows | `psg-pdf-<v>-windows-x64.msi`, `…-portable.zip` | `psg-academic-pdf-<v>-windows-x64.msi`, `…-portable.zip` |
+| macOS | `psg-pdf-<v>-macos-universal.dmg` | `psg-academic-pdf-<v>-macos-universal.dmg` |
+| Linux | `psg-pdf-<v>-linux-x86_64.deb` / `.rpm` / `.AppImage` / `.tar.gz` | `psg-academic-pdf-<v>-linux-x86_64.deb` / `.rpm` / `.AppImage` / `.tar.gz` |
+| Script | `packaging/<os>/package.* --product psg-pdf` | `packaging/<os>/package.* --product psg-academic-pdf` |
+
+PSG Academic PDF's **Open in PSG PDF** finds a separately installed PSG PDF (and falls back to the
+system's PDF viewer without it). Installs of the old combined **PSG PDF Suite** (0.18.x) are
+migrated safely: see [docs/products.md](docs/products.md#migrating-from-the-suite).
 
 ### TeX for PSG Academic PDF
 
@@ -116,18 +127,24 @@ Run `psg-academic-pdf check-tex` to see what was found.
 
 ## Using PSG Academic PDF
 
-1. Choose a journal template and press **New project**. This creates a project folder from the
+1. Choose a journal template (**PSG Research Article**, numbered citations, or **PSG Humanities
+   and Social Sciences Article**, author-year citations and footnotes) and press **New project**.
+   Opening a `.tex` or `.docx` file with PSG Academic PDF (double-click, Open with, or a drop on
+   the window) starts a new project around it from the selected template. This creates a project folder from the
    template, filled with sample metadata.
 2. Import the manuscript with **Manuscript (.tex)…**. If the file is a complete LaTeX document, only
    its body is kept, because the template supplies the preamble and the title block. You can
-   also try **Word (.docx)…**, an experimental import through the local Pandoc. Add
+   also try **Word (.docx)…**, an experimental import through the local Pandoc; afterwards the
+   Activity log names anything pdfLaTeX can't typeset as it is (characters its fonts lack, EMF or
+   TIFF figures). Add
    bibliographies and figures with **Bibliography / figures…**.
 3. Fill in the **publication metadata**: journal, volume, issue, pages, DOI, title, authors,
    affiliations, ORCID iDs, abstract, keywords, dates, licence and copyright. Problems are shown
    under the form.
 4. Press **▶ Compile**. latexmk runs pdfLaTeX and Biber in the project folder, with a time limit
    that you can cancel. When it succeeds the PDF opens in **PDF preview**, drawn by the shared
-   PdfCraft renderer. Errors appear under **Problems** with file and line, and the full
+   PdfCraft renderer. Errors appear under **Problems** with file and line and, for the common
+   ones, what usually causes them and how to fix them; the full
    latexmk output and TeX log have their own tabs.
 5. **Export PDF…** saves the result. **Open in PSG PDF** opens it in the general app for review.
 
@@ -149,18 +166,23 @@ cargo test -p psg-academic-pdf      # academic app
 cargo test -p psg-pdf               # PSG PDF app
 cargo test -p pdfcraft-ui-egui      # shared interface (long)
 cargo xtask layers                  # dependency layering
+cargo xtask products check          # the two products' identities agree everywhere
 cargo xtask assets                  # asset attribution (ATTRIBUTION.toml)
 ```
 
-`.github/workflows/psg-release.yml` is the one workflow for the installers. On every pull request
-it packages the suite for Linux, Windows and macOS, smoke-tests the binaries and, on Linux, runs
-the academic and app tests against a real TeX Live, latexmk, Biber and Pandoc; it publishes only
-from pushes to `beta` and `main` ([docs/releasing.md](docs/releasing.md)).
+`.github/workflows/build.yaml` ("PSG PDF — Build & Release") is the repository's only workflow
+([docs/ci.md](docs/ci.md)). Every pull request runs the quick checks: `cargo xtask ci` (format,
+clippy, tests, cargo-deny, assets, layers) with the academic tests against a real TeX Live,
+latexmk, Biber and Pandoc. Pushes to `beta` and `main`, and pull requests that change the
+packaging or carry the `full-ci` label, also build both products for Linux, Windows and macOS (one
+job per platform), verify signatures and checksums, install both products alone and side by side,
+uninstall them one at a time, and migrate a 0.18 suite install (Windows and Linux). It publishes
+only from pushes to `beta` and `main` ([docs/releasing.md](docs/releasing.md)).
 
 ## Releases
 
 Pull requests go into `beta`. Every push to `beta` publishes a pre-release
-(`vX.Y.Z-beta.N`) with the suite installers for macOS, Windows and Linux; merging `beta` into
+(`vX.Y.Z-beta.N`) with both products' installers for macOS, Windows and Linux; merging `beta` into
 `main` with a `chore(release): vX.Y.Z` commit publishes the stable release. Commit subjects are
 Conventional Commits, and `CHANGELOG.md` is generated from them. See
 [docs/releasing.md](docs/releasing.md).

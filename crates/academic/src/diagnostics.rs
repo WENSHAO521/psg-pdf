@@ -35,6 +35,45 @@ impl std::fmt::Display for Diagnostic {
     }
 }
 
+impl Diagnostic {
+    /// What usually causes this problem and what to do about it, for the common ones.
+    pub fn hint(&self) -> Option<&'static str> {
+        let m = self.message.as_str();
+        let has = |s: &str| m.contains(s);
+        Some(if has("Undefined control sequence") {
+            "A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it."
+        } else if has("not set up for use with LaTeX") || has("Unicode character") {
+            "pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\\alpha$, for example)."
+        } else if has("File `") && has("not found") {
+            "A file the manuscript uses is not in the project. Add it with \"Bibliography / figures…\" and check the spelling: file names are case-sensitive."
+        } else if has("Missing $ inserted") {
+            "Mathematics outside a formula, or a stray _ or ^ in text. Put formulas in $…$, and write \\_ for an underscore in text."
+        } else if has("Missing \\begin{document}") {
+            "Text before \\begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed."
+        } else if has("Runaway argument") || has("Too many }'s") || has("Extra }") || has("Missing } inserted") {
+            "Unbalanced braces: a { without its } (or the other way round) near this line."
+        } else if has("Citation") && has("undefined") {
+            "This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key."
+        } else if has("Reference") && has("undefined") {
+            "No \\label with this name. Check the spelling of the \\ref and the \\label."
+        } else if has("There were undefined references") {
+            "Some citations or cross-references could not be resolved; the warnings above name them."
+        } else if has("Overfull \\hbox") {
+            "A line sticks out into the margin. Rephrase it, allow a hyphenation with \\-, or break a long URL or formula."
+        } else if has("Rerun to get") || has("Label(s) may have changed") || has("Please rerun") {
+            "latexmk normally reruns until this goes away. If it stays, turn on \"Rebuild everything each time\" and compile again."
+        } else if self.file.as_deref() == Some("biber") && (has("Cannot find") || has("datasource")) {
+            "Biber could not read the bibliography file. Check that the .bib file named in main.tex is in the project."
+        } else if self.file.as_deref() == Some("biber") && has("BibTeX subsystem") {
+            "The .bib file has a syntax error near the entry named here: a missing comma, brace or quote."
+        } else if has("Emergency stop") || has("job aborted") || has("Fatal error occurred") {
+            "TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it."
+        } else {
+            return None;
+        })
+    }
+}
+
 /// Source extensions a `file:line: message` line may name (`-file-line-error` output).
 const SOURCE_EXTENSIONS: &[&str] = &[".tex", ".sty", ".cls", ".bbl", ".def", ".cfg", ".clo", ".ltx", ".aux"];
 
@@ -99,7 +138,8 @@ pub fn parse_tex_log(log: &str) -> Vec<Diagnostic> {
                 message.push_str(cont.trim());
                 j += 1;
             }
-            let line_no = message.rfind("on input line ").and_then(|at| message.get(at + 14..)).and_then(|rest| {
+            let line_no = ["on input line ", "at lines ", "at line "].iter().find_map(|marker| {
+                let rest = message.get(message.rfind(marker)? + marker.len()..)?;
                 let digits: String = rest.chars().take_while(char::is_ascii_digit).collect();
                 digits.parse().ok()
             });
@@ -113,7 +153,9 @@ pub fn parse_tex_log(log: &str) -> Vec<Diagnostic> {
 }
 
 fn warning_text(line: &str) -> Option<&str> {
-    if line.starts_with("LaTeX Warning:") || line.starts_with("pdfTeX warning") {
+    // Overfull boxes are text in the margin, which a typesetter fixes; underfull ones are only
+    // loose spacing and are left out.
+    if line.starts_with("LaTeX Warning:") || line.starts_with("pdfTeX warning") || line.starts_with("Overfull \\hbox") {
         return Some(line);
     }
     if line.starts_with("Package ") && line.contains(" Warning:") {
@@ -181,6 +223,36 @@ mod tests {
         assert_eq!(d.len(), 2);
         assert_eq!(d[0].line, Some(9));
         assert!(d[1].message.starts_with("Package biblatex Warning"));
+    }
+
+    #[test]
+    fn overfull_boxes_are_warnings_with_their_line() {
+        let log = "Overfull \\hbox (12.3pt too wide) in paragraph at lines 12--14\n[]\\T1/lmr/m/n/10 averyveryverylongword\n\nUnderfull \\hbox (badness 10000) in paragraph at lines 20--21\n";
+        let d = parse_tex_log(log);
+        assert_eq!(d.len(), 1, "{d:?}");
+        assert_eq!(d[0].severity, Severity::Warning);
+        assert_eq!(d[0].line, Some(12));
+        assert!(d[0].hint().unwrap().contains("margin"));
+    }
+
+    #[test]
+    fn common_problems_come_with_a_hint() {
+        let error = |m: &str| Diagnostic { severity: Severity::Error, file: None, line: None, message: m.to_owned() };
+        for (message, hint) in [
+            ("Undefined control sequence.", "misspelt"),
+            ("Package inputenc Error: Unicode character α (U+03B1)", "glyph"),
+            ("LaTeX Error: File `figure1.png' not found.", "case-sensitive"),
+            ("Missing $ inserted.", "underscore"),
+            ("LaTeX Warning: Citation 'smith2020' on page 1 undefined on input line 4.", "bibliography"),
+            ("LaTeX Warning: Reference `fig:a' on page 2 undefined on input line 9.", "\\label"),
+            ("Runaway argument?", "braces"),
+            ("Emergency stop.", "first error"),
+        ] {
+            assert!(error(message).hint().is_some_and(|h| h.contains(hint)), "{message}");
+        }
+        assert_eq!(error("Something nobody has seen before").hint(), None);
+        let biber = Diagnostic { severity: Severity::Error, file: Some("biber".into()), line: None, message: "Cannot find 'references.bib'!".into() };
+        assert!(biber.hint().unwrap().contains(".bib"));
     }
 
     #[test]

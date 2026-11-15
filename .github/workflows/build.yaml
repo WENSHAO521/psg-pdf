@@ -1,0 +1,425 @@
+name: PSG PDF — Build & Release
+
+# The one workflow of this repository: every check, build, install test and release of the two
+# independent products PSG PDF and PSG Academic PDF (packaging/products.toml, docs/products.md).
+# docs/ci.md describes it; packaging/ci/plan.sh decides what each run does:
+#
+#   Check    plan: product identities, changelog, git sources, then the shared gate (format,
+#            clippy, every test incl. TeX Live/Pandoc, cargo-deny, assets, layers, wasm)
+#   Build    one job per platform, building both products on one Cargo target directory
+#   Verify   on the same runner right after its build: install, side by side, uninstall, upgrade
+#            from the 0.18.x suite (Linux deb + rpm, Windows, macOS)
+#   Quality  SonarCloud, FreeBSD, Nix, house rules, packaging lint, fuzzing, macOS tests
+#   Release  beta / stable release from what passed (packaging/release-tag.sh, docs/releasing.md)
+#
+# | Event                          | Check          | Build + Verify | Quality                     | Release |
+# |--------------------------------|----------------|----------------|-----------------------------|---------|
+# | pull request                   | Linux          | `full-ci` label or packaging changes | SonarCloud; others by path  | never   |
+# | push to another branch         | Linux (skipped while a PR runs it) | – | by path              | never   |
+# | push to beta                   | Linux, Windows | yes            | by path                     | vX.Y.Z-beta.N |
+# | push to main                   | Linux, Windows | yes            | SonarCloud, FreeBSD, by path| vX.Y.Z when CHANGELOG.md has it |
+# | schedule (nightly)             | –              | –              | fuzz, macOS tests, FreeBSD, Nix | never |
+# | manual: quick/full/release-check/quality | as named | full, release-check | release-check, quality | never |
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    # `labeled` so that adding `full-ci` to an open pull request starts a full run.
+    types: [opened, synchronize, reopened, labeled]
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "quick: checks only; full: + installers and install tests; release-check: full + every quality check (nothing is published); quality: the nightly checks"
+        type: choice
+        options: [quick, full, release-check, quality]
+        default: quick
+
+permissions:
+  contents: read
+
+# A newer push to a pull request or a feature branch replaces its older run; runs on beta and main
+# always finish (each may publish). Adding a label other than `full-ci` gets a group of its own,
+# so it neither cancels a run nor does anything (the plan job skips).
+concurrency:
+  group: build-${{ github.event_name }}-${{ github.event.action == 'labeled' && github.event.label.name != 'full-ci' && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref != 'refs/heads/main' && github.ref != 'refs/heads/beta') }}
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  # The last combined-installer release, installed by the migration tests.
+  LEGACY_SUITE_TAG: v0.18.1-beta.7
+
+jobs:
+  # ---- Check ---------------------------------------------------------------------------------
+  plan:
+    name: Check · plan, identities, changelog, sources
+    if: github.event.action != 'labeled' || github.event.label.name == 'full-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: read # plan.sh: is there an open pull request for this branch?
+    outputs:
+      mode: ${{ steps.plan.outputs.mode }}
+      quality: ${{ steps.plan.outputs.quality }}
+      sonar: ${{ steps.plan.outputs.sonar }}
+      freebsd: ${{ steps.plan.outputs.freebsd }}
+      nix: ${{ steps.plan.outputs.nix }}
+      house_rules: ${{ steps.plan.outputs.house_rules }}
+      packaging: ${{ steps.plan.outputs.packaging }}
+      tag: ${{ steps.plan.outputs.tag }}
+      version: ${{ steps.plan.outputs.version }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # the changelog and the changed files need the history
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: plan
+          save-if: ${{ github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/main' }}
+      - name: What this run does
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_MODE: ${{ inputs.mode }}
+          PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          packaging/ci/plan.sh | tee -a "$GITHUB_OUTPUT"
+          {
+            echo "### Plan"
+            sed 's/^/- /' "$GITHUB_OUTPUT" | grep -E '^- (mode|quality|tag)='
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Product identities and build matrix
+        id: matrix
+        run: |
+          set -euo pipefail
+          # Upgrade codes, package names, app ids, update stems and file associations agree with
+          # packaging/products.toml, and no two products share one.
+          cargo xtask products check
+          echo "matrix=$(cargo xtask products matrix)" >> "$GITHUB_OUTPUT"
+      - name: Changelog and commit subjects
+        # Warnings only for the subjects: one that is not a Conventional Commit is left out.
+        run: |
+          cargo xtask changelog verify
+          cargo xtask changelog lint
+      - name: Git dependencies come from storytold
+        run: packaging/ci/git-sources.sh
+      - name: Windows font notice regressions
+        shell: pwsh
+        run: ./packaging/windows/test-font-notices.ps1
+
+  gate:
+    name: Check
+    needs: plan
+    if: needs.plan.outputs.mode != 'none'
+    # Tracks @main so suite-wide CI fixes reach every app without a PR in each repository.
+    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    with:
+      # Windows too in full runs (beta, main, `full-ci`, manual full). No macOS here: the org's
+      # macOS runners are kept for the release builds; the nightly macOS tests are below.
+      os: ${{ needs.plan.outputs.mode == 'full' && '["ubuntu-24.04","windows-latest"]' || '["ubuntu-24.04"]' }}
+      # Same craft-fonts commit as FreeBSD below and craft-fonts.rev (the release builds).
+      craft-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
+      # egui/winit/rfd, the independent oracles (crates/oracle), and PSG Academic PDF's TeX Live,
+      # latexmk, Biber and Pandoc (3.1.3 on Ubuntu 24.04, new enough for --sandbox), installed
+      # once here instead of in a job of their own.
+      packages: >-
+        libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev
+        libgtk-3-dev qpdf poppler-utils
+        texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+        lmodern texlive-bibtex-extra latexmk biber pandoc
+      # cargo-deny for the dependency and licence check of `cargo xtask ci`.
+      tools: cargo-nextest@0.9.150,cargo-deny@0.20.2
+      # A missing oracle or TeX tool fails the job instead of printing a skip notice that reads
+      # as a pass.
+      linux-env: |
+        PDFCRAFT_ORACLES_REQUIRED=1
+        PSG_ACADEMIC_TEX_REQUIRED=1
+      windows-env: PDFCRAFT_REQUIRE_WINRES=1
+      command: |
+        cargo xtask ci
+        packaging/ci/academic-smoke.sh
+      # Windows checks what differs by platform: the build (with resources) and the tests.
+      windows-command: |
+        cargo clippy --workspace --all-targets --locked -- -D warnings
+        cargo test --workspace --locked
+
+  # ---- Build + Verify ------------------------------------------------------------------------
+  build:
+    name: Build · ${{ matrix.platform }} (PSG PDF + PSG Academic PDF)
+    needs: plan
+    # Not after the gate: the builds take longest, and the release waits for both anyway.
+    if: needs.plan.outputs.mode == 'full'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 180
+    env:
+      VERSION: ${{ needs.plan.outputs.version }}
+      CRAFT_I18N_REQUIRED: "1"
+      CRAFT_FONTS_REQUIRED: "1"
+      DIST: ${{ github.workspace }}/dist/release
+      # Sign only what may be published: pull requests and manual runs build unsigned installers.
+      SIGN: ${{ github.event_name == 'push' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+        with:
+          targets: ${{ matrix.platform == 'macos-universal' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      # One cache per platform for both products (they share most of the workspace). Written
+      # only by beta and main, so pull requests read it without replacing it with their own.
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: build-${{ matrix.platform }}
+          save-if: ${{ github.ref == 'refs/heads/beta' || github.ref == 'refs/heads/main' }}
+      - name: Tools (Linux build dependencies and nfpm; WiX on Windows)
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$RUNNER_OS" in
+            Linux)
+              sudo apt-get update
+              sudo apt-get install -y --no-install-recommends \
+                libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libgtk-3-dev \
+                desktop-file-utils zsync
+              # nfpm 2.43.0, checked against the release's checksums.txt.
+              curl -fsSL -o "$RUNNER_TEMP/nfpm.deb" https://github.com/goreleaser/nfpm/releases/download/v2.43.0/nfpm_2.43.0_amd64.deb
+              echo "4a4402f8f9ea87c669d6a62b333f8e268439974754dd886a01731ecaf9fa6d66  $RUNNER_TEMP/nfpm.deb" | sha256sum -c -
+              sudo dpkg -i "$RUNNER_TEMP/nfpm.deb"
+              ;;
+            Windows) dotnet tool install --global wix --version 5.0.2 ;;
+          esac
+          # Release builds embed the translations and the craft-fonts faces (AGENTS.md §1.4); the
+          # *_REQUIRED variables above make a missing one a build error.
+          packaging/fetch-craft-i18n.sh "$RUNNER_TEMP/craft-i18n"
+          packaging/fetch-craft-fonts.sh "$RUNNER_TEMP/craft-fonts"
+          echo "CRAFT_I18N_DIR=$RUNNER_TEMP/craft-i18n" >> "$GITHUB_ENV"
+          echo "CRAFT_FONTS_DIR=$RUNNER_TEMP/craft-fonts" >> "$GITHUB_ENV"
+          # A release's binaries report the release version; the change stays on the runner.
+          # Without a tag (pull requests, manual runs) the Cargo.toml version is kept.
+          if [[ -n "$VERSION" && "$(cargo xtask version)" != "$VERSION" ]]; then cargo xtask version set "$VERSION"; fi
+      - name: Import the Developer ID certificate
+        if: runner.os == 'macOS'
+        env:
+          APPLE_CERTIFICATE: ${{ env.SIGN == 'true' && secrets.APPLE_CERTIFICATE || '' }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ env.SIGN == 'true' && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
+          KEYCHAIN_PASSWORD: ${{ env.SIGN == 'true' && secrets.KEYCHAIN_PASSWORD || '' }}
+        run: packaging/macos/import-cert.sh
+      # Package both products, start their programs, and sort the files into one folder per
+      # product with its SHA-256 list (a file named after neither product fails the build).
+      - name: Build and package both products
+        shell: bash
+        env:
+          APPLE_ID: ${{ env.SIGN == 'true' && secrets.APPLE_ID || '' }}
+          APPLE_PASSWORD: ${{ env.SIGN == 'true' && secrets.APPLE_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ env.SIGN == 'true' && secrets.APPLE_TEAM_ID || '' }}
+          WINDOWS_CERTIFICATE: ${{ env.SIGN == 'true' && secrets.WINDOWS_CERTIFICATE || '' }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ env.SIGN == 'true' && secrets.WINDOWS_CERTIFICATE_PASSWORD || '' }}
+        run: packaging/ci/build-products.sh "${{ matrix.platform }}" ${{ matrix.products }}
+      - name: Verify signatures
+        shell: bash
+        env:
+          SIGNED: ${{ (env.SIGN == 'true' && ((runner.os == 'Windows' && secrets.WINDOWS_CERTIFICATE != '') || (runner.os == 'macOS' && secrets.APPLE_CERTIFICATE != '' && secrets.APPLE_ID != ''))) && '1' || '0' }}
+        run: packaging/ci/verify-signatures.sh "${{ matrix.platform }}" "$SIGNED" ${{ matrix.products }}
+      # Install, coexist, uninstall and migrate on this runner, as soon as its own build is done.
+      - name: Install tests (install, side by side, uninstall, upgrade from the suite)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SIGNED: ${{ (env.SIGN == 'true' && secrets.APPLE_CERTIFICATE != '' && secrets.APPLE_ID != '') && '1' || '0' }}
+        run: packaging/ci/verify-installs.sh "${{ matrix.platform }}"
+      # One artifact per product and platform, uploaded only once the install tests passed: the
+      # release takes only these, so it never ships an untested package or mixes the products.
+      - name: Upload PSG PDF
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: psg-pdf-${{ matrix.platform }}
+          path: dist/upload/psg-pdf/*
+          if-no-files-found: error
+          retention-days: 7
+      - name: Upload PSG Academic PDF
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: psg-academic-pdf-${{ matrix.platform }}
+          path: dist/upload/psg-academic-pdf/*
+          if-no-files-found: error
+          retention-days: 7
+      # For looking into a failure: what was built, never published.
+      - name: Upload the untested packages
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: untested-${{ matrix.platform }}
+          path: dist/upload/
+          if-no-files-found: ignore
+          retention-days: 3
+
+  # ---- Quality -------------------------------------------------------------------------------
+  sonarcloud:
+    name: Quality · SonarCloud
+    needs: plan
+    if: needs.plan.outputs.sonar == '1'
+    # Tracked at @main so org-wide CI improvements propagate without PR churn.
+    uses: storytold/craft-common-actions/.github/workflows/sonarcloud.yml@main
+    secrets: inherit
+
+  freebsd:
+    name: Quality · FreeBSD
+    needs: plan
+    if: needs.plan.outputs.freebsd == '1'
+    # Builds and tests the workspace in a FreeBSD VM (GitHub has no FreeBSD runners).
+    uses: storytold/craft-common-actions/.github/workflows/freebsd.yml@main
+    with:
+      craft-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
+
+  nix:
+    name: Quality · Nix
+    needs: plan
+    if: needs.plan.outputs.nix == '1'
+    # Evaluates the flake: catches Cargo.lock entries nix/package.nix can't vendor.
+    uses: storytold/craft-common-actions/.github/workflows/nix.yml@main
+
+  house-rules:
+    name: Quality · house rules
+    needs: plan
+    if: needs.plan.outputs.house_rules == '1'
+    uses: storytold/craft-common-actions/.github/workflows/house-rules.yml@main
+    with:
+      rust: true
+
+  packaging-lint:
+    name: Quality · packaging lint
+    needs: plan
+    if: needs.plan.outputs.packaging == '1'
+    # actionlint, shellcheck, PowerShell, desktop/AppStream/Flatpak metadata (no Rust build).
+    uses: storytold/craft-common-actions/.github/workflows/packaging-lint.yml@main
+
+  install-policy:
+    name: Quality · Windows installation policy
+    needs: plan
+    if: needs.plan.outputs.packaging == '1'
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build and check non-executable installer fixtures
+        shell: pwsh
+        run: |
+          $tools = Join-Path $env:RUNNER_TEMP 'craft-install-policy-wix'
+          dotnet tool install --tool-path $tools wix --version 5.0.2
+          if ($LASTEXITCODE -ne 0) { throw 'WiX installation failed.' }
+          $env:PATH = "$tools;$env:PATH"
+          # One policy per product (PSG PDF, PSG Academic PDF); install every extension either uses.
+          $extensions = @(Get-ChildItem packaging/windows/install-policy*.json | ForEach-Object { (Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json).extensions } | Sort-Object -Unique)
+          foreach ($extension in $extensions) {
+            & (Join-Path $tools 'wix.exe') extension add -g "WixToolset.$extension.wixext/5.0.2"
+            if ($LASTEXITCODE -ne 0) { throw "WiX extension $extension installation failed." }
+          }
+          ./packaging/windows/test-install-policy.ps1 -OutputDirectory (Join-Path $env:RUNNER_TEMP 'craft-install-policy-tests')
+
+  macos-tests:
+    name: Quality · macOS tests
+    needs: plan
+    if: needs.plan.outputs.quality == '1'
+    # The workspace's tests on macOS, nightly: pull requests and pushes test Linux and Windows
+    # only, so this finds a macOS-only failure within a day. 37 minutes on 10 Nov 2026.
+    uses: storytold/craft-common-actions/.github/workflows/gate.yml@main
+    with:
+      os: '["macos-latest"]'
+      craft-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
+      command: cargo test --workspace --locked --no-fail-fast
+      timeout-minutes: 90
+
+  fuzz:
+    name: Quality · fuzz (mutation, 15 min)
+    needs: plan
+    if: needs.plan.outputs.quality == '1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RUST_BACKTRACE: 1
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: fuzz
+      # Seeds from the pdf.js corpus; findings become synthetic regression tests (AGENTS.md §4).
+      - name: Fuzz open/render/edit/save
+        run: |
+          cargo xtask corpus
+          cargo xtask fuzz --time 900 --seed ${{ github.run_number }}
+      - name: Upload findings
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: fuzz-findings
+          path: fuzz-out/findings
+          if-no-files-found: ignore
+
+  # ---- Release -------------------------------------------------------------------------------
+  release:
+    name: Release · ${{ needs.plan.outputs.tag }}
+    needs: [plan, gate, build]
+    # Only with a tag (pushes to beta and main of this repository, packaging/release-tag.sh) and
+    # only when the checks passed. A stable release needs every platform built and installed; a
+    # beta publishes what passed as long as Linux and Windows did (on this repository the macOS
+    # runners have often never started), and its notes say what is missing. release-files.sh
+    # checks which platforms are there.
+    if: >-
+      !cancelled() && needs.plan.outputs.tag != '' &&
+      needs.plan.result == 'success' && needs.gate.result == 'success' &&
+      (needs.build.result == 'success' || (contains(needs.plan.outputs.tag, '-beta.') && needs.build.result != 'skipped'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      TAG: ${{ needs.plan.outputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          key: plan
+          save-if: false
+      # Only the tested products' artifacts (`psg-…`), one folder each. Not `assets`: the
+      # checkout already has an assets/ folder.
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: psg-*
+          path: release-files
+      - name: Checksums, notes and the release
+        run: |
+          set -euo pipefail
+          packaging/ci/release-files.sh "$TAG" release-files
+          packaging/ci/release-notes.sh "$TAG" release-files > "$RUNNER_TEMP/notes.md"
+          cat "$RUNNER_TEMP/notes.md" >> "$GITHUB_STEP_SUMMARY"
+          flags=(--latest)
+          if [[ "$TAG" == *-beta.* ]]; then flags=(--prerelease --latest=false); fi
+          gh release create "$TAG" release-files/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "PSG PDF and PSG Academic PDF $TAG" \
+            --notes-file "$RUNNER_TEMP/notes.md" \
+            "${flags[@]}"

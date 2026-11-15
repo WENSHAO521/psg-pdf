@@ -13,6 +13,7 @@ mod license_check;
 mod macos_integration;
 mod netcheck;
 mod parity;
+mod products;
 mod screenshots;
 mod version;
 mod web;
@@ -26,6 +27,11 @@ const COMMANDS: &[(&str, &str, Command)] = &[
         "changelog",
         "The suite changelog from Conventional Commits: `release [--version X.Y.Z]`, `notes (--version X.Y.Z | --unreleased)`, `verify`, `lint`",
         changelog::run,
+    ),
+    (
+        "products",
+        "PSG PDF and PSG Academic PDF identities (packaging/products.toml): `check` (default), `matrix` (release workflow JSON), `get <id> <key>`",
+        products::run,
     ),
     ("layers", "Enforce the crate dependency layering (plan/architecture.md §3)", gates::layers),
     ("wasm", "cargo check --target wasm32-unknown-unknown for every crate below L8, in one call", gates::wasm),

@@ -15,18 +15,18 @@ stick. To offer it in Settings > Apps > Default apps, open PowerShell in this fo
 
   $exe = (Resolve-Path .\psg-pdf.exe).Path
   $c = "HKCU:\Software\Classes"
-  $cap = "HKCU:\Software\PSG PDF.Portable\Capabilities"
-  foreach ($k in "$c\PSG PDF.Portable\shell\open\command", "$c\.pdf\OpenWithProgids",
+  $cap = "HKCU:\Software\PSGPDF.Portable\Capabilities"
+  foreach ($k in "$c\PSGPDF.Portable\shell\open\command", "$c\.pdf\OpenWithProgids",
                  "$cap\FileAssociations", "HKCU:\Software\RegisteredApplications") {
     if (!(Test-Path $k)) { New-Item -Path $k -Force | Out-Null }
   }
-  Set-Item -Path "$c\PSG PDF.Portable" -Value "PDF Document"
-  Set-Item -Path "$c\PSG PDF.Portable\shell\open\command" -Value "`"$exe`" `"%1`""
-  New-ItemProperty -Path "$c\.pdf\OpenWithProgids" -Name PSG PDF.Portable -Value "" -PropertyType String -Force | Out-Null
+  Set-Item -Path "$c\PSGPDF.Portable" -Value "PDF Document"
+  Set-Item -Path "$c\PSGPDF.Portable\shell\open\command" -Value "`"$exe`" `"%1`""
+  New-ItemProperty -Path "$c\.pdf\OpenWithProgids" -Name PSGPDF.Portable -Value "" -PropertyType String -Force | Out-Null
   New-ItemProperty -Path $cap -Name ApplicationName -Value "PSG PDF (portable)" -PropertyType String -Force | Out-Null
   New-ItemProperty -Path $cap -Name ApplicationDescription -Value "Open-source PDF workbench" -PropertyType String -Force | Out-Null
-  New-ItemProperty -Path "$cap\FileAssociations" -Name .pdf -Value PSG PDF.Portable -PropertyType String -Force | Out-Null
-  New-ItemProperty -Path "HKCU:\Software\RegisteredApplications" -Name "PSG PDF (portable)" -Value "Software\PSG PDF.Portable\Capabilities" -PropertyType String -Force | Out-Null
+  New-ItemProperty -Path "$cap\FileAssociations" -Name .pdf -Value PSGPDF.Portable -PropertyType String -Force | Out-Null
+  New-ItemProperty -Path "HKCU:\Software\RegisteredApplications" -Name "PSG PDF (portable)" -Value "Software\PSGPDF.Portable\Capabilities" -PropertyType String -Force | Out-Null
 
 Then open Settings > Apps > Default apps, search for .pdf (or for PSG PDF) and choose it. This
 changes only your own user's settings (HKEY_CURRENT_USER), and it doesn't change the default app by
@@ -35,8 +35,8 @@ itself. If you move or rename this folder, run it again from the new place.
 To undo, first choose another app for .pdf in Settings > Apps > Default apps (otherwise Windows
 keeps pointing PDF files at the removed entry), then run:
 
-  Remove-Item -Path "HKCU:\Software\Classes\PSG PDF.Portable", "HKCU:\Software\PSG PDF.Portable" -Recurse -ErrorAction SilentlyContinue
-  Remove-ItemProperty -Path "HKCU:\Software\Classes\.pdf\OpenWithProgids" -Name PSG PDF.Portable -ErrorAction SilentlyContinue
+  Remove-Item -Path "HKCU:\Software\Classes\PSGPDF.Portable", "HKCU:\Software\PSGPDF.Portable" -Recurse -ErrorAction SilentlyContinue
+  Remove-ItemProperty -Path "HKCU:\Software\Classes\.pdf\OpenWithProgids" -Name PSGPDF.Portable -ErrorAction SilentlyContinue
   Remove-ItemProperty -Path "HKCU:\Software\RegisteredApplications" -Name "PSG PDF (portable)" -ErrorAction SilentlyContinue
   foreach ($k in "HKCU:\Software\Classes\.pdf\OpenWithProgids", "HKCU:\Software\Classes\.pdf") {
     $i = Get-Item -Path $k -ErrorAction SilentlyContinue

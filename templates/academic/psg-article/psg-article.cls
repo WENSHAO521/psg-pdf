@@ -2,7 +2,14 @@
 %% Part of PSG Academic PDF. Licensed MIT OR Apache-2.0, like the rest of the repository.
 %% Written for pdfLaTeX; the bibliography uses BibLaTeX with the Biber backend.
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{psg-article}[2026/11/12 v1.0.0 PSG research article]
+\ProvidesClass{psg-article}[2026/11/15 v1.1.0 PSG research article]
+
+%% Options. `authoryear`: author-year citations (Humanities and Social Sciences template) instead
+%% of numbered ones.
+\newif\ifpsg@authoryear
+\DeclareOption{authoryear}{\psg@authoryeartrue}
+\DeclareOption*{\ClassWarning{psg-article}{Unknown option `\CurrentOption' ignored}}
+\ProcessOptions\relax
 
 \LoadClass[10pt,a4paper,twoside]{article}
 
@@ -27,14 +34,33 @@
 
 %% Bibliography: BibLaTeX with Biber.
 \RequirePackage{csquotes}
-\RequirePackage[backend=biber,style=numeric-comp,sorting=none,maxbibnames=10]{biblatex}
+\ifpsg@authoryear
+  \RequirePackage[backend=biber,style=authoryear-comp,maxcitenames=2,maxbibnames=10,uniquelist=false,dashed=false]{biblatex}
+\else
+  \RequirePackage[backend=biber,style=numeric-comp,sorting=none,maxbibnames=10]{biblatex}
+\fi
 
 \RequirePackage[hidelinks,unicode]{hyperref}
 
 \definecolor{psgaccent}{RGB}{31,58,104}
 
-%% Pandoc's LaTeX writer uses \tightlist in lists.
+%% Commands Pandoc's LaTeX writer uses in a converted Word manuscript (DOCX import), so the
+%% converted body compiles as it is.
 \providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\passthrough}[1]{#1}
+%% Pandoc 3.2+ wraps images in \pandocbounded: here, shrink one that is wider than the line or
+%% taller than the text area, keeping its proportions; never enlarge it.
+\newsavebox\psg@figbox
+\providecommand{\pandocbounded}[1]{%
+  \sbox\psg@figbox{#1}%
+  \ifdim\wd\psg@figbox>\linewidth\sbox\psg@figbox{\resizebox{\linewidth}{!}{\usebox\psg@figbox}}\fi
+  \ifdim\dimexpr\ht\psg@figbox+\dp\psg@figbox\relax>0.9\textheight
+    \sbox\psg@figbox{\resizebox{!}{0.9\textheight}{\usebox\psg@figbox}}\fi
+  \usebox\psg@figbox}
+%% Strikeout and underline: with soul when TeX Live has it, otherwise plain and underlined text.
+\newcommand\psg@plainst[1]{#1}
+\newcommand\psg@plainul[1]{\underline{#1}}
+\IfFileExists{soul.sty}{\RequirePackage{soul}}{\let\st\psg@plainst\let\ul\psg@plainul}
 
 %% ---------------------------------------------------------------------------
 %% Publication metadata. PSG Academic PDF writes psg-metadata.tex, which calls

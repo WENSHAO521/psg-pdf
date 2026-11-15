@@ -1,22 +1,23 @@
-# Releasing the PSG PDF Suite
+# Releasing PSG PDF and PSG Academic PDF
 
-PSG PDF and PSG Academic PDF are released together, as one suite, on the rhythm
+PSG PDF and PSG Academic PDF are independent products ([products.md](products.md)) with
+separate installers. They are released at the same time, into the same GitHub release, on the rhythm
 panorama-secure-access uses: small pull requests into `beta`, a pre-release for every push to
 `beta`, and a stable release when `beta` is merged into `main` with a release commit.
-`.github/workflows/psg-release.yml` builds, checks and publishes both; nobody pushes a tag by hand.
-It is the only workflow that makes installers:
+`.github/workflows/build.yaml` ("PSG PDF — Build & Release", the repository's only workflow,
+[ci.md](ci.md)) builds, checks and publishes both; nobody pushes a tag by hand:
 
-| Event | Packages all platforms | Checks (changelog, academic tests with TeX Live, smoke test) | Publishes |
+| Event | Packages both products on all platforms | Checks (identities, changelog, academic tests with TeX Live, smoke tests, signatures, checksums, install/uninstall, coexistence, suite migration) | Publishes |
 |---|---|---|---|
-| Pull request | yes, kept as run artifacts for 7 days, unsigned | yes | nothing |
+| Pull request | only with the `full-ci` label or changes to `packaging/`, the workflow or the app icons; then kept as run artifacts for 7 days, unsigned | the quick checks always; the rest with the builds | nothing |
 | Push to `beta` | yes, signed when the secrets exist | yes | pre-release `vX.Y.Z-beta.N` |
 | Push to `main` | yes, signed when the secrets exist | yes | `vX.Y.Z`, when `CHANGELOG.md` has its section |
-| Manual run | yes, unsigned | yes | nothing |
+| Manual run (`full`, `release-check`) | yes, unsigned | yes | nothing |
 
-Nothing is published unless the changelog and academic checks pass. The quality gates that are not
-about installers keep their own workflows: `ci.yml` (`cargo xtask ci`), `packaging-lint.yml`,
-`sonarcloud.yml`, `freebsd.yml`, `nix.yml`, `house-rules.yml`, and the scheduled `fuzz.yml` and
-`nightly-macos.yml`.
+Nothing is published unless the identity and changelog checks, the gate (`cargo xtask ci` on Linux
+and Windows, with the academic TeX tests) and the Linux and Windows install tests pass; a stable
+release needs macOS too. SonarCloud, FreeBSD, Nix, house rules, packaging lint, fuzzing and the
+macOS tests are jobs of the same workflow ([ci.md](ci.md#triggers) says when each runs).
 
 ## Branches
 
@@ -33,8 +34,10 @@ about installers keep their own workflows: `ci.yml` (`cargo xtask ci`), `packagi
 | `beta` | `vX.Y.Z-beta.N` (pre-release) | always; once `vX.Y.Z` is out, betas are `vX.Y.(Z+1)-beta.N`, and a push whose tree is the release's own (main merged back) publishes nothing |
 | `main` | `vX.Y.Z` (latest) | `CHANGELOG.md` has a `## vX.Y.Z` section and `vX.Y.Z` isn't tagged yet; otherwise nothing |
 
-The publish job creates the tag on the pushed commit, uploads every installer with
-`SHA256SUMS.txt`, and writes the notes: for a beta the changes since the last release, for a
+The publish job checks every file against the SHA-256 written where it was built, creates the tag
+on the pushed commit, uploads both products' installers with `SHA256SUMS.txt` (read by the in-app
+updaters) and one `SHA256SUMS-<product>.txt` per product, and writes the notes, with each product's
+downloads under its own heading: for a beta the changes since the last release, for a
 stable release its `CHANGELOG.md` section.
 
 A stable release is published only when every platform built. A beta is published with the
@@ -82,7 +85,7 @@ release's notes.
 4. Merge `main` back into `beta` so both start the next version from the same tree; that push
    publishes nothing.
 
-`CHANGELOG.md` starts at the `<!-- changelog-base: … -->` commit, where the suite forked from
+`CHANGELOG.md` starts at the `<!-- changelog-base: … -->` commit, where PSG forked from
 PdfCraft; history before it is never collected. `cargo xtask changelog verify` (CI) checks the
 headings are `## vX.Y.Z (YYYY-MM-DD)`, newest first.
 
@@ -90,9 +93,18 @@ headings are `## vX.Y.Z (YYYY-MM-DD)`, newest first.
 
 | Platform | Artifacts | Built on |
 |---|---|---|
-| macOS 11+ (universal: Apple silicon + Intel) | `psg-pdf-suite-<v>-macos-universal.dmg` (both apps), `pdfcraft-cli-<v>-macos-universal.zip` | `macos-15` |
-| Windows 10+ x64 | `psg-pdf-<v>-windows-x64.msi`, `psg-pdf-<v>-windows-x64-portable.zip` (both apps) | `windows-latest` |
-| Linux x86_64 | `psg-pdf-<v>-linux-x86_64.{deb,rpm,tar.gz}` (both apps), `.AppImage` (PSG PDF), `pdfcraft-cli-<v>-linux-x86_64.tar.gz` | `ubuntu-22.04` |
+| macOS 11+ (universal: Apple silicon + Intel) | `psg-pdf-<v>-macos-universal.dmg`, `pdfcraft-cli-<v>-macos-universal.zip`; `psg-academic-pdf-<v>-macos-universal.dmg` | `macos-15` |
+| Windows 10+ x64 | `psg-pdf-<v>-windows-x64.msi`, `psg-pdf-<v>-windows-x64-portable.zip`; `psg-academic-pdf-<v>-windows-x64.msi`, `psg-academic-pdf-<v>-windows-x64-portable.zip` | `windows-latest` |
+| Linux x86_64 | `psg-pdf-<v>-linux-x86_64.{deb,rpm,AppImage,tar.gz}`, `pdfcraft-cli-<v>-linux-x86_64.tar.gz`; `psg-academic-pdf-<v>-linux-x86_64.{deb,rpm,AppImage,tar.gz}` | `ubuntu-22.04` |
+
+Each platform is one build job (`cargo xtask products matrix`) that builds both products in turn
+on one Cargo target directory (`packaging/ci/build-products.sh`); every file must be named after
+exactly one product, and each product gets its own artifact. On the same runner,
+`packaging/ci/verify-installs.sh` then installs both products' packages alone and side by side,
+uninstalls them one at a time, and on Windows and Linux (deb, and rpm in a Fedora container)
+migrates the last suite release (`LEGACY_SUITE_TAG` in the workflow) to the new packages
+(`packaging/<os>/test-install.*`, [products.md](products.md#migrating-from-the-suite)). The
+artifacts are uploaded only after that.
 
 **Signing** uses the repository secrets when they exist: `APPLE_CERTIFICATE`,
 `APPLE_CERTIFICATE_PASSWORD`, `KEYCHAIN_PASSWORD`, `APPLE_ID`, `APPLE_PASSWORD` and `APPLE_TEAM_ID`
@@ -106,13 +118,13 @@ user to allow it in *System Settings ▸ Privacy & Security*) and the Windows fi
 so a release can't ship without them.
 
 PdfCraft's own `release.yml` (its pipeline on the `release` branch) and `windows-arm64.yml` were
-removed: they built PdfCraft-named packages, and the suite has no Windows ARM64 build yet. The
-platform notes below describe the packaging scripts `psg-release.yml` runs; some passages still
+removed: they built PdfCraft-named packages, and PSG has no Windows ARM64 build yet. The
+platform notes below describe the packaging scripts `build.yaml` runs; some passages still
 describe PdfCraft's pipeline.
 
 Every binary reports its version (`pdfcraft --version`, `pdfcraft-cli --version`, *Help ▸ About*).
 The workflow sets `PDFCRAFT_BUILD_SHA` and `PDFCRAFT_BUILD_DATE` (`packaging/env.sh` fills them in
-for local builds): the commit is recorded in the macOS `Info.plist` (`PdfCraftBuildCommit`) and the
+for local builds): the commit is recorded in the macOS `Info.plist` (`PSGPDFBuildCommit`) and the
 date in the AppStream metadata. The binaries don't embed the commit yet.
 
 **Fonts:** every job checks out [craft-fonts](https://github.com/storytold/craft-fonts) at the commit
@@ -132,14 +144,14 @@ Discovery never combines model formats or files from different directories.
 Directory precedence stays the same: `$PDFCRAFT_MODELS`, the release-package locations beside the executable, then the source tree's `assets/models/`.
 The first directory with a complete supported pair wins, even if an earlier legacy pair precedes a later ONNX pair.
 
-The release-package locations are `models\` beside `pdfcraft.exe` (MSI, portable zip), `PdfCraft.app/Contents/Resources/models` (macOS), and `share/pdfcraft/models` beside `bin/` (deb, rpm, tar.gz, AppImage, Flatpak, FreeBSD).
+The release-package locations are `models\` beside `psg-pdf.exe` (MSI, portable zip), `PSG PDF.app/Contents/Resources/models` (macOS), and `share/pdfcraft/models` beside `bin/` (deb, rpm, tar.gz, AppImage, Flatpak, FreeBSD).
 The web build does not include these models, and OCR remains limited to the Latin alphabet without accents.
 
 ### macOS
 
 `packaging/macos/package.sh` builds both architectures, joins them with `lipo`, and assembles
-`PdfCraft.app` from `Info.plist.in` (bundle id `ai.storyteller.pdfcraft`, macOS 11+, PDF declared
-as a document type with rank Alternate, so PdfCraft is offered under Open With without taking over
+`PSG PDF.app` from `Info.plist.in` (bundle id `com.panoramascholarly.psgpdf`, macOS 11+, PDF declared
+as a document type with rank Alternate, so PSG PDF is offered under Open With without taking over
 from Preview). Files opened from Finder arrive as Apple events, which
 `apps/pdfcraft/src/apple_events.rs` receives.
 
@@ -150,7 +162,7 @@ from Preview). Files opened from Finder arrive as Apple events, which
   stapled, and the result is checked with `codesign --verify`, `stapler validate` and `spctl`. The
   app ships on a drag-to-Applications DMG, which is signed and notarized too.
   Its Finder window (background, icon size and positions) comes from
-  [`packaging/macos/dmg/`](../packaging/macos/dmg/README.md), and its volume is named `PdfCraft`
+  [`packaging/macos/dmg/`](../packaging/macos/dmg/README.md), and its volume is named `PSG PDF`
   without the version, which the window's background needs; the DMG file name keeps the version.
 - **CLI:** `pdfcraft-cli` is signed and notarized as a zip. A bare executable can't hold a stapled
   ticket, so Gatekeeper looks it up online the first time a downloaded copy runs.
@@ -167,13 +179,13 @@ packaging/macos/package.sh --arch aarch64     # quicker, host-only; --arch unive
 neither the MSI nor the portable zip needs the Visual C++ redistributable.
 
 - Before packaging, it reads both executables' PE headers: the machine type must match `-Arch`, and
-  `pdfcraft.exe` must be a GUI-subsystem program (no console window, #57) while `pdfcraft-cli.exe`
+  `psg-pdf.exe` must be a GUI-subsystem program (no console window, #57) while `pdfcraft-cli.exe`
   stays a console program.
 - `psg-pdf.wxs` (WiX v5) is a dual-scope package (per-user by default into
-  `%LOCALAPPDATA%\Programs\ArtCraft\PdfCraft`, per-machine into `Program Files\ArtCraft\PdfCraft` (`Program Files (x86)` for the 32-bit build),
+  `%LOCALAPPDATA%\Programs\Panorama Scholarly Group\PSG PDF`, per-machine into `Program Files\Panorama Scholarly Group\PSG PDF` (`Program Files (x86)` for the 32-bit build),
   see `packaging/windows/INSTALLATION.md`) with a Start Menu shortcut, a
   desktop shortcut (on by default) and an App Paths entry. Both shortcuts are plain links to
-  `pdfcraft.exe`, not advertised MSI shortcuts (#107, #143). The MSI version is the numeric `X.Y.Z`
+  `psg-pdf.exe`, not advertised MSI shortcuts (#107, #143). The MSI version is the numeric `X.Y.Z`
   (MSI has no pre-release field), and same-version upgrades are allowed so release candidates replace
   each other. Icon ids end in `.ico` or `.exe` (Windows Installer requires it); packaging-lint checks
   this.
@@ -190,33 +202,33 @@ neither the MSI nor the portable zip needs the Visual C++ redistributable.
   (`INSTALLATION.md`). `/qn` and `/qb` stay unattended and create both unless
   `INSTALLDESKTOPSHORTCUT=0` or `INSTALLPDFCONTEXTMENU=0` is passed;
   `INSTALLIMAGECONTEXTMENU=0` (no checkbox) leaves out the image menu. An update (the launcher runs
-  `msiexec /passive` with no properties) keeps the desktop shortcut only if `PdfCraft.lnk` is still
+  `msiexec /passive` with no properties) keeps the desktop shortcut only if `PSG PDF.lnk` is still
   on the all-users desktop, so deleting it once keeps it away (#1058), and keeps each menu only if
   its key path is still in HKLM (#305). Both are AppSearch results read before the old version is
   removed. An update from a release that didn't have a menu yet (before 0.7.1 for the PDF menu,
   before 0.4.0 for the image menu, found by `OnlyDetect` Upgrade rows) adds it like a first install.
   A value given on the command line wins.
 - The PDF right-click entry (#682) is a classic verb under
-  `HKLM\Software\Classes\SystemFileAssociations\.pdf\shell\PdfCraft.Edit`, so it shows whichever app
+  `HKLM\Software\Classes\SystemFileAssociations\.pdf\shell\PSGPDF.Edit`, so it shows whichever app
   is the default for `.pdf` and never changes that default. Several selected PDFs (up to 15, the
-  limit for a `Document` verb) start one `pdfcraft.exe "<file>"` each, and the single-instance
+  limit for a `Document` verb) start one `psg-pdf.exe "<file>"` each, and the single-instance
   hand-off opens them as tabs. On Windows 11 it is under "Show more options"; a first-level entry
   needs an `IExplorerCommand` handler and package identity (a sparse MSIX package), which the MSI
-  doesn't have. "Combine files in PdfCraft" (#585) is a second verb in the same component,
-  `PdfCraft.Combine`, running `pdfcraft --combine "<file>"` once per selected file; the
+  doesn't have. "Combine files in PSG PDF" (#585) is a second verb in the same component,
+  `PSGPDF.Combine`, running `psg-pdf --combine "<file>"` once per selected file; the
   single-instance hand-off sends them with `"combine": true`, and the running app adds them to
   its Combine files tab (`OsEvent::Combine`). Both verbs come and go with `INSTALLPDFCONTEXTMENU`.
-- The image right-click entry (#190) is the same kind of verb, `PdfCraft.CreatePdf`, for ten image
+- The image right-click entry (#190) is the same kind of verb, `PSGPDF.CreatePdf`, for ten image
   types, in its own component (`PdfcraftImageContextMenu`) since it became optional. Its rows moved
   out of `PdfcraftApp`; that's safe because `MajorUpgrade` removes the old version before installing
   the new one (`afterInstallValidate`), which `test-msi.ps1` checks.
 - `test-msi.ps1 <file.msi>` checks the compiled shortcut, context-menu and dialog tables, and
   evaluates the first-install and update conditions of the desktop shortcut and both menus. Packaging
   runs it in a child process before signing, so the MSI isn't held open when signtool runs. The ARM64 install
-  smoke test checks that both all-users shortcuts point at the installed `pdfcraft.exe` and are
+  smoke test checks that both all-users shortcuts point at the installed `psg-pdf.exe` and are
   removed on uninstall, and that `INSTALLDESKTOPSHORTCUT=0` skips the desktop one.
 - The portable zip holds both executables, the README, the licences, the OFL licence of each
-  embedded craft-fonts family, and `portable.txt`. That marker beside `pdfcraft.exe` keeps the
+  embedded craft-fonts family, and `portable.txt`. That marker beside `psg-pdf.exe` keeps the
   settings, logs, crash recovery and new digital IDs in `PSGPDFData\` next to the exe instead of
   `%APPDATA%` and `%LOCALAPPDATA%` (`crates/ui-egui/src/platform/portable.rs`). The MSI carries the same
   OFL notices; `-SkipBuild` requires `CRAFT_FONTS_DIR` so they can be staged, or
@@ -258,9 +270,9 @@ downloading only the changed blocks. `latest` is the newest published, non-pre-r
 otherwise; the release job checks both.
 
 **Flatpak:** the `flatpak` job turns each arch's tarball into a single-file bundle with
-`packaging/linux/flatpak-bundle.sh` and `flatpak/ai.storyteller.pdfcraft.bundle.yml` (no Rust build;
+`packaging/linux/flatpak-bundle.sh` and `flatpak/com.panoramascholarly.psgpdf.bundle.yml` (no Rust build;
 the same binaries), then installs it and runs `pdfcraft-cli --version` in the sandbox.
-`flatpak/ai.storyteller.pdfcraft.yml` is the from-source manifest for a later Flathub submission;
+`flatpak/com.panoramascholarly.psgpdf.yml` is the from-source manifest for a later Flathub submission;
 packaging-lint keeps the runtime and sandbox permissions (`finish-args`) of the two identical.
 Printing is not available in the Flatpak yet: it runs `lp`, which the freedesktop runtime lacks
 (the job logs a note); it needs the print portal. Users install the bundle with `flatpak install --user pdfcraft-<v>-linux-<arch>.flatpak`; the
@@ -285,10 +297,10 @@ covered in [`packaging/web/README.md`](../packaging/web/README.md).
 ## Secrets
 
 The signing secrets are repository secrets (*Settings ▸ Secrets and variables ▸ Actions*).
-`psg-release.yml` passes them to the packaging steps only on pushes to `beta` and `main`, never on
-pull requests. Each secret is optional: if one is missing, that platform's artifacts are unsigned
+`build.yaml` passes them to the packaging steps only on pushes to `beta` and `main`, never on
+pull requests or manual runs. Each secret is optional: if one is missing, that platform's artifacts are unsigned
 and the run shows a warning. The Azure Trusted Signing secrets below were used by PdfCraft's
-pipeline; `psg-release.yml` signs Windows with the `.pfx` secrets only.
+pipeline; `build.yaml` signs Windows with the `.pfx` secrets only.
 
 | Secret | Used for |
 |---|---|
@@ -303,10 +315,11 @@ pipeline; `psg-release.yml` signs Windows with the `.pfx` secrets only.
 
 ## Checks
 
-`.github/workflows/packaging-lint.yml` runs on changes to `packaging/` and the workflows: actionlint, shellcheck,
-a PowerShell parse, xmllint (WiX, plist, MIME), `desktop-file-validate`, `appstreamcli validate`, and
-the MSI icon-id check. The FreeBSD workflow also exercises its packaging. Every pull request
-runs `psg-release.yml` without publishing, so the suite installers are built before a release is.
+The packaging-lint job of `build.yaml` runs on changes to `packaging/`, the workflow and the app
+icons, and in every full run: actionlint, shellcheck, a PowerShell parse, xmllint (WiX, plist, MIME),
+`desktop-file-validate`, `appstreamcli validate`, and the MSI icon-id check. The FreeBSD job also
+exercises its packaging. A pull request that changes the packaging builds and install-tests both
+products' installers without publishing them; add the `full-ci` label to do that for any other.
 
 ## Scanner detections
 
@@ -330,7 +343,7 @@ a match of the `CobaltStrikeBeacon` family rule.
    bundles neither, and the helper never runs in the app, the installer or CI:
 
    ```powershell
-   pwsh packaging/windows/security-audit.ps1 -Path .\pdfcraft.exe, .\pdfcraft-cli.exe -YaraExe C:\tools\yara64.exe -YaraRule C:\rules\CobaltStrikeBeacon.yar
+   pwsh packaging/windows/security-audit.ps1 -Path .\psg-pdf.exe, .\pdfcraft-cli.exe -YaraExe C:\tools\yara64.exe -YaraRule C:\rules\CobaltStrikeBeacon.yar
    ```
 
    The output lists each matched identifier with its offset, and the SHA-256 of the rule file.

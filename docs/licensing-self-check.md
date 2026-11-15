@@ -26,7 +26,7 @@ its provenance before updating the corresponding hash. Do not replace a licence 
 guessed terms or update a hash merely to silence a failure. `LICENSES.toml` is validated
 with unknown fields rejected.
 
-The existing Linux source-validation step in `.github/workflows/ci.yml` and `cargo xtask ci`
+The existing Linux source-validation step in `.github/workflows/build.yaml` (the Check job) and `cargo xtask ci`
 run `license-check` in place of `assets`; the asset validator runs once within that command.
 This Stage 1 check establishes source-document consistency, not completed-package
 compliance or legal sufficiency. Installer inspection, dependency-notice generation and

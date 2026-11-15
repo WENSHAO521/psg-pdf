@@ -5,6 +5,7 @@
 //! psg-academic-pdf check-tex
 //! psg-academic-pdf templates
 //! psg-academic-pdf new <dir> [--template <id>]
+//! psg-academic-pdf check <dir>
 //! psg-academic-pdf compile <dir> [--out <file.pdf>] [--timeout <seconds>] [--manuscript <file.tex|file.docx>]
 //! ```
 
@@ -23,6 +24,8 @@ Commands:
   check-tex                      show which TeX programs were found
   templates                      list the journal templates
   new <dir> [--template <id>]    start a project in <dir> (default template: psg-article)
+  check <dir>                    list the problems found before compiling (scripts the
+                                 templates can't set, the bibliography); exit 1 on an error
   compile <dir> [--manuscript <file.tex|file.docx>] [--timeout <seconds>] [--out <file.pdf>]
                                  typeset the project in <dir> and optionally export the PDF
   -h, --help                     print this and exit
@@ -43,6 +46,7 @@ pub fn run(args: &[String]) -> Option<i32> {
         "check-tex" => check_tex(),
         "templates" => templates(),
         "new" => report(new(rest)),
+        "check" => check(rest),
         "compile" => report(compile(rest)),
         _ => return None,
     })
@@ -66,6 +70,30 @@ fn report(r: Result<(), String>) -> i32 {
             1
         }
     }
+}
+
+/// The checks the window shows under Problems ▸ Before compiling, one per line. Exit status 1
+/// when any is an error, so a script can stop before compiling.
+fn check(args: &[String]) -> i32 {
+    let Some(dir) = args.first() else {
+        complain("check needs a project folder: psg-academic-pdf check <dir>");
+        return 2;
+    };
+    let project = match Project::open(&PathBuf::from(dir)) {
+        Ok(p) => p,
+        Err(e) => {
+            complain(&e.to_string());
+            return 1;
+        }
+    };
+    let problems = project.preflight();
+    for d in &problems {
+        say(&d.to_string());
+    }
+    if problems.is_empty() {
+        say("No problems found before compiling.");
+    }
+    i32::from(problems.iter().any(|d| d.severity == psg_academic::Severity::Error))
 }
 
 fn check_tex() -> i32 {
@@ -134,6 +162,9 @@ fn compile(args: &[String]) -> Result<(), String> {
     let report = project.compile(&env, None).map_err(|e| e.to_string())?;
     for d in &report.diagnostics {
         complain(&d.to_string());
+        if let Some(hint) = d.hint() {
+            complain(&format!("  hint: {hint}"));
+        }
     }
     say(&report.summary());
     if report.outcome != Outcome::Succeeded {
@@ -149,4 +180,20 @@ fn compile(args: &[String]) -> Result<(), String> {
         say(&format!("PDF: {}", project.pdf_path().display()));
     }
     Ok(())
+}
+
+#[cfg(test)]
+#[allow(clippy::unwrap_used)]
+mod tests {
+    #[test]
+    fn check_fails_on_chinese_text_and_passes_on_the_sample() {
+        let root = tempfile::tempdir().unwrap();
+        let dir = root.path().join("p");
+        let dir_arg = dir.display().to_string();
+        assert_eq!(super::run(&["new".into(), dir_arg.clone()]), Some(0));
+        assert_eq!(super::run(&["check".into(), dir_arg.clone()]), Some(0), "the sample has warnings at most");
+        std::fs::write(dir.join("body.tex"), "张三\n").unwrap();
+        assert_eq!(super::run(&["check".into(), dir_arg]), Some(1));
+        assert_eq!(super::run(&["check".into()]), Some(2));
+    }
 }

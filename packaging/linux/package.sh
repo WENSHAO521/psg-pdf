@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
-# Build and package the PSG PDF Suite for Linux (<arch> is x86_64 or aarch64, or riscv64 when
-# cross-compiling). Every package installs both apps, PSG PDF and PSG Academic PDF, each with its
-# own desktop entry, icon and app id; the AppImage starts PSG PDF.
+# Build and package one PSG product for Linux (<arch> is x86_64 or aarch64, or riscv64 when
+# cross-compiling). PSG PDF and PSG Academic PDF are independent products (packaging/products.toml):
+# each has its own packages, package name, desktop entry, icons and AppImage update channel, and
+# either can be installed without the other.
 #
-#   $DIST/psg-pdf-<version>-linux-<arch>.AppImage  any distro with glibc >= the build host's
-#   $DIST/psg-pdf-<version>-linux-<arch>.AppImage.zsync  delta updates (needs zsyncmake)
-#   $DIST/psg-pdf-<version>-linux-<arch>.deb       Debian, Ubuntu, Mint, Pop!_OS, ...
-#   $DIST/psg-pdf-<version>-linux-<arch>.rpm       Fedora, openSUSE, RHEL, ...
-#   $DIST/psg-pdf-<version>-linux-<arch>.tar.gz    plain FHS-style tree (bin/, share/)
-#   $DIST/pdfcraft-cli-<version>-linux-<arch>.tar.gz  the headless CLI alone (servers, CI, agents)
+#   $DIST/<product>-<version>-linux-<arch>.AppImage  any distro with glibc >= the build host's
+#   $DIST/<product>-<version>-linux-<arch>.AppImage.zsync  delta updates (needs zsyncmake)
+#   $DIST/<product>-<version>-linux-<arch>.deb       Debian, Ubuntu, Mint, Pop!_OS, ...
+#   $DIST/<product>-<version>-linux-<arch>.rpm       Fedora, openSUSE, RHEL, ...
+#   $DIST/<product>-<version>-linux-<arch>.tar.gz    plain FHS-style tree (bin/, share/)
+#   $DIST/pdfcraft-cli-<version>-linux-<arch>.tar.gz  PSG PDF only: the headless CLI alone
+#
+# <product> is psg-pdf (default) or psg-academic-pdf. The psg-academic-pdf packages take over the
+# files the 0.18.x "PSG PDF Suite" package (named psg-pdf) installed for it (docs/products.md).
 #
 # A local or patched build: set PDFCRAFT_BUILD_LABEL (e.g. `titlebar`). `--version` and About then
 # show `0.7.1 (titlebar)`, file names carry `-titlebar`, and the .rpm/.deb release becomes
@@ -18,7 +22,8 @@
 # CROSS_COMPILE (binutils prefix, for strip) and optionally EMULATOR (e.g. qemu-riscv64) to
 # smoke-test the CLI.
 #
-# Usage: packaging/linux/package.sh [--skip-build] [--formats "appimage deb rpm tar cli"]
+# Usage: packaging/linux/package.sh [--product psg-pdf|psg-academic-pdf] [--skip-build]
+#                                   [--formats "appimage deb rpm tar cli"]
 #
 # Needs: cargo, curl and the network (the OCR models: cargo xtask models); nfpm for deb/rpm (https://nfpm.goreleaser.com); appimagetool for the AppImage
 # (downloaded into $CARGO_TARGET_DIR if missing). Build on an old distro (CI: Ubuntu 22.04,
@@ -28,19 +33,43 @@ set -euo pipefail
 # shellcheck source=../env.sh
 . "$(dirname "${BASH_SOURCE[0]}")/../env.sh"
 HERE="$ROOT/packaging/linux"
-APP_ID=com.panoramascholarly.psgpdf
-ACADEMIC_ID=com.panoramascholarly.psgacademicpdf
 
+PRODUCT=psg-pdf
 SKIP_BUILD=0
 FORMATS="appimage deb rpm tar cli"
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --product) PRODUCT="$2"; shift 2 ;;
     --skip-build) SKIP_BUILD=1; shift ;;
     --formats) FORMATS="$2"; shift 2 ;;
-    -h | --help) sed -n '2,24p' "$0"; exit 0 ;;
+    -h | --help) sed -n '2,29p' "$0"; exit 0 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
+
+# Each product's identity (checked against packaging/products.toml by `cargo xtask products check`).
+case "$PRODUCT" in
+  psg-pdf)
+    NAME="PSG PDF"
+    APP_ID=com.panoramascholarly.psgpdf
+    BINARIES="psg-pdf pdfcraft-cli"
+    PACKAGES="-p psg-pdf -p pdfcraft-cli"
+    ICONS="$ROOT/assets/app-icon"
+    NFPM="$HERE/nfpm.yaml"
+    ;;
+  psg-academic-pdf)
+    NAME="PSG Academic PDF"
+    APP_ID=com.panoramascholarly.psgacademicpdf
+    BINARIES="psg-academic-pdf"
+    PACKAGES="-p psg-academic-pdf"
+    ICONS="$ROOT/assets/app-icon-academic"
+    NFPM="$HERE/nfpm-academic.yaml"
+    # The headless CLI belongs to PSG PDF.
+    FORMATS="${FORMATS//cli/}"
+    ;;
+  *) echo "unknown product: $PRODUCT (psg-pdf or psg-academic-pdf)" >&2; exit 2 ;;
+esac
+APP_BIN="${BINARIES%% *}"
 
 ARCH="${CROSS_ARCH:-$(uname -m)}"
 case "$ARCH" in
@@ -51,55 +80,56 @@ case "$ARCH" in
 esac
 export PDFCRAFT_MAINTAINER="${PDFCRAFT_MAINTAINER:-PSG PDF maintainers <84624193+WENSHAO521@users.noreply.github.com>}"
 LABEL_SUFFIX="${PDFCRAFT_BUILD_LABEL:+-$PDFCRAFT_BUILD_LABEL}"
-BASENAME="psg-pdf-$VERSION$LABEL_SUFFIX-linux-$ARCH"
+BASENAME="$PRODUCT-$VERSION$LABEL_SUFFIX-linux-$ARCH"
 
-echo "==> PSG PDF $VERSION$LABEL_SUFFIX for Linux $ARCH ($FORMATS)"
+echo "==> $NAME $VERSION$LABEL_SUFFIX for Linux $ARCH ($FORMATS)"
 
 if [[ "$SKIP_BUILD" = 0 ]]; then
   if [[ -n "${CROSS_TARGET:-}" ]]; then
-    (cd "$ROOT" && cargo build --release --locked -p psg-pdf -p psg-academic-pdf -p pdfcraft-cli --target "$CROSS_TARGET")
+    # shellcheck disable=SC2086 # PACKAGES is a list of arguments
+    (cd "$ROOT" && cargo build --release --locked $PACKAGES --target "$CROSS_TARGET")
   else
-    (cd "$ROOT" && cargo build --release --locked -p psg-pdf -p psg-academic-pdf -p pdfcraft-cli)
+    # shellcheck disable=SC2086
+    (cd "$ROOT" && cargo build --release --locked $PACKAGES)
   fi
 fi
 BIN="$CARGO_TARGET_DIR/${CROSS_TARGET:+$CROSS_TARGET/}release"
-WORK="$CARGO_TARGET_DIR/linux-package"
+WORK="$CARGO_TARGET_DIR/linux-package/$PRODUCT"
 STAGE="$WORK/root"
 rm -rf "$WORK"
 
 # ---- stage an FHS tree (shared by every format) -------------------------------------------------
-install -Dm755 "$BIN/psg-pdf" "$STAGE/usr/bin/psg-pdf"
-install -Dm755 "$BIN/psg-academic-pdf" "$STAGE/usr/bin/psg-academic-pdf"
-install -Dm755 "$BIN/pdfcraft-cli" "$STAGE/usr/bin/pdfcraft-cli"
-"${CROSS_COMPILE:-}strip" "$STAGE/usr/bin/psg-pdf" "$STAGE/usr/bin/psg-academic-pdf" "$STAGE/usr/bin/pdfcraft-cli" 2>/dev/null || true
+for bin in $BINARIES; do
+  install -Dm755 "$BIN/$bin" "$STAGE/usr/bin/$bin"
+  "${CROSS_COMPILE:-}strip" "$STAGE/usr/bin/$bin" 2>/dev/null || true
+done
 install -Dm644 "$HERE/$APP_ID.desktop" "$STAGE/usr/share/applications/$APP_ID.desktop"
-install -Dm644 "$HERE/$APP_ID.mime.xml" "$STAGE/usr/share/mime/packages/$APP_ID.xml"
 mkdir -p "$STAGE/usr/share/metainfo"
 sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$PDFCRAFT_BUILD_DATE/g" \
   "$HERE/$APP_ID.metainfo.xml.in" >"$STAGE/usr/share/metainfo/$APP_ID.metainfo.xml"
 mkdir -p "$STAGE/usr/share/icons"
-cp -R "$ROOT/assets/app-icon/hicolor" "$STAGE/usr/share/icons/"
-# PSG Academic PDF, in the same package (the PSG PDF Suite): its own desktop entry, AppStream
-# metadata, icons and the journal templates, which it looks for in ../share/psg-academic-pdf.
-install -Dm644 "$HERE/$ACADEMIC_ID.desktop" "$STAGE/usr/share/applications/$ACADEMIC_ID.desktop"
-sed -e "s/@VERSION@/$VERSION/g" -e "s/@DATE@/$PDFCRAFT_BUILD_DATE/g" \
-  "$HERE/$ACADEMIC_ID.metainfo.xml.in" >"$STAGE/usr/share/metainfo/$ACADEMIC_ID.metainfo.xml"
-cp -R "$ROOT/assets/app-icon-academic/hicolor" "$STAGE/usr/share/icons/"
-mkdir -p "$STAGE/usr/share/psg-academic-pdf"
-cp -R "$ROOT/templates/academic" "$STAGE/usr/share/psg-academic-pdf/templates"
-mkdir -p "$STAGE/usr/share/doc/psg-pdf"
-copy_docs "$STAGE/usr/share/doc/psg-pdf"
-# OCR models: the app finds them at <bin>/../share/pdfcraft/models, so in every format below.
-stage_models "$STAGE/usr/share/pdfcraft/models"
+cp -R "$ICONS/hicolor" "$STAGE/usr/share/icons/"
+mkdir -p "$STAGE/usr/share/doc/$PRODUCT"
+copy_docs "$STAGE/usr/share/doc/$PRODUCT"
+case "$PRODUCT" in
+  psg-pdf)
+    install -Dm644 "$HERE/$APP_ID.mime.xml" "$STAGE/usr/share/mime/packages/$APP_ID.xml"
+    # OCR models: the app finds them at <bin>/../share/pdfcraft/models, so in every format below.
+    stage_models "$STAGE/usr/share/pdfcraft/models"
+    ;;
+  psg-academic-pdf)
+    # The journal templates, which it looks for in ../share/psg-academic-pdf/templates.
+    mkdir -p "$STAGE/usr/share/psg-academic-pdf"
+    cp -R "$ROOT/templates/academic" "$STAGE/usr/share/psg-academic-pdf/templates"
+    ;;
+esac
 
-for id in "$APP_ID" "$ACADEMIC_ID"; do
-  if command -v desktop-file-validate >/dev/null; then
-    desktop-file-validate "$STAGE/usr/share/applications/$id.desktop"
-  fi
-  if command -v appstreamcli >/dev/null; then
-    appstreamcli validate --no-net --explain "$STAGE/usr/share/metainfo/$id.metainfo.xml"
-  fi
-done
+if command -v desktop-file-validate >/dev/null; then
+  desktop-file-validate "$STAGE/usr/share/applications/$APP_ID.desktop"
+fi
+if command -v appstreamcli >/dev/null; then
+  appstreamcli validate --no-net --explain "$STAGE/usr/share/metainfo/$APP_ID.metainfo.xml"
+fi
 
 has() {
   local format="$1"
@@ -140,7 +170,7 @@ if has deb || has rpm; then
   export RELEASE="1${PDFCRAFT_BUILD_LABEL:+.$PDFCRAFT_BUILD_LABEL}"
   export NFPM_ARCH="$DEB_ARCH"
   # nfpm expands env vars in fields like `version` and `arch`, but not in `contents[].src`.
-  sed "s|\${STAGE}|$STAGE|g" "$HERE/nfpm.yaml" >"$WORK/nfpm.yaml"
+  sed "s|\${STAGE}|$STAGE|g" "$NFPM" >"$WORK/nfpm.yaml"
   for fmt in deb rpm; do
     if has "$fmt"; then (cd "$ROOT" && nfpm package -f "$WORK/nfpm.yaml" -p "$fmt" -t "$DIST/$BASENAME.$fmt"); fi
   done
@@ -165,11 +195,11 @@ if has appimage; then
     echo "no pinned AppImage runtime for $ARCH; build the AppImage on x86_64 or aarch64" >&2
     exit 2
   fi
-  APPDIR="$WORK/PSG-PDF.AppDir"
+  APPDIR="$WORK/${NAME// /-}.AppDir"
   cp -R "$STAGE" "$APPDIR"
-  ln -s usr/bin/psg-pdf "$APPDIR/AppRun"
+  ln -s "usr/bin/$APP_BIN" "$APPDIR/AppRun"
   cp "$HERE/$APP_ID.desktop" "$APPDIR/$APP_ID.desktop"
-  cp "$ROOT/assets/app-icon/hicolor/256x256/apps/$APP_ID.png" "$APPDIR/$APP_ID.png"
+  cp "$ICONS/hicolor/256x256/apps/$APP_ID.png" "$APPDIR/$APP_ID.png"
   ln -s "$APP_ID.png" "$APPDIR/.DirIcon"
 
   TOOL="${APPIMAGETOOL:-$(command -v appimagetool || true)}"
@@ -209,9 +239,10 @@ if has appimage; then
   # Update information: AppImageUpdate, AppImageLauncher and the like read it from the file and
   # fetch only the blocks that changed in a newer release, through the .zsync published next to
   # each AppImage on GitHub Releases. `latest` is the newest published release that is not a
-  # pre-release. A fork's builds point at its own releases through GITHUB_REPOSITORY.
+  # pre-release. A fork's builds point at its own releases through GITHUB_REPOSITORY. The pattern
+  # names this product's own AppImages, so the two products never update into each other.
   REPO="${GITHUB_REPOSITORY:-WENSHAO521/psg-pdf}"
-  UPDATE_INFO="gh-releases-zsync|${REPO%%/*}|${REPO#*/}|latest|psg-pdf-*-linux-$ARCH.AppImage.zsync"
+  UPDATE_INFO="gh-releases-zsync|${REPO%%/*}|${REPO#*/}|latest|$PRODUCT-*-linux-$ARCH.AppImage.zsync"
   # Extract-and-run: works without FUSE (containers, CI). The output embeds the static runtime,
   # so users don't need libfuse2 either. With zsyncmake on the host (CI installs the zsync
   # package) appimagetool also writes the .zsync, into its working directory, hence the cd.
@@ -224,10 +255,16 @@ if has appimage; then
   fi
 fi
 
+# Smoke test: the CLI for PSG PDF; PSG Academic PDF's headless `templates` command, which must
+# find the staged templates through ../share/psg-academic-pdf.
+case "$PRODUCT" in
+  psg-pdf) SMOKE=("$STAGE/usr/bin/pdfcraft-cli" --version) ;;
+  psg-academic-pdf) SMOKE=("$STAGE/usr/bin/psg-academic-pdf" templates) ;;
+esac
 if [[ -z "${CROSS_TARGET:-}" ]]; then
-  "$STAGE/usr/bin/pdfcraft-cli" --version
+  "${SMOKE[@]}"
 elif [[ -n "${EMULATOR:-}" ]]; then
-  "$EMULATOR" "$STAGE/usr/bin/pdfcraft-cli" --version
+  "$EMULATOR" "${SMOKE[@]}"
 fi
 echo "==> done"
 ls -lh "$DIST"

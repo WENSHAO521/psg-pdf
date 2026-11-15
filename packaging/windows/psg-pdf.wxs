@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <!-- PSG PDF's identity (packaging/products.toml; `cargo xtask products check` compares them). -->
+  <?define ProductFolder="PSG PDF" ?>
+  <?define ProductRegKey="Software\PSG PDF" ?>
+  <?define ProductExe="psg-pdf.exe" ?>
+  <!-- installer-ui.wxs shows the PDF menu checkbox only with -d HasPdfContextMenu=1 (package.ps1). -->
+  <?ifndef HasPdfContextMenu ?>
+  <?error PSG PDF's MSI needs -d HasPdfContextMenu=1, or its welcome dialog loses the PDF menu checkbox ?>
+  <?endif?>
   <?ifndef HasCraftFontLicences ?>
   <?define HasCraftFontLicences=0 ?>
   <?endif?>
-  <Package Name="PSG PDF Suite" Manufacturer="Panorama Scholarly Group" Version="$(var.Version)" UpgradeCode="C984AB08-3E67-48B7-8DC2-6F1428165299" Scope="perUserOrMachine" Compressed="yes" Language="1033">
-    <SummaryInformation Description="PSG PDF PDF workbench" Manufacturer="Panorama Scholarly Group" />
+  <Package Name="PSG PDF" Manufacturer="Panorama Scholarly Group" Version="$(var.Version)" UpgradeCode="C984AB08-3E67-48B7-8DC2-6F1428165299" Scope="perUserOrMachine" Compressed="yes" Language="1033">
+    <SummaryInformation Description="PSG PDF: reading, organizing and protecting PDFs" Manufacturer="Panorama Scholarly Group" />
     <?include $(sys.SOURCEFILEDIR)install-policy.wxi?>
     <!-- HKLM registrations must never point into a per-user installation (#305). Allow removal
          of an existing installation even if an older MSI let it install per-user. -->
     <!-- Same-version upgrades let successive pre-releases of one X.Y.Z replace each other
          (MSI versions are numeric, so 1.2.3-rc.1 and 1.2.3-rc.2 are both 1.2.3). -->
+    <!-- PSG PDF continues the UpgradeCode of the old PSG PDF Suite (0.18.x, both apps in one MSI),
+         so installing PSG PDF replaces a suite install like any update: same folder, scope,
+         shortcuts and menu choices, and settings untouched. The suite's copy of PSG Academic PDF
+         goes with it; its own installer puts it back (docs/products.md). -->
     <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A newer version of PSG PDF is already installed." />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
 
@@ -67,7 +79,7 @@
 
     <StandardDirectory Id="ProgramFiles6432Folder">
       <Directory Id="CraftSuiteFolder" Name="Panorama Scholarly Group">
-        <Directory Id="INSTALLFOLDER" Name="PSG PDF">
+        <Directory Id="INSTALLFOLDER" Name="$(var.ProductFolder)">
         <Directory Id="ModelsFolder" Name="models" />
       </Directory>
       </Directory>
@@ -138,12 +150,12 @@
            the ProductCode, which every release changes, so a taskbar pin made from a shortcut that
            named it shows a blank icon once an update removes the old release. -->
       <Component Id="PdfcraftStartMenuShortcut" Directory="ProgramMenuFolder" Guid="0D43C916-5A82-4A51-B696-D5F89FAF047F">
-        <Shortcut Id="StartMenuShortcut" Name="PSG PDF" Description="PSG PDF PDF workbench" Target="[#PdfcraftExe]" WorkingDirectory="INSTALLFOLDER" />
+        <Shortcut Id="StartMenuShortcut" Name="PSG PDF" Description="Reading, organizing and protecting PDFs" Target="[#PdfcraftExe]" WorkingDirectory="INSTALLFOLDER" />
         <RegistryValue Root="HKMU" Key="Software\PSG PDF\Shortcuts" Name="StartMenu" Type="integer" Value="1" KeyPath="yes" />
       </Component>
 
       <Component Id="PdfcraftDesktopShortcut" Directory="DesktopFolder" Guid="A3838481-BE84-41BA-A2C7-CE25095C6967" Condition="INSTALLDESKTOPSHORTCUT = 1">
-        <Shortcut Id="DesktopShortcut" Name="PSG PDF" Description="PSG PDF PDF workbench" Target="[#PdfcraftExe]" WorkingDirectory="INSTALLFOLDER" />
+        <Shortcut Id="DesktopShortcut" Name="PSG PDF" Description="Reading, organizing and protecting PDFs" Target="[#PdfcraftExe]" WorkingDirectory="INSTALLFOLDER" />
         <RegistryValue Root="HKMU" Key="Software\PSG PDF\Shortcuts" Name="Desktop" Type="integer" Value="1" KeyPath="yes" />
       </Component>
 
@@ -204,17 +216,6 @@
         <RegistryValue Root="HKMU" Key="Software\Classes\SystemFileAssociations\.jpx\shell\PSGPDF.CreatePdf" Value="Create PDF with PSG PDF…" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\Classes\SystemFileAssociations\.jpx\shell\PSGPDF.CreatePdf" Name="MultiSelectModel" Value="Single" Type="string" />
         <RegistryValue Root="HKMU" Key="Software\Classes\SystemFileAssociations\.jpx\shell\PSGPDF.CreatePdf\command" Value="&quot;[#PdfcraftExe]&quot; --create-images &quot;%1&quot;" Type="string" />
-      </Component>
-
-      <!-- PSG Academic PDF, the suite's second app, beside psg-pdf.exe. Its built-in templates are
-           compiled in, and it registers no file types: PSG PDF stays the PDF handler. -->
-      <Component Id="PsgAcademicApp" Guid="F83C58EF-1BA7-47AD-9A51-076C8DAD4CF4">
-        <File Id="PsgAcademicExe" Source="$(var.BinDir)\psg-academic-pdf.exe" KeyPath="yes" />
-        <RegistryValue Root="HKMU" Key="Software\Microsoft\Windows\CurrentVersion\App Paths\psg-academic-pdf.exe" Value="[#PsgAcademicExe]" Type="string" />
-      </Component>
-      <Component Id="PsgAcademicStartMenuShortcut" Directory="ProgramMenuFolder" Guid="7B40A9C4-E6A8-47F1-B02A-7D8EABB30E68">
-        <Shortcut Id="AcademicStartMenuShortcut" Name="PSG Academic PDF" Description="LaTeX papers with BibLaTeX and Pandoc" Target="[#PsgAcademicExe]" WorkingDirectory="INSTALLFOLDER" />
-        <RegistryValue Root="HKMU" Key="Software\PSG PDF\Shortcuts" Name="AcademicStartMenu" Type="integer" Value="1" KeyPath="yes" />
       </Component>
 
       <Component Id="PdfcraftCli">
