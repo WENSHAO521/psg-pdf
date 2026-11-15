@@ -1,5 +1,24 @@
 # Vendored crates
 
+## craft-update
+
+The in-app updater, from [storytold/craft-libs](https://github.com/storytold/craft-libs) at
+`1b34eba41e62138fc2438d2734523b302840b45d` (`crates/update`), MIT OR Apache-2.0 (licence files
+copied unchanged). The manifest spells out what the craft-libs workspace supplied. PSG patches,
+each marked `PSG patch` in the source:
+
+- `src/signature.rs` and its callers in `install.rs` and `self_update.rs`: an app with
+  `App::update_key` installs only files listed in the release's `SHA256SUMS.txt` when
+  `SHA256SUMS.txt.sig` is a valid Ed25519 signature of it, checks the download again before the
+  install step, and then needs no Authenticode or Developer ID signature
+  ([docs/update-signing.md](../docs/update-signing.md)).
+- `App::app_id`: the reverse-DNS id of PSG's packages instead of `ai.storyteller.<id>`.
+- `Updater::set_prereleases` and `check_for_update_on`: the beta channel.
+
+Tests: `CARGO_TARGET_DIR=target/vendor-tests cargo test --manifest-path vendor/craft-update/Cargo.toml --lib`
+(`process::tests::running_paths_are_matched_literally` fails in containers whose process table
+can't hold the non-ASCII name it starts; it is unrelated to the patches).
+
 ## edit-session
 
 Document Properties uses the dependency-free draft state machine from

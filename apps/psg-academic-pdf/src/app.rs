@@ -110,7 +110,7 @@ impl AcademicApp {
             tab: Tab::Preview,
             status: t("Checking the TeX installation…").into(),
             activity: Vec::new(),
-            updates: Updates::default(),
+            updates: Updates::with_channel_file(data.root.join("update-channel.txt")),
             pending: paths,
             source: SourceEditor::default(),
             preflight: Vec::new(),
@@ -1143,6 +1143,9 @@ impl eframe::App for AcademicApp {
                 ui.weak(t("PDF engine: PdfCraft (MIT OR Apache-2.0)"));
                 if ui.small_button(t("Check for updates…")).clicked() {
                     self.updates.request_check();
+                }
+                if let Some(error) = self.updates.channel_ui(ui) {
+                    self.note(error);
                 }
             });
         });
