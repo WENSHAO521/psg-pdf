@@ -21,6 +21,7 @@ mod launch;
 mod preview;
 mod psg_pdf;
 mod source;
+mod theme;
 mod updates;
 
 /// Freedesktop app id: the Wayland app id and the hicolor icon name.
@@ -52,7 +53,7 @@ fn run_window(paths: Vec<std::path::PathBuf>) -> eframe::Result {
     let apple_events = apple_events::AppleEvents::install();
     let data = data_dir::DataDir::for_this_run(app::APP_NAME);
     let mut viewport = egui::ViewportBuilder::default()
-        .with_title(app::APP_NAME)
+        .with_title(theme::window_title())
         .with_app_id(APP_ID)
         .with_inner_size([1280.0, 840.0])
         .with_min_inner_size([900.0, 600.0]);

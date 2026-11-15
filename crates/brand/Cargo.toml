@@ -1,0 +1,13 @@
+[package]
+name = "psg-brand"
+description = "The PSG design system shared by PSG PDF and PSG Academic PDF: product names, brand colours, shape tokens and release labels"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+# No dependencies: both apps, the web build and the packaging checks can read it.
+[dependencies]

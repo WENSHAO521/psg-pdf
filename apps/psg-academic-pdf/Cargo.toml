@@ -10,6 +10,8 @@ publish = false
 workspace = true
 
 [dependencies]
+# The PSG design system: name, brand colours, release badge (docs/brand.md).
+psg-brand = { workspace = true }
 # Templates, metadata, TeX detection and sandboxed latexmk compilation.
 psg-academic = { path = "../../crates/academic" }
 # The shared PdfCraft engine draws the PDF preview (the same renderer PSG PDF uses).
@@ -35,3 +37,8 @@ fmv-macos-events = "=0.1.0"
 
 [dev-dependencies]
 tempfile = "3.27"
+
+[build-dependencies]
+# Icon + VERSIONINFO for psg-academic-pdf.exe; build.rs only uses it when targeting Windows.
+# Same version as PSG PDF.
+winresource = "0.1"

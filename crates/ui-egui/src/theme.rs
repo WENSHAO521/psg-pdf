@@ -1,5 +1,5 @@
-//! Design tokens and egui style (plan/acrobat/02-ui-ux.md §1: neutral chrome, white panels,
-//! one blue accent; Dark Gray keeps pages white). Every custom widget reads `Tokens::get`.
+//! Design tokens and egui style (neutral chrome, white panels, one accent: PSG PDF's deep blue
+//! from the PSG design system, `psg-brand`; Dark Gray keeps pages white). Every custom widget reads `Tokens::get`.
 
 use std::sync::Arc;
 
@@ -86,12 +86,13 @@ impl Tokens {
                 icon: Color32::from_rgb(0x44, 0x44, 0x4B),
                 hover: Color32::from_rgb(0xF0, 0xF0, 0xF3),
                 pressed: Color32::from_rgb(0xE4, 0xE4, 0xE9),
-                selected: Color32::from_rgb(0xE6, 0xEE, 0xFD),
-                accent: Color32::from_rgb(0x1B, 0x63, 0xE0),
-                accent_text: Color32::from_rgb(0x17, 0x55, 0xC4),
-                accent_soft: Color32::from_rgb(0xE3, 0xEC, 0xFD),
+                // PSG PDF's accent from the PSG design system (psg-brand, docs/brand.md).
+                selected: crate::brand::colour(crate::brand::PRODUCT.accent(false).selected),
+                accent: crate::brand::colour(crate::brand::PRODUCT.accent(false).accent),
+                accent_text: crate::brand::colour(crate::brand::PRODUCT.accent(false).accent_text),
+                accent_soft: crate::brand::colour(crate::brand::PRODUCT.accent(false).accent_soft),
                 field: Color32::from_rgb(0xFF, 0xFF, 0xFF),
-                badge_new: Color32::from_rgb(0x1B, 0x63, 0xE0),
+                badge_new: crate::brand::colour(crate::brand::PRODUCT.accent(false).accent),
                 page_shadow: Color32::from_black_alpha(34),
                 radius: 6,
             },
@@ -110,12 +111,12 @@ impl Tokens {
                 icon: Color32::from_rgb(0xD4, 0xD4, 0xDA),
                 hover: Color32::from_rgb(0x34, 0x34, 0x3A),
                 pressed: Color32::from_rgb(0x3E, 0x3E, 0x45),
-                selected: Color32::from_rgb(0x23, 0x3A, 0x63),
-                accent: Color32::from_rgb(0x4B, 0x8B, 0xF5),
-                accent_text: Color32::from_rgb(0x8C, 0xB6, 0xFA),
-                accent_soft: Color32::from_rgb(0x24, 0x36, 0x57),
+                selected: crate::brand::colour(crate::brand::PRODUCT.accent(true).selected),
+                accent: crate::brand::colour(crate::brand::PRODUCT.accent(true).accent),
+                accent_text: crate::brand::colour(crate::brand::PRODUCT.accent(true).accent_text),
+                accent_soft: crate::brand::colour(crate::brand::PRODUCT.accent(true).accent_soft),
                 field: Color32::from_rgb(0x1E, 0x1E, 0x22),
-                badge_new: Color32::from_rgb(0x3D, 0x7D, 0xEE),
+                badge_new: crate::brand::colour(crate::brand::PRODUCT.accent(true).accent),
                 page_shadow: Color32::from_black_alpha(120),
                 radius: 6,
             },
