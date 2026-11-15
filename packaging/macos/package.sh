@@ -144,8 +144,10 @@ assemble() {
   cp "$icns" "$app/Contents/Resources/$name.icns"
   # Required embedded-font notices are independent of optional font inputs.
   cp "$ROOT/NOTICE" "$app/Contents/Resources/NOTICE"
-  # The standard About panel (app menu > About) shows Credits.rtf under the version.
-  cp "$HERE/Credits.rtf" "$app/Contents/Resources/Credits.rtf"
+  # The standard About panel (app menu > About) shows Credits.rtf under the version, naming
+  # the product it is in (one template for both products).
+  sed -e "s/@NAME@/$name/g" "$HERE/Credits.rtf" >"$app/Contents/Resources/Credits.rtf"
+  if grep -q '@NAME@' "$app/Contents/Resources/Credits.rtf"; then echo "error: Credits.rtf still has @NAME@" >&2; exit 1; fi
   copy_font_licences "$app/Contents/Resources"
   sed -e "s/@VERSION@/$VERSION/g" -e "s/@SHORT_VERSION@/$SHORT_VERSION/g" \
     -e "s/@BUILD_SHA@/${PDFCRAFT_BUILD_SHA:-unknown}/g" \
