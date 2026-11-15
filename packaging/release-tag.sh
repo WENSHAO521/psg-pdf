@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # Print the tag a CI build of this commit publishes under, or nothing when it publishes none
-# (.github/workflows/psg-release.yml). The version is [workspace.package] version in Cargo.toml.
+# (.github/workflows/build.yaml). The version is [workspace.package] version in Cargo.toml.
 #
-#   beta  vX.Y.Z-beta.<run number>, a pre-release, on every push. Once vX.Y.Z is out, a beta is
-#         one patch ahead (vX.Y.(Z+1)-beta.N) so it sorts above it, and a beta whose tree is the
-#         release's own (main merged back into beta) publishes nothing.
+#   beta  vX.Y.Z-beta.<run number>, a pre-release, on every push (never numbered below an earlier
+#         beta of the same version). Once vX.Y.Z is out, a beta is one patch ahead
+#         (vX.Y.(Z+1)-beta.N) so it sorts above it, and a beta whose tree is the release's own
+#         (main merged back into beta) publishes nothing.
 #   main  vX.Y.Z once a `chore(release): vX.Y.Z` commit has given CHANGELOG.md its section and
 #         no vX.Y.Z tag exists yet. The publish job creates the tag (cloud sessions can't push one).
 #
@@ -37,6 +38,13 @@ case "$ref" in
       IFS='.' read -r major minor patch <<<"$version"
       version="$major.$minor.$((patch + 1))"
     fi
-    echo "v$version-beta.${GITHUB_RUN_NUMBER:?}"
+    # The run number restarts when the workflow file changes (psg-release.yml became build.yaml).
+    # A beta must still sort above every earlier beta of the same version, or the in-app updaters
+    # would never offer it: continue after the highest one already tagged.
+    n="${GITHUB_RUN_NUMBER:?}"
+    last="$(git -C "$ROOT" ls-remote --tags origin "refs/tags/v$version-beta.*" |
+      sed -n "s|.*refs/tags/v$version-beta\.\([0-9][0-9]*\)\$|\1|p" | sort -n | tail -n1)"
+    if [[ -n "$last" ]] && ((last >= n)); then n=$((last + 1)); fi
+    echo "v$version-beta.$n"
     ;;
 esac

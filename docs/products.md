@@ -16,7 +16,8 @@ products share a value that must be unique.
 
 ```sh
 cargo xtask products check                      # every packaging file agrees with the manifest
-cargo xtask products matrix                     # the release workflow's product x platform matrix
+cargo xtask products matrix                     # the build workflow's platform matrix (both products per leg)
+cargo xtask products ids                        # every product id
 cargo xtask products get psg-academic-pdf nfpm  # one value, for scripts
 ```
 
@@ -91,17 +92,20 @@ its projects), so it opens once at the default size after the upgrade.
 
 ## What the release workflow checks
 
-`.github/workflows/psg-release.yml`, on every pull request and push:
+`.github/workflows/build.yaml` ([ci.md](ci.md)), in every full run (pushes to `beta` and `main`,
+pull requests with the `full-ci` label or packaging changes, manual `full` and `release-check`):
 
-- `products`: the identity check, and the build matrix (each product on Linux, macOS, Windows);
-- each build: the product's programs start, every file is named after the product, signatures
-  verify (Authenticode on Windows; codesign, and Gatekeeper with a Developer ID, on macOS), and a
-  SHA-256 list travels with the files;
-- `install-linux` (deb on Ubuntu, rpm on Fedora), `install-windows`, `install-macos`: checksums,
-  then each product installed alone, both side by side, and either uninstalled leaving the other
-  working (`packaging/<os>/test-install.*`); on Windows and Linux also a migration from the last
-  suite release (`LEGACY_SUITE_TAG`);
-- `publish`: only after the Linux and Windows install tests (and, for a stable release, macOS) pass.
+- the plan job: the identity check (`cargo xtask products check`) and the build matrix, one job
+  per platform that builds both products in turn;
+- each build: the products' programs start, every file is named after exactly one product and goes
+  into that product's own artifact, signatures verify (Authenticode on Windows; codesign, and
+  Gatekeeper with a Developer ID, on macOS), and a SHA-256 list travels with the files;
+- on the same runner: each product installed alone, both side by side, and either uninstalled
+  leaving the other working (`packaging/<os>/test-install.*`: deb on Ubuntu, rpm in a Fedora
+  container, MSI, DMG); on Windows and Linux also a migration from the last suite release
+  (`LEGACY_SUITE_TAG`). The artifacts are uploaded only once this passed;
+- the release: only after the gate and the Linux and Windows install tests (and, for a stable
+  release, macOS) pass.
 
 A beta publishes what built when the macOS runners don't start; a stable release needs every
 platform.

@@ -4,21 +4,20 @@ PSG PDF and PSG Academic PDF are independent products ([products.md](products.md
 separate installers. They are released at the same time, into the same GitHub release, on the rhythm
 panorama-secure-access uses: small pull requests into `beta`, a pre-release for every push to
 `beta`, and a stable release when `beta` is merged into `main` with a release commit.
-`.github/workflows/psg-release.yml` builds, checks and publishes both; nobody pushes a tag by hand.
-It is the only workflow that makes installers:
+`.github/workflows/build.yaml` ("PSG PDF — Build & Release", the repository's only workflow,
+[ci.md](ci.md)) builds, checks and publishes both; nobody pushes a tag by hand:
 
 | Event | Packages both products on all platforms | Checks (identities, changelog, academic tests with TeX Live, smoke tests, signatures, checksums, install/uninstall, coexistence, suite migration) | Publishes |
 |---|---|---|---|
-| Pull request | yes, kept as run artifacts for 7 days, unsigned | yes | nothing |
+| Pull request | only with the `full-ci` label or changes to `packaging/`, the workflow or the app icons; then kept as run artifacts for 7 days, unsigned | the quick checks always; the rest with the builds | nothing |
 | Push to `beta` | yes, signed when the secrets exist | yes | pre-release `vX.Y.Z-beta.N` |
 | Push to `main` | yes, signed when the secrets exist | yes | `vX.Y.Z`, when `CHANGELOG.md` has its section |
-| Manual run | yes, unsigned | yes | nothing |
+| Manual run (`full`, `release-check`) | yes, unsigned | yes | nothing |
 
-Nothing is published unless the changelog and academic checks and the Linux and Windows install
-tests pass. The quality gates that are not
-about installers keep their own workflows: `ci.yml` (`cargo xtask ci`), `packaging-lint.yml`,
-`sonarcloud.yml`, `freebsd.yml`, `nix.yml`, `house-rules.yml`, and the scheduled `fuzz.yml` and
-`nightly-macos.yml`.
+Nothing is published unless the identity and changelog checks, the gate (`cargo xtask ci` on Linux
+and Windows, with the academic TeX tests) and the Linux and Windows install tests pass; a stable
+release needs macOS too. SonarCloud, FreeBSD, Nix, house rules, packaging lint, fuzzing and the
+macOS tests are jobs of the same workflow ([ci.md](ci.md#triggers) says when each runs).
 
 ## Branches
 
@@ -98,11 +97,14 @@ headings are `## vX.Y.Z (YYYY-MM-DD)`, newest first.
 | Windows 10+ x64 | `psg-pdf-<v>-windows-x64.msi`, `psg-pdf-<v>-windows-x64-portable.zip`; `psg-academic-pdf-<v>-windows-x64.msi`, `psg-academic-pdf-<v>-windows-x64-portable.zip` | `windows-latest` |
 | Linux x86_64 | `psg-pdf-<v>-linux-x86_64.{deb,rpm,AppImage,tar.gz}`, `pdfcraft-cli-<v>-linux-x86_64.tar.gz`; `psg-academic-pdf-<v>-linux-x86_64.{deb,rpm,AppImage,tar.gz}` | `ubuntu-22.04` |
 
-Each product is one build job per platform (`cargo xtask products matrix`), and its artifact
-holds only files named after it. The `install-*` jobs then install both products' packages on
-each platform, alone and side by side, uninstall them one at a time, and on Windows and Linux
-migrate the last suite release (`LEGACY_SUITE_TAG` in the workflow) to the new packages
-(`packaging/<os>/test-install.*`, [products.md](products.md#migrating-from-the-suite)).
+Each platform is one build job (`cargo xtask products matrix`) that builds both products in turn
+on one Cargo target directory (`packaging/ci/build-products.sh`); every file must be named after
+exactly one product, and each product gets its own artifact. On the same runner,
+`packaging/ci/verify-installs.sh` then installs both products' packages alone and side by side,
+uninstalls them one at a time, and on Windows and Linux (deb, and rpm in a Fedora container)
+migrates the last suite release (`LEGACY_SUITE_TAG` in the workflow) to the new packages
+(`packaging/<os>/test-install.*`, [products.md](products.md#migrating-from-the-suite)). The
+artifacts are uploaded only after that.
 
 **Signing** uses the repository secrets when they exist: `APPLE_CERTIFICATE`,
 `APPLE_CERTIFICATE_PASSWORD`, `KEYCHAIN_PASSWORD`, `APPLE_ID`, `APPLE_PASSWORD` and `APPLE_TEAM_ID`
@@ -117,7 +119,7 @@ so a release can't ship without them.
 
 PdfCraft's own `release.yml` (its pipeline on the `release` branch) and `windows-arm64.yml` were
 removed: they built PdfCraft-named packages, and PSG has no Windows ARM64 build yet. The
-platform notes below describe the packaging scripts `psg-release.yml` runs; some passages still
+platform notes below describe the packaging scripts `build.yaml` runs; some passages still
 describe PdfCraft's pipeline.
 
 Every binary reports its version (`pdfcraft --version`, `pdfcraft-cli --version`, *Help ▸ About*).
@@ -295,10 +297,10 @@ covered in [`packaging/web/README.md`](../packaging/web/README.md).
 ## Secrets
 
 The signing secrets are repository secrets (*Settings ▸ Secrets and variables ▸ Actions*).
-`psg-release.yml` passes them to the packaging steps only on pushes to `beta` and `main`, never on
-pull requests. Each secret is optional: if one is missing, that platform's artifacts are unsigned
+`build.yaml` passes them to the packaging steps only on pushes to `beta` and `main`, never on
+pull requests or manual runs. Each secret is optional: if one is missing, that platform's artifacts are unsigned
 and the run shows a warning. The Azure Trusted Signing secrets below were used by PdfCraft's
-pipeline; `psg-release.yml` signs Windows with the `.pfx` secrets only.
+pipeline; `build.yaml` signs Windows with the `.pfx` secrets only.
 
 | Secret | Used for |
 |---|---|
@@ -313,10 +315,11 @@ pipeline; `psg-release.yml` signs Windows with the `.pfx` secrets only.
 
 ## Checks
 
-`.github/workflows/packaging-lint.yml` runs on changes to `packaging/` and the workflows: actionlint, shellcheck,
-a PowerShell parse, xmllint (WiX, plist, MIME), `desktop-file-validate`, `appstreamcli validate`, and
-the MSI icon-id check. The FreeBSD workflow also exercises its packaging. Every pull request
-runs `psg-release.yml` without publishing, so both products' installers are built and installed before a release is.
+The packaging-lint job of `build.yaml` runs on changes to `packaging/`, the workflow and the app
+icons, and in every full run: actionlint, shellcheck, a PowerShell parse, xmllint (WiX, plist, MIME),
+`desktop-file-validate`, `appstreamcli validate`, and the MSI icon-id check. The FreeBSD job also
+exercises its packaging. A pull request that changes the packaging builds and install-tests both
+products' installers without publishing them; add the `full-ci` label to do that for any other.
 
 ## Scanner detections
 
