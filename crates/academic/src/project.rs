@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::Error;
 use crate::compile::{self, CompileOptions, CompileReport};
+use crate::diagnostics::{Diagnostic, Severity};
 use crate::metadata::PublicationMetadata;
 use crate::paths::{sanitize_name, write_atomic};
 use crate::template::Template;
@@ -161,6 +162,107 @@ impl Project {
         compile::compile(env, &self.dir, &self.compile_options(), cancel)
     }
 
+    /// The manuscript body (the file an import replaces), as text.
+    pub fn read_body(&self) -> Result<String, Error> {
+        read_import_text(&self.dir.join(&self.file.body))
+    }
+
+    /// Replace the manuscript body with `text` (atomically), as the source editor saves it.
+    pub fn write_body(&self, text: &str) -> Result<(), Error> {
+        if text.len() as u64 > MAX_IMPORT {
+            return Err(Error::Project(format!("the body is larger than {} MB", MAX_IMPORT / 1024 / 1024)));
+        }
+        write_atomic(&self.dir.join(&self.file.body), text.as_bytes())
+    }
+
+    /// The `.bib` files in the project folder, by name.
+    pub fn bib_files(&self) -> Vec<String> {
+        let mut names: Vec<String> = std::fs::read_dir(&self.dir)
+            .map(|list| {
+                list.flatten()
+                    .filter_map(|e| e.file_name().into_string().ok())
+                    .filter(|n| n.to_ascii_lowercase().ends_with(".bib") && crate::paths::safe_relative_name(n).is_some())
+                    .collect()
+            })
+            .unwrap_or_default();
+        names.sort();
+        names
+    }
+
+    /// Every bibliography entry of the project's `.bib` files, with the file each is in, and the
+    /// problems found in them and in the manuscript's citations.
+    pub fn bibliography(&self) -> (Vec<(String, crate::bib::BibEntry)>, Vec<Diagnostic>) {
+        let mut entries = Vec::new();
+        let mut parse_issues = Vec::new();
+        let mut problems = Vec::new();
+        for name in self.bib_files() {
+            match read_import_text(&self.dir.join(&name)) {
+                Ok(text) => {
+                    let (found, issues) = crate::bib::parse(&text);
+                    parse_issues.extend(issues.into_iter().map(|i| (name.clone(), i)));
+                    entries.extend(found.into_iter().map(|e| (name.clone(), e)));
+                }
+                Err(e) => problems.push(Diagnostic { severity: Severity::Error, file: Some(name.clone()), line: None, message: e.to_string() }),
+            }
+        }
+        let body = self.read_body().unwrap_or_default();
+        let cited = crate::bib::cited_keys(&body);
+        // The first body line that mentions a key, for a citation with no entry.
+        let cited_on = |key: &str| body.lines().position(|l| l.contains("cite") && l.contains(key)).and_then(|n| u32::try_from(n + 1).ok());
+        let plain: Vec<crate::bib::BibEntry> = entries.iter().map(|(_, e)| e.clone()).collect();
+        // Issues of the check carry the entry's line; find its file by key (or the parse issue's own).
+        let file_of =
+            |key: &Option<String>| key.as_ref().and_then(|k| entries.iter().find(|(_, e)| e.key.eq_ignore_ascii_case(k)).map(|(f, _)| f.clone()));
+        for (file, issue) in &parse_issues {
+            problems.push(Diagnostic { severity: issue.severity, file: Some(file.clone()), line: issue.line, message: issue.message.clone() });
+        }
+        for issue in crate::bib::check(&plain, Vec::new(), &cited) {
+            let (file, line) = match issue.line {
+                None => (Some(self.file.body.clone()), issue.key.as_deref().and_then(cited_on)),
+                Some(line) => (file_of(&issue.key), Some(line)),
+            };
+            problems.push(Diagnostic { severity: issue.severity, file, line, message: issue.message });
+        }
+        (entries, problems)
+    }
+
+    /// Problems to fix before compiling: writing systems the pdfLaTeX templates can't set (in the
+    /// body and the metadata), and bibliography problems when the template uses Biber.
+    pub fn preflight(&self) -> Vec<Diagnostic> {
+        let mut out = Vec::new();
+        match self.read_body() {
+            Ok(body) => {
+                for f in crate::scripts::scan(&body, &self.file.body, true) {
+                    out.push(Diagnostic { severity: f.severity(), file: Some(self.file.body.clone()), line: f.line, message: f.summary() });
+                }
+            }
+            Err(e) => out.push(Diagnostic { severity: Severity::Error, file: Some(self.file.body.clone()), line: None, message: e.to_string() }),
+        }
+        let m = &self.file.metadata;
+        let mut fields: Vec<(String, &str)> = vec![
+            ("title".into(), m.title.as_str()),
+            ("short title".into(), m.short_title.as_str()),
+            ("journal".into(), m.journal.as_str()),
+            ("abstract".into(), m.abstract_text.as_str()),
+        ];
+        fields.extend(m.keywords.iter().map(|k| ("keywords".to_owned(), k.as_str())));
+        fields.extend(m.authors.iter().enumerate().map(|(i, a)| (format!("author {}", i + 1), a.name.as_str())));
+        fields.extend(m.affiliations.iter().enumerate().map(|(i, a)| (format!("affiliation {}", i + 1), a.as_str())));
+        let mut seen = std::collections::HashSet::new();
+        for (field, value) in fields {
+            for f in crate::scripts::scan(value, &format!("metadata: {field}"), false) {
+                // One finding per script and field name (keywords and authors come in lists).
+                if seen.insert((f.script, field.clone())) {
+                    out.push(Diagnostic { severity: f.severity(), file: None, line: None, message: f.message() });
+                }
+            }
+        }
+        if self.file.uses_biber {
+            out.extend(self.bibliography().1);
+        }
+        out
+    }
+
     /// The compiled PDF, if there is one.
     pub fn pdf_path(&self) -> PathBuf {
         self.dir.join(format!("{}.pdf", self.file.main.trim_end_matches(".tex")))
@@ -290,6 +392,22 @@ mod tests {
         let (_root, mut p) = new_project();
         p.file.metadata.title.clear();
         assert!(matches!(p.write_metadata(), Err(Error::Metadata(_))));
+    }
+
+    #[test]
+    fn preflight_names_cjk_text_and_missing_citations() {
+        let (_root, mut p) = new_project();
+        assert!(p.preflight().iter().all(|d| d.severity != crate::Severity::Error), "the sample project is clean: {:?}", p.preflight());
+        p.write_body("Intro.\n\n张三 argues \\parencite{nobody2020}.\n").unwrap();
+        p.file.metadata.title = "论文 Title".into();
+        let found = p.preflight();
+        let text: Vec<String> = found.iter().map(ToString::to_string).collect();
+        assert!(text.iter().any(|t| t.starts_with("body.tex:3: error: 2 characters in Chinese")), "{text:?}");
+        assert!(text.iter().any(|t| t.contains("metadata: title: 2 characters in Chinese")), "{text:?}");
+        assert!(text.iter().any(|t| t.contains("\"nobody2020\" is cited but no bibliography entry")), "{text:?}");
+        assert_eq!(p.read_body().unwrap(), "Intro.\n\n张三 argues \\parencite{nobody2020}.\n");
+        let (entries, _) = p.bibliography();
+        assert!(!entries.is_empty() && entries.iter().all(|(f, _)| f == "references.bib"));
     }
 
     #[test]

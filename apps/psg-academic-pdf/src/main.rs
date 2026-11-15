@@ -15,9 +15,12 @@ mod app;
 mod apple_events;
 mod cli;
 mod data_dir;
+mod fonts;
+mod i18n;
 mod launch;
 mod preview;
 mod psg_pdf;
+mod source;
 mod updates;
 
 /// Freedesktop app id: the Wayland app id and the hicolor icon name.

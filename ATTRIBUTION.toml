@@ -3001,6 +3001,61 @@ kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
 sha256 = "14c0a983f2afe632d86f67fc88ec2d2519dfa48b20640a4c5dc847f56ccd8510"
 
+[[asset]]
+path = "i18n/psg-academic/de.tsv"
+title = "PSG Academic PDF interface translation (de)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
+sha256 = "4d5c06267eedc546f9b6cfe7771dc908d8c4ef42a8b9478573346603fe4e36f6"
+
+[[asset]]
+path = "i18n/psg-academic/ja.tsv"
+title = "PSG Academic PDF interface translation (ja)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
+sha256 = "4247247ba85182f7b06a455be81b99f999f097f0cdb9c366be4e7ddf95543ed5"
+
+[[asset]]
+path = "i18n/psg-academic/ko.tsv"
+title = "PSG Academic PDF interface translation (ko)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
+sha256 = "854e3ee74bce55ebc14f810605867c7d3acc50a264fb085deebb139752f28aa3"
+
+[[asset]]
+path = "i18n/psg-academic/zh-hans.tsv"
+title = "PSG Academic PDF interface translation (zh-hans)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
+sha256 = "9eef8e70c90fe7ec3033308cab6a53cf5bef0cb247bcffc4c05252af7bb8c34d"
+
+[[asset]]
+path = "i18n/psg-academic/zh-hant.tsv"
+title = "PSG Academic PDF interface translation (zh-hant)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
+sha256 = "20a28e75be7337bdd52f8a2c713001d4933464bb8d3651ef82b3fb9bfb9af30d"
+
 [[build_input]]
 name = "craft-i18n"
 option = "CRAFT_I18N_DIR"
