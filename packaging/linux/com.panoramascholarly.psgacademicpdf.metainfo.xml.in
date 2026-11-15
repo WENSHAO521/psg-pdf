@@ -32,6 +32,17 @@
     <keyword>journal</keyword>
     <keyword>typesetting</keyword>
   </keywords>
+  <screenshots>
+    <screenshot type="default">
+      <caption>A sample article: its source and the typeset PDF side by side</caption>
+      <image>https://raw.githubusercontent.com/WENSHAO521/psg-pdf/main/docs/images/psg/psg-academic-pdf.png</image>
+    </screenshot>
+  </screenshots>
+  <branding>
+    <!-- PSG design system (crates/brand, docs/brand.md): PSG Academic PDF academic purple. -->
+    <color type="primary" scheme_preference="light">#e6daee</color>
+    <color type="primary" scheme_preference="dark">#5b2a78</color>
+  </branding>
   <content_rating type="oars-1.1"/>
   <releases>
     <release version="@VERSION@" date="@DATE@"/>
