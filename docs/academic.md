@@ -82,7 +82,8 @@ Implemented and tested:
 - Publication metadata form, validation (DOI, ISSN and ORCID check digits, ISO dates) and
   escaping into `psg-metadata.tex`.
 - Projects: create, open, import a LaTeX manuscript, add bibliography and figure files.
-- Headless commands: `check-tex`, `templates`, `new`, `compile`.
+- Headless commands: `check-tex`, `templates`, `new`, `compile`, and `check` (the checks made
+  before compiling, exit status 1 on an error).
 
 Phase two:
 
