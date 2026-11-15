@@ -12,7 +12,7 @@ them, the macOS DMG backgrounds are generated from it. Edit this file, never the
 Each group is a 1024 × 1024 icon (the master places them side by side). Inside a group:
 
 - elements with `class="detail"` are drawn at 64 px and above (fine line work, ornament, watermark);
-- elements with `class="compact"` replace them at 48 px and below, so small icons stay legible.
+- elements with `class="compact"` replace them at 48 px and below: the same design (PSG PDF keeps its hexagon and outlined page, PSG Academic PDF its gold keyline) with heavier strokes, so small icons stay legible and match the large ones. Never a different or filled mark.
 
 The shared colours are cream `#f5efe1` and gold `#d8ae5c`. The group ids, the icon folders and the brand
 colours are recorded in [`packaging/products.toml`](../../packaging/products.toml); `cargo xtask products
