@@ -20,6 +20,9 @@ pub const UPDATE_APP: App = App {
     // packaging/products.toml `accent`.
     accent: Some(crate::theme::PRODUCT.brand()),
     developer: PUBLISHER,
+    // The MSI's Manufacturer (packaging/windows/*.wxs): the updater finds its own uninstall
+    // record by it, so an MSI copy can update itself.
+    publisher: PUBLISHER,
     // packaging/products.toml `app_id`.
     app_id: Some("com.panoramascholarly.psgacademicpdf"),
     // Releases are signed with PSG's own key (docs/update-signing.md).
@@ -177,5 +180,17 @@ mod tests {
         assert_eq!(UPDATE_APP.stems().collect::<Vec<_>>(), ["psg-academic-pdf"]);
         assert_eq!(UPDATE_APP.repo, "WENSHAO521/psg-pdf");
         assert_eq!(UPDATE_APP.name, "PSG Academic PDF");
+    }
+
+    #[test]
+    fn the_updater_knows_the_msis_own_uninstall_record() {
+        // An MSI copy updates only by finding exactly one uninstall record with this name and
+        // publisher, so both must be what packaging/windows/psg-academic-pdf.wxs registers.
+        let wxs = include_str!("../../../packaging/windows/psg-academic-pdf.wxs");
+        assert!(
+            wxs.contains(&format!(r#"<Package Name="{}" Manufacturer="{}""#, UPDATE_APP.name, UPDATE_APP.publisher)),
+            "the MSI registers another name or publisher"
+        );
+        assert!(wxs.contains(&format!(r"App Paths\{}.exe", UPDATE_APP.id)));
     }
 }

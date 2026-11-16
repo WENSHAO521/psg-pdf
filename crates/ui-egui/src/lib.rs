@@ -18,6 +18,9 @@ pub const UPDATE_APP: craft_update::app::App = craft_update::app::App {
     // packaging/products.toml `accent`, through the PSG design system.
     accent: Some(brand::PRODUCT.brand()),
     developer: brand::PUBLISHER,
+    // The MSI's Manufacturer (packaging/windows/*.wxs): the updater finds its own uninstall
+    // record by it, so an MSI copy can update itself.
+    publisher: brand::PUBLISHER,
     // PSG PDF continues the 0.18.x "PSG PDF Suite" MSI (same UpgradeCode), so its updater
     // recognises that install as its own (docs/products.md, "Migrating from the suite").
     former_names: &["PSG PDF Suite"],
