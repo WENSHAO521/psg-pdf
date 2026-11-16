@@ -41,10 +41,11 @@ impl OpeningMetadata {
 
 /// Read a last-component-symlink-safe attribute with a strict allocation cap.
 fn read_attribute(path: &Path, name: &str) -> io::Result<Option<Vec<u8>>> {
-    read_attribute_with(|buffer| rustix::fs::lgetxattr(path, name, buffer))
+    // rustix 1 answers an empty buffer with 0, not the size: the probe asks for the size.
+    read_attribute_with(|buffer| if buffer.is_empty() { rustix::fs::lgetxattr_query(path, name) } else { rustix::fs::lgetxattr(path, name, buffer) })
 }
 
-/// Probe the length before allocating. A concurrently grown value fails safely; unreadable
+/// Probe the length (`get` with an empty buffer returns it) before allocating. A concurrently grown value fails safely; unreadable
 /// attributes or values beyond the parser cap skip recovery without affecting open/save.
 fn read_attribute_with(mut get: impl FnMut(&mut [u8]) -> rustix::io::Result<usize>) -> io::Result<Option<Vec<u8>>> {
     use rustix::io::Errno;
