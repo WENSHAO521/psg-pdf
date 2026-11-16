@@ -14,7 +14,7 @@ pub enum ButtonKind {
     Primary,
     /// Every other action: outlined.
     Secondary,
-    /// Low-emphasis actions in toolbars and lists: no outline until hovered.
+    /// Low-emphasis actions in toolbars and lists: accent text, no outline until hovered.
     Ghost,
     /// Actions that discard or delete: red text, outlined.
     Danger,
@@ -145,7 +145,8 @@ pub fn selectable_card(ui: &mut Ui, selected: bool, width: f32, add: impl FnOnce
         .inner_margin(egui::Margin::same(space::M as i8));
     let inner = frame.show(ui, |ui| {
         ui.set_width(width - 2.0 * space::M);
-        add(ui);
+        // Cards are often laid out in a wrapping row; their content always stacks.
+        ui.vertical(add);
     });
     let resp = ui.interact(inner.response.rect, inner.response.id.with("card"), Sense::click());
     if resp.hovered() && !selected {
@@ -348,7 +349,7 @@ pub fn kbd(ui: &mut Ui, keys: &str) -> Response {
 
 /// A two-column form: labels on the left, fields on the right, the shared row spacing.
 pub fn form_grid<R>(ui: &mut Ui, id: &'static str, add: impl FnOnce(&mut Ui) -> R) -> R {
-    egui::Grid::new(id).num_columns(2).spacing(vec2(space::M, space::S)).min_col_width(96.0).show(ui, add).inner
+    egui::Grid::new(id).num_columns(2).spacing(vec2(space::M, space::S)).min_col_width(112.0).show(ui, add).inner
 }
 
 /// A form label in the muted colour, vertically centred on its field.

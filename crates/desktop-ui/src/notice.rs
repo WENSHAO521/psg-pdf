@@ -89,7 +89,7 @@ impl Notices {
                                 });
                                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Min), |ui| {
                                     let close =
-                                        ui.add(egui::Button::new(RichText::new("✕").color(p.text_muted)).frame(false)).on_hover_text("Dismiss");
+                                        ui.add(egui::Button::new(RichText::new("×").color(p.text_muted)).frame(false)).on_hover_text("Dismiss");
                                     if close.clicked() {
                                         dismiss = Some(i);
                                     }
