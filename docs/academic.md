@@ -70,6 +70,18 @@ templates are read from:
 
 A broken template is skipped and listed in the Template Library and the activity log, or on standard error.
 
+## Start-up and the log file
+
+Each run writes `logs/psg-academic-pdf.log` in the data folder (eframe's per-user folder for
+PSG Academic PDF, or `PSGAcademicPDFData` beside the exe in the portable zip); the previous run's
+log is kept as `psg-academic-pdf.1.log`. Panics are written there too, with a backtrace.
+
+The window starts with the GPU renderer (wgpu) under the same safeguards as PSG PDF: on Windows
+only Direct3D 12 and OpenGL are tried, never Vulkan, and the device gets the adapter's real
+texture limit. If wgpu can't start, the window opens again with OpenGL. If no renderer starts, a
+message box says why and where the log is. `PSG_RENDERER=gl` starts with OpenGL directly
+(`wgpu` uses wgpu only, without the fallback).
+
 ## Status
 
 Implemented and tested:
