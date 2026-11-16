@@ -920,13 +920,18 @@ impl AcademicApp {
             ui.separator();
             ui.label(t("Engine: pdfLaTeX"));
             ui.separator();
-            ui.add(egui::Label::new(self.status.as_str()).truncate());
+            // The language and the unsaved mark first, from the right, so the last message
+            // (long in German or Vietnamese) is shortened to the space between, never under them.
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                 ui.label(crate::i18n::language().native_name);
                 if self.source.dirty() {
                     ui.separator();
                     ui.label(t("Unsaved changes"));
                 }
+                ui.separator();
+                ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
+                    ui.add(egui::Label::new(self.status.as_str()).truncate()).on_hover_text(self.status.as_str());
+                });
             });
         });
     }

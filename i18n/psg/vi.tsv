@@ -1,0 +1,257 @@
+# PSG PDF's own interface strings in vi, appended to the craft-i18n catalog at build time
+# (crates/ui-egui/build.rs). Same format: context <TAB> English source <TAB> translation.
+# Written from the plain meaning of the English; no other product's translations were consulted.
+	+ Dictionary	+ Từ điển
+	1 line	1 dòng
+	; cancelled — {n} files were not run	; đã hủy — {n} tệp chưa được chạy
+	; {n} files already had text	; {n} tệp đã có văn bản
+	A 3×3 median filter against scan speckle	Bộ lọc trung vị 3×3 để khử đốm nhiễu khi quét
+	A CMap maps a character code to a CID above 65535	Một CMap ánh xạ mã ký tự tới CID lớn hơn 65535
+	A folder is asked for when a multiple-file run starts	Khi bắt đầu chạy nhiều tệp, ứng dụng sẽ hỏi chọn thư mục
+	A graphics state has a halftone phase (HTP)	Một trạng thái đồ họa có pha bán sắc (HTP)
+	A graphics state has a rendering intent that isn't a name	Một trạng thái đồ họa có ý định hiển thị không phải là tên
+	A graphics state has a transfer function (TR)	Một trạng thái đồ họa có hàm truyền (TR)
+	A graphics state has a transfer function (TR2) other than Default	Một trạng thái đồ họa có hàm truyền (TR2) khác Default
+	A graphics state has the rendering intent {}, which isn't a standard one	Một trạng thái đồ họa có ý định hiển thị {}, không phải giá trị chuẩn
+	A graphics state uses the blend mode {}, which ISO 32000-1 doesn't define	Một trạng thái đồ họa dùng chế độ hòa trộn {}, mà ISO 32000-1 không định nghĩa
+	A halftone has a HalftoneName	Một bán sắc có HalftoneName
+	A halftone has a transfer function, which only a non-primary colorant's halftone may have	Một bán sắc có hàm truyền, điều chỉ bán sắc của chất màu không phải màu cơ bản mới được có
+	A halftone has type {}: only types 1 and 5 are allowed	Một bán sắc có kiểu {}: chỉ cho phép kiểu 1 và 5
+	A halftone's HalftoneType is missing or isn't an integer	HalftoneType của một bán sắc bị thiếu hoặc không phải số nguyên
+	A name is longer than 127 bytes	Một tên dài hơn 127 byte
+	A real number is outside ±3.403 × 10³⁸, or nonzero but within ±1.175 × 10⁻³⁸	Một số thực nằm ngoài ±3,403 × 10³⁸, hoặc khác 0 nhưng nằm trong ±1,175 × 10⁻³⁸
+	A script edited here can be at most 256 KiB long; that change wasn't made.	Tập lệnh sửa ở đây dài tối đa 256 KiB; thay đổi đó chưa được thực hiện.
+	A string is longer than 32767 bytes	Một chuỗi dài hơn 32767 byte
+	AVG CONFIDENCE	ĐỘ TIN CẬY TB
+	Accept	Chấp nhận
+	Accept entire page	Chấp nhận cả trang
+	Accept or reject the OCR review of the other document before running OCR here	Hãy chấp nhận hoặc từ chối kết quả duyệt OCR của tài liệu kia trước khi chạy OCR ở đây
+	Add 3D model	Thêm mô hình 3D
+	Add Tools to Hotbar	Thêm công cụ vào thanh nhanh
+	Add a second engine's reading when the first is unsure	Thêm kết quả đọc của công cụ thứ hai khi công cụ thứ nhất không chắc chắn
+	All releases are listed at {url}	Mọi phiên bản đều có tại {url}
+	Always read with both engines and merge the words	Luôn đọc bằng cả hai công cụ và gộp các từ
+	An integer is outside the 32-bit range	Một số nguyên nằm ngoài phạm vi 32 bit
+	Auto-rotate	Tự động xoay
+	Background removal	Xóa nền
+	Beta	Thử nghiệm
+	Betas update to the newest release, beta or stable, and get new features first. Off, only stable releases are installed.	Bản thử nghiệm cập nhật lên phiên bản mới nhất, dù thử nghiệm hay ổn định, và có tính năng mới trước. Khi tắt, chỉ cài bản ổn định.
+	Binarize	Nhị phân hóa
+	Black and white (binarize)	Đen trắng (nhị phân hóa)
+	Both engines, combined as the Strategy says	Cả hai công cụ, kết hợp theo Chiến lược
+	Built-in	Có sẵn
+	CONFIDENCE	ĐỘ TIN CẬY
+	Cancel re-read	Hủy đọc lại
+	Cancelled — {n} words were read on {m} of {t} pages; the rest were not read	Đã hủy — đã đọc {n} từ trên {m}/{t} trang; phần còn lại chưa được đọc
+	Cannot auto-update this installation type. Please download manually.	Kiểu cài đặt này không tự cập nhật được. Vui lòng tải về thủ công.
+	Check for updates when PSG PDF starts	Kiểm tra bản cập nhật khi PSG PDF khởi động
+	Checking for updates…	Đang kiểm tra bản cập nhật…
+	Cleans up the scanned pictures in place: recognized text, comments and links on the pages stay as they are.	Làm sạch ảnh quét ngay tại chỗ: văn bản đã nhận dạng, bình luận và liên kết trên trang được giữ nguyên.
+	Click a word to inspect it; drag a rectangle to re-read part of the page	Nhấp vào một từ để xem chi tiết; kéo một hình chữ nhật để đọc lại một phần trang
+	Close menu	Đóng menu
+	Close {app}	Đóng {app}
+	Close {app} to finish	Đóng {app} để hoàn tất
+	Columns and rows must each be 1 to 99.	Số cột và số hàng phải nằm trong khoảng 1 đến 99.
+	Combine engines	Kết hợp các bộ máy
+	Confidence weighted	Theo trọng số độ tin cậy
+	Correct recognized text…	Sửa văn bản đã nhận dạng…
+	Corrected text (Enter commits)	Văn bản đã sửa (Enter để xác nhận)
+	Could not check for updates.	Không thể kiểm tra bản cập nhật.
+	Couldn't download the text recognition models: {e}	Không tải được các mô hình nhận dạng văn bản: {e}
+	Couldn't start the update ({error})	Không thể bắt đầu cập nhật ({error})
+	Creep:	Độ lệch gáy:
+	Custom calculation script:	Tập lệnh tính toán tùy chỉnh:
+	Custom scale	Tỷ lệ tùy chỉnh
+	Denoise	Khử nhiễu
+	Deskew	Chỉnh nghiêng
+	Despeckle	Khử đốm
+	Detecting paper…	Đang nhận diện khổ giấy…
+	Detecting…	Đang nhận diện…
+	Development build	Bản phát triển
+	Discard embedded search index	Bỏ chỉ mục tìm kiếm nhúng
+	Discard external cross-references	Bỏ các tham chiếu chéo bên ngoài
+	Dock navigation rail on Left	Gắn thanh điều hướng bên trái
+	Dock navigation rail on Right	Gắn thanh điều hướng bên phải
+	Downloading and installing update…	Đang tải về và cài đặt bản cập nhật…
+	Downloading the text recognition models…	Đang tải các mô hình nhận dạng văn bản…
+	Drag hotbar	Kéo thanh nhanh
+	ENGINE · STRATEGY	CÔNG CỤ · CHIẾN LƯỢC
+	Edge shadow removal	Xóa bóng ở mép
+	Edit attachment description	Sửa mô tả tệp đính kèm
+	Edit description	Sửa mô tả
+	Editable text	Văn bản có thể chỉnh sửa
+	Engine	Bộ máy
+	Enhance	Cải thiện
+	Enhance Scanned File	Cải thiện tệp quét
+	Enhance scanned file…	Cải thiện tệp quét…
+	Enhancing scans… image {d} of {t}	Đang cải thiện bản quét… ảnh {d}/{t}
+	Evens out the paper so a grey or yellowed background turns white, and darkens faint strokes. 0 is off.	Làm đều màu giấy để nền xám hoặc ố vàng thành trắng và làm đậm nét mờ. 0 là tắt.
+	Every line set in the style chosen for a level becomes a bookmark of that level, under a new first bookmark.	Mỗi dòng có kiểu đã chọn cho một cấp sẽ thành dấu trang của cấp đó, nằm dưới một dấu trang đầu tiên mới.
+	Extend the docked toolbar along the entire side. Choose a side above to enable.	Kéo dài thanh công cụ đã gắn dọc theo toàn bộ cạnh. Chọn một cạnh ở trên để bật.
+	F8: next word to review; Shift+F8 goes back	F8: từ tiếp theo cần xem lại; Shift+F8 để quay lại
+	Float	Nổi
+	Force OCR (override skip options)	Buộc chạy OCR (bỏ qua các tùy chọn bỏ qua)
+	Freehand-Highlight	Tô sáng tự do
+	Full-side strip	Dải dọc toàn cạnh
+	General & Interface	Chung & Giao diện
+	Get beta updates	Nhận bản thử nghiệm
+	HIGH (>= 90%)	CAO (>= 90%)
+	Hotbar settings	Cài đặt thanh nhanh
+	Hotbar settings / add tools	Cài đặt thanh nhanh / thêm công cụ
+	Hotbar tools	Công cụ trên thanh nhanh
+	Import bookmarks	Nhập dấu trang
+	In multiple files: a file with any text is its own skipped bucket, and nothing is written for it	Khi xử lý nhiều tệp: tệp có bất kỳ văn bản nào được xếp riêng vào nhóm bỏ qua và không ghi gì cho tệp đó
+	Inherit Zoom	Giữ mức thu phóng
+	Installing update…	Đang cài đặt bản cập nhật…
+	Invert middle-button drag	Đảo chiều kéo bằng nút giữa
+	Join beta	Tham gia thử nghiệm
+	Join the beta channel? Betas can have unfinished features and bugs. PSG PDF then updates to every new beta, and to each stable release as soon as it is newer.	Tham gia kênh thử nghiệm? Bản thử nghiệm có thể có tính năng chưa hoàn thiện và lỗi. Khi đó PSG PDF sẽ cập nhật lên mọi bản thử nghiệm mới, và lên từng bản ổn định ngay khi bản đó mới hơn.
+	LOW (< 70%)	THẤP (< 70%)
+	LOW-CONFIDENCE WORDS	TỪ CÓ ĐỘ TIN CẬY THẤP
+	Layout & Sizing	Bố cục & Kích thước
+	Leave beta	Rời thử nghiệm
+	Leave the beta channel? PSG PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	Rời kênh thử nghiệm? PSG PDF giữ phiên bản hiện có và chỉ cập nhật lại khi có bản ổn định đầu tiên mới hơn. Ứng dụng không bao giờ quay về phiên bản cũ hơn.
+	Level {n}	Cấp {n}
+	Lightens shadows along the edges of the scan, such as a book's gutter or a copier's dark border	Làm sáng bóng đổ dọc mép bản quét, như gáy sách hoặc viền tối của máy photocopy
+	MEDIUM (70-89%)	TRUNG BÌNH (70-89%)
+	Mark this page as reviewed (Ctrl+T)	Đánh dấu trang này đã xem lại (Ctrl+T)
+	Metadata stream {object} writes the namespace {namespace} with the prefix {written}, not {prefix}	Luồng siêu dữ liệu {object} ghi không gian tên {namespace} với tiền tố {written}, không phải {prefix}
+	Metadata stream {object} writes the namespace {namespace} without a prefix, not with {prefix}	Luồng siêu dữ liệu {object} ghi không gian tên {namespace} không có tiền tố, thay vì dùng {prefix}
+	Moves each sheet's pages toward the fold by this much more than the sheet outside it, so the margins match once the booklet is folded and trimmed.	Dịch các trang của mỗi tờ về phía nếp gấp nhiều hơn tờ bên ngoài một khoảng bằng giá trị này, để lề khớp nhau khi tập sách được gấp và xén.
+	Navigation rail side	Cạnh của thanh điều hướng
+	New bookmarks from text styles	Dấu trang mới từ kiểu văn bản
+	New bookmarks from text styles…	Dấu trang mới từ kiểu văn bản…
+	Next uncertain	Từ chưa chắc tiếp theo
+	No scanned pages were cleaned up.	Không có trang quét nào được làm sạch.
+	No signature font can draw “{char}”. Use other letters, or draw or import your signature.	Không phông chữ ký nào vẽ được “{char}”. Hãy dùng chữ khác, hoặc vẽ hay nhập chữ ký của bạn.
+	OCR complete — no text recognized on this page.	Đã xong OCR — không nhận dạng được văn bản nào trên trang này.
+	Only web (http, https) and email addresses open, and PSG PDF asks first, as for other links.	Chỉ mở địa chỉ web (http, https) và email, và PSG PDF sẽ hỏi trước, giống như với các liên kết khác.
+	Open web and email addresses written in the page text	Mở địa chỉ web và email được viết trong văn bản trang
+	Optimizing… reading page {d} of {t}	Đang tối ưu… đang đọc trang {d}/{t}
+	Optimizing… reading the pages	Đang tối ưu… đang đọc các trang
+	PAGE	TRANG
+	PSG PDF's checks found no problems for {level}. This is not a validator result.	Các bước kiểm tra của PSG PDF không thấy vấn đề nào cho {level}. Đây không phải kết quả của trình xác thực.
+	PSG PDF's checks now find no problems for {level}. This is not a validator result. Save to keep the changes.	Các bước kiểm tra của PSG PDF giờ không còn thấy vấn đề nào cho {level}. Đây không phải kết quả của trình xác thực. Hãy lưu để giữ các thay đổi.
+	Page Properties	Thuộc tính trang
+	Page Setup…	Thiết lập trang…
+	Page properties…	Thuộc tính trang…
+	Page setup dialog is not available on this system.	Hộp thoại thiết lập trang không có trên hệ thống này.
+	Page verified	Đã xác minh trang
+	Page {} has a boundary smaller than 3 or larger than 14400 units	Trang {} có khung nhỏ hơn 3 hoặc lớn hơn 14400 đơn vị
+	Page {} has transparency but no device-independent blending colour space or PDF/A output intent	Trang {} có độ trong suốt nhưng không có không gian màu hòa trộn độc lập thiết bị hay ý định đầu ra PDF/A
+	Pages with renderable text are left alone and reported as skipped	Các trang có văn bản hiển thị được sẽ giữ nguyên và được báo là đã bỏ qua
+	Panning or auto-scrolling with the middle (wheel) button moves the page the other way.	Khi kéo hoặc tự cuộn bằng nút giữa (con lăn), trang di chuyển theo chiều ngược lại.
+	Paste bookmarks	Dán dấu trang
+	PdfCraft (upstream project)	PdfCraft (dự án gốc)
+	Prepare grouped text	Chuẩn bị văn bản theo nhóm
+	Previous uncertain	Từ chưa chắc trước đó
+	Primary only	Chỉ công cụ chính
+	ROVER vote	Bỏ phiếu ROVER
+	Re-OCR entire page	OCR lại cả trang
+	Re-OCR this region	OCR lại vùng này
+	Re-reading the page…	Đang đọc lại trang…
+	Re-reading the region…	Đang đọc lại vùng…
+	Read {n} words on {m} of {t} pages	Đã đọc {n} từ trên {m}/{t} trang
+	Reading the drawing for snapping…	Đang đọc hình vẽ để bắt dính…
+	Reads pages and files even where the skip options would leave them alone	Đọc cả những trang và tệp mà các tùy chọn bỏ qua lẽ ra sẽ để nguyên
+	Recognized text	Văn bản đã nhận dạng
+	Recognized text applied ({n} words, one undoable step)	Đã áp dụng văn bản nhận dạng ({n} từ, hoàn tác được trong một bước)
+	Reject	Từ chối
+	Reject entire page	Từ chối cả trang
+	Remove from hotbar	Gỡ khỏi thanh nhanh
+	Remove scan speckle	Xóa đốm nhiễu khi quét
+	Removes isolated dark specks such as dust and scanner noise. The only filter black and white scans take.	Xóa các chấm tối riêng lẻ như bụi và nhiễu máy quét. Đây là bộ lọc duy nhất áp dụng cho bản quét đen trắng.
+	Reset side panels	Đặt lại các bảng bên
+	Resize panes	Đổi cỡ các khung
+	Restart to Update	Khởi động lại để cập nhật
+	Run OCR	Chạy OCR
+	Sauvola binarization: ink to black, paper to white	Nhị phân hóa Sauvola: mực thành đen, giấy thành trắng
+	Save or close your open work first; the update restarts the app.	Hãy lưu hoặc đóng công việc đang mở trước; việc cập nhật sẽ khởi động lại ứng dụng.
+	Search all tools…	Tìm mọi công cụ…
+	Search settings…	Tìm trong cài đặt…
+	Select a word on the page to inspect it	Chọn một từ trên trang để xem chi tiết
+	Selects paper size and orientation from the printer driver. For paper tray, print quality or other driver defaults, use Properties…	Chọn khổ và hướng giấy từ trình điều khiển máy in. Với khay giấy, chất lượng in hoặc các mặc định khác của trình điều khiển, hãy dùng Thuộc tính…
+	Separation colour spaces named {} differ in their alternate space or tint transform	Các không gian màu tách kênh tên {} khác nhau về không gian thay thế hoặc phép biến đổi sắc độ
+	Several files have the same name, so their results would overwrite each other; nothing was written: {list}	Có nhiều tệp trùng tên nên kết quả sẽ ghi đè lên nhau; chưa ghi gì: {list}
+	Shift+F8: the previous word to review	Shift+F8: từ cần xem lại trước đó
+	Show or hide the Tools panel	Hiện hoặc ẩn bảng Công cụ
+	Show or hide the side panel	Hiện hoặc ẩn bảng bên
+	Show tab numbers	Hiện số thứ tự thẻ
+	Skip files that already have text	Bỏ qua tệp đã có văn bản
+	Skip pages that already have text	Bỏ qua trang đã có văn bản
+	Source page	Trang nguồn
+	Stick to a side:	Gắn vào một cạnh:
+	Straighten pages scanned sideways or upside down	Xoay thẳng các trang bị quét nằm ngang hoặc lộn ngược
+	Straighten skewed text lines	Chỉnh thẳng các dòng chữ bị nghiêng
+	Straightens skewed text lines before reading	Làm thẳng các dòng chữ bị nghiêng trước khi đọc
+	Suggestions	Gợi ý
+	Tab Order	Thứ tự Tab
+	Tesseract	Tesseract
+	The XMP extension schema container in metadata stream {object} holds no rdf:Bag	Vùng chứa lược đồ mở rộng XMP trong luồng siêu dữ liệu {object} không có rdf:Bag
+	The XMP extension schema container in metadata stream {object} holds {found}, not one rdf:Bag	Vùng chứa lược đồ mở rộng XMP trong luồng siêu dữ liệu {object} chứa {found}, thay vì một rdf:Bag
+	The XMP extension schema {schema} in metadata stream {object} describes {item} with an empty {entry} entry	Lược đồ mở rộng XMP {schema} trong luồng siêu dữ liệu {object} mô tả {item} với mục {entry} trống
+	The XMP extension schema {schema} in metadata stream {object} describes {item} without a {entry} entry	Lược đồ mở rộng XMP {schema} trong luồng siêu dữ liệu {object} mô tả {item} mà không có mục {entry}
+	The XMP extension schema {schema} in metadata stream {object} has an empty {entry} entry	Lược đồ mở rộng XMP {schema} trong luồng siêu dữ liệu {object} có mục {entry} trống
+	The XMP extension schema {schema} in metadata stream {object} has no {entry} entry	Lược đồ mở rộng XMP {schema} trong luồng siêu dữ liệu {object} không có mục {entry}
+	The XMP property {property} in metadata stream {object} should have the value type {type}	Thuộc tính XMP {property} trong luồng siêu dữ liệu {object} phải có kiểu giá trị {type}
+	The XMP property {property} in metadata stream {object}, written {written}, should have the value type {type}	Thuộc tính XMP {property} trong luồng siêu dữ liệu {object}, được ghi là {written}, phải có kiểu giá trị {type}
+	The built-in engine (pure Rust)	Công cụ tích hợp sẵn (thuần Rust)
+	The creep moves the innermost sheet's pages too far for this many pages. Reduce Creep.	Với số trang này, độ lệch gáy làm các trang của tờ trong cùng dịch quá xa. Hãy giảm độ lệch gáy.
+	The document changed. Reopen Document Properties to edit the current version.	Tài liệu đã thay đổi. Hãy mở lại Thuộc tính tài liệu để sửa phiên bản hiện tại.
+	The file doesn't start with a %PDF-1.0 to %PDF-1.7 header line	Tệp không bắt đầu bằng dòng tiêu đề %PDF-1.0 đến %PDF-1.7
+	The file header isn't followed by a comment of four bytes above 127	Sau tiêu đề tệp không có chú thích gồm bốn byte lớn hơn 127
+	The file identifier (ID) in the trailer isn't two non-empty strings	Mã định danh tệp (ID) trong phần trailer không phải hai chuỗi không rỗng
+	The halftone for the colorant {} has no transfer function	Bán sắc của chất màu {} không có hàm truyền
+	The output folder already holds files of these names; nothing was written: {list}	Thư mục đầu ra đã có tệp trùng các tên này; chưa ghi gì: {list}
+	The page was read again; its words were replaced (undo in the panel)	Đã đọc lại trang; các từ của trang đã được thay thế (hoàn tác trong bảng)
+	The page's words were applied as one undoable step ({n} words)	Đã áp dụng các từ của trang thành một bước hoàn tác được ({n} từ)
+	The re-read was cancelled; the words are unchanged	Đã hủy đọc lại; các từ không thay đổi
+	The region was read again; its words were replaced (undo in the panel)	Đã đọc lại vùng; các từ của vùng đã được thay thế (hoàn tác trong bảng)
+	The searchable copies are written here under the source names	Các bản sao tìm kiếm được sẽ được ghi vào đây với tên của tệp nguồn
+	The selected word is gone; choose another	Từ đã chọn không còn nữa; hãy chọn từ khác
+	The spot colour {} of a DeviceN colour space isn't in its Colorants dictionary	Màu pha {} của không gian màu DeviceN không có trong từ điển Colorants của nó
+	The tesseract program, run as an external process	Chương trình tesseract, chạy như một tiến trình bên ngoài
+	The trailer has no file identifier (ID)	Phần trailer không có mã định danh tệp (ID)
+	The update could not be installed: {reason}	Không thể cài bản cập nhật: {reason}
+	The update failed unexpectedly.	Cập nhật thất bại ngoài dự kiến.
+	The update is installed. Close {app} to finish; it restarts by itself.	Đã cài bản cập nhật. Hãy đóng {app} để hoàn tất; ứng dụng sẽ tự khởi động lại.
+	The update stopped unexpectedly.	Cập nhật dừng lại ngoài dự kiến.
+	This document has no text to make bookmarks from.	Tài liệu này không có văn bản để tạo dấu trang.
+	This script is too long to edit here ({kib} KiB); its start is shown. It is kept as it is.	Tập lệnh này quá dài để sửa ở đây ({kib} KiB); chỉ hiện phần đầu. Tập lệnh được giữ nguyên.
+	This signature carries certification permissions, but the document does not name it as its certification, so it is checked as an approval signature.	Chữ ký này mang quyền chứng nhận, nhưng tài liệu không chỉ định nó là chữ ký chứng nhận, nên nó được kiểm tra như chữ ký phê duyệt.
+	Toolbar size	Kích thước thanh công cụ
+	Turns pages scanned sideways or upside down upright before reading	Xoay thẳng các trang bị quét ngang hoặc lộn ngược trước khi đọc
+	Undo the last review change (Ctrl+Z)	Hoàn tác thay đổi xem lại gần nhất (Ctrl+Z)
+	Unspecified	Không xác định
+	Update and Restart	Cập nhật và khởi động lại
+	Update ready. Close {app} to install it.	Bản cập nhật đã sẵn sàng. Hãy đóng {app} để cài đặt.
+	Use Column Order	Dùng thứ tự cột
+	Use Document Structure	Dùng cấu trúc tài liệu
+	Use Row Order	Dùng thứ tự hàng
+	Use the chosen engine's reading alone	Chỉ dùng kết quả đọc của công cụ đã chọn
+	VERIFIED %	% ĐÃ XÁC MINH
+	Verified	Đã xác minh
+	Vertical layout	Bố cục dọc
+	What's new	Có gì mới
+	Word	Từ
+	Writes a new document of visible text; the scan is not changed	Ghi một tài liệu mới gồm văn bản hiển thị; bản quét không bị thay đổi
+	Wrote {name}	Đã ghi {name}
+	bold	đậm
+	by	×
+	by {developer}	của {developer}
+	corrected	đã sửa
+	italic	nghiêng
+	removed	đã xóa
+	skipped	đã bỏ qua
+	the range selects more than {limit} pages	phạm vi chọn nhiều hơn {limit} trang
+	unreviewed	chưa xem lại
+	verified	đã xác minh
+	v{from} to {to}	từ v{from} lên {to}
+	{app} updated to {version}.	Đã cập nhật {app} lên {version}.
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} theo phiên bản được chọn trong trình khởi chạy nên không tự cập nhật.
+	{app} {version} is available with the latest features and bug fixes.	Đã có {app} {version} với các tính năng và bản sửa lỗi mới nhất.
+	{app} {version} is the newest version available.	{app} {version} là phiên bản mới nhất.
+	{font}, {size} pt	{font}, {size} pt
+	{name}: {n} low-confidence word(s) on pages {pages}	{name}: {n} từ có độ tin cậy thấp ở các trang {pages}
+	{n} lines	{n} dòng
+	{n} word(s) to review	{n} từ cần xem lại

@@ -6,10 +6,12 @@
 //! apart one English word that needs two translations, and marks plural rows:
 //!
 //! ```text
-//! 	Compile	编译
-//! @one	{n} error	{n} erreur
-//! @other	{n} error	{n} erreurs
+//! ␉Compile␉编译
+//! @one␉{n} error␉{n} erreur
+//! @other␉{n} error␉{n} erreurs
 //! ```
+//!
+//! (`␉` stands for a tab.)
 //!
 //! A plural row is keyed by the English singular and holds the form for that category. A language
 //! with one form (Chinese, Japanese, Korean, Vietnamese) has only the `@other` row.

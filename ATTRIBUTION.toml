@@ -2977,7 +2977,29 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "1832544ad650c0de5e252504b94ed9c148361730aef5ea75e3edcceb1ad9c27d"
+sha256 = "0005c3f0d8102a2fe6538c533e1b76926e13f715c74cc3554d2d6388e1957147"
+
+[[asset]]
+path = "i18n/psg/es.tsv"
+title = "PSG PDF interface translation (es)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
+sha256 = "68d01cfca183b599230487be0f4da3ca9d44a2b3e8423c5f065019c5b4397221"
+
+[[asset]]
+path = "i18n/psg/fr.tsv"
+title = "PSG PDF interface translation (fr)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
+sha256 = "987591ebc153ff72a4047d515ef09a294e6da1e055dfe8e745a3eb6d94b55622"
 
 [[asset]]
 path = "i18n/psg/ja.tsv"
@@ -2988,7 +3010,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "c763eec74a25859eac12ccbdfec70da6dbfa3728893f0b15cc45580e0faef190"
+sha256 = "44fe60a6a77b8331b6ac3057e6febc39a8aa7df4747e75b6229a6fd50b8e1524"
 
 [[asset]]
 path = "i18n/psg/ko.tsv"
@@ -2999,7 +3021,29 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "4fb6a10ea505abd33d7a127a89b5e8cffe0a9c869ee41d2576f208f681010350"
+sha256 = "5e73e3eefbbb2456945255265856d5e7d50ac97922022337d6b7a38d908495a1"
+
+[[asset]]
+path = "i18n/psg/pt-br.tsv"
+title = "PSG PDF interface translation (pt-br)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
+sha256 = "6e2f30021eca0b5786e4ced62588afcd4c01730683d2daa445c19db8618ea1c2"
+
+[[asset]]
+path = "i18n/psg/vi.tsv"
+title = "PSG PDF interface translation (vi)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
+sha256 = "3628fa05cf1790a7fd7b6dc418b737550eea8320905a8bcbd6fe2cd330f5c0b6"
 
 [[asset]]
 path = "i18n/psg/zh-hans.tsv"
@@ -3010,7 +3054,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "30522e16dfd505e0eed8f0168f41ce3cd92e4465288575b9873e36bc40b64f26"
+sha256 = "1c52b356385e67d7151059795be88754bf65066b3fa38eede1c408bcb0d6c8b0"
 
 [[asset]]
 path = "i18n/psg/zh-hant.tsv"
@@ -3021,7 +3065,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "14c0a983f2afe632d86f67fc88ec2d2519dfa48b20640a4c5dc847f56ccd8510"
+sha256 = "85a77d48f3a93aee2f400ca57c891ab542de3b54d0f7f5de86985257fb937605"
 
 [[asset]]
 path = "i18n/psg-academic/de.tsv"
@@ -3032,7 +3076,29 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "9f20d1f26df2b165b001af8a8aab07ffeb5ac5cfe77eeb07f88d57e8903e81fe"
+sha256 = "da2d33638c416fca25fa1f14adca6a7976bfbd17c99eb5588e95298825c20cba"
+
+[[asset]]
+path = "i18n/psg-academic/es.tsv"
+title = "PSG Academic PDF interface translation (es)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
+sha256 = "6083296b47067fb6d2ea2597e30532fd46463df66f211e9c44980121a307f387"
+
+[[asset]]
+path = "i18n/psg-academic/fr.tsv"
+title = "PSG Academic PDF interface translation (fr)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
+sha256 = "b50f4c92f0a1655a8f294f372941586f20d1b620265def08f9870929ae644d37"
 
 [[asset]]
 path = "i18n/psg-academic/ja.tsv"
@@ -3043,7 +3109,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "c773767ab6a0796fed93bd9aa0c97b3521069b0b5f0bffa09f565587bde4b1ff"
+sha256 = "1eb8aee7f9aad02ce26310c37554c9236e0073db1c4aae2846f1167d81136c86"
 
 [[asset]]
 path = "i18n/psg-academic/ko.tsv"
@@ -3054,7 +3120,29 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "77826cf62b687f2f7e414da01bbc357916bf8f97c28ee998924973bf4b30b058"
+sha256 = "4ede880b7190a62a9c1db83b259024b3ba55219ac6362a5e20108294feeab250"
+
+[[asset]]
+path = "i18n/psg-academic/pt-br.tsv"
+title = "PSG Academic PDF interface translation (pt-br)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
+sha256 = "3a36a20e8bd854d80cb4936f110e833c69b2911ceade962db8c447410b7cc2a3"
+
+[[asset]]
+path = "i18n/psg-academic/vi.tsv"
+title = "PSG Academic PDF interface translation (vi)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
+sha256 = "fd1d6f27249d69d3bf35e811bee2c247f3ceba64bbe08856aa9fd1b16140718d"
 
 [[asset]]
 path = "i18n/psg-academic/zh-hans.tsv"
@@ -3065,7 +3153,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "d00074180c07da3bd374a8d60c7aa7ae35be4970ddedf27998ab653bc49e1bdb"
+sha256 = "15512771d2e374f990de2ed97357368fb91f1413d5b94a4f9d3f4b21fbc45dd2"
 
 [[asset]]
 path = "i18n/psg-academic/zh-hant.tsv"
@@ -3076,7 +3164,18 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "e13db77ece5ee61bb7fe7d6180c8b368b31a8b107a921a686fe9ef5207a0cba4"
+sha256 = "58c8cb2c757d66af02dd16bb21d5f4404dd6884fc6588a02e30d07386640fc03"
+
+[[asset]]
+path = "i18n/glossary.tsv"
+title = "PSG academic publishing glossary (ten languages)"
+author = "PSG PDF contributors"
+source = "this repository (contributor-original, translated from the English interface text)"
+licence = "MIT OR Apache-2.0"
+licence_file = "LICENSE-MIT"
+kind = "translation"
+usage = "The terms and protected names every PSG catalog is checked against (crates/i18n/src/check.rs)"
+sha256 = "abafb11565a5541aaa2293c5b2fdc129c9111d0cebda8b8cd7def1ecefb21d8d"
 
 [[build_input]]
 name = "craft-i18n"

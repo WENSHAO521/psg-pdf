@@ -47,20 +47,20 @@ pub fn source_keys(src: &str) -> Vec<Key> {
                 }
             }
             "tc" => {
-                if let Some((context, used)) = literal(after(i)) {
-                    if let Some((english, _)) = next_literal(after(i.saturating_add(used))) {
-                        keys.push(Key { context, english, other: None });
-                    }
+                if let Some((context, used)) = literal(after(i))
+                    && let Some((english, _)) = next_literal(after(i.saturating_add(used)))
+                {
+                    keys.push(Key { context, english, other: None });
                 }
             }
             "tn" => {
                 // The count is any expression: skip to the first literal at this call's depth.
                 if let Some(start) = first_literal_in_call(after(i)) {
                     let s = i.saturating_add(start);
-                    if let Some((one, used)) = literal(after(s)) {
-                        if let Some((other, _)) = next_literal(after(s.saturating_add(used))) {
-                            keys.push(Key { context: String::new(), english: one, other: Some(other) });
-                        }
+                    if let Some((one, used)) = literal(after(s))
+                        && let Some((other, _)) = next_literal(after(s.saturating_add(used)))
+                    {
+                        keys.push(Key { context: String::new(), english: one, other: Some(other) });
                     }
                 }
             }

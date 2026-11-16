@@ -776,7 +776,9 @@ mod picker_order_tests {
     fn picker_lists_english_first_then_names_alphabetically() {
         let order = Lang::for_picker();
         assert_eq!(order.first().map(|l| l.code()), Some(Lang::EN.code()));
-        assert_eq!(order.len(), Lang::all().count());
+        // Only PSG's ten languages are offered, whatever else the catalogs hold.
+        assert_eq!(order.len(), psg_i18n::LANGUAGE_COUNT);
+        assert!(order.iter().all(|l| l.offered()));
         let keys: Vec<String> = order[1..].iter().map(|l| name_sort_key(l.name())).collect();
         assert!(keys.windows(2).all(|w| w[0] <= w[1]), "{keys:?}");
         assert_eq!(name_sort_key("Čeština"), "cestina");

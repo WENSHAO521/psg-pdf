@@ -356,10 +356,12 @@ pub fn form_grid<R>(ui: &mut Ui, id: &'static str, add: impl FnOnce(&mut Ui) -> 
     egui::Grid::new(id).num_columns(2).spacing(vec2(space::M, space::S)).min_col_width(112.0).show(ui, add).inner
 }
 
-/// A form label in the muted colour, vertically centred on its field.
+/// A form label in the muted colour, vertically centred on its field. It is never shortened: in a
+/// [`form_grid`] the label column grows to the longest label, so a longer translation ("Taille de
+/// l'interface") is read in full instead of cut at the column's minimum width.
 pub fn form_label(ui: &mut Ui, label: &str) -> Response {
     let p = Palette::of(ui);
-    ui.add(egui::Label::new(RichText::new(label).color(p.text_muted)).truncate())
+    ui.add(egui::Label::new(RichText::new(label).color(p.text_muted)).extend())
 }
 
 /// A single-line text field that fills the row, with a placeholder.

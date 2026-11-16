@@ -1,5 +1,13 @@
 # Interface language
 
+PSG PDF and PSG Academic PDF offer the same ten interface languages: English, 简体中文, 繁體中文,
+한국어, 日本語, Deutsch, Français, Español, Português (Brasil) and Tiếng Việt. They are listed once,
+in the shared `psg-i18n` crate (`crates/i18n`, `LANGUAGES`), with the locale matching, plural
+rules, catalog format and checks both apps use. See [PSG's ten languages](#psgs-ten-languages).
+The rest of this page describes the PdfCraft engine catalogs PSG PDF builds on; of those, PSG PDF
+offers only the ten, in its language menu and in **Auto**. A language saved before this change
+that is not one of the ten keeps working, but is no longer offered.
+
 Choose **Menu > Edit > Preferences…** (Command-comma on macOS, Ctrl-comma elsewhere) **> Interface language** and select **Auto**, **English**, **日本語**, **简体中文**, **繁體中文**, **Čeština**, **Português (Brasil)**, **Deutsch**, **Español**, **Français**, **Русский**, **Қазақша**, **Български**, **తెలుగు**, **Magyar**, **Українська**, **Italiano**, **العربية**, **کوردیی ناوەندی**, **فارسی**, **Polski**, **Slovenščina**, **Ελληνικά**, **Türkçe**, **Lietuvių**, **Tiếng Việt**, **Suomi**, **Shqip**, **Català**, **Română** or **Norsk bokmål**. The change applies immediately and persists between launches. Command ids, document contents and file names are unchanged. The status caption PdfCraft draws into a named-layer signature appearance ("Signature valid" and its siblings) follows it too, on screen, in exports and in print; it is never saved. It is drawn in Helvetica, or shaped in embedded Inter, or shaped in a craft-fonts face for Arabic, Japanese, Telugu, Thai and Devanagari when the build has one (drawn as outlines), and otherwise in English, as Chinese always is; saving never writes it.
 
 Displayed keyboard shortcuts use the same active interface language. For example, German shows `Strg+K` and `Strg+Umschalt+S` in the toolbar, menus, command palette, tooltips and Keyboard shortcuts dialog; macOS keeps its modifier symbols (`⌘`, `⇧`, `⌃`). Key names have their own `key` catalog context, so the Delete key can read `Entf` while the command remains `Löschen`. A missing key-name entry falls back to the English key name. Actual bindings and machine-facing command ids remain stable.
@@ -97,11 +105,55 @@ The egui 0.37 migration pins craft-fonts `b076417b5880bd4154bd22f00695b1d28c6bea
 
 ## PSG's own interface strings
 
-craft-i18n carries PdfCraft's catalogs. Strings that only PSG PDF has live in
-`i18n/psg/<code>.tsv` (same columns as craft-i18n) and are appended to the app catalog by
-`crates/ui-egui/build.rs`, so they need `CRAFT_I18N_DIR` like every other translation. PSG
-Academic PDF has its own catalogs in `i18n/psg-academic/` (see `docs/academic.md`). Each file has
-an `ATTRIBUTION.toml` entry; run `cargo xtask assets --write` after editing one.
+craft-i18n carries PdfCraft's catalogs. Strings that only PSG PDF has, and every row the craft-i18n
+revision in `craft-i18n.rev` lacks for one of the ten languages, live in `i18n/psg/<code>.tsv`
+(same columns as craft-i18n) and are appended to the app catalog by `crates/ui-egui/build.rs`, so
+they need `CRAFT_I18N_DIR` like every other translation. PSG Academic PDF has its own catalogs in
+`i18n/psg-academic/` (see `docs/academic.md`). Each file has an `ATTRIBUTION.toml` entry; run
+`cargo xtask assets --write` after editing one.
+
+## PSG's ten languages
+
+- **Choosing.** Both apps follow the system's preferred languages by default (**Auto** / **Follow
+  system**) and keep a manual choice between launches. A change applies on the next frame, without
+  a restart. `zh-TW`, `zh-HK`, `zh-MO` and `zh-Hant…` pick Traditional Chinese unless the tag
+  names `Hans`; every other Chinese locale picks Simplified; every Portuguese locale picks the
+  Brazilian catalog. A system language outside the ten shows English. An unreadable saved value
+  follows the system.
+- **Fallback.** A row a catalog lacks shows in English, never in another language and never as a
+  key.
+- **Placeholders and plurals.** `{name}` placeholders are filled in one pass, so a value such as a
+  file name containing `{n}` is never read as a template. PSG Academic PDF's counts use `@one` /
+  `@other` rows: Chinese, Japanese, Korean and Vietnamese have one form, French and Brazilian
+  Portuguese treat 0 and 1 as singular.
+- **Only interface text.** Manuscripts, LaTeX source, bibliographies, citations, article metadata,
+  file names, command ids and TeX logs never pass through a catalog, so switching the language
+  can't change what is typeset.
+- **Glossary.** `i18n/glossary.tsv` fixes the academic publishing terms (manuscript, template,
+  typesetting, abstract, affiliation, corresponding author, citation, licence, compile…) in every
+  language, and the names that are never translated (LaTeX, pdfLaTeX, Biber, latexmk, Pandoc, TeX
+  Live, ORCID, DOI, ISSN, PSG PDF, PSG Academic PDF).
+- **Checks.** These tests fail on a gap, so no language ships incomplete:
+  - `psg-i18n`: locale matching, plurals, catalog parsing (columns, placeholders, duplicates) and
+    the source scanner.
+  - PSG Academic PDF (`cargo test -p psg-academic-pdf i18n`): every string its source, the shared
+    widgets and the updater show has a row in all nine catalogs, no row is stale, every glossary
+    term and protected name is used, and no sentence is left in English.
+  - PSG PDF (`psg_languages_are_complete` in `crates/ui-egui`, with `CRAFT_I18N_DIR` at the pinned
+    revision): every source string has a row in all nine languages. Set `PSG_I18N_GAPS_DIR=<dir>`
+    to write each language's missing rows to `<dir>/<code>.tsv`.
+  - `psg-desktop-ui` (`inter_draws_every_latin_translation`): Inter's three weights draw every
+    character the German, French, Spanish, Portuguese and Vietnamese rows add.
+- **Fonts and input.** Latin, Vietnamese included, uses the bundled Inter. Chinese, Japanese and
+  Korean use the craft-fonts faces of release builds, with the face of the interface language
+  first. Text fields take composed input (Chinese, Japanese, Korean, Vietnamese) through
+  egui's IME support, which eframe turns on while a text field has focus. A build without `CRAFT_FONTS_DIR` shows CJK as
+  boxes.
+- **Layout.** Long translations (German, French, Vietnamese) are shortened with `…` where a row
+  has no room, such as the status bar message and the preview header, and the full text shows on
+  hover. Form labels widen their column instead of being cut.
+- **Wording.** Every row was written from the plain meaning of the English, without consulting
+  another product's translations. None has had a native speaker's review yet.
 
 ## Typed signatures in other scripts
 

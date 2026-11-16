@@ -2,3 +2,274 @@
 # (crates/ui-egui/build.rs). Same format: context <TAB> English source <TAB> translation.
 # Written from the plain meaning of the English; no other product's translations were consulted.
 	No signature font can draw “{char}”. Use other letters, or draw or import your signature.	“{char}”을(를) 그릴 수 있는 서명 글꼴이 없습니다. 다른 문자를 쓰거나 직접 그린 서명이나 이미지 서명을 사용하세요.
+	+ Dictionary	+ 사전
+	1 line	1줄
+	; cancelled — {n} files were not run	; 취소됨 — 파일 {n}개는 실행되지 않았습니다
+	; {n} files already had text	; 파일 {n}개에는 이미 텍스트가 있었습니다
+	A 3×3 median filter against scan speckle	스캔 잡티를 없애는 3×3 중앙값 필터
+	A CMap maps a character code to a CID above 65535	CMap이 문자 코드를 65535보다 큰 CID에 매핑합니다
+	A folder is asked for when a multiple-file run starts	여러 파일 실행을 시작할 때 폴더를 묻습니다
+	A graphics state has a halftone phase (HTP)	그래픽 상태에 하프톤 위상(HTP)이 있습니다
+	A graphics state has a rendering intent that isn't a name	그래픽 상태의 렌더링 의도가 이름이 아닙니다
+	A graphics state has a transfer function (TR)	그래픽 상태에 전달 함수(TR)가 있습니다
+	A graphics state has a transfer function (TR2) other than Default	그래픽 상태에 Default가 아닌 전달 함수(TR2)가 있습니다
+	A graphics state has the rendering intent {}, which isn't a standard one	그래픽 상태의 렌더링 의도 {}은(는) 표준이 아닙니다
+	A graphics state uses the blend mode {}, which ISO 32000-1 doesn't define	그래픽 상태가 ISO 32000-1에 정의되지 않은 혼합 모드 {}을(를) 사용합니다
+	A halftone has a HalftoneName	하프톤에 HalftoneName이 있습니다
+	A halftone has a transfer function, which only a non-primary colorant's halftone may have	하프톤에 전달 함수가 있습니다. 전달 함수는 원색이 아닌 색료의 하프톤에만 허용됩니다
+	A halftone has type {}: only types 1 and 5 are allowed	하프톤의 유형이 {}입니다: 유형 1과 5만 허용됩니다
+	A halftone's HalftoneType is missing or isn't an integer	하프톤의 HalftoneType이 없거나 정수가 아닙니다
+	A name is longer than 127 bytes	이름이 127바이트보다 깁니다
+	A real number is outside ±3.403 × 10³⁸, or nonzero but within ±1.175 × 10⁻³⁸	실수가 ±3.403 × 10³⁸ 범위를 벗어나거나, 0이 아니면서 ±1.175 × 10⁻³⁸ 이내입니다
+	A script edited here can be at most 256 KiB long; that change wasn't made.	여기서 편집하는 스크립트는 최대 256KiB까지입니다. 그 변경은 적용되지 않았습니다.
+	A string is longer than 32767 bytes	문자열이 32767바이트보다 깁니다
+	AVG CONFIDENCE	평균 신뢰도
+	Accept	수락
+	Accept entire page	페이지 전체 수락
+	Accept or reject the OCR review of the other document before running OCR here	여기서 OCR을 실행하기 전에 다른 문서의 OCR 검토를 수락하거나 거부하세요
+	Add 3D model	3D 모델 추가
+	Add Tools to Hotbar	단축 도구 모음에 도구 추가
+	Add a second engine's reading when the first is unsure	첫 번째 엔진이 확신하지 못할 때 두 번째 엔진의 인식 결과를 더합니다
+	All releases are listed at {url}	모든 릴리스는 {url}에 있습니다
+	Always read with both engines and merge the words	항상 두 엔진으로 인식하고 단어를 병합합니다
+	An integer is outside the 32-bit range	정수가 32비트 범위를 벗어납니다
+	Auto-rotate	자동 회전
+	Background removal	배경 제거
+	Beta	베타
+	Betas update to the newest release, beta or stable, and get new features first. Off, only stable releases are installed.	켜면 베타든 안정판이든 최신 릴리스로 업데이트되어 새 기능을 먼저 받습니다. 끄면 안정판만 설치됩니다.
+	Binarize	이진화
+	Black and white (binarize)	흑백(이진화)
+	Both engines, combined as the Strategy says	두 엔진 모두, 전략에 따라 결합
+	Built-in	기본 제공
+	CONFIDENCE	신뢰도
+	Cancel re-read	다시 읽기 취소
+	Cancelled — {n} words were read on {m} of {t} pages; the rest were not read	취소됨 — {t}페이지 중 {m}페이지에서 단어 {n}개를 인식했고 나머지는 인식하지 않았습니다
+	Cannot auto-update this installation type. Please download manually.	이 설치 유형은 자동 업데이트할 수 없습니다. 직접 다운로드하세요.
+	Check for updates when PSG PDF starts	PSG PDF 시작 시 업데이트 확인
+	Checking for updates…	업데이트 확인 중…
+	Cleans up the scanned pictures in place: recognized text, comments and links on the pages stay as they are.	스캔한 그림을 그 자리에서 정리합니다. 페이지의 인식된 텍스트, 주석, 링크는 그대로 유지됩니다.
+	Click a word to inspect it; drag a rectangle to re-read part of the page	단어를 클릭하면 살펴볼 수 있고, 사각형을 끌면 페이지 일부를 다시 인식합니다
+	Close comment pop-up	주석 팝업 닫기
+	Close menu	메뉴 닫기
+	Close {app}	{app} 닫기
+	Close {app} to finish	마치려면 {app}을(를) 닫으세요
+	Columns and rows must each be 1 to 99.	열과 행은 각각 1에서 99 사이여야 합니다.
+	Combine engines	엔진 결합
+	Confidence weighted	신뢰도 가중
+	Correct recognized text…	인식된 텍스트 교정…
+	Corrected text (Enter commits)	교정한 텍스트 (Enter로 확정)
+	Could not check for updates.	업데이트를 확인할 수 없습니다.
+	Couldn't download the text recognition models: {e}	텍스트 인식 모델을 다운로드하지 못했습니다: {e}
+	Couldn't start the update ({error})	업데이트를 시작할 수 없습니다({error})
+	Creep:	크립:
+	Crop image	이미지 자르기
+	Custom calculation script:	사용자 지정 계산 스크립트:
+	Custom scale	사용자 지정 배율
+	Denoise	잡티 제거
+	Deskew	기울기 보정
+	Despeckle	얼룩 제거
+	Detecting paper…	용지 감지 중…
+	Detecting…	감지 중…
+	Development build	개발 빌드
+	Discard embedded search index	포함된 검색 색인 삭제
+	Discard external cross-references	외부 상호 참조 삭제
+	Dock navigation rail on Left	탐색 레일을 왼쪽에 고정
+	Dock navigation rail on Right	탐색 레일을 오른쪽에 고정
+	Downloading and installing update…	업데이트를 다운로드하고 설치하는 중…
+	Downloading the text recognition models…	텍스트 인식 모델을 다운로드하는 중…
+	Drag hotbar	단축 도구 모음 끌기
+	ENGINE · STRATEGY	엔진 · 전략
+	Edge shadow removal	가장자리 그림자 제거
+	Edit attachment description	첨부 파일 설명 편집
+	Edit description	설명 편집
+	Editable text	편집 가능한 텍스트
+	Engine	엔진
+	Enhance	향상
+	Enhance Scanned File	스캔 파일 향상
+	Enhance scanned file…	스캔 파일 향상…
+	Enhancing scans… image {d} of {t}	스캔 향상 중… 이미지 {d}/{t}
+	Evens out the paper so a grey or yellowed background turns white, and darkens faint strokes. 0 is off.	종이 색을 고르게 해 회색이나 누렇게 바랜 배경을 흰색으로 만들고 흐린 획을 진하게 합니다. 0은 끔입니다.
+	Every line set in the style chosen for a level becomes a bookmark of that level, under a new first bookmark.	수준별로 선택한 스타일로 조판된 모든 줄이 그 수준의 책갈피가 되며, 새로 만든 첫 번째 책갈피 아래에 놓입니다.
+	Export value	내보내기 값
+	Extend the docked toolbar along the entire side. Choose a side above to enable.	고정된 도구 모음을 한쪽 면 전체로 늘립니다. 사용하려면 위에서 한쪽을 선택하세요.
+	F8: next word to review; Shift+F8 goes back	F8: 검토할 다음 단어, Shift+F8: 이전으로
+	Float	떠 있게
+	Force OCR (override skip options)	OCR 강제 실행 (건너뛰기 옵션 무시)
+	Freehand-Highlight	자유 형광펜
+	Full-side strip	한쪽 면 전체 막대
+	General & Interface	일반 및 인터페이스
+	Get beta updates	베타 업데이트 받기
+	HIGH (>= 90%)	높음 (>= 90%)
+	Hotbar settings	단축 도구 모음 설정
+	Hotbar settings / add tools	단축 도구 모음 설정 / 도구 추가
+	Hotbar tools	단축 도구 모음 도구
+	Import bookmarks	책갈피 가져오기
+	In multiple files: a file with any text is its own skipped bucket, and nothing is written for it	여러 파일 처리 시: 텍스트가 조금이라도 있는 파일은 건너뜀으로 따로 분류되며 아무것도 기록되지 않습니다
+	Inherit Zoom	확대/축소 유지
+	Installing update…	업데이트 설치 중…
+	Invert middle-button drag	가운데 버튼 끌기 방향 반전
+	Join beta	베타 참여
+	Join the beta channel? Betas can have unfinished features and bugs. PSG PDF then updates to every new beta, and to each stable release as soon as it is newer.	베타 채널에 참여할까요? 베타에는 미완성 기능과 버그가 있을 수 있습니다. 이후 PSG PDF는 새 베타마다, 그리고 더 새로운 정식 버전이 나오면 업데이트합니다.
+	LOW (< 70%)	낮음 (< 70%)
+	LOW-CONFIDENCE WORDS	신뢰도 낮은 단어
+	Layout & Sizing	레이아웃 및 크기
+	Leave beta	베타 나가기
+	Leave the beta channel? PSG PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	베타 채널을 나갈까요? PSG PDF는 현재 버전을 유지하고, 이보다 새로운 정식 버전이 나오면 다시 업데이트합니다. 이전 버전으로 돌아가지는 않습니다.
+	Level {n}	{n}수준
+	Lightens shadows along the edges of the scan, such as a book's gutter or a copier's dark border	책의 제본 부분이나 복사기의 어두운 테두리처럼 스캔 가장자리를 따라 생긴 그림자를 밝게 합니다
+	MEDIUM (70-89%)	보통 (70-89%)
+	Mark this page as reviewed (Ctrl+T)	이 페이지를 검토 완료로 표시 (Ctrl+T)
+	Metadata stream {object} writes the namespace {namespace} with the prefix {written}, not {prefix}	메타데이터 스트림 {object}이(가) 네임스페이스 {namespace}의 접두사를 {prefix}가 아닌 {written}(으)로 씁니다
+	Metadata stream {object} writes the namespace {namespace} without a prefix, not with {prefix}	메타데이터 스트림 {object}이(가) 네임스페이스 {namespace}을(를) {prefix} 접두사 없이 씁니다
+	Move comment pop-up	주석 팝업 이동
+	Moves each sheet's pages toward the fold by this much more than the sheet outside it, so the margins match once the booklet is folded and trimmed.	각 낱장의 페이지를 바깥쪽 낱장보다 이만큼 더 접는 선 쪽으로 옮겨, 소책자를 접고 재단한 뒤 여백이 맞도록 합니다.
+	Navigation rail side	탐색 레일 위치
+	New bookmarks from text styles	텍스트 스타일로 새 책갈피 만들기
+	New bookmarks from text styles…	텍스트 스타일로 새 책갈피 만들기…
+	Next uncertain	다음 불확실 항목
+	No field in this form calculates its value yet. Give a field a calculation on the Calculate tab of its properties, and it shows here.	이 양식에는 아직 값을 계산하는 필드가 없습니다. 필드 속성의 계산 탭에서 계산을 지정하면 여기에 표시됩니다.
+	No scanned pages were cleaned up.	정리된 스캔 페이지가 없습니다.
+	OCR complete — no text recognized on this page.	OCR 완료 — 이 페이지에서 인식된 텍스트가 없습니다.
+	Only web (http, https) and email addresses open, and PSG PDF asks first, as for other links.	웹(http, https) 주소와 이메일 주소만 열리며, 다른 링크처럼 PSG PDF가 먼저 묻습니다.
+	Open comment pop-up	주석 팝업 열기
+	Open web and email addresses written in the page text	페이지 텍스트에 적힌 웹 주소와 이메일 주소 열기
+	Optimizing… reading page {d} of {t}	최적화 중… {t}쪽 중 {d}쪽 읽는 중
+	Optimizing… reading the pages	최적화 중… 페이지 읽는 중
+	PAGE	페이지
+	PSG PDF's checks found no problems for {level}. This is not a validator result.	PSG PDF 검사에서 {level} 관련 문제를 찾지 못했습니다. 검증 도구의 결과는 아닙니다.
+	PSG PDF's checks now find no problems for {level}. This is not a validator result. Save to keep the changes.	이제 PSG PDF 검사에서 {level} 관련 문제가 없습니다. 검증 도구의 결과는 아닙니다. 변경 사항을 유지하려면 저장하세요.
+	Page Properties	페이지 속성
+	Page Setup…	페이지 설정…
+	Page properties…	페이지 속성…
+	Page setup dialog is not available on this system.	이 시스템에서는 페이지 설정 대화 상자를 사용할 수 없습니다.
+	Page verified	페이지 확인됨
+	Page {} has a boundary smaller than 3 or larger than 14400 units	{}쪽의 경계 상자가 3보다 작거나 14400단위보다 큽니다
+	Page {} has transparency but no device-independent blending colour space or PDF/A output intent	{}쪽에 투명도가 있지만 장치 독립 혼합 색 공간이나 PDF/A 출력 의도가 없습니다
+	Pages with renderable text are left alone and reported as skipped	표시 가능한 텍스트가 있는 페이지는 그대로 두고 건너뜀으로 보고합니다
+	Panning or auto-scrolling with the middle (wheel) button moves the page the other way.	가운데(휠) 버튼으로 이동하거나 자동 스크롤할 때 페이지가 반대 방향으로 움직입니다.
+	Paste bookmarks	책갈피 붙여넣기
+	PdfCraft (upstream project)	PdfCraft(업스트림 프로젝트)
+	Prepare grouped text	그룹 텍스트 준비
+	Previous uncertain	이전 불확실 항목
+	Primary only	기본 엔진만
+	ROVER vote	ROVER 투표
+	Re-OCR entire page	페이지 전체 다시 OCR
+	Re-OCR this region	이 영역 다시 OCR
+	Re-reading the page…	페이지를 다시 읽는 중…
+	Re-reading the region…	영역을 다시 읽는 중…
+	Read {n} words on {m} of {t} pages	{t}페이지 중 {m}페이지에서 단어 {n}개를 인식했습니다
+	Reading the drawing for snapping…	맞춤을 위해 도면을 읽는 중…
+	Reads pages and files even where the skip options would leave them alone	건너뛰기 옵션에 해당하는 페이지와 파일도 인식합니다
+	Recognized text	인식된 텍스트
+	Recognized text applied ({n} words, one undoable step)	인식된 텍스트를 적용했습니다 (단어 {n}개, 한 번에 실행 취소 가능)
+	Reject	거부
+	Reject entire page	페이지 전체 거부
+	Remove from hotbar	단축 도구 모음에서 제거
+	Remove scan speckle	스캔 잡티 제거
+	Remove {standard} identification	{standard} 식별 정보 제거
+	Removes isolated dark specks such as dust and scanner noise. The only filter black and white scans take.	먼지나 스캐너 노이즈 같은 고립된 어두운 점을 없앱니다. 흑백 스캔에 적용되는 유일한 필터입니다.
+	Reset side panels	측면 패널 초기화
+	Reshape comment	주석 모양 바꾸기
+	Resize panes	창 크기 조절
+	Restart to Update	다시 시작하여 업데이트
+	Run OCR	OCR 실행
+	Sauvola binarization: ink to black, paper to white	Sauvola 이진화: 잉크는 검정, 종이는 흰색으로
+	Save or close your open work first; the update restarts the app.	먼저 열려 있는 작업을 저장하거나 닫으세요. 업데이트하면 앱이 다시 시작됩니다.
+	Search all tools…	모든 도구 검색…
+	Search settings…	설정 검색…
+	Select a word on the page to inspect it	살펴볼 단어를 페이지에서 선택하세요
+	Selects paper size and orientation from the printer driver. For paper tray, print quality or other driver defaults, use Properties…	프린터 드라이버에서 용지 크기와 방향을 선택합니다. 용지함, 인쇄 품질 등 드라이버 기본값은 다음을 사용하세요: 속성…
+	Separation colour spaces named {} differ in their alternate space or tint transform	이름이 {}인 분판 색 공간들의 대체 공간이나 색조 변환이 서로 다릅니다
+	Set calculation order	계산 순서 설정
+	Several files have the same name, so their results would overwrite each other; nothing was written: {list}	이름이 같은 파일이 여러 개라 결과가 서로 덮어쓰게 되므로 아무것도 기록하지 않았습니다: {list}
+	Shift+F8: the previous word to review	Shift+F8: 검토할 이전 단어
+	Show Page Edge Shadows	페이지 가장자리 그림자 표시
+	Show or hide the Tools panel	도구 패널 표시 또는 숨기기
+	Show or hide the side panel	측면 패널 표시 또는 숨기기
+	Show tab numbers	탭 번호 표시
+	Skip files that already have text	이미 텍스트가 있는 파일 건너뛰기
+	Skip pages that already have text	이미 텍스트가 있는 페이지 건너뛰기
+	Source page	원본 페이지
+	Stick to a side:	한쪽에 붙이기:
+	Straighten pages scanned sideways or upside down	옆으로 또는 거꾸로 스캔된 페이지 바로잡기
+	Straighten skewed text lines	기울어진 텍스트 줄 바로잡기
+	Straightens skewed text lines before reading	인식하기 전에 기울어진 텍스트 줄을 바로잡습니다
+	Suggestions	제안
+	Tab Order	탭 순서
+	Tesseract	Tesseract 엔진
+	The XMP extension schema container in metadata stream {object} holds no rdf:Bag	메타데이터 스트림 {object}의 XMP 확장 스키마 컨테이너에 rdf:Bag이 없습니다
+	The XMP extension schema container in metadata stream {object} holds {found}, not one rdf:Bag	메타데이터 스트림 {object}의 XMP 확장 스키마 컨테이너에 rdf:Bag 하나가 아니라 {found}이(가) 있습니다
+	The XMP extension schema {schema} in metadata stream {object} describes {item} with an empty {entry} entry	메타데이터 스트림 {object}의 XMP 확장 스키마 {schema}이(가) {item}을(를) 빈 {entry} 항목으로 설명합니다
+	The XMP extension schema {schema} in metadata stream {object} describes {item} without a {entry} entry	메타데이터 스트림 {object}의 XMP 확장 스키마 {schema}이(가) {item}을(를) {entry} 항목 없이 설명합니다
+	The XMP extension schema {schema} in metadata stream {object} has an empty {entry} entry	메타데이터 스트림 {object}의 XMP 확장 스키마 {schema}에 빈 {entry} 항목이 있습니다
+	The XMP extension schema {schema} in metadata stream {object} has no {entry} entry	메타데이터 스트림 {object}의 XMP 확장 스키마 {schema}에 {entry} 항목이 없습니다
+	The XMP property {property} in metadata stream {object} should have the value type {type}	메타데이터 스트림 {object}의 XMP 속성 {property}은(는) 값 유형이 {type}이어야 합니다
+	The XMP property {property} in metadata stream {object}, written {written}, should have the value type {type}	메타데이터 스트림 {object}의 XMP 속성 {property}({written}(으)로 기록됨)은(는) 값 유형이 {type}이어야 합니다
+	The built-in engine (pure Rust)	내장 엔진 (순수 Rust)
+	The certificate of {} has critical extensions PSG PDF does not recognize, so it is not used to vouch for {}.	{}의 인증서에 PSG PDF가 인식하지 못하는 중요 확장이 있어 {}을(를) 보증하는 데 사용하지 않습니다.
+	The creep moves the innermost sheet's pages too far for this many pages. Reduce Creep.	이 페이지 수에서는 크립 때문에 가장 안쪽 낱장의 페이지가 너무 많이 이동합니다. 크립을 줄이세요.
+	The document changed. Reopen Document Properties to edit the current version.	문서가 변경되었습니다. 현재 버전을 편집하려면 문서 속성을 다시 여세요.
+	The file doesn't start with a %PDF-1.0 to %PDF-1.7 header line	파일이 %PDF-1.0~%PDF-1.7 헤더 줄로 시작하지 않습니다
+	The file header isn't followed by a comment of four bytes above 127	파일 헤더 뒤에 127보다 큰 4바이트로 된 주석이 없습니다
+	The file identifier (ID) in the trailer isn't two non-empty strings	트레일러의 파일 식별자(ID)가 비어 있지 않은 문자열 두 개가 아닙니다
+	The halftone for the colorant {} has no transfer function	색료 {}의 하프톤에 전달 함수가 없습니다
+	The output folder already holds files of these names; nothing was written: {list}	출력 폴더에 이 이름의 파일이 이미 있어 아무것도 기록하지 않았습니다: {list}
+	The page was read again; its words were replaced (undo in the panel)	페이지를 다시 인식해 단어를 바꿨습니다 (패널에서 실행 취소)
+	The page's words were applied as one undoable step ({n} words)	페이지의 단어를 한 번에 실행 취소할 수 있는 단계로 적용했습니다 (단어 {n}개)
+	The re-read was cancelled; the words are unchanged	다시 읽기가 취소되었습니다. 단어는 바뀌지 않았습니다
+	The region was read again; its words were replaced (undo in the panel)	영역을 다시 인식해 단어를 바꿨습니다 (패널에서 실행 취소)
+	The searchable copies are written here under the source names	검색 가능한 사본은 원본 이름 그대로 여기에 저장됩니다
+	The selected word is gone; choose another	선택한 단어가 없어졌습니다. 다른 단어를 선택하세요
+	The signature's signed attributes have no content type, which CMS requires; it was read anyway.	서명의 서명된 속성에 CMS가 요구하는 콘텐츠 유형이 없습니다. 그래도 읽었습니다.
+	The signature's signed attributes have no message digest, so the signature does not cover the document.	서명의 서명된 속성에 메시지 다이제스트가 없어 서명이 문서를 포함하지 않습니다.
+	The signature's signed attributes name a content type other than data, so it is not a signature of the document.	서명의 서명된 속성이 data가 아닌 콘텐츠 유형을 지정하므로 이 문서의 서명이 아닙니다.
+	The spot colour {} of a DeviceN colour space isn't in its Colorants dictionary	DeviceN 색 공간의 별색 {}이(가) Colorants 사전에 없습니다
+	The tesseract program, run as an external process	외부 프로세스로 실행하는 tesseract 프로그램
+	The timestamp authority's certificate is not issued for time stamping.	타임스탬프 기관의 인증서가 타임스탬프 용도로 발급되지 않았습니다.
+	The trailer has no file identifier (ID)	트레일러에 파일 식별자(ID)가 없습니다
+	The update could not be installed: {reason}	업데이트를 설치할 수 없습니다: {reason}
+	The update failed unexpectedly.	업데이트가 예기치 않게 실패했습니다.
+	The update is installed. Close {app} to finish; it restarts by itself.	업데이트가 설치되었습니다. 마치려면 {app}을(를) 닫으세요. 자동으로 다시 시작됩니다.
+	The update stopped unexpectedly.	업데이트가 예기치 않게 중단되었습니다.
+	This document has no text to make bookmarks from.	이 문서에는 책갈피를 만들 텍스트가 없습니다.
+	This form has too many fields, or a field name too long, for PSG PDF to read them all. Any signature among the rest is not listed, so the document is treated as signed.	이 양식은 필드가 너무 많거나 필드 이름이 너무 길어 PSG PDF가 모두 읽을 수 없습니다. 나머지 필드의 서명은 목록에 나오지 않으므로 문서를 서명된 것으로 취급합니다.
+	This script is too long to edit here ({kib} KiB); its start is shown. It is kept as it is.	이 스크립트는 너무 길어서({kib}KiB) 여기서 편집할 수 없습니다. 앞부분만 표시되며, 스크립트는 그대로 유지됩니다.
+	This signature carries certification permissions, but the document does not name it as its certification, so it is checked as an approval signature.	이 서명에는 인증 권한이 있지만 문서가 이를 인증 서명으로 지정하지 않으므로 승인 서명으로 검사합니다.
+	This signature uses an RSA key shorter than 2048 bits, which is no longer considered strong enough for signatures. It still validates, but it should not be relied on.	이 서명은 2048비트보다 짧은 RSA 키를 사용하며, 이는 더 이상 서명에 충분히 안전하다고 보지 않습니다. 검증은 되지만 신뢰해서는 안 됩니다.
+	Toolbar size	도구 모음 크기
+	Transform image	이미지 변형
+	Turns pages scanned sideways or upside down upright before reading	옆으로 또는 거꾸로 스캔된 페이지를 인식하기 전에 바로 세웁니다
+	Undo the last review change (Ctrl+Z)	마지막 검토 변경 실행 취소 (Ctrl+Z)
+	Unspecified	지정 안 됨
+	Update and Restart	업데이트 후 다시 시작
+	Update ready. Close {app} to install it.	업데이트가 준비되었습니다. 설치하려면 {app}을(를) 닫으세요.
+	Use Column Order	열 순서 사용
+	Use Document Structure	문서 구조 사용
+	Use Row Order	행 순서 사용
+	Use the chosen engine's reading alone	선택한 엔진의 인식 결과만 사용합니다
+	VERIFIED %	확인 비율
+	Verified	확인됨
+	Vertical layout	세로 레이아웃
+	What's new	새로운 기능
+	Word	단어
+	Writes a new document of visible text; the scan is not changed	보이는 텍스트로 새 문서를 만들며 스캔본은 바뀌지 않습니다
+	Wrote {name}	{name}을(를) 저장했습니다
+	bold	굵게
+	by	×
+	by {developer}	제작: {developer}
+	corrected	교정됨
+	italic	기울임꼴
+	removed	삭제됨
+	skipped	건너뜀
+	the range selects more than {limit} pages	범위가 {limit}쪽을 넘게 선택합니다
+	unreviewed	검토 안 함
+	verified	확인됨
+	v{from} to {to}	v{from}에서 {to}(으)로
+	{app} updated to {version}.	{app}이(가) {version}(으)로 업데이트되었습니다.
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version}은(는) 런처에서 선택한 버전을 따르므로 스스로 업데이트하지 않습니다.
+	{app} {version} is available with the latest features and bug fixes.	{app} {version}이(가) 출시되었습니다. 최신 기능과 버그 수정이 포함되어 있습니다.
+	{app} {version} is the newest version available.	{app} {version}이(가) 최신 버전입니다.
+	{font}, {size} pt	{font}, {size}pt
+	{name}: {n} low-confidence word(s) on pages {pages}	{name}: {pages}페이지에 신뢰도 낮은 단어 {n}개
+	{n} lines	{n}줄
+	{n} word(s) to review	검토할 단어 {n}개

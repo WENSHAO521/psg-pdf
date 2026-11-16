@@ -5336,6 +5336,7 @@ dependencies = [
  "pdfcraft-fonts",
  "psg-brand",
  "psg-i18n",
+ "skrifa 0.44.0",
 ]
 
 [[package]]

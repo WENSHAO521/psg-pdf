@@ -374,10 +374,9 @@ impl AcademicApp {
             .show(ui, |ui| {
                 ui.set_min_size(ui.available_size());
                 ui.horizontal(|ui| {
-                    ui.label(egui::RichText::new(t("PDF preview")).strong());
-                    if self.preview.total_pages > 0 {
-                        widgets::muted(ui, tn(self.preview.total_pages, "{n} page", "{n} pages", &[]));
-                    }
+                    // The controls first, from the right, and the title in what is left of the
+                    // row, shortened if it must be: longer translations ("PDF-Vorschau",
+                    // "Breite anpassen") would otherwise draw over each other.
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                         let ctx = ui.ctx().clone();
                         if ui.add_enabled(!self.preview.rendering && self.has_pdf(), egui::Button::new(t("Redraw"))).clicked() {
@@ -390,6 +389,13 @@ impl AcademicApp {
                         if (before - self.zoom).abs() > f32::EPSILON && self.has_pdf() {
                             self.load_preview(&ctx);
                         }
+                        ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
+                            ui.add(egui::Label::new(egui::RichText::new(t("PDF preview")).strong()).truncate());
+                            if self.preview.total_pages > 0 {
+                                let pages = tn(self.preview.total_pages, "{n} page", "{n} pages", &[]);
+                                ui.add(egui::Label::new(egui::RichText::new(pages).color(psg_desktop_ui::Palette::of(ui).text_muted)).truncate());
+                            }
+                        });
                     });
                 });
                 if let Some(e) = &self.preview.error {
