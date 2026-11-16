@@ -2,42 +2,64 @@
 # No escapes: a backslash is a backslash. Embedded by apps/psg-academic-pdf/src/i18n.rs; a missing row shows in English.
 # Written from the plain meaning of the English; no other product's translations were consulted.
 	(none)	（無）
+	A .tex or .docx file becomes the body of a new project	一個 .tex 或 .docx 檔案將成為新專案的正文
 	A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it.	指令拼寫有誤，或需要期刊範本未載入的巨集套件。請檢查這一行的指令，或將其刪除。
 	A file the manuscript uses is not in the project. Add it with "Bibliography / figures…" and check the spelling: file names are case-sensitive.	稿件用到的某個檔案不在專案中。請用「參考文獻 / 圖片…」新增，並檢查拼寫：檔名區分大小寫。
 	A line sticks out into the margin. Rephrase it, allow a hyphenation with \-, or break a long URL or formula.	有一行伸進了頁邊距。請改寫，用 \- 允許斷詞，或拆分過長的網址或公式。
 	Abbreviation	縮寫
+	About	關於
 	Abstract	摘要
 	Accepted	接受日期
 	Activity	活動紀錄
 	Add affiliation	新增單位
 	Add author	新增作者
+	Add bibliography file…	新增參考文獻檔案…
 	Add bibliography, figures or other files	新增參考文獻、圖片或其他檔案
 	Added {path} as {name}	已將 {path} 新增為 {name}
 	Affiliation numbers, e.g. 1, 2	單位編號，例如 1, 2
 	Affiliations	單位
+	All ({n})	全部（{n}）
+	All releases are listed at {url}	所有版本都列在 {url}
+	An open project keeps the template it was created with; the selection applies to new projects.	已開啟的專案保留建立時的範本；此處的選擇用於新專案。
 	Article	文章
+	Article details	文章資訊
 	Article no.	文章編號
 	Author {n}	作者 {n}
-	Authors and affiliations	作者與單位
-	Before compiling	編譯前檢查
+	Authors	作者
+	Authors refer to these by number.	作者以編號引用這些機構。
+	Auto Typeset	自動排版
+	Before typesetting	排版前
+	Before you export	匯出前檢查
+	Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):	除內建範本外，PSG Academic PDF 也會從以下資料夾讀取範本（每個範本是一個含 template.toml 的資料夾）：
+	Beta	測試版
 	Biber could not read the bibliography file. Check that the .bib file named in main.tex is in the project.	Biber 無法讀取參考文獻檔案。請確認 main.tex 中指定的 .bib 檔案在專案中。
 	Bibliography / figures…	參考文獻 / 圖片…
+	Bibliography: {tool}	參考文獻：{tool}
+	Built in	內建
 	Cancel	取消
+	Cancelled	已取消
 	Cancelling…	正在取消…
+	Cannot auto-update this installation type. Please download manually.	此安裝類型無法自動更新。請手動下載。
+	Check Again	重新檢查
 	Check again	重新檢查
+	Check and export the finished PDF	檢查並匯出完成的 PDF
+	Check compatibility	檢查相容性
 	Check for updates…	檢查更新…
+	Check the finished article and save the PDF where it is needed.	檢查完成的文章，並將 PDF 儲存到需要的位置。
+	Checking TeX…	正在檢查 TeX…
+	Checking for updates…	正在檢查更新…
 	Checking the TeX installation…	正在檢查 TeX 安裝…
 	Checking…	正在檢查…
 	Choose an empty folder for the project	為專案選擇一個空資料夾
+	Close	關閉
+	Close {app}	關閉 {app}
+	Close {app} to finish	關閉 {app} 以完成
+	Coming later	後續版本提供
 	Compilation started.	已開始編譯。
-	Compile	編譯
 	Compile output	編譯輸出
-	Compile the project to see the PDF here.	編譯專案後在此檢視 PDF。
-	Compile to see errors and warnings here.	編譯後在此檢視錯誤與警告。
-	Compile to see latexmk's output here.	編譯後在此檢視 latexmk 的輸出。
-	Compiling with latexmk and pdfLaTeX…	正在以 latexmk 與 pdfLaTeX 編譯…
 	Copyright	版權
 	Corresponding author	通訊作者
+	Could not check for updates.	無法檢查更新。
 	Could not check the TeX installation: {error}	無法檢查 TeX 安裝：{error}
 	Could not create the project: {error}	無法建立專案：{error}
 	Could not open the project: {error}	無法開啟專案：{error}
@@ -45,277 +67,268 @@
 	Could not save the project: {error}	無法儲存專案：{error}
 	Could not save {file}: {error}	無法儲存 {file}：{error}
 	Could not start the compilation: {error}	無法開始編譯：{error}
+	Couldn't start the update ({error})	無法開始更新（{error}）
 	Create the project in {path}	在 {path} 中建立專案
+	Ctrl	Ctrl
+	Current project	目前專案
 	DOI	DOI
+	Dark	深色
+	Dashboard	總覽
+	Data folder:	資料夾：
 	Dates and licence	日期與授權
+	Development build	開發版本
 	Discard unsaved changes and read the file again	捨棄未儲存的變更並重新讀取檔案
+	Dismiss	關閉
+	Download	下載
+	Downloading and installing update…	正在下載並安裝更新…
+	Edit manuscript	編輯稿件
+	Editor	編輯器
 	Email	電子郵件
 	Engine	引擎
+	Engine: pdfLaTeX	引擎：pdfLaTeX
 	Entry	條目
+	Error	錯誤
+	Errors ({n})	錯誤（{n}）
+	Errors stop typesetting; warnings are worth a look before export.	錯誤會中止排版；匯出前最好看看警告。
 	Experimental: converts with the local Pandoc	實驗功能：使用本機 Pandoc 轉換
+	Export	匯出
 	Export PDF…	匯出 PDF…
 	Export failed: {error}	匯出失敗：{error}
 	Export the PDF	匯出 PDF
 	Exported {path}.	已匯出 {path}。
+	Failed	失敗
+	File	檔案
 	Files added; see Activity for their names in the project.	檔案已新增；在「活動紀錄」中檢視它們在專案中的名稱。
-	Filter	篩選
-	From the last compilation	上次編譯的結果
+	Filter by key, author or title	依鍵名、作者或標題篩選
+	Finished	已完成
+	Fit width	符合寬度
+	Follow system	跟隨系統
+	Follow system ({language})	跟隨系統（{language}）
+	From the last typesetting run	來自上次排版
+	Get beta updates	取得測試版更新
 	Go to line	跳至該行
 	ISSN	ISSN
+	Idle	閒置
 	Import	匯入
 	Import a Word manuscript (experimental, via Pandoc)	匯入 Word 稿件（實驗功能，使用 Pandoc）
+	Import a manuscript	匯入稿件
+	Import a manuscript or create a project from a template to start.	匯入稿件或從範本新增專案即可開始。
 	Import failed: {error}	匯入失敗：{error}
+	Import manuscript…	匯入稿件…
+	Import template (.zip)…	匯入範本（.zip）…
 	Import the manuscript body (LaTeX)	匯入稿件正文（LaTeX）
 	Install Pandoc to import .docx (experimental)	安裝 Pandoc 後可匯入 .docx（實驗功能）
+	Installing update…	正在安裝更新…
+	Interface size	介面大小
 	Issue	期
+	Join beta	加入測試版
+	Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.	加入測試版通道？測試版可能有未完成的功能和錯誤。之後 PSG Academic PDF 會更新到每個新測試版，以及較新的正式版。
 	Journal	期刊
 	Journal and issue	期刊與期號
-	Journal template	期刊範本
+	Journal templates set the layout, fonts and citation style. New projects use the selected template.	期刊範本決定版式、字型和引用格式。新專案使用所選範本。
 	Key	引用鍵
 	Keywords	關鍵詞
 	Language	介面語言
+	Language and appearance	語言與外觀
+	Later	稍後
+	Leave beta	退出測試版
+	Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	退出測試版通道？PSG Academic PDF 保留目前版本，直到出現比它更新的正式版才會再更新。它不會退回舊版本。
 	Licence statement	授權聲明
+	Light	淺色
+	Line {n}	第 {n} 行
+	Manuscript	稿件
 	Manuscript (.tex)…	稿件（.tex）…
+	Manuscript as a new project…	以稿件新增專案…
 	Mathematics outside a formula, or a stray _ or ^ in text. Put formulas in $…$, and write \_ for an underscore in text.	公式之外出現了數學內容，或正文中有多餘的 _ 或 ^。請把公式放在 $…$ 中，正文中的底線寫作 \_。
+	Missing	遺失
+	Name	姓名
 	New in folder…	在資料夾中新建…
 	New project	新增專案
+	New project from this template	用此範本新增專案
 	New project from {template} around {path}.	已用 {template} 圍繞 {path} 新增專案。
 	New project from {template} in {path}.	已用 {template} 在 {path} 中新增專案。
+	New projects use the {template} template. Choose another in the Template Library.	新專案使用 {template} 範本。可在範本庫中選擇其他範本。
+	No PDF yet	尚無 PDF
+	No PDF yet.	尚無 PDF。
 	No TeX log yet.	還沒有 TeX 記錄。
 	No \label with this name. Check the spelling of the \ref and the \label.	沒有這個名稱的 \label。請檢查 \ref 與 \label 的拼寫。
+	No \section headings yet.	尚無 \section 標題。
+	No bibliography	無參考文獻
+	No bibliography entries yet.	尚無參考文獻條目。
+	No errors	沒有錯誤
 	No errors or warnings.	沒有錯誤或警告。
+	No manuscript open	沒有開啟的稿件
 	No problems in the manuscript's scripts or the bibliography.	稿件文字與參考文獻中沒有發現問題。
-	No project yet. Choose a template and press New project.	還沒有專案。請選擇範本，然後按「新增專案」。
+	No project open	沒有開啟的專案
 	No template is available.	沒有可用的範本。
 	Not added: {error}	未新增：{error}
 	Not opened (one project at a time): {path}	未開啟（一次只能開啟一個專案）：{path}
+	Not typeset in this session	本次尚未排版
+	Nothing typeset in this session yet.	本次還沒有排版過。
+	OK	確定
 	ORCID iD	ORCID iD
 	Open a PSG Academic PDF project folder	開啟 PSG Academic PDF 專案資料夾
+	Open another project…	開啟其他專案…
 	Open file	開啟檔案
 	Open in PSG PDF	在 PSG PDF 中開啟
+	Open or create a project first.	請先開啟或新增專案。
 	Open or create a project to check it.	請開啟或新增專案以進行檢查。
-	Open or create a project to edit its manuscript.	請開啟或新增專案以編輯稿件。
-	Open or create a project to see its bibliography.	請開啟或新增專案以檢視參考文獻。
+	Open or create a project to import into it.	開啟或新增專案後才能匯入其中。
 	Open or create a project, and wait for the TeX check, before compiling.	編譯前請先開啟或新增專案，並等待 TeX 檢查完成。
+	Open or create a project, then typeset it to export a PDF.	開啟或新增專案並排版後即可匯出 PDF。
+	Open project…	開啟專案…
 	Open the compiled PDF in PSG PDF for review, annotation and further editing	在 PSG PDF 中開啟編譯好的 PDF，進行審閱、註解與進一步編輯
 	Opened {path} in PSG PDF.	已在 PSG PDF 中開啟 {path}。
 	Opened {path} in the default PDF viewer.	已在預設 PDF 檢視器中開啟 {path}。
 	Opened {path}.	已開啟 {path}。
-	Open…	開啟…
+	Outline	大綱
+	PDF	PDF
 	PDF engine: PdfCraft (MIT OR Apache-2.0)	PDF 引擎：PdfCraft（MIT OR Apache-2.0）
 	PDF preview	PDF 預覽
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	未安裝 PSG PDF，因此已在預設檢視器中開啟 PDF。PSG PDF 需要另外下載。
 	Page {n}: {error}	第 {n} 頁：{error}
 	Pages	頁碼
+	Planned for a later version; not available yet.	計畫在後續版本提供，目前尚不可用。
 	Portable mode: settings and projects are kept in {path}.	可攜模式：設定與專案保存在 {path}。
-	Preview zoom	預覽縮放
+	Press Auto Typeset first.	請先按「自動排版」。
+	Press Auto Typeset to typeset the manuscript; the PDF appears here.	按「自動排版」排版稿件，PDF 會顯示在這裡。
+	Preview	預覽
+	Problems	問題
 	Problems ({n})	問題（{n}）
-	Project	專案
 	Project: {path} (template {template})	專案：{path}（範本 {template}）
-	Publication metadata	出版詮釋資料
+	Projects you open or create appear here.	開啟或新增的專案會顯示在這裡。
+	Publication	出版資訊
 	Published	出版日期
 	Rebuild everything each time	每次都完整重建
 	Received	收稿日期
-	Redraw preview	重新繪製預覽
+	Recent projects	最近的專案
+	Redraw	重新繪製
 	References ({n})	參考文獻（{n}）
 	Reload from disk	從磁碟重新載入
 	Remove	移除
-	Replaces the article body; a full document keeps only its body	取代文章正文；完整文件只保留其正文部分
-	Revised	修回日期
-	Save	儲存
-	Save the file (Ctrl+S / ⌘S)	儲存檔案（Ctrl+S / ⌘S）
-	Saved {file}.	已儲存 {file}。
-	Separate keywords with ; or ,	以 ; 或 , 分隔關鍵詞
-	Short title	短標題
-	Showing the first {shown} of {total} pages.	顯示 {total} 頁中的前 {shown} 頁。
-	Some citations or cross-references could not be resolved; the warnings above name them.	部分引用或交叉參照無法解析；上方的警告列出了它們。
-	Source and PDF	原始碼與 PDF
-	Supported files	支援的檔案
-	TeX installation	TeX 安裝
-	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX 尚未就緒：找不到 {tools}。請安裝含 latexmk 與 biber 的 TeX Live，然後按「重新檢查」。
-	TeX is ready.	TeX 已就緒。
-	TeX log	TeX 記錄
-	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX 遇到致命錯誤而停止。請先修正清單中的第一個錯誤，後面的錯誤往往由它引起。
-	Template skipped: {problem}	已略過範本：{problem}
-	Text before \begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed.	\begin{document} 之前有文字：正文檔案只能包含文章正文。請重新匯入稿件，以移除其導言區。
-	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	.bib 檔案在此處所列條目附近有語法錯誤：缺少逗號、括號或引號。
-	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	pdfLaTeX 期刊範本無法排版中文、日文或韓文（需要 XeLaTeX 或 LuaLaTeX 加 CJK 字型，而這些範本不使用它們）。請用拉丁字母（羅馬化，原文保留在來源資料中）提供標題、姓名與參考文獻，或在 PSG Academic PDF 之外使用支援 CJK 的範本排版。
-	The project folder: compilation happens here and only here	專案資料夾：編譯只在這裡進行
-	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	範本沒有西里爾字母字型（T2A 編碼）。請按多數英文期刊的要求，將西里爾字母的姓名與標題轉寫為拉丁字母。
-	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	範本沒有希臘文正文字型。公式中請用指令書寫希臘字母（$\alpha$、$\Omega$）；正文中的希臘文單字必須轉寫。
-	The templates have no font for this script. Transliterate the text.	範本沒有這種文字的字型。請將文字轉寫為拉丁字母。
-	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	此 Pandoc 版本過舊：匯入 DOCX 需要 Pandoc 2.15 或更新版本
-	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	參考文獻中沒有這個引用鍵。請在 .bib 檔案中新增該條目，或更正引用鍵。
-	This template doesn't use a bibliography file.	此範本不使用參考文獻檔案。
-	Time limit	時間限制
-	Title	標題
-	Type	類型
-	Typeset with latexmk and pdfLaTeX	以 latexmk 與 pdfLaTeX 排版
-	Typesetting	排版
-	Unbalanced braces: a { without its } (or the other way round) near this line.	括號不配對：這一行附近有 { 缺少對應的 }（或相反）。
-	Unsaved changes; they are saved before compiling.	有未儲存的變更；編譯前會自動儲存。
-	Volume	卷
-	Word (.docx)…	Word（.docx）…
-	Year	年份
-	found	已找到
-	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk 通常會重複執行直到這條消失。如果一直存在，請開啟「每次都完整重建」後重新編譯。
-	not found	找不到
-	not found (optional, for DOCX import)	找不到（選用，用於匯入 DOCX）
-	pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX.	使用這些範本時，pdfLaTeX 無法排版從右到左書寫的文字。請轉寫文字，或使用 XeLaTeX 或 LuaLaTeX 範本準備文章。
-	pdfLaTeX via latexmk (shell escape off)	透過 latexmk 呼叫 pdfLaTeX（已關閉 shell escape）
-	pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\alpha$, for example).	pdfLaTeX 的字型沒有這個字元的字形。請替換它，或寫成 LaTeX 指令（例如希臘字母寫作 $\alpha$）。
-	{file} is not UTF-8 text; save it as UTF-8 and try again.	{file} 不是 UTF-8 文字；請另存為 UTF-8 後重試。
-	{file} is too large to edit here.	{file} 太大，無法在此編輯。
-	{first} Some things need fixing first: see Activity.	{first} 有些問題需要先修正：見「活動紀錄」。
-	{id} · {engine} · bibliography: {bibliography}	{id} · {engine} · 參考文獻：{bibliography}
-	{n} problems found before compiling; see Problems.	編譯前發現 {n} 個問題；見「問題」。
-	{path} is a Word manuscript; install Pandoc to import it.	{path} 是 Word 稿件；請安裝 Pandoc 後匯入。
-	A .tex or .docx file becomes the body of a new project	一個 .tex 或 .docx 檔案將成為新專案的正文
-	About	關於
-	Add bibliography file…	新增參考文獻檔案…
-	All ({n})	全部（{n}）
-	An open project keeps the template it was created with; the selection applies to new projects.	已開啟的專案保留建立時的範本；此處的選擇用於新專案。
-	Article details	文章資訊
-	Authors	作者
-	Authors refer to these by number.	作者以編號引用這些機構。
-	Auto Typeset	自動排版
-	Before typesetting	排版前
-	Before you export	匯出前檢查
-	Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):	除內建範本外，PSG Academic PDF 也會從以下資料夾讀取範本（每個範本是一個含 template.toml 的資料夾）：
-	Bibliography: {tool}	參考文獻：{tool}
-	Built in	內建
-	Cancelled	已取消
-	Check and export the finished PDF	檢查並匯出完成的 PDF
-	Check compatibility	檢查相容性
-	Check the finished article and save the PDF where it is needed.	檢查完成的文章，並將 PDF 儲存到需要的位置。
-	Checking TeX…	正在檢查 TeX…
-	Coming later	後續版本提供
-	Current project	目前專案
-	Dark	深色
-	Dashboard	總覽
-	Data folder:	資料夾：
-	Edit manuscript	編輯文稿
-	Editor	編輯器
-	Engine: pdfLaTeX	引擎：pdfLaTeX
-	Error	錯誤
-	Errors ({n})	錯誤（{n}）
-	Errors stop typesetting; warnings are worth a look before export.	錯誤會中止排版；匯出前最好看看警告。
-	Export	匯出
-	Failed	失敗
-	File	檔案
-	Filter by key, author or title	依鍵名、作者或標題篩選
-	Finished	已完成
-	Follow system	跟隨系統
-	From the last typesetting run	來自上次排版
-	Get beta updates	取得測試版更新
-	Idle	閒置
-	Import a manuscript	匯入文稿
-	Import a manuscript or create a project from a template to start.	匯入文稿或從範本新增專案即可開始。
-	Import manuscript…	匯入文稿…
-	Import template (.zip)…	匯入範本（.zip）…
-	Interface size	介面大小
-	Join beta	加入測試版
-	Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.	加入測試版通道？測試版可能有未完成的功能和錯誤。之後 PSG Academic PDF 會更新到每個新測試版，以及較新的正式版。
-	Journal templates set the layout, fonts and citation style. New projects use the selected template.	期刊範本決定版式、字型和引用格式。新專案使用所選範本。
-	Language and appearance	語言與外觀
-	Leave beta	退出測試版
-	Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	退出測試版通道？PSG Academic PDF 保留目前版本，直到出現比它更新的正式版才會再更新。它不會退回舊版本。
-	Light	淺色
-	Line {n}	第 {n} 行
-	Manuscript	文稿
-	Manuscript as a new project…	以文稿新增專案…
-	Missing	遺失
-	Name	姓名
-	New project from this template	用此範本新增專案
-	New projects use the {template} template. Choose another in the Template Library.	新專案使用 {template} 範本。可在範本庫中選擇其他範本。
-	No PDF yet	尚無 PDF
-	No PDF yet.	尚無 PDF。
-	No \section headings yet.	尚無 \section 標題。
-	No bibliography	無參考文獻
-	No bibliography entries yet.	尚無參考文獻條目。
-	No errors	沒有錯誤
-	No manuscript open	沒有開啟的文稿
-	No project open	沒有開啟的專案
-	Not typeset in this session	本次尚未排版
-	Nothing typeset in this session yet.	本次還沒有排版過。
-	Open another project…	開啟其他專案…
-	Open or create a project first.	請先開啟或新增專案。
-	Open or create a project to import into it.	開啟或新增專案後才能匯入其中。
-	Open or create a project, then typeset it to export a PDF.	開啟或新增專案並排版後即可匯出 PDF。
-	Open project…	開啟專案…
-	Outline	大綱
-	PDF	PDF
-	Planned for a later version; not available yet.	計畫在後續版本提供，目前尚不可用。
-	Press Auto Typeset first.	請先按「自動排版」。
-	Press Auto Typeset to typeset the manuscript; the PDF appears here.	按「自動排版」排版文稿，PDF 會顯示在這裡。
-	Preview	預覽
-	Problems	問題
-	Projects you open or create appear here.	開啟或新增的專案會顯示在這裡。
-	Publication	出版資訊
-	Recent projects	最近的專案
-	Redraw	重新繪製
 	Remove from the list (the folder is kept)	從清單中移除（資料夾保留）
+	Replaces the article body; a full document keeps only its body	取代文章正文；完整文件只保留其正文部分
 	Required publication details are filled in	必填的出版資訊已填寫
 	Reset	重設
+	Resize panes	調整窗格大小
+	Restart to Update	重新啟動以更新
 	Review problems	檢視問題
+	Revised	修回日期
 	Running	執行中
 	Runs in this session	本次的排版紀錄
+	Save	儲存
+	Save or close your open work first; the update restarts the app.	請先儲存或關閉進行中的工作；更新會重新啟動應用程式。
 	Save the file ({keys})	儲存檔案（{keys}）
 	Save, check and typeset with latexmk and pdfLaTeX ({keys})	儲存、檢查並以 latexmk 和 pdfLaTeX 排版（{keys}）
 	Saved with the project ({keys}) and before every typesetting run.	隨專案儲存（{keys}），每次排版前也會儲存。
+	Saved {file}.	已儲存 {file}。
 	Saved.	已儲存。
-	See Manuscript ▸ Title & abstract, Authors and Publication.	請查看「文稿 ▸ 標題與摘要、作者、出版資訊」。
+	See Manuscript ▸ Title & abstract, Authors and Publication.	請查看「稿件 ▸ 標題與摘要、作者、出版資訊」。
 	Selected for new projects	新專案將使用
+	Separate keywords with ; or ,	以 ; 或 , 分隔關鍵詞
 	Settings	設定
 	Settings for this project	本專案的設定
 	Settings ▸ TeX installation	設定 ▸ TeX 安裝
+	Shift	Shift
+	Short title	短標題
 	Shortcuts:	快速鍵：
-	Show the PDF beside the manuscript	在文稿旁顯示 PDF
+	Show the PDF beside the manuscript	在稿件旁顯示 PDF
+	Showing the first {shown} of {total} pages.	顯示 {total} 頁中的前 {shown} 頁。
 	Size	大小
+	Some citations or cross-references could not be resolved; the warnings above name them.	部分引用或交叉參照無法解析；上方的警告列出了它們。
 	Source	原始檔
 	Split	並排
 	Start a project	開始一個專案
 	Suggested name	建議檔名
+	Supported files	支援的檔案
 	Switch area	切換功能區
+	TeX installation	TeX 安裝
 	TeX is not ready: see Settings ▸ TeX installation.	TeX 尚未就緒：請查看「設定 ▸ TeX 安裝」。
+	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX 尚未就緒：找不到 {tools}。請安裝含 latexmk 與 biber 的 TeX Live，然後按「重新檢查」。
+	TeX is ready.	TeX 已就緒。
+	TeX log	TeX 記錄
 	TeX not found	找不到 TeX
 	TeX ready	TeX 已就緒
 	TeX ready, no Biber	TeX 已就緒，缺少 Biber
+	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX 遇到致命錯誤而停止。請先修正清單中的第一個錯誤，後面的錯誤往往由它引起。
 	Template Library	範本庫
+	Template skipped: {problem}	已略過範本：{problem}
 	Template: {template}	範本：{template}
+	Text before \begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed.	\begin{document} 之前有文字：正文檔案只能包含文章正文。請重新匯入稿件，以移除其導言區。
+	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	.bib 檔案在此處所列條目附近有語法錯誤：缺少逗號、括號或引號。
+	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	pdfLaTeX 期刊範本無法排版中文、日文或韓文（需要 XeLaTeX 或 LuaLaTeX 加 CJK 字型，而這些範本不使用它們）。請用拉丁字母（羅馬化，原文保留在來源資料中）提供標題、姓名與參考文獻，或在 PSG Academic PDF 之外使用支援 CJK 的範本排版。
+	The project folder: compilation happens here and only here	專案資料夾：編譯只在這裡進行
 	The project has been typeset	專案已排版
+	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	範本沒有西里爾字母字型（T2A 編碼）。請按多數英文期刊的要求，將西里爾字母的姓名與標題轉寫為拉丁字母。
+	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	範本沒有希臘文正文字型。公式中請用指令書寫希臘字母（$\alpha$、$\Omega$）；正文中的希臘文單字必須轉寫。
+	The templates have no font for this script. Transliterate the text.	範本沒有這種文字的字型。請將文字轉寫為拉丁字母。
+	The update could not be installed: {reason}	無法安裝更新：{reason}
+	The update failed unexpectedly.	更新意外失敗。
+	The update is installed. Close {app} to finish; it restarts by itself.	更新已安裝。關閉 {app} 即可完成，它會自動重新啟動。
+	The update stopped unexpectedly.	更新意外中止。
 	Theme	主題
+	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	此 Pandoc 版本過舊：匯入 DOCX 需要 Pandoc 2.15 或更新版本
+	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	參考文獻中沒有這個引用鍵。請在 .bib 檔案中新增該條目，或更正引用鍵。
+	This template doesn't use a bibliography file.	此範本不使用參考文獻檔案。
+	Time limit	時間限制
 	Timed out	已逾時
+	Title	標題
 	Title & abstract	標題與摘要
+	Type	類型
 	Typeset	排版時間
 	Typeset accepted articles into publication-ready PDFs with your journal's template.	使用期刊範本，將已錄用文章排版為可出版的 PDF。
-	Typeset in {secs} s with {n} warning(s).	排版完成，耗時 {secs} 秒，{n} 個警告。
 	Typeset the project first.	請先排版專案。
 	Typeset to see errors and warnings here.	排版後會在這裡顯示錯誤和警告。
 	Typeset to see latexmk's output here.	排版後會在這裡顯示 latexmk 的輸出。
+	Typesetting	排版
 	Typesetting cancelled.	排版已取消。
-	Typesetting failed after {secs} s with {n} error(s).	排版失敗，耗時 {secs} 秒，{n} 個錯誤。
 	Typesetting for {secs} s…	已排版 {secs} 秒…
 	Typesetting is already running.	排版正在進行。
 	Typesetting stopped: it took longer than {secs} s.	排版已停止：耗時超過 {secs} 秒。
 	Typesetting with latexmk and pdfLaTeX…	正在以 latexmk 和 pdfLaTeX 排版…
+	Unbalanced braces: a { without its } (or the other way round) near this line.	括號不配對：這一行附近有 { 缺少對應的 }（或相反）。
 	Unsaved	未儲存
 	Unsaved changes	有未儲存的變更
 	Untitled article	未命名文章
+	Update	更新
+	Update and Restart	更新並重新啟動
+	Update ready. Close {app} to install it.	更新已就緒。關閉 {app} 即可安裝。
 	Updates	更新
 	Used by this project	本專案使用
+	Volume	卷
 	Warning	警告
 	Warnings ({n})	警告（{n}）
+	What's new	新功能
 	Where templates come from	範本來源
+	Word (.docx)…	Word（.docx）…
 	Worth a look, but they don't stop the export.	值得一看，但不會阻止匯出。
+	Year	年份
+	by {developer}	來自 {developer}
+	found	已找到
+	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk 通常會重複執行直到這條消失。如果一直存在，請開啟「每次都完整重建」後重新編譯。
 	latexmk runs pdfLaTeX (and Biber for the bibliography) in the project folder, without shell escape.	latexmk 在專案資料夾中執行 pdfLaTeX（以及處理參考文獻的 Biber），不啟用 shell escape。
+	not found	找不到
+	not found (optional, for DOCX import)	找不到（選用，用於匯入 DOCX）
 	pdfLaTeX	pdfLaTeX
+	pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX.	使用這些範本時，pdfLaTeX 無法排版從右到左書寫的文字。請轉寫文字，或使用 XeLaTeX 或 LuaLaTeX 範本準備文章。
+	pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\alpha$, for example).	pdfLaTeX 的字型沒有這個字元的字形。請替換它，或寫成 LaTeX 指令（例如希臘字母寫作 $\alpha$）。
 	via latexmk, shell escape off	經 latexmk，shell escape 關閉
+	v{from} to {to}	從 v{from} 到 {to}
+	{app} updated to {version}.	{app} 已更新到 {version}。
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} 使用啟動器中選擇的版本，因此不會自行更新。
+	{app} {version} is available with the latest features and bug fixes.	{app} {version} 已推出，包含最新功能與錯誤修正。
+	{app} {version} is the newest version available.	{app} {version} 已是最新版本。
+	{file} is not UTF-8 text; save it as UTF-8 and try again.	{file} 不是 UTF-8 文字；請另存為 UTF-8 後重試。
+	{file} is too large to edit here.	{file} 太大，無法在此編輯。
+	{first} Some things need fixing first: see Activity.	{first} 有些問題需要先修正：見「活動紀錄」。
 	{id} · licence {licence}	{id} · 授權 {licence}
 	{name} (open)	{name}（已開啟）
-	{n} error(s)	{n} 個錯誤
-	{n} error(s): see Problems.	{n} 個錯誤：請查看「問題」。
-	{n} pages	{n} 頁
-	{n} warning(s)	{n} 個警告
-	{n} words	{n} 詞
-	Fit width	符合寬度
+	{path} is a Word manuscript; install Pandoc to import it.	{path} 是 Word 稿件；請安裝 Pandoc 後匯入。
+@other	Typeset in {secs} s with {n} warning.	排版完成，用時 {secs} 秒，{n} 個警告。
+@other	Typesetting failed after {secs} s with {n} error.	排版失敗，用時 {secs} 秒，{n} 個錯誤。
+@other	{n} error	{n} 個錯誤
+@other	{n} error: see Problems.	{n} 個錯誤：請查看「問題」。
+@other	{n} page	{n} 頁
+@other	{n} problem found before compiling; see Problems.	編譯前發現 {n} 個問題；請查看「問題」。
+@other	{n} warning	{n} 個警告
+@other	{n} word	{n} 個字詞

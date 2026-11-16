@@ -1,0 +1,176 @@
+# PSG PDF's own interface strings in es, appended to the craft-i18n catalog at build time
+# (crates/ui-egui/build.rs). Same format: context <TAB> English source <TAB> translation.
+# Written from the plain meaning of the English; no other product's translations were consulted.
+	1 line	1 línea
+	A CMap maps a character code to a CID above 65535	Un CMap asigna un código de carácter a un CID mayor que 65535
+	A graphics state has a halftone phase (HTP)	Un estado gráfico tiene una fase de semitono (HTP)
+	A graphics state has a rendering intent that isn't a name	Un estado gráfico tiene una intención de representación que no es un nombre
+	A graphics state has a transfer function (TR)	Un estado gráfico tiene una función de transferencia (TR)
+	A graphics state has a transfer function (TR2) other than Default	Un estado gráfico tiene una función de transferencia (TR2) distinta de Default
+	A graphics state has the rendering intent {}, which isn't a standard one	Un estado gráfico tiene la intención de representación {}, que no es estándar
+	A graphics state uses the blend mode {}, which ISO 32000-1 doesn't define	Un estado gráfico usa el modo de fusión {}, que ISO 32000-1 no define
+	A halftone has a HalftoneName	Un semitono tiene un HalftoneName
+	A halftone has a transfer function, which only a non-primary colorant's halftone may have	Un semitono tiene una función de transferencia, que solo puede tener el semitono de un colorante no primario
+	A halftone has type {}: only types 1 and 5 are allowed	Un semitono es de tipo {}: solo se permiten los tipos 1 y 5
+	A halftone's HalftoneType is missing or isn't an integer	Falta el HalftoneType de un semitono o no es un entero
+	A name is longer than 127 bytes	Un nombre ocupa más de 127 bytes
+	A real number is outside ±3.403 × 10³⁸, or nonzero but within ±1.175 × 10⁻³⁸	Un número real está fuera de ±3,403 × 10³⁸, o no es cero pero está dentro de ±1,175 × 10⁻³⁸
+	A script edited here can be at most 256 KiB long; that change wasn't made.	Un script editado aquí puede ocupar como máximo 256 KiB; ese cambio no se hizo.
+	A string is longer than 32767 bytes	Una cadena ocupa más de 32767 bytes
+	Accept or reject the OCR review of the other document before running OCR here	Acepte o rechace la revisión de OCR del otro documento antes de ejecutar el OCR aquí
+	Add 3D model	Añadir modelo 3D
+	Add Tools to Hotbar	Añadir herramientas a la barra rápida
+	All releases are listed at {url}	Todas las versiones están en {url}
+	An integer is outside the 32-bit range	Un entero está fuera del rango de 32 bits
+	Background removal	Eliminación del fondo
+	Beta	Beta
+	Betas update to the newest release, beta or stable, and get new features first. Off, only stable releases are installed.	Las beta se actualizan a la versión más reciente, beta o estable, y reciben antes las funciones nuevas. Desactivado, solo se instalan versiones estables.
+	Black and white (binarize)	Blanco y negro (binarizar)
+	Built-in	Integrado
+	Cancel re-read	Cancelar la relectura
+	Cannot auto-update this installation type. Please download manually.	Este tipo de instalación no se puede actualizar automáticamente. Descargue la actualización manualmente.
+	Check for updates when PSG PDF starts	Buscar actualizaciones al iniciar PSG PDF
+	Checking for updates…	Buscando actualizaciones…
+	Cleans up the scanned pictures in place: recognized text, comments and links on the pages stay as they are.	Limpia las imágenes escaneadas en su sitio: el texto reconocido, los comentarios y los enlaces de las páginas quedan como están.
+	Close menu	Cerrar el menú
+	Close {app}	Cerrar {app}
+	Close {app} to finish	Cierre {app} para terminar
+	Columns and rows must each be 1 to 99.	Las columnas y las filas deben estar entre 1 y 99.
+	Combine engines	Combinar motores
+	Could not check for updates.	No se pudo buscar actualizaciones.
+	Couldn't start the update ({error})	No se pudo iniciar la actualización ({error})
+	Creep:	Corrimiento:
+	Custom calculation script:	Script de cálculo personalizado:
+	Custom scale	Escala personalizada
+	Despeckle	Eliminar motas
+	Detecting paper…	Detectando el papel…
+	Detecting…	Detectando…
+	Development build	Versión de desarrollo
+	Discard embedded search index	Descartar el índice de búsqueda incrustado
+	Discard external cross-references	Descartar las referencias cruzadas externas
+	Dock navigation rail on Left	Acoplar la barra de navegación a la izquierda
+	Dock navigation rail on Right	Acoplar la barra de navegación a la derecha
+	Downloading and installing update…	Descargando e instalando la actualización…
+	Drag hotbar	Arrastrar la barra rápida
+	Edge shadow removal	Eliminación de sombras en los bordes
+	Edit attachment description	Editar la descripción del adjunto
+	Edit description	Editar la descripción
+	Engine	Motor
+	Enhance	Mejorar
+	Enhance Scanned File	Mejorar archivo escaneado
+	Enhance scanned file…	Mejorar archivo escaneado…
+	Enhancing scans… image {d} of {t}	Mejorando escaneos… imagen {d} de {t}
+	Evens out the paper so a grey or yellowed background turns white, and darkens faint strokes. 0 is off.	Iguala el papel para que un fondo gris o amarillento quede blanco y oscurece los trazos tenues. 0 lo desactiva.
+	Every line set in the style chosen for a level becomes a bookmark of that level, under a new first bookmark.	Cada línea con el estilo elegido para un nivel se convierte en un marcador de ese nivel, bajo un nuevo primer marcador.
+	Extend the docked toolbar along the entire side. Choose a side above to enable.	Extiende la barra de herramientas acoplada a lo largo de todo el lado. Elija un lado arriba para activarlo.
+	Float	Flotante
+	Freehand-Highlight	Resaltado a mano alzada
+	Full-side strip	Franja en todo el lado
+	General & Interface	General e interfaz
+	Get beta updates	Recibir versiones beta
+	Hotbar settings	Ajustes de la barra rápida
+	Hotbar settings / add tools	Ajustes de la barra rápida / añadir herramientas
+	Hotbar tools	Herramientas de la barra rápida
+	Import bookmarks	Importar marcadores
+	Inherit Zoom	Heredar el zoom
+	Installing update…	Instalando la actualización…
+	Invert middle-button drag	Invertir el arrastre con el botón central
+	Join beta	Unirse a la beta
+	Join the beta channel? Betas can have unfinished features and bugs. PSG PDF then updates to every new beta, and to each stable release as soon as it is newer.	¿Unirse al canal beta? Las versiones beta pueden tener funciones sin terminar y errores. PSG PDF se actualizará entonces a cada beta nueva y a cada versión estable en cuanto sea más reciente.
+	Layout & Sizing	Diseño y tamaño
+	Leave beta	Salir de la beta
+	Leave the beta channel? PSG PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	¿Salir del canal beta? PSG PDF conserva la versión que tiene y vuelve a actualizarse con la primera versión estable más reciente. Nunca vuelve a una versión anterior.
+	Level {n}	Nivel {n}
+	Lightens shadows along the edges of the scan, such as a book's gutter or a copier's dark border	Aclara las sombras de los bordes del escaneo, como el lomo de un libro o el borde oscuro de una fotocopiadora
+	Metadata stream {object} writes the namespace {namespace} with the prefix {written}, not {prefix}	El flujo de metadatos {object} escribe el espacio de nombres {namespace} con el prefijo {written}, no {prefix}
+	Metadata stream {object} writes the namespace {namespace} without a prefix, not with {prefix}	El flujo de metadatos {object} escribe el espacio de nombres {namespace} sin prefijo, no con {prefix}
+	Moves each sheet's pages toward the fold by this much more than the sheet outside it, so the margins match once the booklet is folded and trimmed.	Desplaza las páginas de cada hoja hacia el pliegue esta cantidad más que la hoja exterior, para que los márgenes coincidan al plegar y refilar el folleto.
+	Navigation rail side	Lado de la barra de navegación
+	New bookmarks from text styles	Nuevos marcadores a partir de estilos de texto
+	New bookmarks from text styles…	Nuevos marcadores a partir de estilos de texto…
+	No scanned pages were cleaned up.	No se limpió ninguna página escaneada.
+	No signature font can draw “{char}”. Use other letters, or draw or import your signature.	Ninguna fuente de firma puede dibujar «{char}». Use otras letras, o dibuje o importe su firma.
+	Only web (http, https) and email addresses open, and PSG PDF asks first, as for other links.	Solo se abren direcciones web (http, https) y de correo, y PSG PDF pregunta antes, como con otros enlaces.
+	Open web and email addresses written in the page text	Abrir las direcciones web y de correo escritas en el texto de la página
+	Optimizing… reading page {d} of {t}	Optimizando… leyendo la página {d} de {t}
+	Optimizing… reading the pages	Optimizando… leyendo las páginas
+	PSG PDF's checks found no problems for {level}. This is not a validator result.	Las comprobaciones de PSG PDF no encontraron problemas para {level}. No es el resultado de un validador.
+	PSG PDF's checks now find no problems for {level}. This is not a validator result. Save to keep the changes.	Las comprobaciones de PSG PDF ya no encuentran problemas para {level}. No es el resultado de un validador. Guarde para conservar los cambios.
+	Page Properties	Propiedades de la página
+	Page Setup…	Configurar página…
+	Page properties…	Propiedades de la página…
+	Page setup dialog is not available on this system.	El cuadro de diálogo de configuración de página no está disponible en este sistema.
+	Page {} has a boundary smaller than 3 or larger than 14400 units	La página {} tiene un cuadro menor que 3 o mayor que 14400 unidades
+	Page {} has transparency but no device-independent blending colour space or PDF/A output intent	La página {} tiene transparencia pero ni espacio de color de fusión independiente del dispositivo ni intención de salida PDF/A
+	Panning or auto-scrolling with the middle (wheel) button moves the page the other way.	Al desplazar o hacer desplazamiento automático con el botón central (rueda), la página se mueve en sentido contrario.
+	Paste bookmarks	Pegar marcadores
+	PdfCraft (upstream project)	PdfCraft (proyecto original)
+	Prepare grouped text	Preparar el texto agrupado
+	Re-reading the page…	Releyendo la página…
+	Re-reading the region…	Releyendo la región…
+	Reading the drawing for snapping…	Leyendo el dibujo para el ajuste…
+	Remove from hotbar	Quitar de la barra rápida
+	Remove scan speckle	Quitar las motas del escaneo
+	Remove this leaf tag from reading order and mark its direct content as an artifact	Quitar esta etiqueta hoja del orden de lectura y marcar su contenido directo como artefacto
+	Removes isolated dark specks such as dust and scanner noise. The only filter black and white scans take.	Elimina motas oscuras aisladas, como polvo y ruido del escáner. Es el único filtro que admiten los escaneos en blanco y negro.
+	Reset side panels	Restablecer paneles laterales
+	Resize panes	Cambiar el tamaño de los paneles
+	Restart to Update	Reiniciar para actualizar
+	Save or close your open work first; the update restarts the app.	Primero guarde o cierre su trabajo abierto; la actualización reinicia la aplicación.
+	Search all tools…	Buscar en todas las herramientas…
+	Search settings…	Buscar en los ajustes…
+	Selects paper size and orientation from the printer driver. For paper tray, print quality or other driver defaults, use Properties…	Elige el tamaño y la orientación del papel desde el controlador de la impresora. Para la bandeja, la calidad de impresión u otros valores del controlador, use Propiedades…
+	Separation colour spaces named {} differ in their alternate space or tint transform	Los espacios de color de separación llamados {} difieren en su espacio alternativo o su transformación de tinta
+	Show or hide the Tools panel	Mostrar u ocultar el panel Herramientas
+	Show or hide the side panel	Mostrar u ocultar el panel lateral
+	Show tab numbers	Mostrar los números de pestaña
+	Stick to a side:	Fijar a un lado:
+	Straighten pages scanned sideways or upside down	Enderezar páginas escaneadas de lado o al revés
+	Straighten skewed text lines	Enderezar líneas de texto inclinadas
+	Tab Order	Orden de tabulación
+	Tesseract	Tesseract
+	The XMP extension schema container in metadata stream {object} holds no rdf:Bag	El contenedor de esquemas de extensión XMP del flujo de metadatos {object} no contiene ningún rdf:Bag
+	The XMP extension schema container in metadata stream {object} holds {found}, not one rdf:Bag	El contenedor de esquemas de extensión XMP del flujo de metadatos {object} contiene {found}, no un único rdf:Bag
+	The XMP extension schema {schema} in metadata stream {object} describes {item} with an empty {entry} entry	El esquema de extensión XMP {schema} del flujo de metadatos {object} describe {item} con una entrada {entry} vacía
+	The XMP extension schema {schema} in metadata stream {object} describes {item} without a {entry} entry	El esquema de extensión XMP {schema} del flujo de metadatos {object} describe {item} sin entrada {entry}
+	The XMP extension schema {schema} in metadata stream {object} has an empty {entry} entry	El esquema de extensión XMP {schema} del flujo de metadatos {object} tiene una entrada {entry} vacía
+	The XMP extension schema {schema} in metadata stream {object} has no {entry} entry	El esquema de extensión XMP {schema} del flujo de metadatos {object} no tiene entrada {entry}
+	The XMP property {property} in metadata stream {object} should have the value type {type}	La propiedad XMP {property} del flujo de metadatos {object} debería tener el tipo de valor {type}
+	The XMP property {property} in metadata stream {object}, written {written}, should have the value type {type}	La propiedad XMP {property} del flujo de metadatos {object}, escrita {written}, debería tener el tipo de valor {type}
+	The creep moves the innermost sheet's pages too far for this many pages. Reduce Creep.	Con tantas páginas, el corrimiento desplaza demasiado las páginas de la hoja más interior. Reduzca el corrimiento.
+	The document changed. Reopen Document Properties to edit the current version.	El documento ha cambiado. Vuelva a abrir Propiedades del documento para editar la versión actual.
+	The file doesn't start with a %PDF-1.0 to %PDF-1.7 header line	El archivo no empieza con una línea de encabezado de %PDF-1.0 a %PDF-1.7
+	The file header isn't followed by a comment of four bytes above 127	El encabezado del archivo no va seguido de un comentario de cuatro bytes mayores que 127
+	The file identifier (ID) in the trailer isn't two non-empty strings	El identificador de archivo (ID) del trailer no son dos cadenas no vacías
+	The halftone for the colorant {} has no transfer function	El semitono del colorante {} no tiene función de transferencia
+	The re-read was cancelled; the words are unchanged	Se canceló la relectura; las palabras no han cambiado
+	The spot colour {} of a DeviceN colour space isn't in its Colorants dictionary	La tinta plana {} de un espacio de color DeviceN no está en su diccionario Colorants
+	The trailer has no file identifier (ID)	El trailer no tiene identificador de archivo (ID)
+	The update could not be installed: {reason}	No se pudo instalar la actualización: {reason}
+	The update failed unexpectedly.	La actualización falló inesperadamente.
+	The update is installed. Close {app} to finish; it restarts by itself.	La actualización está instalada. Cierre {app} para terminar; se reiniciará solo.
+	The update stopped unexpectedly.	La actualización se detuvo inesperadamente.
+	This document has no text to make bookmarks from.	Este documento no tiene texto con el que crear marcadores.
+	This script is too long to edit here ({kib} KiB); its start is shown. It is kept as it is.	Este script es demasiado largo para editarlo aquí ({kib} KiB); se muestra su comienzo. Se conserva tal cual.
+	This signature carries certification permissions, but the document does not name it as its certification, so it is checked as an approval signature.	Esta firma tiene permisos de certificación, pero el documento no la designa como su certificación, así que se comprueba como firma de aprobación.
+	Toolbar size	Tamaño de la barra de herramientas
+	Unspecified	Sin especificar
+	Update and Restart	Actualizar y reiniciar
+	Update ready. Close {app} to install it.	Actualización lista. Cierre {app} para instalarla.
+	Use Column Order	Usar el orden de columnas
+	Use Document Structure	Usar la estructura del documento
+	Use Row Order	Usar el orden de filas
+	Vertical layout	Diseño vertical
+	What's new	Novedades
+	bold	negrita
+	by	×
+	by {developer}	de {developer}
+	italic	cursiva
+	the range selects more than {limit} pages	el intervalo selecciona más de {limit} páginas
+	v{from} to {to}	de v{from} a {to}
+	{app} updated to {version}.	{app} se actualizó a {version}.
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} sigue la versión elegida en el lanzador, así que no se actualiza por sí mismo.
+	{app} {version} is available with the latest features and bug fixes.	{app} {version} ya está disponible, con las últimas funciones y correcciones de errores.
+	{app} {version} is the newest version available.	{app} {version} es la versión más reciente.
+	{font}, {size} pt	{font}, {size} pt
+	{n} lines	{n} líneas

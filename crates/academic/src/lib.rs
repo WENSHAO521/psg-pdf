@@ -18,6 +18,14 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
 pub mod bib;
+
+/// Marks a sentence the apps show in the interface language (the hints under a diagnostic, the
+/// advice for a script pdfLaTeX can't set). It returns `english` unchanged: the English is the
+/// catalog key, the app translates it when it draws it, and the translation tests find every
+/// marked string in the source. This crate itself never translates anything.
+pub const fn mark(english: &'static str) -> &'static str {
+    english
+}
 pub mod compile;
 pub mod diagnostics;
 pub mod metadata;

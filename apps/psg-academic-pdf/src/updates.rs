@@ -43,7 +43,7 @@ pub struct Updates {
 impl Default for Updates {
     fn default() -> Self {
         Self {
-            updater: Updater::new(&UPDATE_APP, env!("CARGO_PKG_VERSION")),
+            updater: Updater::new(&UPDATE_APP, env!("CARGO_PKG_VERSION")).with_translator(crate::i18n::updater_text),
             open: false,
             check_requested: false,
             beta: false,
@@ -133,7 +133,9 @@ impl Updates {
             self.open = false;
         }
         if self.open {
-            let response = CheckResultDialog::new(&UPDATE_APP, env!("CARGO_PKG_VERSION")).show(ctx, self.updater.status());
+            let response = CheckResultDialog::new(&UPDATE_APP, env!("CARGO_PKG_VERSION"))
+                .with_translator(crate::i18n::updater_text)
+                .show(ctx, self.updater.status());
             match response {
                 CheckResultResponse::None => {}
                 CheckResultResponse::Close => {

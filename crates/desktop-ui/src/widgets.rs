@@ -109,8 +109,12 @@ pub fn status_dot(ui: &mut Ui, tone: Tone) -> Response {
     resp
 }
 
-/// The release badge ("Beta", "Development build") for `version`, in the shared gold; nothing
-/// for a stable release.
+/// The words [`psg_brand::Release::badge`] can return, marked so the apps' translation checks
+/// require a row for each (the badge is drawn through [`psg_i18n::ui_text`]).
+pub const BADGES: [&str; 2] = [psg_i18n::mark("Beta"), psg_i18n::mark("Development build")];
+
+/// The release badge ("Beta", "Development build") for `version`, in the shared gold and the
+/// interface language; nothing for a stable release.
 pub fn release_badge(ui: &mut Ui, version: &str) -> Option<Response> {
     let label = psg_brand::Release::of(version).badge()?;
     let p = Palette::of(ui);
@@ -120,7 +124,7 @@ pub fn release_badge(ui: &mut Ui, version: &str) -> Option<Response> {
             .stroke(Stroke::new(1.0, p.gold))
             .corner_radius(CornerRadius::same(radius::SMALL))
             .inner_margin(egui::Margin::symmetric(6, 1))
-            .show(ui, |ui| ui.label(RichText::new(label).font(fonts::semibold(text::SMALL)).color(p.text)))
+            .show(ui, |ui| ui.label(RichText::new(psg_i18n::ui_text(label)).font(fonts::semibold(text::SMALL)).color(p.text)))
             .response,
     )
 }
@@ -364,10 +368,12 @@ pub fn form_grid<R>(ui: &mut Ui, id: &'static str, add: impl FnOnce(&mut Ui) -> 
     egui::Grid::new(id).num_columns(2).spacing(vec2(space::M, space::S)).min_col_width(112.0).show(ui, add).inner
 }
 
-/// A form label in the muted colour, vertically centred on its field.
+/// A form label in the muted colour, vertically centred on its field. It is never shortened: in a
+/// [`form_grid`] the label column grows to the longest label, so a longer translation ("Taille de
+/// l'interface") is read in full instead of cut at the column's minimum width.
 pub fn form_label(ui: &mut Ui, label: &str) -> Response {
     let p = Palette::of(ui);
-    ui.add(egui::Label::new(RichText::new(label).color(p.text_muted)).truncate())
+    ui.add(egui::Label::new(RichText::new(label).color(p.text_muted)).extend())
 }
 
 /// A single-line text field that fills the row, with a placeholder.

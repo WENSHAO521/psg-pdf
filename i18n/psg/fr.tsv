@@ -1,0 +1,177 @@
+# PSG PDF's own interface strings in fr, appended to the craft-i18n catalog at build time
+# (crates/ui-egui/build.rs). Same format: context <TAB> English source <TAB> translation.
+# Written from the plain meaning of the English; no other product's translations were consulted.
+	1 line	1 ligne
+	A CMap maps a character code to a CID above 65535	Une CMap associe un code de caractère à un CID supérieur à 65535
+	A graphics state has a halftone phase (HTP)	Un état graphique a une phase de trame (HTP)
+	A graphics state has a rendering intent that isn't a name	Un état graphique a une intention de rendu qui n'est pas un nom
+	A graphics state has a transfer function (TR)	Un état graphique a une fonction de transfert (TR)
+	A graphics state has a transfer function (TR2) other than Default	Un état graphique a une fonction de transfert (TR2) autre que Default
+	A graphics state has the rendering intent {}, which isn't a standard one	Un état graphique a l'intention de rendu {}, qui n'est pas standard
+	A graphics state uses the blend mode {}, which ISO 32000-1 doesn't define	Un état graphique utilise le mode de fusion {}, que l'ISO 32000-1 ne définit pas
+	A halftone has a HalftoneName	Une trame a un HalftoneName
+	A halftone has a transfer function, which only a non-primary colorant's halftone may have	Une trame a une fonction de transfert, que seule la trame d'un colorant non primaire peut avoir
+	A halftone has type {}: only types 1 and 5 are allowed	Une trame est de type {} : seuls les types 1 et 5 sont autorisés
+	A halftone's HalftoneType is missing or isn't an integer	Le HalftoneType d'une trame manque ou n'est pas un entier
+	A name is longer than 127 bytes	Un nom dépasse 127 octets
+	A real number is outside ±3.403 × 10³⁸, or nonzero but within ±1.175 × 10⁻³⁸	Un nombre réel sort de ±3,403 × 10³⁸, ou est non nul mais compris dans ±1,175 × 10⁻³⁸
+	A script edited here can be at most 256 KiB long; that change wasn't made.	Un script modifié ici peut faire au plus 256 Kio ; cette modification n'a pas été faite.
+	A string is longer than 32767 bytes	Une chaîne dépasse 32767 octets
+	Accept or reject the OCR review of the other document before running OCR here	Acceptez ou refusez la vérification OCR de l'autre document avant de lancer l'OCR ici
+	Add 3D model	Ajouter un modèle 3D
+	Add Tools to Hotbar	Ajouter des outils à la barre rapide
+	All releases are listed at {url}	Toutes les versions sont listées sur {url}
+	An integer is outside the 32-bit range	Un entier sort de la plage 32 bits
+	Background removal	Suppression du fond
+	Beta	Bêta
+	Betas update to the newest release, beta or stable, and get new features first. Off, only stable releases are installed.	Les bêtas se mettent à jour vers la version la plus récente, bêta ou stable, et reçoivent les nouvelles fonctions en premier. Désactivé, seules les versions stables sont installées.
+	Black and white (binarize)	Noir et blanc (binariser)
+	Built-in	Intégré
+	Cancel re-read	Annuler la relecture
+	Cannot auto-update this installation type. Please download manually.	Ce type d'installation ne peut pas se mettre à jour automatiquement. Téléchargez la mise à jour manuellement.
+	Check for updates when PSG PDF starts	Rechercher des mises à jour au démarrage de PSG PDF
+	Checking for updates…	Recherche de mises à jour…
+	Cleans up the scanned pictures in place: recognized text, comments and links on the pages stay as they are.	Nettoie les images numérisées sur place : le texte reconnu, les commentaires et les liens des pages restent tels quels.
+	Close menu	Fermer le menu
+	Close {app}	Fermer {app}
+	Close {app} to finish	Fermez {app} pour terminer
+	Columns and rows must each be 1 to 99.	Les colonnes et les lignes doivent chacune être comprises entre 1 et 99.
+	Combine engines	Combiner les moteurs
+	Could not check for updates.	Impossible de rechercher des mises à jour.
+	Couldn't start the update ({error})	Impossible de lancer la mise à jour ({error})
+	Creep:	Chasse :
+	Custom calculation script:	Script de calcul personnalisé :
+	Custom scale	Échelle personnalisée
+	Despeckle	Supprimer les taches
+	Detecting paper…	Détection du papier…
+	Detecting…	Détection…
+	Development build	Version de développement
+	Discard embedded search index	Supprimer l'index de recherche incorporé
+	Discard external cross-references	Supprimer les références croisées externes
+	Dock navigation rail on Left	Ancrer la barre de navigation à gauche
+	Dock navigation rail on Right	Ancrer la barre de navigation à droite
+	Downloading and installing update…	Téléchargement et installation de la mise à jour…
+	Drag hotbar	Déplacer la barre rapide
+	Edge shadow removal	Suppression des ombres de bord
+	Edit attachment description	Modifier la description de la pièce jointe
+	Edit description	Modifier la description
+	Engine	Moteur
+	Enhance	Améliorer
+	Enhance Scanned File	Améliorer le fichier numérisé
+	Enhance scanned file…	Améliorer le fichier numérisé…
+	Enhancing scans… image {d} of {t}	Amélioration des numérisations… image {d} sur {t}
+	Evens out the paper so a grey or yellowed background turns white, and darkens faint strokes. 0 is off.	Uniformise le papier pour qu’un fond gris ou jauni devienne blanc, et fonce les traits pâles. 0 désactive.
+	Every line set in the style chosen for a level becomes a bookmark of that level, under a new first bookmark.	Chaque ligne composée dans le style choisi pour un niveau devient un signet de ce niveau, sous un nouveau premier signet.
+	Extend the docked toolbar along the entire side. Choose a side above to enable.	Étendre la barre d’outils ancrée sur tout le côté. Choisissez un côté ci-dessus pour l’activer.
+	Float	Flottante
+	Freehand-Highlight	Surlignage à main levée
+	Full-side strip	Bande sur tout le côté
+	General & Interface	Général et interface
+	Get beta updates	Recevoir les versions bêta
+	Hotbar settings	Réglages de la barre rapide
+	Hotbar settings / add tools	Réglages de la barre rapide / ajouter des outils
+	Hotbar tools	Outils de la barre rapide
+	Import bookmarks	Importer des signets
+	Inherit Zoom	Conserver le zoom
+	Installing update…	Installation de la mise à jour…
+	Invert middle-button drag	Inverser le glissement au bouton central
+	Join beta	Rejoindre la bêta
+	Join the beta channel? Betas can have unfinished features and bugs. PSG PDF then updates to every new beta, and to each stable release as soon as it is newer.	Rejoindre le canal bêta ? Les bêtas peuvent contenir des fonctions inachevées et des bogues. PSG PDF se met alors à jour vers chaque nouvelle bêta, et vers chaque version stable dès qu'elle est plus récente.
+	Layout & Sizing	Disposition et taille
+	Leave beta	Quitter la bêta
+	Leave the beta channel? PSG PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	Quitter le canal bêta ? PSG PDF garde sa version actuelle et se remet à jour avec la première version stable plus récente. Il ne revient jamais à une version antérieure.
+	Level {n}	Niveau {n}
+	Lightens shadows along the edges of the scan, such as a book's gutter or a copier's dark border	Éclaircit les ombres le long des bords de la numérisation, comme le pli d’un livre ou la bordure sombre d’un copieur
+	Metadata stream {object} writes the namespace {namespace} with the prefix {written}, not {prefix}	Le flux de métadonnées {object} écrit l'espace de noms {namespace} avec le préfixe {written}, et non {prefix}
+	Metadata stream {object} writes the namespace {namespace} without a prefix, not with {prefix}	Le flux de métadonnées {object} écrit l'espace de noms {namespace} sans préfixe, et non avec {prefix}
+	Moves each sheet's pages toward the fold by this much more than the sheet outside it, so the margins match once the booklet is folded and trimmed.	Décale les pages de chaque feuille vers le pli de cette valeur de plus que la feuille extérieure, pour que les marges correspondent une fois le livret plié et massicoté.
+	Navigation rail side	Côté de la barre de navigation
+	New bookmarks from text styles	Nouveaux signets à partir des styles de texte
+	New bookmarks from text styles…	Nouveaux signets à partir des styles de texte…
+	No scanned pages were cleaned up.	Aucune page numérisée n’a été nettoyée.
+	No signature font can draw “{char}”. Use other letters, or draw or import your signature.	Aucune police de signature ne peut dessiner « {char} ». Utilisez d’autres lettres, ou dessinez ou importez votre signature.
+	Only web (http, https) and email addresses open, and PSG PDF asks first, as for other links.	Seules les adresses web (http, https) et e-mail s'ouvrent, et PSG PDF demande d'abord, comme pour les autres liens.
+	Open web and email addresses written in the page text	Ouvrir les adresses web et e-mail écrites dans le texte de la page
+	Optimizing… reading page {d} of {t}	Optimisation… lecture de la page {d} sur {t}
+	Optimizing… reading the pages	Optimisation… lecture des pages
+	PSG PDF's checks found no problems for {level}. This is not a validator result.	Les vérifications de PSG PDF n'ont trouvé aucun problème pour {level}. Ce n'est pas le résultat d'un validateur.
+	PSG PDF's checks now find no problems for {level}. This is not a validator result. Save to keep the changes.	Les vérifications de PSG PDF ne trouvent plus de problème pour {level}. Ce n'est pas le résultat d'un validateur. Enregistrez pour conserver les modifications.
+	Page Properties	Propriétés de la page
+	Page Setup…	Mise en page…
+	Page properties…	Propriétés de la page…
+	Page setup dialog is not available on this system.	La boîte de dialogue de mise en page n'est pas disponible sur ce système.
+	Page {} has a boundary smaller than 3 or larger than 14400 units	La page {} a un cadre inférieur à 3 ou supérieur à 14400 unités
+	Page {} has transparency but no device-independent blending colour space or PDF/A output intent	La page {} contient de la transparence mais ni espace colorimétrique de fusion indépendant du périphérique, ni intention de sortie PDF/A
+	Panning or auto-scrolling with the middle (wheel) button moves the page the other way.	Le déplacement ou le défilement automatique au bouton central (molette) fait bouger la page dans l’autre sens.
+	Paste bookmarks	Coller les signets
+	PdfCraft (upstream project)	PdfCraft (projet d'origine)
+	Prepare grouped text	Préparer le texte groupé
+	Re-reading the page…	Relecture de la page…
+	Re-reading the region…	Relecture de la zone…
+	Reading the drawing for snapping…	Lecture du dessin pour le magnétisme…
+	Remove from hotbar	Retirer de la barre rapide
+	Remove scan speckle	Supprimer les taches de numérisation
+	Remove this leaf tag from reading order and mark its direct content as an artifact	Retirer cette balise feuille de l’ordre de lecture et marquer son contenu direct comme artefact
+	Removes isolated dark specks such as dust and scanner noise. The only filter black and white scans take.	Supprime les points sombres isolés, comme la poussière et le bruit du scanner. C’est le seul filtre que prennent les numérisations en noir et blanc.
+	Reset side panels	Réinitialiser les panneaux latéraux
+	Resize panes	Redimensionner les volets
+	Restart to Update	Redémarrer pour mettre à jour
+	Save or close your open work first; the update restarts the app.	Enregistrez ou fermez d'abord votre travail en cours ; la mise à jour redémarre l'application.
+	Search all tools…	Rechercher dans tous les outils…
+	Search settings…	Rechercher dans les réglages…
+	Selects paper size and orientation from the printer driver. For paper tray, print quality or other driver defaults, use Properties…	Choisit le format et l'orientation du papier depuis le pilote d'impression. Pour le bac, la qualité d'impression ou d'autres réglages du pilote, utilisez Propriétés…
+	Separation colour spaces named {} differ in their alternate space or tint transform	Des espaces colorimétriques de séparation nommés {} diffèrent par leur espace de remplacement ou leur transformation de teinte
+	Show or hide the Tools panel	Afficher ou masquer le panneau Outils
+	Show or hide the side panel	Afficher ou masquer le panneau latéral
+	Show tab numbers	Afficher les numéros d'onglet
+	Stick to a side:	Ancrer sur un côté :
+	Straighten pages scanned sideways or upside down	Redresser les pages numérisées de côté ou à l'envers
+	Straighten skewed text lines	Redresser les lignes de texte inclinées
+	Tab Order	Ordre de tabulation
+	Tesseract	Tesseract
+	The XMP extension schema container in metadata stream {object} holds no rdf:Bag	Le conteneur de schémas d'extension XMP du flux de métadonnées {object} ne contient pas de rdf:Bag
+	The XMP extension schema container in metadata stream {object} holds {found}, not one rdf:Bag	Le conteneur de schémas d'extension XMP du flux de métadonnées {object} contient {found}, et non un seul rdf:Bag
+	The XMP extension schema {schema} in metadata stream {object} describes {item} with an empty {entry} entry	Le schéma d'extension XMP {schema} du flux de métadonnées {object} décrit {item} avec une entrée {entry} vide
+	The XMP extension schema {schema} in metadata stream {object} describes {item} without a {entry} entry	Le schéma d'extension XMP {schema} du flux de métadonnées {object} décrit {item} sans entrée {entry}
+	The XMP extension schema {schema} in metadata stream {object} has an empty {entry} entry	Le schéma d'extension XMP {schema} du flux de métadonnées {object} a une entrée {entry} vide
+	The XMP extension schema {schema} in metadata stream {object} has no {entry} entry	Le schéma d'extension XMP {schema} du flux de métadonnées {object} n'a pas d'entrée {entry}
+	The XMP property {property} in metadata stream {object} should have the value type {type}	La propriété XMP {property} du flux de métadonnées {object} devrait avoir le type de valeur {type}
+	The XMP property {property} in metadata stream {object}, written {written}, should have the value type {type}	La propriété XMP {property} du flux de métadonnées {object}, écrite {written}, devrait avoir le type de valeur {type}
+	The creep moves the innermost sheet's pages too far for this many pages. Reduce Creep.	Pour autant de pages, la chasse décale trop les pages de la feuille la plus intérieure. Réduisez la chasse.
+	The document changed. Reopen Document Properties to edit the current version.	Le document a changé. Rouvrez Propriétés du document pour modifier la version actuelle.
+	The file doesn't start with a %PDF-1.0 to %PDF-1.7 header line	Le fichier ne commence pas par une ligne d'en-tête %PDF-1.0 à %PDF-1.7
+	The file header isn't followed by a comment of four bytes above 127	L'en-tête du fichier n'est pas suivi d'un commentaire de quatre octets supérieurs à 127
+	The file identifier (ID) in the trailer isn't two non-empty strings	L'identifiant de fichier (ID) du trailer n'est pas formé de deux chaînes non vides
+	The halftone for the colorant {} has no transfer function	La trame du colorant {} n'a pas de fonction de transfert
+	The re-read was cancelled; the words are unchanged	La relecture a été annulée ; les mots sont inchangés
+	The spot colour {} of a DeviceN colour space isn't in its Colorants dictionary	La couleur d'accompagnement {} d'un espace colorimétrique DeviceN n'est pas dans son dictionnaire Colorants
+	The trailer has no file identifier (ID)	Le trailer n'a pas d'identifiant de fichier (ID)
+	The update could not be installed: {reason}	La mise à jour n'a pas pu être installée : {reason}
+	The update failed unexpectedly.	La mise à jour a échoué de manière inattendue.
+	The update is installed. Close {app} to finish; it restarts by itself.	La mise à jour est installée. Fermez {app} pour terminer ; l'application redémarre d'elle-même.
+	The update stopped unexpectedly.	La mise à jour s'est arrêtée de manière inattendue.
+	This document has no text to make bookmarks from.	Ce document ne contient aucun texte à partir duquel créer des signets.
+	This form has too many fields, or a field name too long, for PSG PDF to read them all. Any signature among the rest is not listed, so the document is treated as signed.	Ce formulaire a trop de champs, ou un nom de champ trop long, pour que PSG PDF les lise tous. Une signature parmi les autres ne serait pas listée ; le document est donc traité comme signé.
+	This script is too long to edit here ({kib} KiB); its start is shown. It is kept as it is.	Ce script est trop long pour être modifié ici ({kib} Kio) ; son début est affiché. Il est conservé tel quel.
+	This signature carries certification permissions, but the document does not name it as its certification, so it is checked as an approval signature.	Cette signature porte des autorisations de certification, mais le document ne la désigne pas comme sa certification ; elle est donc vérifiée comme signature d'approbation.
+	Toolbar size	Taille de la barre d’outils
+	Unspecified	Non spécifié
+	Update and Restart	Mettre à jour et redémarrer
+	Update ready. Close {app} to install it.	Mise à jour prête. Fermez {app} pour l'installer.
+	Use Column Order	Utiliser l’ordre des colonnes
+	Use Document Structure	Utiliser la structure du document
+	Use Row Order	Utiliser l’ordre des lignes
+	Vertical layout	Disposition verticale
+	What's new	Nouveautés
+	bold	gras
+	by	×
+	by {developer}	par {developer}
+	italic	italique
+	the range selects more than {limit} pages	la plage sélectionne plus de {limit} pages
+	v{from} to {to}	de v{from} à {to}
+	{app} updated to {version}.	{app} a été mis à jour vers {version}.
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} suit la version choisie dans le lanceur et ne se met donc pas à jour seul.
+	{app} {version} is available with the latest features and bug fixes.	{app} {version} est disponible, avec les dernières fonctions et corrections de bogues.
+	{app} {version} is the newest version available.	{app} {version} est la version la plus récente.
+	{font}, {size} pt	{font}, {size} pt
+	{n} lines	{n} lignes

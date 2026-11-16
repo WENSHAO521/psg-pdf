@@ -112,6 +112,65 @@ fn shared_fonts_put_inter_and_jetbrains_mono_first() {
     assert!(defs.families.contains_key(&egui::FontFamily::Name(crate::fonts::SEMIBOLD.into())));
 }
 
+/// Every badge the brand can show is one the translation checks know about.
+#[test]
+fn release_badges_are_marked_for_translation() {
+    for version in ["0.20.0-beta", "0.20.0-beta.3", "0.20.0-dev", "0.20.0-rc1"] {
+        if let Some(badge) = psg_brand::Release::of(version).badge() {
+            assert!(crate::widgets::BADGES.contains(&badge), "{badge}");
+        }
+    }
+}
+
+/// Every character the Latin-script translations use (German, French, Spanish, Portuguese and
+/// Vietnamese, with its stacked diacritics) is in all three Inter weights, so a translated label
+/// is never drawn partly in a fallback face or as a box. CJK and Hangul come from craft-fonts.
+/// With `CRAFT_I18N_DIR` set (a craft-i18n checkout), PSG PDF's craft-i18n catalogs are checked
+/// too.
+#[test]
+fn inter_draws_every_latin_translation() {
+    use skrifa::MetadataProvider;
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+    let mut files: Vec<std::path::PathBuf> = Vec::new();
+    for code in ["de", "fr", "es", "pt-br", "vi"] {
+        files.push(root.join(format!("i18n/psg/{code}.tsv")));
+        files.push(root.join(format!("i18n/psg-academic/{code}.tsv")));
+        if let Some(dir) = std::env::var_os("CRAFT_I18N_DIR") {
+            for name in ["common.tsv", "pdfcraft.tsv"] {
+                files.push(std::path::Path::new(&dir).join("locales").join(code).join(name));
+            }
+        }
+    }
+    let faces =
+        [("Inter", crate::fonts::INTER_REGULAR), ("Inter-Medium", crate::fonts::INTER_MEDIUM), ("Inter-SemiBold", crate::fonts::INTER_SEMIBOLD)];
+    let mut gaps = std::collections::BTreeSet::new();
+    for file in files {
+        let Ok(text) = std::fs::read_to_string(&file) else { continue };
+        // A symbol the English itself uses (the ▸ of a menu path) is the source's choice, drawn
+        // by egui's fallback face in every language alike; only what a translation adds counts.
+        let used: std::collections::BTreeSet<char> = text
+            .lines()
+            .filter(|l| !l.starts_with('#'))
+            .filter_map(|l| {
+                let mut cols = l.split('\t').skip(1);
+                Some((cols.next()?, cols.next()?))
+            })
+            .flat_map(|(english, translated)| translated.chars().filter(move |c| !english.contains(*c)))
+            .filter(|c| !c.is_control())
+            .collect();
+        for (name, bytes) in faces {
+            let font = skrifa::FontRef::new(bytes).expect("Inter parses");
+            let charmap = font.charmap();
+            for &c in &used {
+                if charmap.map(c).is_none() {
+                    gaps.insert(format!("{name} lacks {c:?} (U+{:04X}) used in {}", u32::from(c), file.display()));
+                }
+            }
+        }
+    }
+    assert!(gaps.is_empty(), "{gaps:#?}");
+}
+
 /// Chips in a wrapping row on a narrow card move to the next line whole, and the row never grows
 /// wider than the room it was given (the template cards widened past the window before).
 #[test]

@@ -2,3 +2,316 @@
 # (crates/ui-egui/build.rs). Same format: context <TAB> English source <TAB> translation.
 # Written from the plain meaning of the English; no other product's translations were consulted.
 	No signature font can draw “{char}”. Use other letters, or draw or import your signature.	无法用任何签名字体绘制“{char}”。请换用其他文字，或手写签名、导入签名图片。
+	1 line	1 行
+	A CMap maps a character code to a CID above 65535	某个 CMap 把字符码映射到大于 65535 的 CID
+	A font isn't embedded	有字体未嵌入
+	A graphics state has a halftone phase (HTP)	某个图形状态带有半色调相位（HTP）
+	A graphics state has a rendering intent that isn't a name	某个图形状态的呈现意图不是名称
+	A graphics state has a transfer function (TR)	某个图形状态带有传递函数（TR）
+	A graphics state has a transfer function (TR2) other than Default	某个图形状态带有非 Default 的传递函数（TR2）
+	A graphics state has the rendering intent {}, which isn't a standard one	某个图形状态的呈现意图 {} 不是标准值
+	A graphics state uses the blend mode {}, which ISO 32000-1 doesn't define	某个图形状态使用了 ISO 32000-1 未定义的混合模式 {}
+	A halftone has a HalftoneName	某个半色调带有 HalftoneName
+	A halftone has a transfer function, which only a non-primary colorant's halftone may have	某个半色调带有传递函数，而只有非原色色料的半色调才可以有
+	A halftone has type {}: only types 1 and 5 are allowed	某个半色调的类型为 {}：只允许类型 1 和 5
+	A halftone's HalftoneType is missing or isn't an integer	某个半色调的 HalftoneType 缺失或不是整数
+	A name is longer than 127 bytes	某个名称超过 127 字节
+	A real number is outside ±3.403 × 10³⁸, or nonzero but within ±1.175 × 10⁻³⁸	某个实数超出 ±3.403 × 10³⁸，或不为零但在 ±1.175 × 10⁻³⁸ 以内
+	A script edited here can be at most 256 KiB long; that change wasn't made.	在此编辑的脚本最长 256 KiB；该更改未生效。
+	A string is longer than 32767 bytes	某个字符串超过 32767 字节
+	A {} action isn't allowed	不允许 {} 动作
+	A {} annotation has additional actions	某个 {} 注释带有附加动作
+	A {} annotation has no appearance stream	某个 {} 注释没有外观流
+	A {} annotation isn't set to print, or is hidden	某个 {} 注释未设为打印，或被隐藏
+	Accept or reject the OCR review of the other document before running OCR here	请先接受或拒绝另一个文档的 OCR 复核，再在此运行 OCR
+	Accessibility Report	无障碍报告
+	Add 3D model	添加 3D 模型
+	Add Tools to Hotbar	向快捷工具栏添加工具
+	All releases are listed at {url}	所有版本都列在 {url}
+	An integer is outside the 32-bit range	某个整数超出 32 位范围
+	Background removal	去除背景
+	Beta	测试版
+	Betas update to the newest release, beta or stable, and get new features first. Off, only stable releases are installed.	开启后会更新到最新版本（测试版或稳定版），率先获得新功能。关闭时只安装稳定版。
+	Black and white (binarize)	黑白（二值化）
+	Built-in	内置
+	Cancel re-read	取消重新识别
+	Cannot auto-update this installation type. Please download manually.	此安装类型无法自动更新。请手动下载。
+	Change Author	更改作者
+	Change Keywords	更改关键词
+	Change Subject	更改主题
+	Change Title	更改标题
+	Check for updates when PSG PDF starts	PSG PDF 启动时检查更新
+	Checking for updates…	正在检查更新…
+	Cleans up the scanned pictures in place: recognized text, comments and links on the pages stay as they are.	直接清理扫描图像：页面上已识别的文本、注释和链接保持不变。
+	Close menu	关闭菜单
+	Close {app}	关闭 {app}
+	Close {app} to finish	关闭 {app} 以完成
+	Columns and rows must each be 1 to 99.	列数和行数都必须在 1 到 99 之间。
+	Combine engines	组合引擎
+	Could not check for updates.	无法检查更新。
+	Couldn't start the update ({error})	无法开始更新（{error}）
+	Create links	创建链接
+	Creep:	爬移：
+	Crop image	裁剪图像
+	Custom calculation script:	自定义计算脚本：
+	Custom scale	自定义比例
+	Despeckle	去斑点
+	Detailed Report	详细报告
+	Detecting paper…	正在检测纸张…
+	Detecting…	正在检测…
+	Development build	开发版本
+	DeviceCMYK is used, but the PDF/A output intent isn't a CMYK profile	使用了 DeviceCMYK，但 PDF/A 输出意图不是 CMYK 配置文件
+	DeviceRGB is used, but the PDF/A output intent isn't an RGB profile	使用了 DeviceRGB，但 PDF/A 输出意图不是 RGB 配置文件
+	Discard embedded search index	丢弃嵌入的搜索索引
+	Discard external cross-references	丢弃外部交叉引用
+	Dock navigation rail on Left	将导航栏停靠在左侧
+	Dock navigation rail on Right	将导航栏停靠在右侧
+	Downloading and installing update…	正在下载并安装更新…
+	Drag hotbar	拖动快捷工具栏
+	Edge shadow removal	去除边缘阴影
+	Edit attachment description	编辑附件说明
+	Edit description	编辑说明
+	Engine	引擎
+	Enhance	增强
+	Enhance Scanned File	增强扫描文件
+	Enhance scanned file…	增强扫描文件…
+	Enhancing scans… image {d} of {t}	正在增强扫描件… 第 {d} 张，共 {t} 张
+	Evens out the paper so a grey or yellowed background turns white, and darkens faint strokes. 0 is off.	均匀纸张底色，让发灰或发黄的背景变白，并加深浅淡的笔画。0 表示关闭。
+	Every line set in the style chosen for a level becomes a bookmark of that level, under a new first bookmark.	以某一级别所选样式排版的每一行都会成为该级别的书签，放在一个新的首个书签之下。
+	Extend the docked toolbar along the entire side. Choose a side above to enable.	让停靠的工具栏延伸到整条边。先在上方选择一侧即可启用。
+	Field "{}" on page {p} has no description (tooltip)	第 {p} 页的字段“{}”没有说明（工具提示）
+	Filename	文件名
+	Flatten Fill & Sign	平面化填写和签名内容
+	Float	浮动
+	Font (unnamed) on page {p} doesn't map its characters to Unicode	第 {p} 页的字体（未命名）没有把字符映射到 Unicode
+	Font {} on page {p} doesn't map its characters to Unicode	第 {p} 页的字体 {} 没有把字符映射到 Unicode
+	Form field on page {p} isn't tagged	第 {p} 页的表单字段未加标签
+	Freehand-Highlight	手绘高亮
+	Full-side strip	整边长条
+	General & Interface	常规与界面
+	Get beta updates	获取测试版更新
+	Hotbar settings	快捷工具栏设置
+	Hotbar settings / add tools	快捷工具栏设置 / 添加工具
+	Hotbar tools	快捷工具栏工具
+	H{n} follows an H{d}; headings should not skip levels	H{n} 紧跟在 H{d} 之后；标题不应跳级
+	Import bookmarks	导入书签
+	Inherit Zoom	沿用缩放
+	Installing update…	正在安装更新…
+	Invert middle-button drag	反转中键拖动
+	Join beta	加入测试版
+	Join the beta channel? Betas can have unfinished features and bugs. PSG PDF then updates to every new beta, and to each stable release as soon as it is newer.	加入测试版通道？测试版可能有未完成的功能和错误。之后 PSG PDF 会更新到每个新测试版，以及更新的正式版。
+	Layout & Sizing	布局与尺寸
+	Leave beta	退出测试版
+	Leave the beta channel? PSG PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	退出测试版通道？PSG PDF 保留当前版本，直到出现比它更新的正式版才会再更新。它不会退回旧版本。
+	Level {n}	第 {n} 级
+	Lightens shadows along the edges of the scan, such as a book's gutter or a copier's dark border	减淡扫描件边缘的阴影，例如书籍的装订缝或复印机留下的黑边
+	Mark differences	标记差异
+	Metadata stream {object} writes the namespace {namespace} with the prefix {written}, not {prefix}	元数据流 {object} 为命名空间 {namespace} 写入的前缀是 {written}，而不是 {prefix}
+	Metadata stream {object} writes the namespace {namespace} without a prefix, not with {prefix}	元数据流 {object} 写入命名空间 {namespace} 时没有前缀，而应使用 {prefix}
+	Moves each sheet's pages toward the fold by this much more than the sheet outside it, so the margins match once the booklet is folded and trimmed.	每张纸上的页面比其外侧那张多向折缝移动这么多，使小册子折叠裁切后边距一致。
+	Navigation rail side	导航栏位置
+	New bookmarks from text styles	按文本样式新建书签
+	New bookmarks from text styles…	按文本样式新建书签…
+	No document language is set	未设置文档语言
+	No page has text: the document appears to be images of pages	没有页面含文字：文档似乎是页面图像
+	No scanned pages were cleaned up.	没有清理任何扫描页面。
+	Only web (http, https) and email addresses open, and PSG PDF asks first, as for other links.	只会打开网页（http、https）和电子邮件地址，并且 PSG PDF 会像对待其他链接一样先询问。
+	Open web and email addresses written in the page text	打开页面文字中写出的网址和电子邮件地址
+	Optimizing… reading page {d} of {t}	正在优化…正在读取第 {d} 页，共 {t} 页
+	Optimizing… reading the pages	正在优化…正在读取页面
+	PSG PDF can't check this signature yet: {}.	PSG PDF 暂时无法检查此签名：{}。
+	PSG PDF's checks found no problems for {level}. This is not a validator result.	PSG PDF 的检查未发现 {level} 方面的问题。这不是验证工具的结论。
+	PSG PDF's checks now find no problems for {level}. This is not a validator result. Save to keep the changes.	PSG PDF 的检查现在未发现 {level} 方面的问题。这不是验证工具的结论。请保存以保留更改。
+	Page Properties	页面属性
+	Page Setup…	页面设置…
+	Page properties…	页面属性…
+	Page setup dialog is not available on this system.	此系统不提供页面设置对话框。
+	Page {p} doesn't tab in structure order	第 {p} 页的 Tab 键顺序不是结构顺序
+	Page {p}: {n} untagged content item	第 {p} 页：{n} 个未加标签的内容项
+	Page {p}: {n} untagged content items	第 {p} 页：{n} 个未加标签的内容项
+	Page {} has a boundary smaller than 3 or larger than 14400 units	第 {} 页的某个页面框小于 3 或大于 14400 单位
+	Page {} has additional actions	第 {} 页带有附加动作
+	Page {} has transparency but no device-independent blending colour space or PDF/A output intent	第 {} 页含透明效果，但没有设备无关的混合色彩空间，也没有 PDF/A 输出意图
+	Panning or auto-scrolling with the middle (wheel) button moves the page the other way.	用中键（滚轮）平移或自动滚动时，页面朝相反方向移动。
+	Paste bookmarks	粘贴书签
+	PdfCraft (upstream project)	PdfCraft（上游项目）
+	Prepare grouped text	准备分组文本
+	Re-reading the page…	正在重新识别页面…
+	Re-reading the region…	正在重新识别区域…
+	Reading the drawing for snapping…	正在读取图形以便吸附…
+	Remove from hotbar	从快捷工具栏移除
+	Remove scan speckle	去除扫描杂点
+	Remove this leaf tag from reading order and mark its direct content as an artifact	从阅读顺序中移除此叶标签，并将其直接内容标记为伪影
+	Remove {standard} identification	移除 {standard} 标识
+	Removes isolated dark specks such as dust and scanner noise. The only filter black and white scans take.	去除灰尘、扫描噪点等孤立的暗点。这是黑白扫描件唯一可用的滤镜。
+	Report created	报告创建时间
+	Reset side panels	重置侧边面板
+	Resize panes	调整窗格大小
+	Restart to Update	重启以更新
+	Rule Name	规则名称
+	Run form script	运行表单脚本
+	Save as {level}	另存为 {level}
+	Save or close your open work first; the update restarts the app.	请先保存或关闭正在进行的工作；更新会重启应用。
+	Search all tools…	搜索所有工具…
+	Search settings…	搜索设置…
+	Selects paper size and orientation from the printer driver. For paper tray, print quality or other driver defaults, use Properties…	通过打印机驱动程序选择纸张大小和方向。纸盒、打印质量或其他驱动程序默认设置，请使用属性…
+	Separation colour spaces named {} differ in their alternate space or tint transform	名为 {} 的分色色彩空间在替代空间或色调转换上不一致
+	Show or hide the Tools panel	显示或隐藏工具面板
+	Show or hide the side panel	显示或隐藏侧边面板
+	Show tab numbers	显示标签页编号
+	Signature is invalid	签名无效
+	Signature is valid	签名有效
+	Signature validity is unknown	签名有效性未知
+	Signing time is from the clock on the signer's computer.	签名时间来自签名者计算机上的时钟。
+	Stick to a side:	停靠到一侧：
+	Straighten pages scanned sideways or upside down	摆正横向或倒置扫描的页面
+	Straighten skewed text lines	校正倾斜的文字行
+	Tab Order	Tab 键顺序
+	Tesseract	Tesseract 引擎
+	The ECDSA signature is not in canonical DER (trailing bytes, padding or a missing sign byte); it was read anyway.	ECDSA 签名不是规范的 DER 编码（有尾随字节、填充或缺少符号字节）；仍已读取。
+	The ECDSA signature is the raw r and s values instead of a DER sequence; it was read anyway.	ECDSA 签名是原始的 r 和 s 值，而不是 DER 序列；仍已读取。
+	The RSA signature value does not have the length of the key's modulus (leading zero bytes dropped or added); it was read anyway.	RSA 签名值的长度与密钥模数不同（前导零字节被删去或添加）；仍已读取。
+	The RSA signature's DigestInfo has no NULL parameter (older signers write it so); it was read anyway.	RSA 签名的 DigestInfo 没有 NULL 参数（较旧的签名程序会这样写）；仍已读取。
+	The XMP extension schema container in metadata stream {object} holds no rdf:Bag	元数据流 {object} 中的 XMP 扩展架构容器不含 rdf:Bag
+	The XMP extension schema container in metadata stream {object} holds {found}, not one rdf:Bag	元数据流 {object} 中的 XMP 扩展架构容器包含 {found}，而不是一个 rdf:Bag
+	The XMP extension schema {schema} in metadata stream {object} describes {item} with an empty {entry} entry	元数据流 {object} 中的 XMP 扩展架构 {schema} 描述 {item} 时 {entry} 条目为空
+	The XMP extension schema {schema} in metadata stream {object} describes {item} without a {entry} entry	元数据流 {object} 中的 XMP 扩展架构 {schema} 描述 {item} 时缺少 {entry} 条目
+	The XMP extension schema {schema} in metadata stream {object} has an empty {entry} entry	元数据流 {object} 中的 XMP 扩展架构 {schema} 的 {entry} 条目为空
+	The XMP extension schema {schema} in metadata stream {object} has no {entry} entry	元数据流 {object} 中的 XMP 扩展架构 {schema} 没有 {entry} 条目
+	The XMP property {property} in metadata stream {object} should have the value type {type}	元数据流 {object} 中的 XMP 属性 {property} 应为值类型 {type}
+	The XMP property {property} in metadata stream {object}, written {written}, should have the value type {type}	元数据流 {object} 中的 XMP 属性 {property}（写作 {written}）应为值类型 {type}
+	The certificate of {} does not allow this many CA certificates below it (path length), so it is not used to vouch for {}.	{} 的证书不允许其下有这么多 CA 证书（路径长度），因此不用于担保 {}。
+	The certificate of {} has critical extensions PSG PDF does not recognize, so it is not used to vouch for {}.	{} 的证书带有 PSG PDF 无法识别的关键扩展，因此不会用它来担保 {}。
+	The certificate of {} is not a CA certificate that may issue certificates, so it is not used to vouch for {}.	{} 的证书不是可签发证书的 CA 证书，因此不用于担保 {}。
+	The certificate of {} was not valid at the time of signing, so it is not used to vouch for {}.	{} 的证书在签名时无效，因此不用于担保 {}。
+	The checker found problems which may prevent the document from being fully accessible.	检查发现了一些问题，可能使文档无法做到完全无障碍。
+	The creep moves the innermost sheet's pages too far for this many pages. Reduce Creep.	对于这么多页，爬移使最内层纸张的页面移动过多。请减小爬移值。
+	The document changed. Reopen Document Properties to edit the current version.	文档已更改。请重新打开“文档属性”以编辑当前版本。
+	The document has been altered or corrupted since the signature was applied.	自应用签名以来，文档已被更改或损坏。
+	The document has been altered or corrupted since the timestamp was applied.	自应用时间戳以来，文档已被更改或损坏。
+	The document has been altered since this signature was applied in ways it does not permit ({}).	自应用此签名以来，文档发生了签名不允许的更改（{}）。
+	The document has been altered since this timestamp was applied in ways it does not permit ({}).	自应用此时间戳以来，文档发生了时间戳不允许的更改（{}）。
+	The document has been modified since this signature was applied, but the changes are permitted ({}).	自应用此签名以来，文档已被修改，但这些更改是允许的（{}）。
+	The document has been modified since this timestamp was applied, but the changes are permitted ({}).	自应用此时间戳以来，文档已被修改，但这些更改是允许的（{}）。
+	The document has no tags (structure tree)	文档没有标签（结构树）
+	The document has no title	文档没有标题
+	The document isn't marked as tagged (MarkInfo Marked)	文档未标记为带标签（MarkInfo Marked）
+	The document isn't tagged, so none of its content is	文档没有标签，因此其内容都没有标签
+	The document's embedded revocation information shows that the signer's certificate has not been revoked.	文档中嵌入的吊销信息表明签名者的证书未被吊销。
+	The embedded timestamp token is valid and its authority is trusted; trusted time is {}.	嵌入的时间戳令牌有效，且其颁发机构受信任；可信时间为 {}。
+	The file doesn't start with a %PDF-1.0 to %PDF-1.7 header line	文件开头不是 %PDF-1.0 到 %PDF-1.7 的文件头行
+	The file header isn't followed by a comment of four bytes above 127	文件头之后没有由四个大于 127 的字节组成的注释
+	The file identifier (ID) in the trailer isn't two non-empty strings	尾部字典中的文件标识符（ID）不是两个非空字符串
+	The font {} isn't embedded	字体 {} 未嵌入
+	The halftone for the colorant {} has no transfer function	色料 {} 的半色调没有传递函数
+	The metadata doesn't identify the file as {}	元数据没有把文件标识为 {}
+	The re-read was cancelled; the words are unchanged	已取消重新识别；文字未更改
+	The security settings don't allow screen readers to read the text	安全设置不允许屏幕阅读器读取文字
+	The signature algorithm and the SignerInfo's digest algorithm name different hashes; the signature was made with the SignerInfo's.	签名算法与 SignerInfo 的摘要算法指定了不同的哈希；签名使用的是 SignerInfo 的哈希。
+	The signature carries an unverified timestamp ({}): the timestamp authority is not in your list of trusted certificates, so the signing time claimed by the signer is used instead.	签名带有未验证的时间戳（{}）：时间戳颁发机构不在您的受信任证书列表中，因此改用签名者声称的签名时间。
+	The signature contents are not hexadecimal.	签名内容不是十六进制。
+	The signature could not be checked ({}).	无法检查签名（{}）。
+	The signature could not be read ({}).	无法读取签名（{}）。
+	The signature could not be verified ({}).	无法验证签名（{}）。
+	The signature has no valid byte range.	签名没有有效的字节范围。
+	The signature includes an embedded timestamp.	签名包含嵌入的时间戳。
+	The signature is BER-encoded (indefinite lengths) rather than DER; it was read leniently.	签名采用 BER 编码（不定长度）而不是 DER；已宽松读取。
+	The signature uses the legacy adbe.x509.rsa_sha1 format.	签名使用旧式 adbe.x509.rsa_sha1 格式。
+	The signature value does not match the signer's certificate: the signature is corrupt.	签名值与签名者的证书不符：签名已损坏。
+	The signature's byte range does not exclude exactly its contents.	签名的字节范围没有恰好排除其内容。
+	The signature's byte range does not match the file.	签名的字节范围与文件不符。
+	The signature's signed attributes have no content type, which CMS requires; it was read anyway.	签名的已签名属性中缺少 CMS 要求的内容类型；仍已读取该签名。
+	The signature's signed attributes have no message digest, so the signature does not cover the document.	签名的已签名属性中没有消息摘要，因此该签名并未覆盖文档。
+	The signature's signed attributes name a content type other than data, so it is not a signature of the document.	签名的已签名属性指定的内容类型不是 data，因此它不是对该文档的签名。
+	The signature's timestamp token could not be verified ({}).	无法验证签名的时间戳令牌（{}）。
+	The signature's timestamp token does not cover the signature value.	签名的时间戳令牌没有覆盖签名值。
+	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	已签名内容是 BER 允许的构造型（分段）OCTET STRING；仍已读取。
+	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	签名者的证书不允许数字签名（其密钥用法既没有数字签名也没有不可否认性）。
+	The signer's certificate has been revoked ({}).	签名者的证书已被吊销（{}）。
+	The signer's certificate has critical extensions PSG PDF does not recognize ({}).	签名者的证书含有 PSG PDF 无法识别的关键扩展（{}）。
+	The signer's certificate is not in the signature.	签名中没有签名者的证书。
+	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	签名者的证书不是为签署文档而签发的（其扩展密钥用法没有文档签名用途）。
+	The signer's certificate was not valid at the time of signing.	签名者的证书在签名时无效。
+	The signer's identity is unknown because it has not been included in your list of trusted certificates and none of its parent certificates are trusted certificates.	签名者身份未知，因为它不在您的受信任证书列表中，其上级证书也都不是受信任证书。
+	The signer's identity is valid.	签名者身份有效。
+	The spot colour {} of a DeviceN colour space isn't in its Colorants dictionary	DeviceN 色彩空间的专色 {} 不在其 Colorants 字典中
+	The timestamp authority's certificate is not issued for time stamping.	时间戳机构的证书并非为时间戳用途签发。
+	The timestamp authority's certificate was not valid at the time of timestamping.	时间戳颁发机构的证书在加盖时间戳时无效。
+	The timestamp contents are not hexadecimal.	时间戳内容不是十六进制。
+	The timestamp has no valid byte range.	时间戳没有有效的字节范围。
+	The timestamp token could not be read ({}).	无法读取时间戳令牌（{}）。
+	The timestamp token is valid and its authority is trusted.	时间戳令牌有效，且其颁发机构受信任。
+	The timestamp token is valid, but the timestamp authority is not in your list of trusted certificates.	时间戳令牌有效，但时间戳颁发机构不在您的受信任证书列表中。
+	The timestamp's byte range does not exclude exactly its contents.	时间戳的字节范围没有恰好排除其内容。
+	The timestamp's byte range does not match the file.	时间戳的字节范围与文件不符。
+	The trailer has no file identifier (ID)	尾部字典没有文件标识符（ID）
+	The update could not be installed: {reason}	无法安装更新：{reason}
+	The update failed unexpectedly.	更新意外失败。
+	The update is installed. Close {app} to finish; it restarts by itself.	更新已安装。关闭 {app} 即可完成，它会自动重新启动。
+	The update stopped unexpectedly.	更新意外中止。
+	The window shows the file name, not the title (Initial View > Show)	窗口显示的是文件名而非标题（初始视图 > 显示）
+	This document has no text to make bookmarks from.	此文档中没有可用于生成书签的文本。
+	This document has not been modified since this signature was applied.	自应用此签名以来，文档未被修改。
+	This document has not been modified since this timestamp was applied.	自应用此时间戳以来，文档未被修改。
+	This form has too many fields, or a field name too long, for PSG PDF to read them all. Any signature among the rest is not listed, so the document is treated as signed.	此表单的字段太多或某个字段名太长，PSG PDF 无法全部读取。其余字段中的签名不会列出，因此文档被视为已签名。
+	This script is too long to edit here ({kib} KiB); its start is shown. It is kept as it is.	此脚本太长（{kib} KiB），无法在此编辑；只显示开头部分。脚本保持不变。
+	This signature carries certification permissions, but the document does not name it as its certification, so it is checked as an approval signature.	此签名带有认证权限，但文档并未将其指定为认证签名，因此按批准签名进行检查。
+	This signature uses RIPEMD-160, a legacy 160-bit hash algorithm that is no longer recommended for signatures. It still validates, but it should not be relied on.	此签名使用 RIPEMD-160，这是一种已不再推荐用于签名的旧式 160 位哈希算法。签名仍可通过验证，但不应依赖。
+	This signature uses SHA-1, a weak hash algorithm: collisions in it have been demonstrated. It still validates because many documents signed years ago use it, but it should not be relied on.	此签名使用 SHA-1，这是一种弱哈希算法：其碰撞已被证实。由于许多多年前签署的文档使用它，签名仍可通过验证，但不应依赖。
+	This signature uses an RSA key shorter than 2048 bits, which is no longer considered strong enough for signatures. It still validates, but it should not be relied on.	此签名使用的 RSA 密钥短于 2048 位，已不再被视为足以保证签名安全。它仍能通过验证，但不应依赖它。
+	Toolbar size	工具栏大小
+	Unsigned signature field	未签名的签名字段
+	Unspecified	未指定
+	Update and Restart	更新并重启
+	Update ready. Close {app} to install it.	更新已就绪。关闭 {app} 即可安装。
+	Use Column Order	按列顺序
+	Use Document Structure	按文档结构
+	Use Row Order	按行顺序
+	Vertical layout	竖向布局
+	What's new	新功能
+	a table has 1 to {max} columns	表格的列数为 1 到 {max}
+	a table has 1 to {max} rows	表格的行数为 1 到 {max}
+	alternate text hides an annotation inside it	替代文本遮蔽了其中的注释
+	alternate text on an element with no page content	替代文本位于没有页面内容的元素上
+	bold	粗体
+	by	×
+	by {developer}	来自 {developer}
+	comments	注释
+	document security store	文档安全存储
+	document structure	文档结构
+	form fill	表单填写
+	italic	斜体
+	its alternate text is inside another element's and will never be read	其替代文本位于另一元素的替代文本之内，永远不会被读出
+	links	链接
+	metadata	元数据
+	no alternate text	没有替代文本
+	no header cells (TH)	没有表头单元格（TH）
+	no summary	没有摘要
+	not in a TR	不在 TR 中
+	not in a Table, THead, TBody or TFoot	不在 Table、THead、TBody 或 TFoot 中
+	not in an L (list)	不在 L（列表）中
+	not in an LI (list item)	不在 LI（列表项）中
+	other changes	其他更改
+	page content	页面内容
+	page {n} is out of range (1–{count})	第 {n} 页超出范围（1–{count}）
+	pages added or removed	页面增删
+	rows have between {min} and {max} columns	各行的列数在 {min} 到 {max} 之间
+	the area, the spacing and the column widths must be numbers, the spacing 0 or more and each width more than 0	区域、间距和列宽都必须是数字，间距不小于 0，每个列宽大于 0
+	the first heading is an H{n}; headings should not skip levels	第一个标题是 H{n}；标题不应跳级
+	the first row number can be at most {max}	起始行号最大为 {max}
+	the range selects more than {limit} pages	该范围选中了超过 {limit} 页
+	the signed version could not be read	无法读取已签名的版本
+	v{from} to {to}	从 v{from} 到 {to}
+	{app} updated to {version}.	{app} 已更新到 {version}。
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} 使用启动器中选择的版本，因此不会自行更新。
+	{app} {version} is available with the latest features and bug fixes.	{app} {version} 已推出，包含最新功能和错误修复。
+	{app} {version} is the newest version available.	{app} {version} 已是最新版本。
+	{font}, {size} pt	{font}，{size} pt
+	{n} lines	{n} 行
+	{n} pages and no bookmarks	{n} 页但没有书签
+	{page} is not a page number or label	{page} 不是页码或页面标签
+	{ty} element on page {p}: {what}	第 {p} 页的 {ty} 元素：{what}
+	{ty} element: {what}	{ty} 元素：{what}
+	{} annotation on page {p} isn't tagged	第 {p} 页的 {} 注释未加标签
+	{} annotations aren't allowed	不允许 {} 注释
+	… and {n} more	…另有 {n} 项

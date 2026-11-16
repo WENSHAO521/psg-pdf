@@ -213,7 +213,15 @@ impl Lang {
         LANGUAGES.iter().filter_map(|l| Lang::from_code(l.code))
     }
 
-    /// Every registered language in the order a picker lists them: English first (the source
+    /// Whether PSG offers this language: one of the ten in `psg_i18n::LANGUAGES`, which both
+    /// products share and whose catalogs the tests check for completeness. The picker and Auto
+    /// use only these. The other craft-i18n languages stay registered, so a preference saved by
+    /// an earlier version (`ru`) keeps working, but they aren't offered.
+    pub fn offered(self) -> bool {
+        psg_i18n::language(self.code()).is_some()
+    }
+
+    /// Every offered language in the order a picker lists them: English first (the source
     /// language and the fallback), then the rest by their own name with accents folded, so
     /// Čeština sits under C rather than after Z. Names in other scripts follow the Latin ones in
     /// code point order: Greek, Cyrillic, Arabic, then the CJK languages.
@@ -227,7 +235,7 @@ impl Lang {
     /// Latin-script fallback with the other Latin names when a script's face is missing, rather
     /// than sorting it into a block of unrenderable labels.
     pub fn for_picker_by(mut shown: impl FnMut(Lang) -> &'static str) -> Vec<Lang> {
-        let mut rest: Vec<Lang> = Lang::all().filter(|l| l.code() != Lang::EN.code()).collect();
+        let mut rest: Vec<Lang> = Lang::all().filter(|l| l.code() != Lang::EN.code() && l.offered()).collect();
         rest.sort_by_cached_key(|l| name_sort_key(shown(*l)));
         std::iter::once(Lang::EN).chain(rest).collect()
     }
@@ -396,7 +404,9 @@ pub fn system_lang() -> Lang {
 
 #[cfg(not(target_arch = "wasm32"))]
 fn detect_system_lang() -> Lang {
-    if let Some(l) = env_lang(|var| std::env::var(var).ok()) {
+    // Only the languages PSG offers: a system in a language it doesn't offer falls through to
+    // the next preference, and finally to English.
+    if let Some(l) = env_lang(|var| std::env::var(var).ok()).filter(|l| l.offered()) {
         return l;
     }
     // Apps started from the Finder don't inherit LANG: use the macOS preferred-languages list.
@@ -404,12 +414,12 @@ fn detect_system_lang() -> Lang {
     #[cfg(target_os = "macos")]
     if let Ok(out) = std::process::Command::new("/usr/bin/defaults").args(["read", "-g", "AppleLanguages"]).output()
         && out.status.success()
-        && let Some(l) = first_supported(&String::from_utf8_lossy(&out.stdout))
+        && let Some(l) = first_supported_where(&String::from_utf8_lossy(&out.stdout), Lang::offered)
     {
         return l;
     }
     #[cfg(target_os = "windows")]
-    if let Some(l) = windows_ui_language().as_deref().and_then(first_supported) {
+    if let Some(l) = windows_ui_language().as_deref().and_then(|list| first_supported_where(list, Lang::offered)) {
         return l;
     }
     Lang::EN
@@ -445,7 +455,13 @@ fn windows_ui_language() -> Option<String> {
 /// The first supported language in a macOS `defaults read` list or Windows UI-culture output.
 #[cfg_attr(not(any(target_os = "macos", target_os = "windows")), allow(dead_code))]
 fn first_supported(list: &str) -> Option<Lang> {
-    list.split(['(', ')', ',', '"', '\n']).map(str::trim).filter(|s| !s.is_empty()).find_map(lang_from_tag)
+    first_supported_where(list, |_| true)
+}
+
+/// [`first_supported`] among the languages `accept` takes.
+#[cfg_attr(not(any(target_os = "macos", target_os = "windows")), allow(dead_code))]
+fn first_supported_where(list: &str, accept: impl Fn(Lang) -> bool) -> Option<Lang> {
+    list.split(['(', ')', ',', '"', '\n']).map(str::trim).filter(|s| !s.is_empty()).find_map(|t| lang_from_tag(t).filter(|l| accept(*l)))
 }
 
 /// The first supported language among BCP 47 tags in preference order, as the browser lists them
@@ -464,6 +480,7 @@ fn detect_system_lang() -> Lang {
     let Some(navigator) = web_sys::window().map(|w| w.navigator()) else { return Lang::EN };
     let mut tags: Vec<String> = navigator.languages().iter().take(31).filter_map(|v| v.as_string()).collect();
     tags.extend(navigator.language());
+    tags.retain(|t| lang_from_tag(t.trim()).is_some_and(Lang::offered));
     first_supported_tag(&tags).unwrap_or(Lang::EN)
 }
 
@@ -477,6 +494,23 @@ thread_local! {
 /// widgets can translate without every call site carrying a language around.
 pub fn set_current(lang: Lang) {
     CURRENT.set(lang);
+    // The shared PSG widgets (`psg-desktop-ui`) draw a few words of their own; they ask here.
+    psg_i18n::install_ui_translator(shared_widget_text);
+}
+
+/// One of the updater's strings (`psg_i18n::updater::TEXT`) in the current language with its
+/// `{name}` values filled: the translator craft-update's prompt and dialogs call as they draw.
+pub fn updater_text(english: &str, args: &[(&str, &str)]) -> String {
+    fmt(t(english), args)
+}
+
+/// What the shared PSG widgets' English `s` reads in the current language: key names from the
+/// `key` context (German `Strg`), everything else from the plain catalog.
+fn shared_widget_text(s: &str) -> String {
+    match s {
+        "Ctrl" | "Shift" => key_name(s).to_owned(),
+        _ => t(s).to_owned(),
+    }
 }
 
 /// The language the UI is drawn in.
@@ -742,7 +776,9 @@ mod picker_order_tests {
     fn picker_lists_english_first_then_names_alphabetically() {
         let order = Lang::for_picker();
         assert_eq!(order.first().map(|l| l.code()), Some(Lang::EN.code()));
-        assert_eq!(order.len(), Lang::all().count());
+        // Only PSG's ten languages are offered, whatever else the catalogs hold.
+        assert_eq!(order.len(), psg_i18n::LANGUAGE_COUNT);
+        assert!(order.iter().all(|l| l.offered()));
         let keys: Vec<String> = order[1..].iter().map(|l| name_sort_key(l.name())).collect();
         assert!(keys.windows(2).all(|w| w[0] <= w[1]), "{keys:?}");
         assert_eq!(name_sort_key("Čeština"), "cestina");

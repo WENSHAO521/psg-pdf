@@ -1,0 +1,335 @@
+# PSG Academic PDF interface in vi (Vietnamese). Columns, separated by a TAB: context <TAB> English <TAB> translation.
+# No escapes: a backslash is a backslash. Embedded by apps/psg-academic-pdf/src/i18n.rs; checked by its i18n tests.
+# Plural rows: context @one / @other, keyed by the English singular (psg_i18n::catalog).
+# Written from the plain meaning of the English; no other product's translations were consulted.
+	(none)	(không có)
+	A .tex or .docx file becomes the body of a new project	Một tệp .tex hoặc .docx trở thành phần thân của dự án mới
+	A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it.	Một lệnh bị viết sai, hoặc cần một gói mà mẫu tạp chí không nạp. Hãy kiểm tra lệnh ở dòng này hoặc xóa nó.
+	A file the manuscript uses is not in the project. Add it with "Bibliography / figures…" and check the spelling: file names are case-sensitive.	Một tệp mà bản thảo dùng không có trong dự án. Hãy thêm tệp bằng "Tài liệu tham khảo / hình…" và kiểm tra chính tả: tên tệp phân biệt chữ hoa và chữ thường.
+	A line sticks out into the margin. Rephrase it, allow a hyphenation with \-, or break a long URL or formula.	Một dòng tràn ra lề. Hãy viết lại, cho phép ngắt từ bằng \-, hoặc ngắt URL hay công thức dài.
+	Abbreviation	Tên viết tắt
+	About	Giới thiệu
+	Abstract	Tóm tắt
+	Accepted	Ngày chấp nhận
+	Activity	Hoạt động
+	Add affiliation	Thêm đơn vị
+	Add author	Thêm tác giả
+	Add bibliography file…	Thêm tệp tài liệu tham khảo…
+	Add bibliography, figures or other files	Thêm tài liệu tham khảo, hình hoặc tệp khác
+	Added {path} as {name}	Đã thêm {path} với tên {name}
+	Affiliation numbers, e.g. 1, 2	Số thứ tự đơn vị, ví dụ 1, 2
+	Affiliations	Đơn vị công tác
+	All ({n})	Tất cả ({n})
+	All releases are listed at {url}	Mọi phiên bản đều có tại {url}
+	An open project keeps the template it was created with; the selection applies to new projects.	Dự án đang mở giữ nguyên mẫu đã dùng khi tạo; lựa chọn này áp dụng cho dự án mới.
+	Article	Bài báo
+	Article details	Thông tin bài báo
+	Article no.	Mã số bài báo
+	Author {n}	Tác giả {n}
+	Authors	Tác giả
+	Authors refer to these by number.	Các tác giả tham chiếu đến chúng bằng số thứ tự.
+	Auto Typeset	Tự động dàn trang
+	Before typesetting	Trước khi dàn trang
+	Before you export	Trước khi xuất
+	Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):	Ngoài các mẫu có sẵn, PSG Academic PDF đọc mẫu từ các thư mục sau (mỗi mẫu là một thư mục có tệp template.toml):
+	Beta	Thử nghiệm
+	Biber could not read the bibliography file. Check that the .bib file named in main.tex is in the project.	Biber không đọc được tệp tài liệu tham khảo. Hãy kiểm tra tệp .bib được nêu trong main.tex có trong dự án hay không.
+	Bibliography / figures…	Tài liệu tham khảo / hình…
+	Bibliography: {tool}	Tài liệu tham khảo: {tool}
+	Built in	Có sẵn
+	Cancel	Hủy
+	Cancelled	Đã hủy
+	Cancelling…	Đang hủy…
+	Cannot auto-update this installation type. Please download manually.	Kiểu cài đặt này không tự cập nhật được. Vui lòng tải về thủ công.
+	Check Again	Kiểm tra lại
+	Check again	Kiểm tra lại
+	Check and export the finished PDF	Kiểm tra và xuất PDF hoàn chỉnh
+	Check compatibility	Kiểm tra tương thích
+	Check for updates…	Kiểm tra bản cập nhật…
+	Check the finished article and save the PDF where it is needed.	Kiểm tra bài báo hoàn chỉnh và lưu PDF vào nơi cần dùng.
+	Checking TeX…	Đang kiểm tra TeX…
+	Checking for updates…	Đang kiểm tra bản cập nhật…
+	Checking the TeX installation…	Đang kiểm tra bản cài đặt TeX…
+	Checking…	Đang kiểm tra…
+	Choose an empty folder for the project	Chọn một thư mục trống cho dự án
+	Close	Đóng
+	Close {app}	Đóng {app}
+	Close {app} to finish	Đóng {app} để hoàn tất
+	Coming later	Sắp có
+	Compilation started.	Đã bắt đầu biên dịch.
+	Compile output	Kết quả biên dịch
+	Copyright	Bản quyền
+	Corresponding author	Tác giả liên hệ
+	Could not check for updates.	Không thể kiểm tra bản cập nhật.
+	Could not check the TeX installation: {error}	Không thể kiểm tra bản cài đặt TeX: {error}
+	Could not create the project: {error}	Không thể tạo dự án: {error}
+	Could not open the project: {error}	Không thể mở dự án: {error}
+	Could not read {path}: {error}	Không thể đọc {path}: {error}
+	Could not save the project: {error}	Không thể lưu dự án: {error}
+	Could not save {file}: {error}	Không thể lưu {file}: {error}
+	Could not start the compilation: {error}	Không thể bắt đầu biên dịch: {error}
+	Couldn't start the update ({error})	Không thể bắt đầu cập nhật ({error})
+	Create the project in {path}	Tạo dự án trong {path}
+	Ctrl	Ctrl
+	Current project	Dự án hiện tại
+	DOI	DOI
+	Dark	Tối
+	Dashboard	Tổng quan
+	Data folder:	Thư mục dữ liệu:
+	Dates and licence	Ngày tháng và giấy phép
+	Development build	Bản phát triển
+	Discard unsaved changes and read the file again	Bỏ các thay đổi chưa lưu và đọc lại tệp
+	Dismiss	Đóng
+	Download	Tải về
+	Downloading and installing update…	Đang tải về và cài đặt bản cập nhật…
+	Edit manuscript	Sửa bản thảo
+	Editor	Trình soạn thảo
+	Email	Email
+	Engine	Bộ máy
+	Engine: pdfLaTeX	Bộ máy: pdfLaTeX
+	Entry	Mục
+	Error	Lỗi
+	Errors ({n})	Lỗi ({n})
+	Errors stop typesetting; warnings are worth a look before export.	Lỗi làm dừng quá trình dàn trang; nên xem các cảnh báo trước khi xuất.
+	Experimental: converts with the local Pandoc	Thử nghiệm: chuyển đổi bằng Pandoc trên máy
+	Export	Xuất
+	Export PDF…	Xuất PDF…
+	Export failed: {error}	Xuất thất bại: {error}
+	Export the PDF	Xuất PDF
+	Exported {path}.	Đã xuất {path}.
+	Failed	Thất bại
+	File	Tệp
+	Files added; see Activity for their names in the project.	Đã thêm tệp; xem tên của chúng trong dự án ở mục Hoạt động.
+	Filter by key, author or title	Lọc theo khóa, tác giả hoặc tiêu đề
+	Finished	Hoàn tất
+	Fit width	Vừa chiều rộng
+	Follow system	Theo hệ thống
+	Follow system ({language})	Theo hệ thống ({language})
+	From the last typesetting run	Từ lần dàn trang gần nhất
+	Get beta updates	Nhận bản thử nghiệm
+	Go to line	Đến dòng
+	ISSN	ISSN
+	Idle	Sẵn sàng
+	Import	Nhập
+	Import a Word manuscript (experimental, via Pandoc)	Nhập bản thảo Word (thử nghiệm, qua Pandoc)
+	Import a manuscript	Nhập bản thảo
+	Import a manuscript or create a project from a template to start.	Để bắt đầu, hãy nhập một bản thảo hoặc tạo dự án từ một mẫu.
+	Import failed: {error}	Nhập thất bại: {error}
+	Import manuscript…	Nhập bản thảo…
+	Import template (.zip)…	Nhập mẫu (.zip)…
+	Import the manuscript body (LaTeX)	Nhập phần thân bản thảo (LaTeX)
+	Install Pandoc to import .docx (experimental)	Cài Pandoc để nhập .docx (thử nghiệm)
+	Installing update…	Đang cài đặt bản cập nhật…
+	Interface size	Cỡ giao diện
+	Issue	Số
+	Join beta	Tham gia thử nghiệm
+	Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.	Tham gia kênh thử nghiệm? Bản thử nghiệm có thể có tính năng chưa hoàn thiện và lỗi. Khi đó PSG Academic PDF sẽ cập nhật lên mọi bản thử nghiệm mới, và lên từng bản ổn định ngay khi bản đó mới hơn.
+	Journal	Tạp chí
+	Journal and issue	Tạp chí và số
+	Journal templates set the layout, fonts and citation style. New projects use the selected template.	Mẫu tạp chí quy định bố cục, phông chữ và kiểu trích dẫn. Dự án mới dùng mẫu đã chọn.
+	Key	Khóa
+	Keywords	Từ khóa
+	Language	Ngôn ngữ
+	Language and appearance	Ngôn ngữ và giao diện
+	Later	Để sau
+	Leave beta	Rời thử nghiệm
+	Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	Rời kênh thử nghiệm? PSG Academic PDF giữ phiên bản hiện có và chỉ cập nhật lại khi có bản ổn định đầu tiên mới hơn. Ứng dụng không bao giờ quay về phiên bản cũ hơn.
+	Licence statement	Tuyên bố giấy phép
+	Light	Sáng
+	Line {n}	Dòng {n}
+	Manuscript	Bản thảo
+	Manuscript (.tex)…	Bản thảo (.tex)…
+	Manuscript as a new project…	Bản thảo thành dự án mới…
+	Mathematics outside a formula, or a stray _ or ^ in text. Put formulas in $…$, and write \_ for an underscore in text.	Ký hiệu toán nằm ngoài công thức, hoặc có dấu _ hay ^ lạc trong văn bản. Hãy đặt công thức trong $…$ và viết \_ cho dấu gạch dưới trong văn bản.
+	Missing	Thiếu
+	Name	Tên
+	New in folder…	Tạo mới trong thư mục…
+	New project	Dự án mới
+	New project from this template	Dự án mới từ mẫu này
+	New project from {template} around {path}.	Dự án mới từ {template} cho {path}.
+	New project from {template} in {path}.	Dự án mới từ {template} trong {path}.
+	New projects use the {template} template. Choose another in the Template Library.	Dự án mới dùng mẫu {template}. Hãy chọn mẫu khác trong Thư viện mẫu.
+	No PDF yet	Chưa có PDF
+	No PDF yet.	Chưa có PDF.
+	No TeX log yet.	Chưa có nhật ký TeX.
+	No \label with this name. Check the spelling of the \ref and the \label.	Không có \label nào mang tên này. Hãy kiểm tra chính tả của \ref và \label.
+	No \section headings yet.	Chưa có tiêu đề \section.
+	No bibliography	Không có tài liệu tham khảo
+	No bibliography entries yet.	Chưa có mục tài liệu tham khảo nào.
+	No errors	Không có lỗi
+	No errors or warnings.	Không có lỗi hay cảnh báo.
+	No manuscript open	Chưa mở bản thảo
+	No problems in the manuscript's scripts or the bibliography.	Không có vấn đề về hệ chữ trong bản thảo hay trong tài liệu tham khảo.
+	No project open	Chưa mở dự án
+	No template is available.	Không có mẫu nào.
+	Not added: {error}	Chưa thêm: {error}
+	Not opened (one project at a time): {path}	Chưa mở (mỗi lần một dự án): {path}
+	Not typeset in this session	Chưa dàn trang trong phiên này
+	Nothing typeset in this session yet.	Chưa có gì được dàn trang trong phiên này.
+	OK	OK
+	ORCID iD	ORCID iD
+	Open a PSG Academic PDF project folder	Mở thư mục dự án PSG Academic PDF
+	Open another project…	Mở dự án khác…
+	Open file	Mở tệp
+	Open in PSG PDF	Mở trong PSG PDF
+	Open or create a project first.	Hãy mở hoặc tạo dự án trước.
+	Open or create a project to check it.	Hãy mở hoặc tạo dự án để kiểm tra.
+	Open or create a project to import into it.	Hãy mở hoặc tạo dự án để nhập vào.
+	Open or create a project, and wait for the TeX check, before compiling.	Trước khi biên dịch, hãy mở hoặc tạo dự án và chờ kiểm tra TeX xong.
+	Open or create a project, then typeset it to export a PDF.	Hãy mở hoặc tạo dự án, rồi dàn trang để xuất PDF.
+	Open project…	Mở dự án…
+	Open the compiled PDF in PSG PDF for review, annotation and further editing	Mở PDF đã biên dịch trong PSG PDF để duyệt, chú thích và chỉnh sửa thêm
+	Opened {path} in PSG PDF.	Đã mở {path} trong PSG PDF.
+	Opened {path} in the default PDF viewer.	Đã mở {path} bằng trình xem PDF mặc định.
+	Opened {path}.	Đã mở {path}.
+	Outline	Dàn ý
+	PDF	PDF
+	PDF engine: PdfCraft (MIT OR Apache-2.0)	Bộ máy PDF: PdfCraft (MIT OR Apache-2.0)
+	PDF preview	Xem trước PDF
+	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	Chưa cài PSG PDF nên PDF được mở bằng trình xem mặc định. PSG PDF được tải về riêng.
+	Page {n}: {error}	Trang {n}: {error}
+	Pages	Trang
+	Planned for a later version; not available yet.	Dự kiến có trong phiên bản sau; hiện chưa có.
+	Portable mode: settings and projects are kept in {path}.	Chế độ di động: cài đặt và dự án được lưu trong {path}.
+	Press Auto Typeset first.	Hãy nhấn Tự động dàn trang trước.
+	Press Auto Typeset to typeset the manuscript; the PDF appears here.	Nhấn Tự động dàn trang để dàn trang bản thảo; PDF sẽ hiện ở đây.
+	Preview	Xem trước
+	Problems	Vấn đề
+	Problems ({n})	Vấn đề ({n})
+	Project: {path} (template {template})	Dự án: {path} (mẫu {template})
+	Projects you open or create appear here.	Các dự án bạn mở hoặc tạo sẽ hiện ở đây.
+	Publication	Xuất bản
+	Published	Ngày xuất bản
+	Rebuild everything each time	Dựng lại toàn bộ mỗi lần
+	Received	Ngày nhận
+	Recent projects	Dự án gần đây
+	Redraw	Vẽ lại
+	References ({n})	Tài liệu dẫn ({n})
+	Reload from disk	Tải lại từ ổ đĩa
+	Remove	Gỡ
+	Remove from the list (the folder is kept)	Gỡ khỏi danh sách (thư mục vẫn được giữ)
+	Replaces the article body; a full document keeps only its body	Thay thế phần thân bài báo; với tài liệu đầy đủ, chỉ giữ lại phần thân
+	Required publication details are filled in	Đã điền đủ thông tin xuất bản bắt buộc
+	Reset	Đặt lại
+	Resize panes	Đổi cỡ các khung
+	Restart to Update	Khởi động lại để cập nhật
+	Review problems	Xem các vấn đề
+	Revised	Ngày sửa
+	Running	Đang chạy
+	Runs in this session	Các lần chạy trong phiên này
+	Save	Lưu
+	Save or close your open work first; the update restarts the app.	Hãy lưu hoặc đóng công việc đang mở trước; việc cập nhật sẽ khởi động lại ứng dụng.
+	Save the file ({keys})	Lưu tệp ({keys})
+	Save, check and typeset with latexmk and pdfLaTeX ({keys})	Lưu, kiểm tra và dàn trang bằng latexmk và pdfLaTeX ({keys})
+	Saved with the project ({keys}) and before every typesetting run.	Được lưu cùng dự án ({keys}) và trước mỗi lần dàn trang.
+	Saved {file}.	Đã lưu {file}.
+	Saved.	Đã lưu.
+	See Manuscript ▸ Title & abstract, Authors and Publication.	Xem Bản thảo ▸ Tiêu đề & tóm tắt, Tác giả và Xuất bản.
+	Selected for new projects	Được chọn cho dự án mới
+	Separate keywords with ; or ,	Ngăn cách từ khóa bằng ; hoặc ,
+	Settings	Cài đặt
+	Settings for this project	Cài đặt cho dự án này
+	Settings ▸ TeX installation	Cài đặt ▸ Bản cài đặt TeX
+	Shift	Shift
+	Short title	Tiêu đề ngắn
+	Shortcuts:	Phím tắt:
+	Show the PDF beside the manuscript	Hiện PDF bên cạnh bản thảo
+	Showing the first {shown} of {total} pages.	Đang hiện {shown} trang đầu trong tổng số {total} trang.
+	Size	Kích thước
+	Some citations or cross-references could not be resolved; the warnings above name them.	Một số trích dẫn hoặc tham chiếu chéo không phân giải được; các cảnh báo ở trên nêu rõ chúng.
+	Source	Mã nguồn
+	Split	Chia đôi
+	Start a project	Bắt đầu dự án
+	Suggested name	Tên gợi ý
+	Supported files	Tệp được hỗ trợ
+	Switch area	Chuyển khu vực
+	TeX installation	Bản cài đặt TeX
+	TeX is not ready: see Settings ▸ TeX installation.	TeX chưa sẵn sàng: xem Cài đặt ▸ Bản cài đặt TeX.
+	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX chưa sẵn sàng: không tìm thấy {tools}. Hãy cài TeX Live kèm latexmk và biber, rồi nhấn Kiểm tra lại.
+	TeX is ready.	TeX đã sẵn sàng.
+	TeX log	Nhật ký TeX
+	TeX not found	Không tìm thấy TeX
+	TeX ready	TeX sẵn sàng
+	TeX ready, no Biber	TeX sẵn sàng, không có Biber
+	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX đã dừng ở một lỗi nghiêm trọng. Hãy sửa lỗi đầu tiên trong danh sách; các lỗi sau thường bắt nguồn từ nó.
+	Template Library	Thư viện mẫu
+	Template skipped: {problem}	Đã bỏ qua mẫu: {problem}
+	Template: {template}	Mẫu: {template}
+	Text before \begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed.	Có văn bản trước \begin{document}: tệp phần thân chỉ được chứa nội dung bài báo. Hãy nhập lại bản thảo để loại bỏ phần mở đầu của nó.
+	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	Tệp .bib có lỗi cú pháp gần mục được nêu ở đây: thiếu dấu phẩy, dấu ngoặc nhọn hoặc dấu nháy.
+	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	Các mẫu tạp chí pdfLaTeX không thể dàn trang tiếng Trung, tiếng Nhật hay tiếng Hàn (cần XeLaTeX hoặc LuaLaTeX với phông chữ CJK, mà các mẫu này không dùng). Hãy ghi tiêu đề, tên và tài liệu dẫn bằng chữ Latinh (phiên âm, giữ bản gốc trong dữ liệu nguồn), hoặc chuẩn bị bài báo bằng một mẫu hỗ trợ CJK bên ngoài PSG Academic PDF.
+	The project folder: compilation happens here and only here	Thư mục dự án: việc biên dịch diễn ra ở đây và chỉ ở đây
+	The project has been typeset	Dự án đã được dàn trang
+	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	Các mẫu không có phông chữ Kirin (mã hóa T2A). Hãy chuyển tự tên và tiêu đề Kirin, như phần lớn tạp chí tiếng Anh yêu cầu.
+	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	Các mẫu không có phông chữ Hy Lạp cho văn bản. Trong công thức, hãy viết chữ cái Hy Lạp bằng lệnh ($\alpha$, $\Omega$); từ Hy Lạp trong văn bản phải được chuyển tự.
+	The templates have no font for this script. Transliterate the text.	Các mẫu không có phông chữ cho hệ chữ này. Hãy chuyển tự văn bản.
+	The update could not be installed: {reason}	Không thể cài bản cập nhật: {reason}
+	The update failed unexpectedly.	Cập nhật thất bại ngoài dự kiến.
+	The update is installed. Close {app} to finish; it restarts by itself.	Đã cài bản cập nhật. Hãy đóng {app} để hoàn tất; ứng dụng sẽ tự khởi động lại.
+	The update stopped unexpectedly.	Cập nhật dừng lại ngoài dự kiến.
+	Theme	Chủ đề
+	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	Pandoc này quá cũ: nhập DOCX cần Pandoc 2.15 trở lên
+	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	Khóa trích dẫn này không có trong tài liệu tham khảo. Hãy thêm mục vào tệp .bib hoặc sửa lại khóa.
+	This template doesn't use a bibliography file.	Mẫu này không dùng tệp tài liệu tham khảo.
+	Time limit	Giới hạn thời gian
+	Timed out	Hết thời gian
+	Title	Tiêu đề
+	Title & abstract	Tiêu đề & tóm tắt
+	Type	Loại
+	Typeset	Thời điểm dàn trang
+	Typeset accepted articles into publication-ready PDFs with your journal's template.	Dàn trang các bài báo đã được chấp nhận thành PDF sẵn sàng xuất bản bằng mẫu của tạp chí.
+	Typeset the project first.	Hãy dàn trang dự án trước.
+	Typeset to see errors and warnings here.	Dàn trang để xem lỗi và cảnh báo ở đây.
+	Typeset to see latexmk's output here.	Dàn trang để xem kết quả của latexmk ở đây.
+	Typesetting	Dàn trang
+	Typesetting cancelled.	Đã hủy dàn trang.
+	Typesetting for {secs} s…	Đang dàn trang được {secs} giây…
+	Typesetting is already running.	Quá trình dàn trang đang chạy.
+	Typesetting stopped: it took longer than {secs} s.	Đã dừng dàn trang: quá {secs} giây.
+	Typesetting with latexmk and pdfLaTeX…	Đang dàn trang bằng latexmk và pdfLaTeX…
+	Unbalanced braces: a { without its } (or the other way round) near this line.	Dấu ngoặc nhọn không cân: có { mà thiếu } (hoặc ngược lại) gần dòng này.
+	Unsaved	Chưa lưu
+	Unsaved changes	Có thay đổi chưa lưu
+	Untitled article	Bài báo chưa có tiêu đề
+	Update	Cập nhật
+	Update and Restart	Cập nhật và khởi động lại
+	Update ready. Close {app} to install it.	Bản cập nhật đã sẵn sàng. Hãy đóng {app} để cài đặt.
+	Updates	Cập nhật
+	Used by this project	Được dự án này dùng
+	Volume	Tập
+	Warning	Cảnh báo
+	Warnings ({n})	Cảnh báo ({n})
+	What's new	Có gì mới
+	Where templates come from	Nguồn của các mẫu
+	Word (.docx)…	Word (.docx)…
+	Worth a look, but they don't stop the export.	Nên xem qua, nhưng chúng không chặn việc xuất.
+	Year	Năm
+	by {developer}	của {developer}
+	found	đã tìm thấy
+	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk thường chạy lại cho đến khi điều này biến mất. Nếu vẫn còn, hãy bật "Dựng lại toàn bộ mỗi lần" và biên dịch lại.
+	latexmk runs pdfLaTeX (and Biber for the bibliography) in the project folder, without shell escape.	latexmk chạy pdfLaTeX (và Biber cho tài liệu tham khảo) trong thư mục dự án, không dùng shell escape.
+	not found	không tìm thấy
+	not found (optional, for DOCX import)	không tìm thấy (tùy chọn, để nhập DOCX)
+	pdfLaTeX	pdfLaTeX
+	pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX.	Với các mẫu này, pdfLaTeX không thể dàn trang chữ viết từ phải sang trái. Hãy chuyển tự văn bản hoặc chuẩn bị bài báo bằng mẫu dành cho XeLaTeX hoặc LuaLaTeX.
+	pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\alpha$, for example).	Phông chữ của pdfLaTeX không có glyph cho ký tự này. Hãy thay thế, hoặc viết nó bằng một lệnh LaTeX (ví dụ chữ Hy Lạp viết là $\alpha$).
+	via latexmk, shell escape off	qua latexmk, tắt shell escape
+	v{from} to {to}	từ v{from} lên {to}
+	{app} updated to {version}.	Đã cập nhật {app} lên {version}.
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} theo phiên bản được chọn trong trình khởi chạy nên không tự cập nhật.
+	{app} {version} is available with the latest features and bug fixes.	Đã có {app} {version} với các tính năng và bản sửa lỗi mới nhất.
+	{app} {version} is the newest version available.	{app} {version} là phiên bản mới nhất.
+	{file} is not UTF-8 text; save it as UTF-8 and try again.	{file} không phải văn bản UTF-8; hãy lưu ở dạng UTF-8 rồi thử lại.
+	{file} is too large to edit here.	{file} quá lớn để sửa ở đây.
+	{first} Some things need fixing first: see Activity.	{first} Cần sửa một số chỗ trước: xem Hoạt động.
+	{id} · licence {licence}	{id} · giấy phép {licence}
+	{name} (open)	{name} (đang mở)
+	{path} is a Word manuscript; install Pandoc to import it.	{path} là bản thảo Word; hãy cài Pandoc để nhập.
+@other	Typeset in {secs} s with {n} warning.	Đã dàn trang trong {secs} giây, có {n} cảnh báo.
+@other	Typesetting failed after {secs} s with {n} error.	Dàn trang thất bại sau {secs} giây, có {n} lỗi.
+@other	{n} error	{n} lỗi
+@other	{n} error: see Problems.	{n} lỗi: xem Vấn đề.
+@other	{n} page	{n} trang
+@other	{n} problem found before compiling; see Problems.	Phát hiện {n} vấn đề trước khi biên dịch; xem Vấn đề.
+@other	{n} warning	{n} cảnh báo
+@other	{n} word	{n} từ

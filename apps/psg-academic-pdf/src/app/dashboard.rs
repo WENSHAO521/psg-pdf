@@ -6,7 +6,7 @@
 use psg_desktop_ui::{Tone, widgets};
 
 use super::{AcademicApp, Page};
-use crate::i18n::{t, tf};
+use crate::i18n::{t, tf, tn};
 
 impl AcademicApp {
     pub(super) fn dashboard_page(&mut self, ui: &mut egui::Ui) {
@@ -117,10 +117,10 @@ impl AcademicApp {
                     None => widgets::chip(ui, Tone::Neutral, t("Not typeset in this session")),
                 };
                 if errors > 0 {
-                    widgets::chip(ui, Tone::Danger, tf("{n} error(s)", &[("n", &errors.to_string())]));
+                    widgets::chip(ui, Tone::Danger, tn(errors, "{n} error", "{n} errors", &[]));
                 }
                 if warnings > 0 {
-                    widgets::chip(ui, Tone::Warning, tf("{n} warning(s)", &[("n", &warnings.to_string())]));
+                    widgets::chip(ui, Tone::Warning, tn(warnings, "{n} warning", "{n} warnings", &[]));
                 }
             });
             ui.add(egui::Label::new(egui::RichText::new(dir).small().weak()).truncate())

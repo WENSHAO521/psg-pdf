@@ -4784,6 +4784,7 @@ dependencies = [
  "proptest",
  "psg-brand",
  "psg-desktop-ui",
+ "psg-i18n",
  "rfd",
  "rustix 1.1.6",
  "serde",
@@ -5316,8 +5317,8 @@ dependencies = [
  "psg-academic",
  "psg-brand",
  "psg-desktop-ui",
+ "psg-i18n",
  "rfd",
- "sys-locale",
  "tempfile",
  "winresource",
 ]
@@ -5336,6 +5337,15 @@ dependencies = [
  "egui_kittest",
  "pdfcraft-fonts",
  "psg-brand",
+ "psg-i18n",
+ "skrifa 0.44.0",
+]
+
+[[package]]
+name = "psg-i18n"
+version = "0.20.0"
+dependencies = [
+ "sys-locale",
 ]
 
 [[package]]

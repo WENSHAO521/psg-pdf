@@ -100,22 +100,33 @@ impl AcademicApp {
         });
     }
 
-    /// The interface language: the system's, or one picked here (saved in the data folder).
+    /// The interface language: the system's (the default), or one picked here. The choice is
+    /// saved in the data folder and shows on the next frame.
     fn language_picker(&mut self, ui: &mut egui::Ui) {
-        let current = crate::i18n::current();
-        let name = crate::i18n::LANGUAGES.iter().find(|(c, _)| *c == current).map_or("English", |(_, n)| *n);
+        let saved = self.language;
+        let current = crate::i18n::language();
+        let shown = match saved {
+            psg_i18n::Preference::Auto => crate::i18n::tf("Follow system ({language})", &[("language", current.native_name)]),
+            psg_i18n::Preference::Fixed(l) => l.native_name.to_owned(),
+        };
         let mut chosen = None;
-        egui::ComboBox::from_id_salt("language").selected_text(name).show_ui(ui, |ui| {
-            for (code, name) in crate::i18n::LANGUAGES {
-                if ui.selectable_label(code == current, name).clicked() {
-                    chosen = Some(code);
+        egui::ComboBox::from_id_salt("language").selected_text(shown).show_ui(ui, |ui| {
+            if ui.selectable_label(saved == psg_i18n::Preference::Auto, t("Follow system")).clicked() {
+                chosen = Some(psg_i18n::Preference::Auto);
+            }
+            for lang in &psg_i18n::LANGUAGES {
+                // Each language in its own name, so a reader can find theirs whatever is showing.
+                let item = ui.selectable_label(saved == psg_i18n::Preference::Fixed(lang), lang.native_name).on_hover_text(lang.english_name);
+                if item.clicked() {
+                    chosen = Some(psg_i18n::Preference::Fixed(lang));
                 }
             }
         });
-        if let Some(code) = chosen {
-            crate::i18n::set(code);
-            crate::fonts::install(ui.ctx(), code);
-            if let Err(e) = write_setting(&self.language_file, code) {
+        if let Some(pref) = chosen {
+            self.language = pref;
+            crate::i18n::apply(pref);
+            crate::fonts::install(ui.ctx(), crate::i18n::current());
+            if let Err(e) = write_setting(&self.language_file, pref.as_str()) {
                 self.note(format!("{}: {e}", self.language_file.display()));
             }
         }

@@ -4,7 +4,7 @@
 use psg_desktop_ui::{Tone, widgets};
 
 use super::AcademicApp;
-use crate::i18n::{t, tf};
+use crate::i18n::{t, tn};
 
 impl AcademicApp {
     pub(super) fn export_page(&mut self, ui: &mut egui::Ui) {
@@ -25,7 +25,7 @@ impl AcademicApp {
                 ui.set_width(ui.available_width());
                 widgets::section_header(ui, t("Before you export"));
                 check(ui, file.is_some(), t("The project has been typeset"), Some(t("Press Auto Typeset first.")));
-                check(ui, errors == 0, t("No errors"), Some(&tf("{n} error(s): see Problems.", &[("n", &errors.to_string())])));
+                check(ui, errors == 0, t("No errors"), Some(&tn(errors, "{n} error: see Problems.", "{n} errors: see Problems.", &[])));
                 check(
                     ui,
                     blocking == 0,
@@ -34,7 +34,7 @@ impl AcademicApp {
                 );
                 if warnings > 0 {
                     ui.horizontal(|ui| {
-                        widgets::chip(ui, Tone::Warning, tf("{n} warning(s)", &[("n", &warnings.to_string())]));
+                        widgets::chip(ui, Tone::Warning, tn(warnings, "{n} warning", "{n} warnings", &[]));
                         widgets::muted(ui, t("Worth a look, but they don't stop the export."));
                     });
                 }
