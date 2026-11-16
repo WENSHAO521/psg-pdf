@@ -77,6 +77,8 @@ pub fn install(ctx: &egui::Context, product: Product) {
     for (theme, dark) in [(egui::Theme::Light, false), (egui::Theme::Dark, true)] {
         ctx.style_mut_of(theme, |style| apply(style, &Palette::new(product, dark)));
     }
+    // The shared icons are SVGs (`crate::icons`); installing twice is a no-op.
+    egui_extras::install_image_loaders(ctx);
 }
 
 /// The type ramp: the sizes of egui's text styles, in points.

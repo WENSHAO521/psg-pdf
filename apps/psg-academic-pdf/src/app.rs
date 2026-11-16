@@ -73,6 +73,19 @@ impl Page {
             Page::Settings => t("Settings"),
         }
     }
+
+    /// The area's Lucide icon on the navigation rail (`psg_desktop_ui::icons`).
+    pub fn icon(self) -> &'static str {
+        match self {
+            Page::Dashboard => "house",
+            Page::Manuscript => "file-text",
+            Page::Templates => "swatch-book",
+            Page::Typesetting => "type",
+            Page::Problems => "triangle-alert",
+            Page::Export => "file-output",
+            Page::Settings => "settings",
+        }
+    }
 }
 
 /// What the Manuscript area shows.
@@ -893,7 +906,7 @@ impl AcademicApp {
                     Page::Problems => Some((warnings, Tone::Warning)),
                     _ => None,
                 };
-                if widgets::nav_item(ui, page.label(), self.page == page, count, compact).clicked() {
+                if widgets::nav_item(ui, page.icon(), page.label(), self.page == page, count, compact).clicked() {
                     self.page = page;
                 }
             }

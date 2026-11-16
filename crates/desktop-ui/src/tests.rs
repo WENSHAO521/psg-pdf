@@ -85,9 +85,10 @@ fn components_are_accessible() {
     let mut selected = 0usize;
     let mut harness = Harness::new_ui(|ui| {
         ui.ctx().set_fonts(crate::fonts::definitions([]));
+        egui_extras::install_image_loaders(ui.ctx());
         style::install(ui.ctx(), Product::Academic);
         for (i, label) in ["Dashboard", "Manuscript"].into_iter().enumerate() {
-            if widgets::nav_item(ui, label, selected == i, Some((i * 3, Tone::Danger)), false).clicked() {
+            if widgets::nav_item(ui, "house", label, selected == i, Some((i * 3, Tone::Danger)), false).clicked() {
                 selected = i;
             }
         }
@@ -109,4 +110,27 @@ fn shared_fonts_put_inter_and_jetbrains_mono_first() {
     assert_eq!(defs.families.get(&egui::FontFamily::Proportional).and_then(|f| f.first()).map(String::as_str), Some("Inter"));
     assert_eq!(defs.families.get(&egui::FontFamily::Monospace).and_then(|f| f.first()).map(String::as_str), Some("JetBrainsMono"));
     assert!(defs.families.contains_key(&egui::FontFamily::Name(crate::fonts::SEMIBOLD.into())));
+}
+
+/// Chips in a wrapping row on a narrow card move to the next line whole, and the row never grows
+/// wider than the room it was given (the template cards widened past the window before).
+#[test]
+fn chips_wrap_inside_a_narrow_row() {
+    let used = std::cell::Cell::new(0.0f32);
+    let mut harness = Harness::builder().with_size(egui::vec2(600.0, 400.0)).build_ui(|ui| {
+        ui.ctx().set_fonts(crate::fonts::definitions([]));
+        style::install(ui.ctx(), Product::Academic);
+        ui.allocate_ui(egui::vec2(160.0, 300.0), |ui| {
+            ui.set_max_width(160.0);
+            let row = ui.horizontal_wrapped(|ui| {
+                for label in ["pdflatex", "Bibliography: biber", "v1.0.0", "Built in", "Used by this project"] {
+                    widgets::chip(ui, Tone::Neutral, label);
+                }
+            });
+            used.set(row.response.rect.width());
+        });
+    });
+    harness.run();
+    drop(harness);
+    assert!(used.get() <= 160.5, "the chip row grew to {} points", used.get());
 }

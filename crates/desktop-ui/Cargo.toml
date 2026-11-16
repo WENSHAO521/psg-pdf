@@ -15,6 +15,9 @@ psg-brand = { workspace = true }
 egui = { workspace = true, features = ["default_fonts"] }
 # Inter Regular is embedded once, by pdfcraft-fonts (also used for typed signatures).
 pdfcraft-fonts = { workspace = true }
+# Lucide icons are drawn through craft-ui's SVG icon set, rasterised by egui_extras (as in PSG PDF).
+craft-ui = { workspace = true }
+egui_extras = { workspace = true }
 
 [dev-dependencies]
 egui_kittest = { workspace = true }

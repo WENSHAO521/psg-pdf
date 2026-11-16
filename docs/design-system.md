@@ -45,7 +45,8 @@ embedded once (`psg_desktop_ui::fonts`).
 | `card`, `selectable_card` | Grouped content; choosable items (templates, recent projects). |
 | `page_header`, `section_header`, `overline`, `muted` | The type hierarchy of a page. |
 | `empty_state` | What a page is for and the actions that start it, instead of a blank pane. |
-| `nav_item` + `layout::nav_rail` | The workspace navigation rail, with problem counts; collapses to initials on narrow windows. |
+| `nav_item` + `layout::nav_rail` | The workspace navigation rail: a Lucide icon and label per area, with problem counts; collapses to the icons (label as tooltip) on narrow windows. |
+| `icons` | The Lucide icons the shared components draw, from `assets/icons/`, tinted per theme. Never use Unicode glyphs as icons. |
 | `segmented` | Mutually exclusive views ("Editor · Split · PDF"). |
 | `banner` | A message across a page in a tone, with an optional action. |
 | `form_grid`, `form_label`, `text_field` | Two-column forms with the shared spacing. |
@@ -55,6 +56,9 @@ embedded once (`psg_desktop_ui::fonts`).
 | `keys::command` | Shortcuts written per platform: `⌘S` on macOS, `Ctrl+S` elsewhere. |
 
 ## Behaviour both products share
+
+- Pages cap their width with `ui.set_max_width(ui.available_width().min(N))`: `set_max_width` alone can widen a page past the window.
+- `chip` is measured before it is placed, so a wrapping row moves a chip to the next line instead of widening the card.
 
 - **Theme**: follows the system's light or dark setting live; Light when the desktop says nothing.
   A manual choice (System, Light, Dark) is offered in Settings / Preferences.
