@@ -225,6 +225,21 @@ mod tests {
     use std::path::PathBuf;
     use std::sync::Arc;
 
+    #[test]
+    fn the_updater_knows_the_msis_own_uninstall_record() {
+        // An MSI copy updates only by finding exactly one uninstall record with this name and
+        // publisher, so both must be what packaging/windows/psg-pdf.wxs registers; the 0.18.x
+        // suite MSI it upgrades from registered the former name.
+        let app = &crate::UPDATE_APP;
+        let wxs = include_str!("../../../../packaging/windows/psg-pdf.wxs");
+        assert!(
+            wxs.contains(&format!(r#"<Package Name="{}" Manufacturer="{}""#, app.name, app.publisher)),
+            "the MSI registers another name or publisher"
+        );
+        assert!(wxs.contains(&format!(r"App Paths\{}.exe", app.id)));
+        assert_eq!(app.former_names, ["PSG PDF Suite"]);
+    }
+
     /// An app with one open document holding a form, and with `dirty` an unsaved change to it.
     fn app(dirty: bool) -> PdfCraftApp {
         let mut app = PdfCraftApp::new();

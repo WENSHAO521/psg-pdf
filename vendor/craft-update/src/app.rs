@@ -31,10 +31,18 @@ pub struct App {
     /// signed list vouches for, and no longer needs an Authenticode or Developer ID signature.
     /// `None` or blank: the upstream checks.
     pub update_key: Option<&'static str>,
+    /// PSG patch: the `Publisher` its Windows Installer packages register (the MSI's
+    /// `Manufacturer`). An uninstall record from anyone else is never taken for this app's, so
+    /// this must match the package or an MSI copy finds no record of itself and can't update.
+    /// [`PUBLISHER`] unless the app says otherwise.
+    pub publisher: &'static str,
 }
 
 /// The developer of every app in the storytold organisation.
 pub const DEVELOPER: &str = "ArtCraft";
+
+/// Who the storytold organisation's Windows Installer packages name as their publisher.
+pub const PUBLISHER: &str = "Learning Machines LLC";
 
 impl App {
     /// An app with no former names and no icon.
@@ -51,6 +59,7 @@ impl App {
             developer: DEVELOPER,
             app_id: None,
             update_key: None,
+            publisher: PUBLISHER,
         }
     }
 
