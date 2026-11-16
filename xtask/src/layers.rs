@@ -88,6 +88,8 @@ pub const TABLE: &[(&str, Class)] = &[
     ("oracle", Class::Testkit),
     // The PSG design system (names, brand colours, release labels; no dependencies)
     ("psg-brand", Class::Standalone(0)),
+    // The PSG Desktop Design System: egui theme, fonts and components both apps share
+    ("psg-desktop-ui", Class::Layer(7)),
     // PSG Academic PDF's typesetting core (no UI; depends on no other workspace crate)
     ("psg-academic", Class::Layer(4)),
     // L8 apps + tooling
@@ -112,6 +114,7 @@ pub const SIDEWAYS: &[(&str, &str)] = &[
     ("sign", "security"),
     ("ui-egui", "ui-common"),
     ("ui-egui", "platform"),
+    ("ui-egui", "psg-desktop-ui"),
     ("automation", "platform"),
 ];
 

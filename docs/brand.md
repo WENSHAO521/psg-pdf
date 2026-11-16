@@ -65,11 +65,10 @@ meet 3:1. The two products' accents are tested to stay clearly apart.
 
 ## Type
 
-- Interface: **Inter** (OFL) in PSG PDF; PSG Academic PDF uses egui's built-in faces until it
-  shares PSG PDF's font set. Chinese, Japanese and Korean come from the craft-fonts faces in
-  release builds.
-- Code, logs and TeX source: **JetBrains Mono** (OFL) in PSG PDF, egui's monospace in PSG
-  Academic PDF.
+- Interface: **Inter** (OFL) in both products, from the PSG Desktop Design System
+  ([design-system.md](design-system.md)). Chinese, Japanese and Korean come from the craft-fonts
+  faces in release builds.
+- Code, logs and TeX source: **JetBrains Mono** (OFL) in both products.
 - Sizes (points): 12 small, 13 body, 15 heading, 20 title, 28 display.
 - No font is taken from the operating system into a PDF, a package or the repository
   ([AGENTS.md](../AGENTS.md) §1.4).
@@ -104,9 +103,12 @@ release needs every platform of both products ([releasing.md](releasing.md)).
 
 ## Where it is applied
 
+The interface itself (components, layout, notifications) is the PSG Desktop Design System:
+[design-system.md](design-system.md).
+
 | Surface | PSG PDF | PSG Academic PDF |
 |---|---|---|
-| Interface accent and selection | `crates/ui-egui/src/theme.rs` | `apps/psg-academic-pdf/src/theme.rs` |
+| Interface accent and selection | `crates/ui-egui/src/theme.rs` (from `crates/desktop-ui`) | `crates/desktop-ui` via `apps/psg-academic-pdf/src/theme.rs` |
 | Name, version, badge | `crates/ui-egui/src/brand.rs` | `apps/psg-academic-pdf/src/theme.rs` |
 | Update dialog accent | `crates/ui-egui/src/lib.rs` | `apps/psg-academic-pdf/src/updates.rs` |
 | Windows exe icon and version info | `apps/psg-pdf/build.rs` | `apps/psg-academic-pdf/build.rs` |

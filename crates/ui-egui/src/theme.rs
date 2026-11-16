@@ -1,5 +1,6 @@
-//! Design tokens and egui style (neutral chrome, white panels, one accent: PSG PDF's deep blue
-//! from the PSG design system, `psg-brand`; Dark Gray keeps pages white). Every custom widget reads `Tokens::get`.
+//! Design tokens and egui style (neutral chrome, white panels, one accent: PSG PDF's deep blue).
+//! The colours come from the PSG Desktop Design System (`psg-brand`, `psg-desktop-ui`), shared
+//! with PSG Academic PDF; Dark Gray keeps pages white. Every custom widget reads `Tokens::get`.
 
 use std::sync::Arc;
 
@@ -64,62 +65,46 @@ pub struct Tokens {
     pub accent_soft: Color32,
     pub field: Color32,
     pub badge_new: Color32,
+    /// Text in the design system's success, warning and danger tones (`psg_brand::Tone`).
+    pub success: Color32,
+    pub warning: Color32,
+    pub danger: Color32,
     pub page_shadow: Color32,
     pub radius: u8,
 }
 
 impl Tokens {
+    /// The tokens of `kind`: the PSG Desktop Design System's shared neutrals (`psg_brand::surfaces`,
+    /// the same ones PSG Academic PDF draws with) and PSG PDF's deep-blue accent.
     pub fn for_kind(kind: ThemeKind) -> Self {
-        match kind {
-            ThemeKind::Light => Self {
-                kind,
-                titlebar: Color32::from_rgb(0xE9, 0xE9, 0xEB),
-                chrome: Color32::from_rgb(0xFF, 0xFF, 0xFF),
-                panel: Color32::from_rgb(0xFF, 0xFF, 0xFF),
-                pasteboard: Color32::from_rgb(0xF1, 0xF1, 0xF3),
-                card: Color32::from_rgb(0xFF, 0xFF, 0xFF),
-                border: Color32::from_rgb(0xDA, 0xDA, 0xDE),
-                divider: Color32::from_rgb(0xE8, 0xE8, 0xEB),
-                text: Color32::from_rgb(0x22, 0x22, 0x26),
-                text_muted: Color32::from_rgb(0x5E, 0x5E, 0x66),
-                text_faint: Color32::from_rgb(0x6B, 0x6B, 0x73),
-                icon: Color32::from_rgb(0x44, 0x44, 0x4B),
-                hover: Color32::from_rgb(0xF0, 0xF0, 0xF3),
-                pressed: Color32::from_rgb(0xE4, 0xE4, 0xE9),
-                // PSG PDF's accent from the PSG design system (psg-brand, docs/brand.md).
-                selected: crate::brand::colour(crate::brand::PRODUCT.accent(false).selected),
-                accent: crate::brand::colour(crate::brand::PRODUCT.accent(false).accent),
-                accent_text: crate::brand::colour(crate::brand::PRODUCT.accent(false).accent_text),
-                accent_soft: crate::brand::colour(crate::brand::PRODUCT.accent(false).accent_soft),
-                field: Color32::from_rgb(0xFF, 0xFF, 0xFF),
-                badge_new: crate::brand::colour(crate::brand::PRODUCT.accent(false).accent),
-                page_shadow: Color32::from_black_alpha(34),
-                radius: 6,
-            },
-            ThemeKind::Dark => Self {
-                kind,
-                titlebar: Color32::from_rgb(0x1B, 0x1B, 0x1E),
-                chrome: Color32::from_rgb(0x26, 0x26, 0x2A),
-                panel: Color32::from_rgb(0x26, 0x26, 0x2A),
-                pasteboard: Color32::from_rgb(0x19, 0x19, 0x1C),
-                card: Color32::from_rgb(0x2E, 0x2E, 0x33),
-                border: Color32::from_rgb(0x3C, 0x3C, 0x43),
-                divider: Color32::from_rgb(0x33, 0x33, 0x39),
-                text: Color32::from_rgb(0xEC, 0xEC, 0xEF),
-                text_muted: Color32::from_rgb(0xAE, 0xAE, 0xB6),
-                text_faint: Color32::from_rgb(0x97, 0x97, 0x9E),
-                icon: Color32::from_rgb(0xD4, 0xD4, 0xDA),
-                hover: Color32::from_rgb(0x34, 0x34, 0x3A),
-                pressed: Color32::from_rgb(0x3E, 0x3E, 0x45),
-                selected: crate::brand::colour(crate::brand::PRODUCT.accent(true).selected),
-                accent: crate::brand::colour(crate::brand::PRODUCT.accent(true).accent),
-                accent_text: crate::brand::colour(crate::brand::PRODUCT.accent(true).accent_text),
-                accent_soft: crate::brand::colour(crate::brand::PRODUCT.accent(true).accent_soft),
-                field: Color32::from_rgb(0x1E, 0x1E, 0x22),
-                badge_new: crate::brand::colour(crate::brand::PRODUCT.accent(true).accent),
-                page_shadow: Color32::from_black_alpha(120),
-                radius: 6,
-            },
+        let dark = kind == ThemeKind::Dark;
+        let p = psg_desktop_ui::Palette::new(crate::brand::PRODUCT, dark);
+        Self {
+            kind,
+            titlebar: p.titlebar,
+            chrome: p.chrome,
+            panel: p.panel,
+            pasteboard: p.canvas,
+            card: p.card,
+            border: p.border,
+            divider: p.divider,
+            text: p.text,
+            text_muted: p.text_muted,
+            text_faint: p.text_faint,
+            icon: p.icon,
+            hover: p.hover,
+            pressed: p.pressed,
+            selected: p.selected,
+            accent: p.accent,
+            accent_text: p.accent_text,
+            accent_soft: p.accent_soft,
+            field: p.field,
+            badge_new: p.accent,
+            success: p.tone(psg_brand::Tone::Success).text,
+            warning: p.tone(psg_brand::Tone::Warning).text,
+            danger: p.tone(psg_brand::Tone::Danger).text,
+            page_shadow: p.shadow,
+            radius: psg_brand::radius::CONTROL,
         }
     }
 
@@ -364,9 +349,10 @@ fn font_definitions_for_platform(prefer_hans: bool, platform: FontPolicyPlatform
     };
     // Shared with typed signatures' fallback glyphs, so the font is embedded once.
     add(&mut fonts, "Inter", pdfcraft_fonts::INTER_REGULAR);
-    add(&mut fonts, "Inter-Medium", include_bytes!("../../../assets/fonts/Inter-Medium.ttf"));
-    add(&mut fonts, "Inter-SemiBold", include_bytes!("../../../assets/fonts/Inter-SemiBold.ttf"));
-    add(&mut fonts, "JetBrainsMono", include_bytes!("../../../assets/fonts/JetBrainsMono-Regular.ttf"));
+    // The PSG Desktop Design System embeds these once for both products.
+    add(&mut fonts, "Inter-Medium", psg_desktop_ui::fonts::INTER_MEDIUM);
+    add(&mut fonts, "Inter-SemiBold", psg_desktop_ui::fonts::INTER_SEMIBOLD);
+    add(&mut fonts, "JetBrainsMono", psg_desktop_ui::fonts::JETBRAINS_MONO);
     fonts.families.entry(FontFamily::Proportional).or_default().insert(0, "Inter".to_owned());
     fonts.families.entry(FontFamily::Monospace).or_default().insert(0, "JetBrainsMono".to_owned());
     // Keep missing Latin/Cyrillic letters in the app's own faces (for example Bulgarian ѝ,
@@ -432,6 +418,8 @@ pub fn apply(ctx: &egui::Context, kind: ThemeKind) {
     let rtl = crate::i18n::current().rtl();
     let t = Tokens::for_kind(kind);
     ctx.data_mut(|d| d.insert_temp(egui::Id::unique("pdfcraft-theme"), t));
+    // Shared design-system components (psg-desktop-ui) drawn in this window use PSG PDF's palette.
+    psg_desktop_ui::style::remember_product(ctx, crate::brand::PRODUCT);
     let mut v = if t.dark() { Visuals::dark() } else { Visuals::light() };
     v.panel_fill = t.panel;
     v.window_fill = t.card;
@@ -442,6 +430,8 @@ pub fn apply(ctx: &egui::Context, kind: ThemeKind) {
     v.selection.stroke = Stroke::new(1.0, t.accent);
     v.hyperlink_color = t.accent_text;
     v.override_text_color = Some(t.text);
+    v.warn_fg_color = t.warning;
+    v.error_fg_color = t.danger;
     v.window_corner_radius = CornerRadius::same(10);
     v.menu_corner_radius = CornerRadius::same(8);
     v.window_shadow = egui::Shadow { offset: [0, 8], blur: 28, spread: 0, color: Color32::from_black_alpha(if t.dark() { 110 } else { 38 }) };

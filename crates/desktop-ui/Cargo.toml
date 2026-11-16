@@ -1,0 +1,20 @@
+[package]
+name = "psg-desktop-ui"
+description = "The PSG Desktop Design System: the egui theme, fonts and components PSG PDF and PSG Academic PDF share"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+# The design tokens (colours, radii, spacing, sizes, tones), shared with packaging and the web.
+psg-brand = { workspace = true }
+egui = { workspace = true, features = ["default_fonts"] }
+# Inter Regular is embedded once, by pdfcraft-fonts (also used for typed signatures).
+pdfcraft-fonts = { workspace = true }
+
+[dev-dependencies]
+egui_kittest = { workspace = true }
