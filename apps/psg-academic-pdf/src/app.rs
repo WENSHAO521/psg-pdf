@@ -27,7 +27,7 @@ use psg_desktop_ui::style::ThemeChoice;
 use psg_desktop_ui::{Tone, layout, widgets};
 
 use crate::data_dir::DataDir;
-use crate::i18n::{t, tf};
+use crate::i18n::{t, tf, tn};
 use crate::launch::{self, ManuscriptKind, Request};
 use crate::preview::Preview;
 use crate::recent::Recent;
@@ -181,6 +181,8 @@ pub struct AcademicApp {
     bib_filter: String,
     /// Where the chosen interface language is saved ("" or missing: follow the system).
     language_file: PathBuf,
+    /// The saved interface language: the system's, or one picked in Settings.
+    language: psg_i18n::Preference,
     /// Where the chosen theme is saved ("system", "light" or "dark").
     theme_file: PathBuf,
     theme: ThemeChoice,
@@ -195,7 +197,8 @@ impl AcademicApp {
         let workspace = data.projects();
         let language_file = data.root.join("language.txt");
         let chosen = std::fs::read_to_string(&language_file).unwrap_or_default();
-        crate::i18n::set(if chosen.trim().is_empty() { crate::i18n::system() } else { chosen.trim() });
+        let language = psg_i18n::Preference::parse(&chosen);
+        crate::i18n::apply(language);
         crate::fonts::install(ctx, crate::i18n::current());
         crate::theme::apply(ctx);
         let theme_file = data.root.join("theme.txt");
@@ -236,6 +239,7 @@ impl AcademicApp {
             bib: Vec::new(),
             bib_filter: String::new(),
             language_file,
+            language,
             theme_file,
             theme,
             data_root: data.root.clone(),
@@ -727,7 +731,7 @@ impl AcademicApp {
         self.refresh_checks();
         let blocking = self.preflight.iter().filter(|d| d.severity == Severity::Error).count();
         if blocking > 0 {
-            self.note(tf("{n} problems found before compiling; see Problems.", &[("n", &blocking.to_string())]));
+            self.note(tn(blocking, "{n} problem found before compiling; see Problems.", "{n} problems found before compiling; see Problems.", &[]));
         }
         let (Some(project), Some(env)) = (self.project.clone(), self.env.clone()) else {
             self.fail(t("Open or create a project, and wait for the TeX check, before compiling."));
@@ -918,7 +922,7 @@ impl AcademicApp {
             ui.separator();
             ui.add(egui::Label::new(self.status.as_str()).truncate());
             ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
-                ui.label(crate::i18n::LANGUAGES.iter().find(|(c, _)| *c == crate::i18n::current()).map_or("English", |(_, n)| *n));
+                ui.label(crate::i18n::language().native_name);
                 if self.source.dirty() {
                     ui.separator();
                     ui.label(t("Unsaved changes"));
@@ -984,10 +988,15 @@ fn project_title(project: &Project) -> String {
 fn summary(report: &CompileReport) -> String {
     let secs = format!("{:.1}", report.elapsed.as_secs_f32());
     match report.outcome {
-        Outcome::Succeeded => tf("Typeset in {secs} s with {n} warning(s).", &[("secs", &secs), ("n", &report.warnings().count().to_string())]),
-        Outcome::Failed => {
-            tf("Typesetting failed after {secs} s with {n} error(s).", &[("secs", &secs), ("n", &report.errors().count().max(1).to_string())])
+        Outcome::Succeeded => {
+            tn(report.warnings().count(), "Typeset in {secs} s with {n} warning.", "Typeset in {secs} s with {n} warnings.", &[("secs", &secs)])
         }
+        Outcome::Failed => tn(
+            report.errors().count().max(1),
+            "Typesetting failed after {secs} s with {n} error.",
+            "Typesetting failed after {secs} s with {n} errors.",
+            &[("secs", &secs)],
+        ),
         Outcome::TimedOut => tf("Typesetting stopped: it took longer than {secs} s.", &[("secs", &secs)]),
         Outcome::Cancelled => t("Typesetting cancelled.").to_owned(),
     }

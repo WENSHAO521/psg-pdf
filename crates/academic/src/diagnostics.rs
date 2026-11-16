@@ -41,33 +41,39 @@ impl Diagnostic {
         let m = self.message.as_str();
         let has = |s: &str| m.contains(s);
         Some(if has("Undefined control sequence") {
-            "A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it."
+            crate::mark("A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it.")
         } else if has("not set up for use with LaTeX") || has("Unicode character") {
-            "pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\\alpha$, for example)."
+            crate::mark(
+                "pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\\alpha$, for example).",
+            )
         } else if has("File `") && has("not found") {
-            "A file the manuscript uses is not in the project. Add it with \"Bibliography / figures…\" and check the spelling: file names are case-sensitive."
+            crate::mark(
+                "A file the manuscript uses is not in the project. Add it with \"Bibliography / figures…\" and check the spelling: file names are case-sensitive.",
+            )
         } else if has("Missing $ inserted") {
-            "Mathematics outside a formula, or a stray _ or ^ in text. Put formulas in $…$, and write \\_ for an underscore in text."
+            crate::mark("Mathematics outside a formula, or a stray _ or ^ in text. Put formulas in $…$, and write \\_ for an underscore in text.")
         } else if has("Missing \\begin{document}") {
-            "Text before \\begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed."
+            crate::mark(
+                "Text before \\begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed.",
+            )
         } else if has("Runaway argument") || has("Too many }'s") || has("Extra }") || has("Missing } inserted") {
-            "Unbalanced braces: a { without its } (or the other way round) near this line."
+            crate::mark("Unbalanced braces: a { without its } (or the other way round) near this line.")
         } else if has("Citation") && has("undefined") {
-            "This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key."
+            crate::mark("This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.")
         } else if has("Reference") && has("undefined") {
-            "No \\label with this name. Check the spelling of the \\ref and the \\label."
+            crate::mark("No \\label with this name. Check the spelling of the \\ref and the \\label.")
         } else if has("There were undefined references") {
-            "Some citations or cross-references could not be resolved; the warnings above name them."
+            crate::mark("Some citations or cross-references could not be resolved; the warnings above name them.")
         } else if has("Overfull \\hbox") {
-            "A line sticks out into the margin. Rephrase it, allow a hyphenation with \\-, or break a long URL or formula."
+            crate::mark("A line sticks out into the margin. Rephrase it, allow a hyphenation with \\-, or break a long URL or formula.")
         } else if has("Rerun to get") || has("Label(s) may have changed") || has("Please rerun") {
-            "latexmk normally reruns until this goes away. If it stays, turn on \"Rebuild everything each time\" and compile again."
+            crate::mark("latexmk normally reruns until this goes away. If it stays, turn on \"Rebuild everything each time\" and compile again.")
         } else if self.file.as_deref() == Some("biber") && (has("Cannot find") || has("datasource")) {
-            "Biber could not read the bibliography file. Check that the .bib file named in main.tex is in the project."
+            crate::mark("Biber could not read the bibliography file. Check that the .bib file named in main.tex is in the project.")
         } else if self.file.as_deref() == Some("biber") && has("BibTeX subsystem") {
-            "The .bib file has a syntax error near the entry named here: a missing comma, brace or quote."
+            crate::mark("The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.")
         } else if has("Emergency stop") || has("job aborted") || has("Fatal error occurred") {
-            "TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it."
+            crate::mark("TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.")
         } else {
             return None;
         })

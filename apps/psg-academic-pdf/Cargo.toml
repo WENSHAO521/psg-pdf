@@ -22,8 +22,8 @@ eframe = { workspace = true, features = ["default_fonts", "wgpu", "glow", "acces
 egui = { workspace = true, features = ["default_fonts"] }
 # Chinese, Japanese and Korean interface faces from the craft-fonts build input (OFL).
 pdfcraft-fonts = { workspace = true }
-# The system language picks the interface language (same version as PSG PDF).
-sys-locale = "0.3"
+# The interface languages, catalogs and checks shared with PSG PDF.
+psg-i18n = { workspace = true }
 # Native open/save dialogs, as in PSG PDF.
 rfd = { workspace = true }
 log = { workspace = true }

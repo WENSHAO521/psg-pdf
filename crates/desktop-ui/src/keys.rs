@@ -11,8 +11,9 @@ pub fn command_for(mac: bool, key: &str, shift: bool) -> String {
     match (mac, shift) {
         (true, false) => format!("⌘{key}"),
         (true, true) => format!("⇧⌘{key}"),
-        (false, false) => format!("Ctrl+{key}"),
-        (false, true) => format!("Ctrl+Shift+{key}"),
+        // Key names follow the interface language (German writes `Strg`); macOS keeps its symbols.
+        (false, false) => format!("{}+{key}", psg_i18n::ui_text("Ctrl")),
+        (false, true) => format!("{}+{}+{key}", psg_i18n::ui_text("Ctrl"), psg_i18n::ui_text("Shift")),
     }
 }
 

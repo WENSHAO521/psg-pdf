@@ -1,0 +1,46 @@
+# The academic publishing glossary shared by PSG PDF and PSG Academic PDF. Read by psg_i18n::check::Glossary.
+# A row whose English uses the term (whole word, any case) must use this translation: alternatives are
+# separated by |, matched as a substring (so compounds and inflections count). = keeps a name as written.
+# An empty cell sets no rule. Placeholders such as {error} are values, not words, and are ignored.
+en	zh-hans	zh-hant	ko	ja	de	fr	es	pt-br	vi
+# Names that stay as written
+LaTeX	=	=	=	=	=	=	=	=	=
+pdfLaTeX	=	=	=	=	=	=	=	=	=
+XeLaTeX	=	=	=	=	=	=	=	=	=
+LuaLaTeX	=	=	=	=	=	=	=	=	=
+BibTeX	=	=	=	=	=	=	=	=	=
+Biber	=	=	=	=	=	=	=	=	=
+latexmk	=	=	=	=	=	=	=	=	=
+Pandoc	=	=	=	=	=	=	=	=	=
+TeX Live	=	=	=	=	=	=	=	=	=
+ORCID	=	=	=	=	=	=	=	=	=
+DOI	=	=	=	=	=	=	=	=	=
+ISSN	=	=	=	=	=	=	=	=	=
+PSG PDF	=	=	=	=	=	=	=	=	=
+PSG Academic PDF	=	=	=	=	=	=	=	=	=
+PdfCraft	=	=	=	=	=	=	=	=	=
+# Academic publishing terms
+manuscript	稿件	稿件	원고	原稿	Manuskript	manuscrit	manuscrito	manuscrito	bản thảo
+bibliography	参考文献	參考文獻	참고문헌	文献	Literatur	bibliograph	bibliograf	bibliograf	tài liệu tham khảo
+template	模板	範本	템플릿	テンプレート	Vorlage	modèle	plantilla	modelo	mẫu
+typeset	排版	排版	조판	組版	setz|Satz	compos	maquet|maquét	diagram	dàn trang
+typesetting	排版	排版	조판	組版	Satz|setz	compos	maquet|maquét	diagram	dàn trang
+abstract	摘要	摘要	초록	要旨	Zusammenfassung	résumé	resumen	resumo	tóm tắt
+keyword	关键词	關鍵詞	키워드	キーワード	Schlagw	mot	palabra	palavra	từ khóa
+affiliation	单位	單位	소속	所属	Institution	affiliation	afiliaci	afiliaç	đơn vị
+corresponding author	通讯作者	通訊作者	교신저자	責任著者	Korrespond	auteur correspondant	autor de correspondencia	autor correspondente	tác giả liên hệ
+author	作者	作者	저자	著者	Autor	auteur	autor	autor	tác giả
+journal	期刊	期刊	학술지	ジャーナル	Zeitschrift	revue	revista	periódico	tạp chí
+citation	引用	引用	인용	引用	Zit	citation	cita	citaç	trích dẫn
+figure	图	圖	그림	図	Abbildung	figure	figura	figura	hình
+volume	卷	卷	권	巻	Band	volume	volumen	volume	tập
+issue	期	期	호	号	Heft	numéro	número	número	số
+licence	许可	授權	라이선스	ライセンス	Lizenz	licence	licencia	licença	giấy phép
+font	字体	字型	글꼴	フォント	Schrift	police	fuente	fonte	phông chữ
+compile	编译	編譯	컴파일	コンパイル	ompil	compil	compil	compil	biên dịch
+compilation	编译	編譯	컴파일	コンパイル	ompil	compil	compil	compil	biên dịch
+preview	预览	預覽	미리 보기	プレビュー	Vorschau	aperçu	vista previa	pré-visualiza	xem trước
+project	项目	專案	프로젝트	プロジェクト	Projekt	projet	proyecto	projeto	dự án
+warning	警告	警告	경고	警告	Warnung	avertissement	advertencia	aviso	cảnh báo
+error	错误	錯誤	오류	エラー	Fehler	erreur	error	erro	lỗi
+preamble	导言	導言	프리앰블	プリアンブル	Präambel	préambule	preámbulo	preâmbulo	phần mở đầu

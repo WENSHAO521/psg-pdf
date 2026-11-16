@@ -7,7 +7,7 @@ use psg_academic::Author;
 use psg_desktop_ui::{Tone, layout, widgets};
 
 use super::{AcademicApp, ManuscriptTab, SourceView};
-use crate::i18n::{t, tf};
+use crate::i18n::{t, tf, tn};
 use crate::preview::{MAX_PREVIEW_PAGES, PageSlot};
 
 impl AcademicApp {
@@ -82,8 +82,8 @@ impl AcademicApp {
             ui.set_width(ui.available_width());
             widgets::section_header(ui, t("Article"));
             widgets::form_grid(ui, "article-grid", |ui| {
-                for (label, value) in [("Type", &mut m.article_type), ("Title", &mut m.title), ("Short title", &mut m.short_title)] {
-                    widgets::form_label(ui, t(label));
+                for (label, value) in [(t("Type"), &mut m.article_type), (t("Title"), &mut m.title), (t("Short title"), &mut m.short_title)] {
+                    widgets::form_label(ui, label);
                     ui.add(widgets::text_field(value, ""));
                     ui.end_row();
                 }
@@ -95,7 +95,7 @@ impl AcademicApp {
             widgets::form_label(ui, t("Abstract"));
             ui.add(egui::TextEdit::multiline(&mut m.abstract_text).desired_rows(10).desired_width(f32::INFINITY));
             let words = m.abstract_text.split_whitespace().count();
-            widgets::muted(ui, tf("{n} words", &[("n", &words.to_string())]));
+            widgets::muted(ui, tn(words, "{n} word", "{n} words", &[]));
         });
     }
 
@@ -180,17 +180,17 @@ impl AcademicApp {
             widgets::section_header(ui, t("Journal and issue"));
             widgets::form_grid(ui, "journal-grid", |ui| {
                 for (label, value) in [
-                    ("Journal", &mut m.journal),
-                    ("Abbreviation", &mut m.journal_abbrev),
-                    ("ISSN", &mut m.issn),
-                    ("Volume", &mut m.volume),
-                    ("Issue", &mut m.issue),
-                    ("Year", &mut m.year),
-                    ("Pages", &mut m.pages),
-                    ("Article no.", &mut m.article_number),
-                    ("DOI", &mut m.doi),
+                    (t("Journal"), &mut m.journal),
+                    (t("Abbreviation"), &mut m.journal_abbrev),
+                    (t("ISSN"), &mut m.issn),
+                    (t("Volume"), &mut m.volume),
+                    (t("Issue"), &mut m.issue),
+                    (t("Year"), &mut m.year),
+                    (t("Pages"), &mut m.pages),
+                    (t("Article no."), &mut m.article_number),
+                    (t("DOI"), &mut m.doi),
                 ] {
-                    widgets::form_label(ui, t(label));
+                    widgets::form_label(ui, label);
                     ui.add(widgets::text_field(value, ""));
                     ui.end_row();
                 }
@@ -201,10 +201,13 @@ impl AcademicApp {
             ui.set_width(ui.available_width());
             widgets::section_header(ui, t("Dates and licence"));
             widgets::form_grid(ui, "dates-grid", |ui| {
-                for (label, value) in
-                    [("Received", &mut m.received), ("Revised", &mut m.revised), ("Accepted", &mut m.accepted), ("Published", &mut m.published)]
-                {
-                    widgets::form_label(ui, t(label));
+                for (label, value) in [
+                    (t("Received"), &mut m.received),
+                    (t("Revised"), &mut m.revised),
+                    (t("Accepted"), &mut m.accepted),
+                    (t("Published"), &mut m.published),
+                ] {
+                    widgets::form_label(ui, label);
                     ui.add(widgets::text_field(value, "YYYY-MM-DD"));
                     ui.end_row();
                 }
@@ -373,7 +376,7 @@ impl AcademicApp {
                 ui.horizontal(|ui| {
                     ui.label(egui::RichText::new(t("PDF preview")).strong());
                     if self.preview.total_pages > 0 {
-                        widgets::muted(ui, tf("{n} pages", &[("n", &self.preview.total_pages.to_string())]));
+                        widgets::muted(ui, tn(self.preview.total_pages, "{n} page", "{n} pages", &[]));
                     }
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
                         let ctx = ui.ctx().clone();

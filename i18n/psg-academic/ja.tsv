@@ -2,42 +2,64 @@
 # No escapes: a backslash is a backslash. Embedded by apps/psg-academic-pdf/src/i18n.rs; a missing row shows in English.
 # Written from the plain meaning of the English; no other product's translations were consulted.
 	(none)	（なし）
-	A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it.	コマンドのつづりが誤っているか、雑誌テンプレートが読み込まないパッケージが必要です。この行のコマンドを確認するか削除してください。
+	A .tex or .docx file becomes the body of a new project	.tex または .docx ファイルが新しいプロジェクトの本文になります
+	A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it.	コマンドのつづりが誤っているか、ジャーナルテンプレートが読み込まないパッケージが必要です。この行のコマンドを確認するか削除してください。
 	A file the manuscript uses is not in the project. Add it with "Bibliography / figures…" and check the spelling: file names are case-sensitive.	原稿で使うファイルがプロジェクトにありません。「参考文献 / 図…」で追加し、つづりを確認してください。ファイル名は大文字と小文字を区別します。
 	A line sticks out into the margin. Rephrase it, allow a hyphenation with \-, or break a long URL or formula.	行が余白にはみ出しています。言い回しを変えるか、\- でハイフネーションを許すか、長い URL や数式を分割してください。
 	Abbreviation	略称
+	About	このアプリについて
 	Abstract	要旨
 	Accepted	受理日
 	Activity	アクティビティ
 	Add affiliation	所属を追加
 	Add author	著者を追加
+	Add bibliography file…	文献ファイルを追加…
 	Add bibliography, figures or other files	参考文献、図、その他のファイルを追加
 	Added {path} as {name}	{path} を {name} として追加しました
 	Affiliation numbers, e.g. 1, 2	所属番号（例: 1, 2）
 	Affiliations	所属
+	All ({n})	すべて（{n}）
+	All releases are listed at {url}	すべてのリリースは {url} にあります
+	An open project keeps the template it was created with; the selection applies to new projects.	開いているプロジェクトは作成時のテンプレートのままです。ここでの選択は新しいプロジェクトに適用されます。
 	Article	論文
+	Article details	論文の情報
 	Article no.	論文番号
 	Author {n}	著者 {n}
-	Authors and affiliations	著者と所属
-	Before compiling	コンパイル前の確認
+	Authors	著者
+	Authors refer to these by number.	著者はこれらを番号で参照します。
+	Auto Typeset	自動組版
+	Before typesetting	組版の前
+	Before you export	書き出す前に
+	Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):	PSG Academic PDF は組み込みテンプレートのほか、次のフォルダーからもテンプレートを読み込みます（各テンプレートは template.toml を含むフォルダーです）：
+	Beta	ベータ
 	Biber could not read the bibliography file. Check that the .bib file named in main.tex is in the project.	Biber が参考文献ファイルを読めませんでした。main.tex で指定した .bib ファイルがプロジェクトにあるか確認してください。
 	Bibliography / figures…	参考文献 / 図…
+	Bibliography: {tool}	文献処理：{tool}
+	Built in	組み込み
 	Cancel	キャンセル
+	Cancelled	キャンセル済み
 	Cancelling…	キャンセルしています…
+	Cannot auto-update this installation type. Please download manually.	この種類のインストールは自動でアップデートできません。手動でダウンロードしてください。
+	Check Again	もう一度確認
 	Check again	再確認
+	Check and export the finished PDF	完成した PDF を確認して書き出す
+	Check compatibility	互換性を確認
 	Check for updates…	アップデートを確認…
+	Check the finished article and save the PDF where it is needed.	完成した論文を確認し、PDF を必要な場所に保存します。
+	Checking TeX…	TeX を確認中…
+	Checking for updates…	アップデートを確認しています…
 	Checking the TeX installation…	TeX のインストールを確認しています…
 	Checking…	確認しています…
 	Choose an empty folder for the project	プロジェクト用の空のフォルダーを選択
+	Close	閉じる
+	Close {app}	{app} を閉じる
+	Close {app} to finish	{app} を閉じて完了
+	Coming later	今後対応予定
 	Compilation started.	コンパイルを開始しました。
-	Compile	コンパイル
 	Compile output	コンパイル出力
-	Compile the project to see the PDF here.	プロジェクトをコンパイルすると、ここに PDF が表示されます。
-	Compile to see errors and warnings here.	コンパイルすると、ここにエラーと警告が表示されます。
-	Compile to see latexmk's output here.	コンパイルすると、ここに latexmk の出力が表示されます。
-	Compiling with latexmk and pdfLaTeX…	latexmk と pdfLaTeX でコンパイルしています…
 	Copyright	著作権
 	Corresponding author	責任著者
+	Could not check for updates.	アップデートを確認できませんでした。
 	Could not check the TeX installation: {error}	TeX のインストールを確認できませんでした: {error}
 	Could not create the project: {error}	プロジェクトを作成できませんでした: {error}
 	Could not open the project: {error}	プロジェクトを開けませんでした: {error}
@@ -45,277 +67,268 @@
 	Could not save the project: {error}	プロジェクトを保存できませんでした: {error}
 	Could not save {file}: {error}	{file} を保存できませんでした: {error}
 	Could not start the compilation: {error}	コンパイルを開始できませんでした: {error}
+	Couldn't start the update ({error})	アップデートを開始できませんでした（{error}）
 	Create the project in {path}	{path} にプロジェクトを作成
+	Ctrl	Ctrl
+	Current project	現在のプロジェクト
 	DOI	DOI
+	Dark	ダーク
+	Dashboard	ダッシュボード
+	Data folder:	データフォルダー：
 	Dates and licence	日付とライセンス
+	Development build	開発ビルド
 	Discard unsaved changes and read the file again	保存していない変更を破棄してファイルを読み直す
+	Dismiss	閉じる
+	Download	ダウンロード
+	Downloading and installing update…	アップデートをダウンロードしてインストールしています…
+	Edit manuscript	原稿を編集
+	Editor	エディター
 	Email	メール
 	Engine	エンジン
+	Engine: pdfLaTeX	エンジン：pdfLaTeX
 	Entry	項目
+	Error	エラー
+	Errors ({n})	エラー（{n}）
+	Errors stop typesetting; warnings are worth a look before export.	エラーがあると組版は止まります。警告は書き出す前に確認してください。
 	Experimental: converts with the local Pandoc	試験的機能: ローカルの Pandoc で変換します
+	Export	書き出し
 	Export PDF…	PDF を書き出す…
 	Export failed: {error}	書き出しに失敗しました: {error}
 	Export the PDF	PDF を書き出す
 	Exported {path}.	{path} を書き出しました。
+	Failed	失敗
+	File	ファイル
 	Files added; see Activity for their names in the project.	ファイルを追加しました。プロジェクト内での名前は「アクティビティ」で確認できます。
-	Filter	絞り込み
-	From the last compilation	前回のコンパイル結果
+	Filter by key, author or title	キー・著者・タイトルで絞り込み
+	Finished	完了
+	Fit width	幅に合わせる
+	Follow system	システムに合わせる
+	Follow system ({language})	システムに合わせる（{language}）
+	From the last typesetting run	前回の組版から
+	Get beta updates	ベータ版の更新を受け取る
 	Go to line	その行へ移動
 	ISSN	ISSN
+	Idle	待機中
 	Import	読み込み
 	Import a Word manuscript (experimental, via Pandoc)	Word 原稿を読み込む（試験的機能、Pandoc を使用）
+	Import a manuscript	原稿を読み込む
+	Import a manuscript or create a project from a template to start.	原稿を読み込むか、テンプレートからプロジェクトを作成して始めましょう。
 	Import failed: {error}	読み込みに失敗しました: {error}
+	Import manuscript…	原稿を読み込む…
+	Import template (.zip)…	テンプレートを読み込む（.zip）…
 	Import the manuscript body (LaTeX)	原稿本文を読み込む（LaTeX）
 	Install Pandoc to import .docx (experimental)	Pandoc をインストールすると .docx を読み込めます（試験的機能）
+	Installing update…	アップデートをインストールしています…
+	Interface size	表示サイズ
 	Issue	号
-	Journal	雑誌
-	Journal and issue	雑誌と号
-	Journal template	雑誌テンプレート
+	Join beta	ベータに参加
+	Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.	ベータチャンネルに参加しますか？ベータ版には未完成の機能や不具合があることがあります。PSG Academic PDF は新しいベータ版ごとに、また新しい安定版が出ればそれに更新されます。
+	Journal	ジャーナル
+	Journal and issue	ジャーナルと号
+	Journal templates set the layout, fonts and citation style. New projects use the selected template.	ジャーナルのテンプレートがレイアウト、フォント、引用スタイルを決めます。新しいプロジェクトは選択したテンプレートを使います。
 	Key	キー
 	Keywords	キーワード
 	Language	表示言語
+	Language and appearance	言語と外観
+	Later	後で
+	Leave beta	ベータをやめる
+	Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	ベータチャンネルをやめますか？PSG Academic PDF は今のバージョンのままで、それより新しい安定版が出たときに更新されます。古いバージョンには戻りません。
 	Licence statement	ライセンス表記
+	Light	ライト
+	Line {n}	{n} 行目
+	Manuscript	原稿
 	Manuscript (.tex)…	原稿（.tex）…
+	Manuscript as a new project…	原稿から新しいプロジェクト…
 	Mathematics outside a formula, or a stray _ or ^ in text. Put formulas in $…$, and write \_ for an underscore in text.	数式の外に数式があるか、本文に余分な _ や ^ があります。数式は $…$ に入れ、本文のアンダースコアは \_ と書いてください。
+	Missing	見つかりません
+	Name	氏名
 	New in folder…	フォルダーに新規作成…
 	New project	新規プロジェクト
+	New project from this template	このテンプレートで新規プロジェクト
 	New project from {template} around {path}.	{template} で {path} を元に新規プロジェクトを作成しました。
 	New project from {template} in {path}.	{template} で {path} に新規プロジェクトを作成しました。
+	New projects use the {template} template. Choose another in the Template Library.	新しいプロジェクトは {template} テンプレートを使います。別のものはテンプレートライブラリで選べます。
+	No PDF yet	PDF はまだありません
+	No PDF yet.	PDF はまだありません。
 	No TeX log yet.	TeX ログはまだありません。
 	No \label with this name. Check the spelling of the \ref and the \label.	この名前の \label がありません。\ref と \label のつづりを確認してください。
+	No \section headings yet.	\section の見出しはまだありません。
+	No bibliography	文献なし
+	No bibliography entries yet.	文献の項目はまだありません。
+	No errors	エラーなし
 	No errors or warnings.	エラーや警告はありません。
+	No manuscript open	開いている原稿はありません
 	No problems in the manuscript's scripts or the bibliography.	原稿の文字と参考文献に問題はありません。
-	No project yet. Choose a template and press New project.	プロジェクトはまだありません。テンプレートを選んで「新規プロジェクト」を押してください。
+	No project open	開いているプロジェクトはありません
 	No template is available.	使えるテンプレートがありません。
 	Not added: {error}	追加しませんでした: {error}
 	Not opened (one project at a time): {path}	開きませんでした（一度に開けるプロジェクトは一つです）: {path}
+	Not typeset in this session	このセッションでは未組版
+	Nothing typeset in this session yet.	このセッションではまだ何も組版していません。
+	OK	OK
 	ORCID iD	ORCID iD
 	Open a PSG Academic PDF project folder	PSG Academic PDF のプロジェクトフォルダーを開く
+	Open another project…	別のプロジェクトを開く…
 	Open file	ファイルを開く
 	Open in PSG PDF	PSG PDF で開く
+	Open or create a project first.	まずプロジェクトを開くか作成してください。
 	Open or create a project to check it.	確認するにはプロジェクトを開くか作成してください。
-	Open or create a project to edit its manuscript.	原稿を編集するにはプロジェクトを開くか作成してください。
-	Open or create a project to see its bibliography.	参考文献を見るにはプロジェクトを開くか作成してください。
+	Open or create a project to import into it.	読み込むには、プロジェクトを開くか作成してください。
 	Open or create a project, and wait for the TeX check, before compiling.	コンパイルする前に、プロジェクトを開くか作成し、TeX の確認が終わるのを待ってください。
+	Open or create a project, then typeset it to export a PDF.	プロジェクトを開くか作成し、組版すると PDF を書き出せます。
+	Open project…	プロジェクトを開く…
 	Open the compiled PDF in PSG PDF for review, annotation and further editing	コンパイルした PDF を PSG PDF で開き、確認、注釈、編集を行う
 	Opened {path} in PSG PDF.	{path} を PSG PDF で開きました。
 	Opened {path} in the default PDF viewer.	{path} を既定の PDF ビューアーで開きました。
 	Opened {path}.	{path} を開きました。
-	Open…	開く…
+	Outline	アウトライン
+	PDF	PDF
 	PDF engine: PdfCraft (MIT OR Apache-2.0)	PDF エンジン: PdfCraft（MIT OR Apache-2.0）
 	PDF preview	PDF プレビュー
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF がインストールされていないため、既定のビューアーで PDF を開きました。PSG PDF は別途ダウンロードできます。
 	Page {n}: {error}	{n} ページ: {error}
 	Pages	ページ
-	Portable mode: settings and projects are kept in {path}.	ポータブルモード: 設定とプロジェクトは {path} に保存されます。
-	Preview zoom	プレビューの倍率
-	Problems ({n})	問題（{n}）
-	Project	プロジェクト
-	Project: {path} (template {template})	プロジェクト: {path}（テンプレート {template}）
-	Publication metadata	出版メタデータ
-	Published	公開日
-	Rebuild everything each time	毎回すべて再構築する
-	Received	受付日
-	Redraw preview	プレビューを再描画
-	References ({n})	参考文献（{n}）
-	Reload from disk	ディスクから再読み込み
-	Remove	削除
-	Replaces the article body; a full document keeps only its body	論文本文を置き換えます。完全な文書は本文だけが残ります
-	Revised	修正日
-	Save	保存
-	Save the file (Ctrl+S / ⌘S)	ファイルを保存（Ctrl+S / ⌘S）
-	Saved {file}.	{file} を保存しました。
-	Separate keywords with ; or ,	キーワードは ; または , で区切ります
-	Short title	短縮タイトル
-	Showing the first {shown} of {total} pages.	全 {total} ページのうち最初の {shown} ページを表示しています。
-	Some citations or cross-references could not be resolved; the warnings above name them.	一部の引用や相互参照を解決できませんでした。上の警告に名前があります。
-	Source and PDF	ソースと PDF
-	Supported files	対応ファイル
-	TeX installation	TeX のインストール
-	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX の準備ができていません: {tools} が見つかりません。latexmk と biber を含む TeX Live をインストールしてから「再確認」を押してください。
-	TeX is ready.	TeX の準備ができました。
-	TeX log	TeX ログ
-	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX が致命的なエラーで止まりました。一覧の最初のエラーを直してください。後のエラーはそれが原因であることが多いです。
-	Template skipped: {problem}	テンプレートをスキップしました: {problem}
-	Text before \begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed.	\begin{document} より前に文字があります。本文ファイルには論文本文だけを入れてください。プリアンブルを除くため原稿を読み込み直してください。
-	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	.bib ファイルのここに示した項目の近くに構文エラーがあります。カンマ、括弧、引用符が抜けています。
-	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	pdfLaTeX の雑誌テンプレートは中国語、日本語、韓国語を組版できません（CJK フォントを使う XeLaTeX か LuaLaTeX が必要ですが、これらのテンプレートは使いません）。タイトル、氏名、参考文献はラテン文字（ローマ字表記、原文は元データに保存）で記すか、PSG Academic PDF 以外で CJK 対応のテンプレートを使ってください。
-	The project folder: compilation happens here and only here	プロジェクトフォルダー: コンパイルはここでのみ行われます
-	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	テンプレートにはキリル文字のフォント（T2A エンコーディング）がありません。多くの英文誌の求めに従い、キリル文字の氏名やタイトルは翻字してください。
-	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	テンプレートにはギリシャ文字の本文フォントがありません。数式ではギリシャ文字をコマンド（$\alpha$、$\Omega$）で書き、本文のギリシャ語は翻字してください。
-	The templates have no font for this script. Transliterate the text.	テンプレートにはこの文字のフォントがありません。翻字してください。
-	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	この Pandoc は古すぎます。DOCX の読み込みには Pandoc 2.15 以降が必要です
-	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	この引用キーは参考文献にありません。.bib ファイルに項目を追加するか、キーを直してください。
-	This template doesn't use a bibliography file.	このテンプレートは参考文献ファイルを使いません。
-	Time limit	制限時間
-	Title	タイトル
-	Type	種類
-	Typeset with latexmk and pdfLaTeX	latexmk と pdfLaTeX で組版
-	Typesetting	組版
-	Unbalanced braces: a { without its } (or the other way round) near this line.	括弧の対応が取れていません。この行の近くに } のない {（またはその逆）があります。
-	Unsaved changes; they are saved before compiling.	保存していない変更があります。コンパイル前に保存されます。
-	Volume	巻
-	Word (.docx)…	Word（.docx）…
-	Year	年
-	found	検出
-	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk は通常これが消えるまで再実行します。残る場合は「毎回すべて再構築する」をオンにしてもう一度コンパイルしてください。
-	not found	見つかりません
-	not found (optional, for DOCX import)	見つかりません（任意、DOCX の読み込み用）
-	pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX.	これらのテンプレートでは、pdfLaTeX は右から左に書く文字を組版できません。翻字するか、XeLaTeX または LuaLaTeX 用のテンプレートで準備してください。
-	pdfLaTeX via latexmk (shell escape off)	latexmk 経由の pdfLaTeX（shell escape は無効）
-	pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\alpha$, for example).	pdfLaTeX のフォントにはこの文字のグリフがありません。置き換えるか、LaTeX コマンドで書いてください（例: ギリシャ文字は $\alpha$）。
-	{file} is not UTF-8 text; save it as UTF-8 and try again.	{file} は UTF-8 のテキストではありません。UTF-8 で保存してからやり直してください。
-	{file} is too large to edit here.	{file} は大きすぎてここでは編集できません。
-	{first} Some things need fixing first: see Activity.	{first} 先に直すべき点があります。「アクティビティ」を見てください。
-	{id} · {engine} · bibliography: {bibliography}	{id} · {engine} · 参考文献: {bibliography}
-	{n} problems found before compiling; see Problems.	コンパイル前に {n} 件の問題が見つかりました。「問題」を見てください。
-	{path} is a Word manuscript; install Pandoc to import it.	{path} は Word の原稿です。読み込むには Pandoc をインストールしてください。
-	A .tex or .docx file becomes the body of a new project	.tex または .docx ファイルが新しいプロジェクトの本文になります
-	About	このアプリについて
-	Add bibliography file…	文献ファイルを追加…
-	All ({n})	すべて（{n}）
-	An open project keeps the template it was created with; the selection applies to new projects.	開いているプロジェクトは作成時のテンプレートのままです。ここでの選択は新しいプロジェクトに適用されます。
-	Article details	論文の情報
-	Authors	著者
-	Authors refer to these by number.	著者はこれらを番号で参照します。
-	Auto Typeset	自動組版
-	Before typesetting	組版の前
-	Before you export	書き出す前に
-	Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):	PSG Academic PDF は組み込みテンプレートのほか、次のフォルダーからもテンプレートを読み込みます（各テンプレートは template.toml を含むフォルダーです）：
-	Bibliography: {tool}	文献処理：{tool}
-	Built in	組み込み
-	Cancelled	キャンセル済み
-	Check and export the finished PDF	完成した PDF を確認して書き出す
-	Check compatibility	互換性を確認
-	Check the finished article and save the PDF where it is needed.	完成した論文を確認し、PDF を必要な場所に保存します。
-	Checking TeX…	TeX を確認中…
-	Coming later	今後対応予定
-	Current project	現在のプロジェクト
-	Dark	ダーク
-	Dashboard	ダッシュボード
-	Data folder:	データフォルダー：
-	Edit manuscript	原稿を編集
-	Editor	エディター
-	Engine: pdfLaTeX	エンジン：pdfLaTeX
-	Error	エラー
-	Errors ({n})	エラー（{n}）
-	Errors stop typesetting; warnings are worth a look before export.	エラーがあると組版は止まります。警告は書き出す前に確認してください。
-	Export	書き出し
-	Failed	失敗
-	File	ファイル
-	Filter by key, author or title	キー・著者・タイトルで絞り込み
-	Finished	完了
-	Follow system	システムに合わせる
-	From the last typesetting run	前回の組版から
-	Get beta updates	ベータ版の更新を受け取る
-	Idle	待機中
-	Import a manuscript	原稿を読み込む
-	Import a manuscript or create a project from a template to start.	原稿を読み込むか、テンプレートからプロジェクトを作成して始めましょう。
-	Import manuscript…	原稿を読み込む…
-	Import template (.zip)…	テンプレートを読み込む（.zip）…
-	Interface size	表示サイズ
-	Join beta	ベータに参加
-	Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.	ベータチャンネルに参加しますか？ベータ版には未完成の機能や不具合があることがあります。PSG Academic PDF は新しいベータ版ごとに、また新しい安定版が出ればそれに更新されます。
-	Journal templates set the layout, fonts and citation style. New projects use the selected template.	ジャーナルのテンプレートがレイアウト、フォント、引用スタイルを決めます。新しいプロジェクトは選択したテンプレートを使います。
-	Language and appearance	言語と外観
-	Leave beta	ベータをやめる
-	Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	ベータチャンネルをやめますか？PSG Academic PDF は今のバージョンのままで、それより新しい安定版が出たときに更新されます。古いバージョンには戻りません。
-	Light	ライト
-	Line {n}	{n} 行目
-	Manuscript	原稿
-	Manuscript as a new project…	原稿から新しいプロジェクト…
-	Missing	見つかりません
-	Name	氏名
-	New project from this template	このテンプレートで新規作成
-	New projects use the {template} template. Choose another in the Template Library.	新しいプロジェクトは {template} テンプレートを使います。別のものはテンプレートライブラリで選べます。
-	No PDF yet	PDF はまだありません
-	No PDF yet.	PDF はまだありません。
-	No \section headings yet.	\section の見出しはまだありません。
-	No bibliography	文献なし
-	No bibliography entries yet.	文献の項目はまだありません。
-	No errors	エラーなし
-	No manuscript open	開いている原稿はありません
-	No project open	開いているプロジェクトはありません
-	Not typeset in this session	このセッションでは未組版
-	Nothing typeset in this session yet.	このセッションではまだ何も組版していません。
-	Open another project…	別のプロジェクトを開く…
-	Open or create a project first.	まずプロジェクトを開くか作成してください。
-	Open or create a project to import into it.	読み込むには、プロジェクトを開くか作成してください。
-	Open or create a project, then typeset it to export a PDF.	プロジェクトを開くか作成し、組版すると PDF を書き出せます。
-	Open project…	プロジェクトを開く…
-	Outline	アウトライン
-	PDF	PDF
 	Planned for a later version; not available yet.	今後のバージョンで対応予定です。まだ使えません。
+	Portable mode: settings and projects are kept in {path}.	ポータブルモード: 設定とプロジェクトは {path} に保存されます。
 	Press Auto Typeset first.	まず「自動組版」を押してください。
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	「自動組版」を押すと原稿が組版され、PDF がここに表示されます。
 	Preview	プレビュー
 	Problems	問題
+	Problems ({n})	問題（{n}）
+	Project: {path} (template {template})	プロジェクト: {path}（テンプレート {template}）
 	Projects you open or create appear here.	開いたり作成したりしたプロジェクトがここに表示されます。
 	Publication	出版情報
+	Published	公開日
+	Rebuild everything each time	毎回すべて再構築する
+	Received	受付日
 	Recent projects	最近のプロジェクト
 	Redraw	再描画
+	References ({n})	参考文献（{n}）
+	Reload from disk	ディスクから再読み込み
+	Remove	削除
 	Remove from the list (the folder is kept)	一覧から外す（フォルダーは残ります）
+	Replaces the article body; a full document keeps only its body	論文本文を置き換えます。完全な文書は本文だけが残ります
 	Required publication details are filled in	必須の出版情報が入力されています
 	Reset	リセット
+	Resize panes	ペインのサイズを変更
+	Restart to Update	再起動してアップデート
 	Review problems	問題を確認
+	Revised	修正日
 	Running	実行中
 	Runs in this session	このセッションの実行
+	Save	保存
+	Save or close your open work first; the update restarts the app.	先に開いている作業を保存するか閉じてください。アップデートするとアプリが再起動します。
 	Save the file ({keys})	ファイルを保存（{keys}）
 	Save, check and typeset with latexmk and pdfLaTeX ({keys})	保存・確認して latexmk と pdfLaTeX で組版（{keys}）
 	Saved with the project ({keys}) and before every typesetting run.	プロジェクトと一緒に保存され（{keys}）、組版の前にも毎回保存されます。
+	Saved {file}.	{file} を保存しました。
 	Saved.	保存しました。
 	See Manuscript ▸ Title & abstract, Authors and Publication.	「原稿 ▸ タイトルと要旨、著者、出版情報」を確認してください。
 	Selected for new projects	新規プロジェクト用
+	Separate keywords with ; or ,	キーワードは ; または , で区切ります
 	Settings	設定
 	Settings for this project	このプロジェクトの設定
 	Settings ▸ TeX installation	設定 ▸ TeX のインストール
+	Shift	Shift
+	Short title	短縮タイトル
 	Shortcuts:	ショートカット：
 	Show the PDF beside the manuscript	原稿の横に PDF を表示
+	Showing the first {shown} of {total} pages.	全 {total} ページのうち最初の {shown} ページを表示しています。
 	Size	サイズ
+	Some citations or cross-references could not be resolved; the warnings above name them.	一部の引用や相互参照を解決できませんでした。上の警告に名前があります。
 	Source	ソース
 	Split	左右に並べる
 	Start a project	プロジェクトを始める
 	Suggested name	推奨ファイル名
+	Supported files	対応ファイル
 	Switch area	エリアを切り替え
+	TeX installation	TeX のインストール
 	TeX is not ready: see Settings ▸ TeX installation.	TeX の準備ができていません。「設定 ▸ TeX のインストール」を確認してください。
+	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX の準備ができていません: {tools} が見つかりません。latexmk と biber を含む TeX Live をインストールしてから「再確認」を押してください。
+	TeX is ready.	TeX の準備ができました。
+	TeX log	TeX ログ
 	TeX not found	TeX が見つかりません
 	TeX ready	TeX 準備完了
 	TeX ready, no Biber	TeX 準備完了（Biber なし）
+	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX が致命的なエラーで止まりました。一覧の最初のエラーを直してください。後のエラーはそれが原因であることが多いです。
 	Template Library	テンプレートライブラリ
+	Template skipped: {problem}	テンプレートをスキップしました: {problem}
 	Template: {template}	テンプレート：{template}
+	Text before \begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed.	\begin{document} より前に文字があります。本文ファイルには論文本文だけを入れてください。プリアンブルを除くため原稿を読み込み直してください。
+	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	.bib ファイルのここに示した項目の近くに構文エラーがあります。カンマ、括弧、引用符が抜けています。
+	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	pdfLaTeX のジャーナルテンプレートは中国語、日本語、韓国語を組版できません（CJK フォントを使う XeLaTeX か LuaLaTeX が必要ですが、これらのテンプレートは使いません）。タイトル、氏名、参考文献はラテン文字（ローマ字表記、原文は元データに保存）で記すか、PSG Academic PDF 以外で CJK 対応のテンプレートを使ってください。
+	The project folder: compilation happens here and only here	プロジェクトフォルダー: コンパイルはここでのみ行われます
 	The project has been typeset	プロジェクトは組版済み
+	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	テンプレートにはキリル文字のフォント（T2A エンコーディング）がありません。多くの英語のジャーナルの求めに従い、キリル文字の氏名やタイトルは翻字してください。
+	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	テンプレートにはギリシャ文字の本文フォントがありません。数式ではギリシャ文字をコマンド（$\alpha$、$\Omega$）で書き、本文のギリシャ語は翻字してください。
+	The templates have no font for this script. Transliterate the text.	テンプレートにはこの文字のフォントがありません。翻字してください。
+	The update could not be installed: {reason}	アップデートをインストールできませんでした: {reason}
+	The update failed unexpectedly.	アップデートが予期せず失敗しました。
+	The update is installed. Close {app} to finish; it restarts by itself.	アップデートをインストールしました。{app} を閉じると完了し、自動で再起動します。
+	The update stopped unexpectedly.	アップデートが予期せず停止しました。
 	Theme	テーマ
+	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	この Pandoc は古すぎます。DOCX の読み込みには Pandoc 2.15 以降が必要です
+	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	この引用キーは参考文献にありません。.bib ファイルに項目を追加するか、キーを直してください。
+	This template doesn't use a bibliography file.	このテンプレートは参考文献ファイルを使いません。
+	Time limit	制限時間
 	Timed out	時間切れ
+	Title	タイトル
 	Title & abstract	タイトルと要旨
+	Type	種類
 	Typeset	組版日時
 	Typeset accepted articles into publication-ready PDFs with your journal's template.	採択された論文を、ジャーナルのテンプレートで出版用の PDF に組版します。
-	Typeset in {secs} s with {n} warning(s).	{secs} 秒で組版しました（警告 {n} 件）。
 	Typeset the project first.	まずプロジェクトを組版してください。
 	Typeset to see errors and warnings here.	組版するとエラーと警告がここに表示されます。
 	Typeset to see latexmk's output here.	組版すると latexmk の出力がここに表示されます。
+	Typesetting	組版
 	Typesetting cancelled.	組版をキャンセルしました。
-	Typesetting failed after {secs} s with {n} error(s).	{secs} 秒後に組版が失敗しました（エラー {n} 件）。
 	Typesetting for {secs} s…	組版中（{secs} 秒）…
 	Typesetting is already running.	組版を実行中です。
 	Typesetting stopped: it took longer than {secs} s.	組版を止めました：{secs} 秒を超えました。
 	Typesetting with latexmk and pdfLaTeX…	latexmk と pdfLaTeX で組版中…
+	Unbalanced braces: a { without its } (or the other way round) near this line.	括弧の対応が取れていません。この行の近くに } のない {（またはその逆）があります。
 	Unsaved	未保存
 	Unsaved changes	未保存の変更があります
 	Untitled article	無題の論文
+	Update	アップデート
+	Update and Restart	アップデートして再起動
+	Update ready. Close {app} to install it.	アップデートの準備ができました。{app} を閉じるとインストールされます。
 	Updates	アップデート
 	Used by this project	このプロジェクトで使用中
+	Volume	巻
 	Warning	警告
 	Warnings ({n})	警告（{n}）
+	What's new	新機能
 	Where templates come from	テンプレートの場所
+	Word (.docx)…	Word（.docx）…
 	Worth a look, but they don't stop the export.	確認をおすすめしますが、書き出しは止まりません。
+	Year	年
+	by {developer}	開発元: {developer}
+	found	検出
+	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk は通常これが消えるまで再実行します。残る場合は「毎回すべて再構築する」をオンにしてもう一度コンパイルしてください。
 	latexmk runs pdfLaTeX (and Biber for the bibliography) in the project folder, without shell escape.	latexmk がプロジェクトフォルダーで pdfLaTeX（文献には Biber）を実行します。shell escape は使いません。
+	not found	見つかりません
+	not found (optional, for DOCX import)	見つかりません（任意、DOCX の読み込み用）
 	pdfLaTeX	pdfLaTeX
+	pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX.	これらのテンプレートでは、pdfLaTeX は右から左に書く文字を組版できません。翻字するか、XeLaTeX または LuaLaTeX 用のテンプレートで準備してください。
+	pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\alpha$, for example).	pdfLaTeX のフォントにはこの文字のグリフがありません。置き換えるか、LaTeX コマンドで書いてください（例: ギリシャ文字は $\alpha$）。
 	via latexmk, shell escape off	latexmk 経由、shell escape オフ
+	v{from} to {to}	v{from} から {to} へ
+	{app} updated to {version}.	{app} を {version} にアップデートしました。
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} はランチャーで選んだバージョンに従うため、自分ではアップデートしません。
+	{app} {version} is available with the latest features and bug fixes.	{app} {version} が公開されました。最新の機能と不具合の修正が含まれています。
+	{app} {version} is the newest version available.	{app} {version} は最新バージョンです。
+	{file} is not UTF-8 text; save it as UTF-8 and try again.	{file} は UTF-8 のテキストではありません。UTF-8 で保存してからやり直してください。
+	{file} is too large to edit here.	{file} は大きすぎてここでは編集できません。
+	{first} Some things need fixing first: see Activity.	{first} 先に直すべき点があります。「アクティビティ」を見てください。
 	{id} · licence {licence}	{id} · ライセンス {licence}
 	{name} (open)	{name}（開いています）
-	{n} error(s)	エラー {n} 件
-	{n} error(s): see Problems.	エラー {n} 件：「問題」を確認してください。
-	{n} pages	{n} ページ
-	{n} warning(s)	警告 {n} 件
-	{n} words	{n} 語
-	Fit width	幅に合わせる
+	{path} is a Word manuscript; install Pandoc to import it.	{path} は Word の原稿です。読み込むには Pandoc をインストールしてください。
+@other	Typeset in {secs} s with {n} warning.	{secs} 秒で組版しました（警告 {n} 件）。
+@other	Typesetting failed after {secs} s with {n} error.	{secs} 秒後に組版に失敗しました（エラー {n} 件）。
+@other	{n} error	エラー {n} 件
+@other	{n} error: see Problems.	エラー {n} 件: 問題を確認してください。
+@other	{n} page	{n} ページ
+@other	{n} problem found before compiling; see Problems.	コンパイル前に {n} 件の問題が見つかりました。問題を確認してください。
+@other	{n} warning	警告 {n} 件
+@other	{n} word	{n} 語

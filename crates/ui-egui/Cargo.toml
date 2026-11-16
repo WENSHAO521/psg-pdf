@@ -26,6 +26,8 @@ pdfcraft-engine = { workspace = true }
 psg-brand = { workspace = true }
 # The PSG Desktop Design System: shared neutrals, tones, fonts and components (docs/design-system.md).
 psg-desktop-ui = { workspace = true }
+# The ten PSG interface languages and the hook the shared widgets translate through.
+psg-i18n = { workspace = true }
 pdfcraft-cos = { workspace = true }
 pdfcraft-content = { workspace = true }
 pdfcraft-ocr = { workspace = true }

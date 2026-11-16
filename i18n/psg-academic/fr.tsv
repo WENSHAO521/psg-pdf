@@ -1,0 +1,343 @@
+# PSG Academic PDF interface in fr (French). Columns, separated by a TAB: context <TAB> English <TAB> translation.
+# No escapes: a backslash is a backslash. Embedded by apps/psg-academic-pdf/src/i18n.rs; checked by its i18n tests.
+# Plural rows: context @one / @other, keyed by the English singular (psg_i18n::catalog).
+# Written from the plain meaning of the English; no other product's translations were consulted.
+	(none)	(aucun)
+	A .tex or .docx file becomes the body of a new project	Un fichier .tex ou .docx devient le corps d'un nouveau projet
+	A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it.	Une commande est mal orthographiée ou nécessite un package que le modèle de la revue ne charge pas. Vérifiez la commande sur cette ligne ou supprimez-la.
+	A file the manuscript uses is not in the project. Add it with "Bibliography / figures…" and check the spelling: file names are case-sensitive.	Un fichier utilisé par le manuscrit ne se trouve pas dans le projet. Ajoutez-le avec « Bibliographie / figures… » et vérifiez l'orthographe : les noms de fichier sont sensibles à la casse.
+	A line sticks out into the margin. Rephrase it, allow a hyphenation with \-, or break a long URL or formula.	Une ligne déborde dans la marge. Reformulez-la, autorisez une césure avec \- ou coupez une longue URL ou formule.
+	Abbreviation	Abréviation
+	About	À propos
+	Abstract	Résumé
+	Accepted	Accepté
+	Activity	Activité
+	Add affiliation	Ajouter une affiliation
+	Add author	Ajouter un auteur
+	Add bibliography file…	Ajouter un fichier de bibliographie…
+	Add bibliography, figures or other files	Ajouter une bibliographie, des figures ou d'autres fichiers
+	Added {path} as {name}	{path} ajouté sous le nom {name}
+	Affiliation numbers, e.g. 1, 2	Numéros d'affiliation, p. ex. 1, 2
+	Affiliations	Affiliations
+	All ({n})	Tout ({n})
+	All releases are listed at {url}	Toutes les versions sont listées sur {url}
+	An open project keeps the template it was created with; the selection applies to new projects.	Un projet ouvert garde le modèle avec lequel il a été créé ; la sélection s'applique aux nouveaux projets.
+	Article	Article
+	Article details	Détails de l'article
+	Article no.	N° d'article
+	Author {n}	Auteur {n}
+	Authors	Auteurs
+	Authors refer to these by number.	Les auteurs y renvoient par leur numéro.
+	Auto Typeset	Composer automatiquement
+	Before typesetting	Avant la composition
+	Before you export	Avant l'export
+	Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):	En plus des modèles intégrés, PSG Academic PDF lit les modèles de ces dossiers (chaque modèle est un dossier contenant un template.toml) :
+	Beta	Bêta
+	Biber could not read the bibliography file. Check that the .bib file named in main.tex is in the project.	Biber n'a pas pu lire le fichier de bibliographie. Vérifiez que le fichier .bib indiqué dans main.tex se trouve dans le projet.
+	Bibliography / figures…	Bibliographie / figures…
+	Bibliography: {tool}	Bibliographie : {tool}
+	Built in	Intégré
+	Cancel	Annuler
+	Cancelled	Annulé
+	Cancelling…	Annulation…
+	Cannot auto-update this installation type. Please download manually.	Ce type d'installation ne peut pas se mettre à jour automatiquement. Téléchargez la mise à jour manuellement.
+	Check Again	Vérifier à nouveau
+	Check again	Vérifier à nouveau
+	Check and export the finished PDF	Vérifier et exporter le PDF final
+	Check compatibility	Vérifier la compatibilité
+	Check for updates…	Rechercher des mises à jour…
+	Check the finished article and save the PDF where it is needed.	Vérifiez l'article final et enregistrez le PDF là où vous en avez besoin.
+	Checking TeX…	Vérification de TeX…
+	Checking for updates…	Recherche de mises à jour…
+	Checking the TeX installation…	Vérification de l'installation TeX…
+	Checking…	Vérification…
+	Choose an empty folder for the project	Choisissez un dossier vide pour le projet
+	Close	Fermer
+	Close {app}	Fermer {app}
+	Close {app} to finish	Fermez {app} pour terminer
+	Coming later	Bientôt disponible
+	Compilation started.	Compilation lancée.
+	Compile output	Sortie de compilation
+	Copyright	Droits d'auteur
+	Corresponding author	Auteur correspondant
+	Could not check for updates.	Impossible de rechercher des mises à jour.
+	Could not check the TeX installation: {error}	Impossible de vérifier l'installation TeX : {error}
+	Could not create the project: {error}	Impossible de créer le projet : {error}
+	Could not open the project: {error}	Impossible d'ouvrir le projet : {error}
+	Could not read {path}: {error}	Impossible de lire {path} : {error}
+	Could not save the project: {error}	Impossible d'enregistrer le projet : {error}
+	Could not save {file}: {error}	Impossible d'enregistrer {file} : {error}
+	Could not start the compilation: {error}	Impossible de lancer la compilation : {error}
+	Couldn't start the update ({error})	Impossible de lancer la mise à jour ({error})
+	Create the project in {path}	Créer le projet dans {path}
+	Ctrl	Ctrl
+	Current project	Projet actuel
+	DOI	DOI
+	Dark	Sombre
+	Dashboard	Tableau de bord
+	Data folder:	Dossier de données :
+	Dates and licence	Dates et licence
+	Development build	Version de développement
+	Discard unsaved changes and read the file again	Abandonner les modifications non enregistrées et relire le fichier
+	Dismiss	Fermer
+	Download	Télécharger
+	Downloading and installing update…	Téléchargement et installation de la mise à jour…
+	Edit manuscript	Modifier le manuscrit
+	Editor	Éditeur
+	Email	E-mail
+	Engine	Moteur
+	Engine: pdfLaTeX	Moteur : pdfLaTeX
+	Entry	Entrée
+	Error	Erreur
+	Errors ({n})	Erreurs ({n})
+	Errors stop typesetting; warnings are worth a look before export.	Les erreurs arrêtent la composition ; les avertissements méritent un coup d'œil avant l'export.
+	Experimental: converts with the local Pandoc	Expérimental : conversion avec le Pandoc local
+	Export	Exporter
+	Export PDF…	Exporter le PDF…
+	Export failed: {error}	Échec de l'export : {error}
+	Export the PDF	Exporter le PDF
+	Exported {path}.	{path} exporté.
+	Failed	Échec
+	File	Fichier
+	Files added; see Activity for their names in the project.	Fichiers ajoutés ; leurs noms dans le projet figurent dans Activité.
+	Filter by key, author or title	Filtrer par clé, auteur ou titre
+	Finished	Terminé
+	Fit width	Ajuster à la largeur
+	Follow system	Comme le système
+	Follow system ({language})	Comme le système ({language})
+	From the last typesetting run	De la dernière composition
+	Get beta updates	Recevoir les versions bêta
+	Go to line	Aller à la ligne
+	ISSN	ISSN
+	Idle	Prêt
+	Import	Importer
+	Import a Word manuscript (experimental, via Pandoc)	Importer un manuscrit Word (expérimental, via Pandoc)
+	Import a manuscript	Importer un manuscrit
+	Import a manuscript or create a project from a template to start.	Pour commencer, importez un manuscrit ou créez un projet à partir d'un modèle.
+	Import failed: {error}	Échec de l'import : {error}
+	Import manuscript…	Importer un manuscrit…
+	Import template (.zip)…	Importer un modèle (.zip)…
+	Import the manuscript body (LaTeX)	Importer le corps du manuscrit (LaTeX)
+	Install Pandoc to import .docx (experimental)	Installez Pandoc pour importer des .docx (expérimental)
+	Installing update…	Installation de la mise à jour…
+	Interface size	Taille de l'interface
+	Issue	Numéro
+	Join beta	Rejoindre la bêta
+	Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.	Rejoindre le canal bêta ? Les bêtas peuvent contenir des fonctions inachevées et des bogues. PSG Academic PDF se met alors à jour vers chaque nouvelle bêta, et vers chaque version stable dès qu'elle est plus récente.
+	Journal	Revue
+	Journal and issue	Revue et numéro
+	Journal templates set the layout, fonts and citation style. New projects use the selected template.	Les modèles de revue fixent la mise en page, les polices et le style de citation. Les nouveaux projets utilisent le modèle sélectionné.
+	Key	Clé
+	Keywords	Mots-clés
+	Language	Langue
+	Language and appearance	Langue et apparence
+	Later	Plus tard
+	Leave beta	Quitter la bêta
+	Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	Quitter le canal bêta ? PSG Academic PDF garde sa version actuelle et se remet à jour avec la première version stable plus récente. Il ne revient jamais à une version antérieure.
+	Licence statement	Mention de licence
+	Light	Clair
+	Line {n}	Ligne {n}
+	Manuscript	Manuscrit
+	Manuscript (.tex)…	Manuscrit (.tex)…
+	Manuscript as a new project…	Manuscrit comme nouveau projet…
+	Mathematics outside a formula, or a stray _ or ^ in text. Put formulas in $…$, and write \_ for an underscore in text.	Des mathématiques hors d'une formule, ou un _ ou ^ isolé dans le texte. Placez les formules entre $…$ et écrivez \_ pour un tiret bas dans le texte.
+	Missing	Manquant
+	Name	Nom
+	New in folder…	Nouveau dans un dossier…
+	New project	Nouveau projet
+	New project from this template	Nouveau projet à partir de ce modèle
+	New project from {template} around {path}.	Nouveau projet à partir de {template} autour de {path}.
+	New project from {template} in {path}.	Nouveau projet à partir de {template} dans {path}.
+	New projects use the {template} template. Choose another in the Template Library.	Les nouveaux projets utilisent le modèle {template}. Choisissez-en un autre dans la Bibliothèque de modèles.
+	No PDF yet	Pas encore de PDF
+	No PDF yet.	Pas encore de PDF.
+	No TeX log yet.	Pas encore de journal TeX.
+	No \label with this name. Check the spelling of the \ref and the \label.	Aucun \label de ce nom. Vérifiez l'orthographe du \ref et du \label.
+	No \section headings yet.	Pas encore de titres \section.
+	No bibliography	Sans bibliographie
+	No bibliography entries yet.	Pas encore d'entrées bibliographiques.
+	No errors	Aucune erreur
+	No errors or warnings.	Aucune erreur ni aucun avertissement.
+	No manuscript open	Aucun manuscrit ouvert
+	No problems in the manuscript's scripts or the bibliography.	Aucun problème dans les écritures du manuscrit ni dans la bibliographie.
+	No project open	Aucun projet ouvert
+	No template is available.	Aucun modèle n'est disponible.
+	Not added: {error}	Non ajouté : {error}
+	Not opened (one project at a time): {path}	Non ouvert (un seul projet à la fois) : {path}
+	Not typeset in this session	Pas encore composé dans cette session
+	Nothing typeset in this session yet.	Rien n'a encore été composé dans cette session.
+	OK	OK
+	ORCID iD	ORCID iD
+	Open a PSG Academic PDF project folder	Ouvrir un dossier de projet PSG Academic PDF
+	Open another project…	Ouvrir un autre projet…
+	Open file	Ouvrir le fichier
+	Open in PSG PDF	Ouvrir dans PSG PDF
+	Open or create a project first.	Ouvrez ou créez d'abord un projet.
+	Open or create a project to check it.	Ouvrez ou créez un projet pour le vérifier.
+	Open or create a project to import into it.	Ouvrez ou créez un projet pour y importer.
+	Open or create a project, and wait for the TeX check, before compiling.	Avant de compiler, ouvrez ou créez un projet et attendez la vérification de TeX.
+	Open or create a project, then typeset it to export a PDF.	Ouvrez ou créez un projet, puis composez-le pour exporter un PDF.
+	Open project…	Ouvrir un projet…
+	Open the compiled PDF in PSG PDF for review, annotation and further editing	Ouvrir le PDF compilé dans PSG PDF pour le relire, l'annoter et le retoucher
+	Opened {path} in PSG PDF.	{path} ouvert dans PSG PDF.
+	Opened {path} in the default PDF viewer.	{path} ouvert dans le lecteur PDF par défaut.
+	Opened {path}.	{path} ouvert.
+	Outline	Plan
+	PDF	PDF
+	PDF engine: PdfCraft (MIT OR Apache-2.0)	Moteur PDF : PdfCraft (MIT OR Apache-2.0)
+	PDF preview	Aperçu du PDF
+	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF n'est pas installé : le PDF s'est ouvert dans le lecteur par défaut. PSG PDF se télécharge séparément.
+	Page {n}: {error}	Page {n} : {error}
+	Pages	Pages
+	Planned for a later version; not available yet.	Prévu pour une version ultérieure ; pas encore disponible.
+	Portable mode: settings and projects are kept in {path}.	Mode portable : les réglages et les projets sont conservés dans {path}.
+	Press Auto Typeset first.	Appuyez d'abord sur Composer automatiquement.
+	Press Auto Typeset to typeset the manuscript; the PDF appears here.	Appuyez sur Composer automatiquement pour composer le manuscrit ; le PDF apparaît ici.
+	Preview	Aperçu
+	Problems	Problèmes
+	Problems ({n})	Problèmes ({n})
+	Project: {path} (template {template})	Projet : {path} (modèle {template})
+	Projects you open or create appear here.	Les projets que vous ouvrez ou créez apparaissent ici.
+	Publication	Publication
+	Published	Publié
+	Rebuild everything each time	Tout reconstruire à chaque fois
+	Received	Reçu
+	Recent projects	Projets récents
+	Redraw	Redessiner
+	References ({n})	Références ({n})
+	Reload from disk	Recharger depuis le disque
+	Remove	Retirer
+	Remove from the list (the folder is kept)	Retirer de la liste (le dossier est conservé)
+	Replaces the article body; a full document keeps only its body	Remplace le corps de l'article ; d'un document complet, seul le corps est gardé
+	Required publication details are filled in	Les informations de publication obligatoires sont renseignées
+	Reset	Réinitialiser
+	Resize panes	Redimensionner les volets
+	Restart to Update	Redémarrer pour mettre à jour
+	Review problems	Examiner les problèmes
+	Revised	Révisé
+	Running	En cours
+	Runs in this session	Exécutions de cette session
+	Save	Enregistrer
+	Save or close your open work first; the update restarts the app.	Enregistrez ou fermez d'abord votre travail en cours ; la mise à jour redémarre l'application.
+	Save the file ({keys})	Enregistrer le fichier ({keys})
+	Save, check and typeset with latexmk and pdfLaTeX ({keys})	Enregistrer, vérifier et composer avec latexmk et pdfLaTeX ({keys})
+	Saved with the project ({keys}) and before every typesetting run.	Enregistré avec le projet ({keys}) et avant chaque composition.
+	Saved {file}.	{file} enregistré.
+	Saved.	Enregistré.
+	See Manuscript ▸ Title & abstract, Authors and Publication.	Voir Manuscrit ▸ Titre et résumé, Auteurs et Publication.
+	Selected for new projects	Sélectionné pour les nouveaux projets
+	Separate keywords with ; or ,	Séparez les mots-clés par ; ou ,
+	Settings	Réglages
+	Settings for this project	Réglages de ce projet
+	Settings ▸ TeX installation	Réglages ▸ Installation TeX
+	Shift	Maj
+	Short title	Titre court
+	Shortcuts:	Raccourcis :
+	Show the PDF beside the manuscript	Afficher le PDF à côté du manuscrit
+	Showing the first {shown} of {total} pages.	Affichage des {shown} premières pages sur {total}.
+	Size	Taille
+	Some citations or cross-references could not be resolved; the warnings above name them.	Certaines citations ou références croisées n'ont pas pu être résolues ; les avertissements ci-dessus les indiquent.
+	Source	Source
+	Split	Partagé
+	Start a project	Commencer un projet
+	Suggested name	Nom suggéré
+	Supported files	Fichiers pris en charge
+	Switch area	Changer de zone
+	TeX installation	Installation TeX
+	TeX is not ready: see Settings ▸ TeX installation.	TeX n'est pas prêt : voir Réglages ▸ Installation TeX.
+	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX n'est pas prêt : {tools} introuvable. Installez TeX Live avec latexmk et biber, puis appuyez sur Vérifier à nouveau.
+	TeX is ready.	TeX est prêt.
+	TeX log	Journal TeX
+	TeX not found	TeX introuvable
+	TeX ready	TeX prêt
+	TeX ready, no Biber	TeX prêt, sans Biber
+	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX s'est arrêté sur une erreur fatale. Corrigez la première erreur de la liste ; les suivantes en découlent souvent.
+	Template Library	Bibliothèque de modèles
+	Template skipped: {problem}	Modèle ignoré : {problem}
+	Template: {template}	Modèle : {template}
+	Text before \begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed.	Texte avant \begin{document} : le fichier du corps ne doit contenir que le texte de l'article. Importez à nouveau le manuscrit pour retirer son préambule.
+	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	Le fichier .bib contient une erreur de syntaxe près de l'entrée indiquée ici : une virgule, une accolade ou un guillemet manquant.
+	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	Les modèles de revue pdfLaTeX ne peuvent pas composer le chinois, le japonais ni le coréen (il faut XeLaTeX ou LuaLaTeX avec une police CJK, que ces modèles n'utilisent pas). Donnez titres, noms et références en écriture latine (romanisés, l'original restant dans les données sources), ou préparez l'article hors de PSG Academic PDF avec un modèle compatible CJK.
+	The project folder: compilation happens here and only here	Le dossier du projet : la compilation a lieu ici et seulement ici
+	The project has been typeset	Le projet a été composé
+	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	Les modèles n'ont pas de police cyrillique (codage T2A). Translittérez les noms et titres cyrilliques, comme l'exigent la plupart des revues anglophones.
+	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	Les modèles n'ont pas de police de texte grecque. Dans les formules, écrivez les lettres grecques sous forme de commandes ($\alpha$, $\Omega$) ; les mots grecs du texte courant doivent être translittérés.
+	The templates have no font for this script. Transliterate the text.	Les modèles n'ont pas de police pour cette écriture. Translittérez le texte.
+	The update could not be installed: {reason}	La mise à jour n'a pas pu être installée : {reason}
+	The update failed unexpectedly.	La mise à jour a échoué de manière inattendue.
+	The update is installed. Close {app} to finish; it restarts by itself.	La mise à jour est installée. Fermez {app} pour terminer ; l'application redémarre d'elle-même.
+	The update stopped unexpectedly.	La mise à jour s'est arrêtée de manière inattendue.
+	Theme	Thème
+	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	Ce Pandoc est trop ancien : l'import DOCX nécessite Pandoc 2.15 ou plus récent
+	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	Cette clé de citation ne figure pas dans la bibliographie. Ajoutez l'entrée au fichier .bib ou corrigez la clé.
+	This template doesn't use a bibliography file.	Ce modèle n'utilise pas de fichier de bibliographie.
+	Time limit	Délai maximal
+	Timed out	Délai dépassé
+	Title	Titre
+	Title & abstract	Titre et résumé
+	Type	Type
+	Typeset	Composé le
+	Typeset accepted articles into publication-ready PDFs with your journal's template.	Composez les articles acceptés en PDF prêts à publier avec le modèle de votre revue.
+	Typeset the project first.	Composez d'abord le projet.
+	Typeset to see errors and warnings here.	Composez pour voir ici les erreurs et les avertissements.
+	Typeset to see latexmk's output here.	Composez pour voir ici la sortie de latexmk.
+	Typesetting	Composition
+	Typesetting cancelled.	Composition annulée.
+	Typesetting for {secs} s…	Composition depuis {secs} s…
+	Typesetting is already running.	La composition est déjà en cours.
+	Typesetting stopped: it took longer than {secs} s.	Composition arrêtée : elle a duré plus de {secs} s.
+	Typesetting with latexmk and pdfLaTeX…	Composition avec latexmk et pdfLaTeX…
+	Unbalanced braces: a { without its } (or the other way round) near this line.	Accolades déséquilibrées : un { sans son } (ou l'inverse) près de cette ligne.
+	Unsaved	Non enregistré
+	Unsaved changes	Modifications non enregistrées
+	Untitled article	Article sans titre
+	Update	Mettre à jour
+	Update and Restart	Mettre à jour et redémarrer
+	Update ready. Close {app} to install it.	Mise à jour prête. Fermez {app} pour l'installer.
+	Updates	Mises à jour
+	Used by this project	Utilisé par ce projet
+	Volume	Volume
+	Warning	Avertissement
+	Warnings ({n})	Avertissements ({n})
+	What's new	Nouveautés
+	Where templates come from	Provenance des modèles
+	Word (.docx)…	Word (.docx)…
+	Worth a look, but they don't stop the export.	À regarder, mais ils n'empêchent pas l'export.
+	Year	Année
+	by {developer}	par {developer}
+	found	trouvé
+	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk relance normalement jusqu'à ce que cela disparaisse. Si cela persiste, activez « Tout reconstruire à chaque fois » et compilez à nouveau.
+	latexmk runs pdfLaTeX (and Biber for the bibliography) in the project folder, without shell escape.	latexmk exécute pdfLaTeX (et Biber pour la bibliographie) dans le dossier du projet, sans shell escape.
+	not found	introuvable
+	not found (optional, for DOCX import)	introuvable (facultatif, pour l'import DOCX)
+	pdfLaTeX	pdfLaTeX
+	pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX.	Avec ces modèles, pdfLaTeX ne peut pas composer les écritures de droite à gauche. Translittérez le texte ou préparez l'article avec un modèle pour XeLaTeX ou LuaLaTeX.
+	pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\alpha$, for example).	Les polices de pdfLaTeX n'ont pas de glyphe pour ce caractère. Remplacez-le ou écrivez-le sous forme de commande LaTeX (une lettre grecque comme $\alpha$, par exemple).
+	via latexmk, shell escape off	via latexmk, shell escape désactivé
+	v{from} to {to}	de v{from} à {to}
+	{app} updated to {version}.	{app} a été mis à jour vers {version}.
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} suit la version choisie dans le lanceur et ne se met donc pas à jour seul.
+	{app} {version} is available with the latest features and bug fixes.	{app} {version} est disponible, avec les dernières fonctions et corrections de bogues.
+	{app} {version} is the newest version available.	{app} {version} est la version la plus récente.
+	{file} is not UTF-8 text; save it as UTF-8 and try again.	{file} n'est pas du texte UTF-8 ; enregistrez-le en UTF-8 et réessayez.
+	{file} is too large to edit here.	{file} est trop volumineux pour être modifié ici.
+	{first} Some things need fixing first: see Activity.	{first} Certains points doivent d'abord être corrigés : voir Activité.
+	{id} · licence {licence}	{id} · licence {licence}
+	{name} (open)	{name} (ouvert)
+	{path} is a Word manuscript; install Pandoc to import it.	{path} est un manuscrit Word ; installez Pandoc pour l'importer.
+@one	Typeset in {secs} s with {n} warning.	Composé en {secs} s, avec {n} avertissement.
+@other	Typeset in {secs} s with {n} warning.	Composé en {secs} s, avec {n} avertissements.
+@one	Typesetting failed after {secs} s with {n} error.	Échec de la composition après {secs} s, avec {n} erreur.
+@other	Typesetting failed after {secs} s with {n} error.	Échec de la composition après {secs} s, avec {n} erreurs.
+@one	{n} error	{n} erreur
+@other	{n} error	{n} erreurs
+@one	{n} error: see Problems.	{n} erreur : voir Problèmes.
+@other	{n} error: see Problems.	{n} erreurs : voir Problèmes.
+@one	{n} page	{n} page
+@other	{n} page	{n} pages
+@one	{n} problem found before compiling; see Problems.	{n} problème trouvé avant la compilation ; voir Problèmes.
+@other	{n} problem found before compiling; see Problems.	{n} problèmes trouvés avant la compilation ; voir Problèmes.
+@one	{n} warning	{n} avertissement
+@other	{n} warning	{n} avertissements
+@one	{n} word	{n} mot
+@other	{n} word	{n} mots

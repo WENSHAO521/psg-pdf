@@ -110,3 +110,13 @@ fn shared_fonts_put_inter_and_jetbrains_mono_first() {
     assert_eq!(defs.families.get(&egui::FontFamily::Monospace).and_then(|f| f.first()).map(String::as_str), Some("JetBrainsMono"));
     assert!(defs.families.contains_key(&egui::FontFamily::Name(crate::fonts::SEMIBOLD.into())));
 }
+
+/// Every badge the brand can show is one the translation checks know about.
+#[test]
+fn release_badges_are_marked_for_translation() {
+    for version in ["0.20.0-beta", "0.20.0-beta.3", "0.20.0-dev", "0.20.0-rc1"] {
+        if let Some(badge) = psg_brand::Release::of(version).badge() {
+            assert!(crate::widgets::BADGES.contains(&badge), "{badge}");
+        }
+    }
+}

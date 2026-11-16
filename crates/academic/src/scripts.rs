@@ -65,19 +65,19 @@ impl Script {
     /// What the limitation is and what to do, for this script.
     pub fn advice(self) -> &'static str {
         match self {
-            Script::Han | Script::Kana | Script::Hangul => {
-                "The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF."
-            }
-            Script::Greek => {
-                "The templates have no Greek text font. In formulas write Greek letters as commands ($\\alpha$, $\\Omega$); Greek words in running text must be transliterated."
-            }
-            Script::Cyrillic => {
-                "The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require."
-            }
-            Script::Arabic | Script::Hebrew => {
-                "pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX."
-            }
-            Script::Thai | Script::Indic => "The templates have no font for this script. Transliterate the text.",
+            Script::Han | Script::Kana | Script::Hangul => crate::mark(
+                "The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.",
+            ),
+            Script::Greek => crate::mark(
+                "The templates have no Greek text font. In formulas write Greek letters as commands ($\\alpha$, $\\Omega$); Greek words in running text must be transliterated.",
+            ),
+            Script::Cyrillic => crate::mark(
+                "The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.",
+            ),
+            Script::Arabic | Script::Hebrew => crate::mark(
+                "pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX.",
+            ),
+            Script::Thai | Script::Indic => crate::mark("The templates have no font for this script. Transliterate the text."),
         }
     }
 }

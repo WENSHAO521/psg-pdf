@@ -89,7 +89,7 @@ pub fn split<S: ?Sized>(
     let bar = egui::Rect::from_min_size(egui::pos2(left.right(), full.top()), vec2(handle, full.height()));
     let right = egui::Rect::from_min_max(egui::pos2(bar.right(), full.top()), full.max);
     let resp = ui.interact(bar, ui.scope_id().with(id).with("split"), Sense::click_and_drag());
-    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Splitter, true, "Resize panes"));
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Splitter, true, psg_i18n::ui_text("Resize panes")));
     if resp.dragged()
         && let Some(pos) = resp.interact_pointer_pos()
         && usable > 0.0

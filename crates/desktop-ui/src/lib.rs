@@ -20,6 +20,7 @@ pub mod widgets;
 
 pub use palette::Palette;
 pub use psg_brand::{Product, Tone};
+pub use psg_i18n::ui_text;
 
 #[cfg(test)]
 mod tests;

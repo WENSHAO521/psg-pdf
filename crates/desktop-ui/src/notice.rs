@@ -88,8 +88,9 @@ impl Notices {
                                     ui.add(egui::Label::new(RichText::new(&n.text).color(p.text)).wrap());
                                 });
                                 ui.with_layout(egui::Layout::right_to_left(egui::Align::Min), |ui| {
-                                    let close =
-                                        ui.add(egui::Button::new(RichText::new("×").color(p.text_muted)).frame(false)).on_hover_text("Dismiss");
+                                    let close = ui
+                                        .add(egui::Button::new(RichText::new("×").color(p.text_muted)).frame(false))
+                                        .on_hover_text(psg_i18n::ui_text("Dismiss"));
                                     if close.clicked() {
                                         dismiss = Some(i);
                                     }

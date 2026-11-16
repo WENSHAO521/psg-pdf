@@ -1446,6 +1446,19 @@ fn unused_id_rows() -> String {
 /// covers contextual, plural and dynamically looked-up strings the scan can't see).
 fn english_keys() -> std::collections::BTreeSet<(String, String)> {
     use std::collections::BTreeSet;
+    let plain = source_strings();
+    // (context, source) keys; `@id` rows only reword a command label, which is in `plain`.
+    let mut keys: BTreeSet<(String, String)> = plain.into_iter().map(|s| (String::new(), s)).collect();
+    for (_, _, app) in CRAFT_I18N {
+        keys.extend(rows(app).into_iter().filter(|(context, ..)| context != "@id").map(|(context, source, _)| (context, source)));
+    }
+    keys
+}
+
+/// The English strings the source itself shows: the UI literals, the commands, All tools and the
+/// engine's own wordings (without the catalogs' keys, which [`english_keys`] adds).
+fn source_strings() -> std::collections::BTreeSet<String> {
+    use std::collections::BTreeSet;
     let mut plain: BTreeSet<String> = ui_literals();
     let mut add = |s: &str| {
         plain.insert(s.to_string());
@@ -1482,12 +1495,7 @@ fn english_keys() -> std::collections::BTreeSet<(String, String)> {
         add(header);
     }
     crate::credits::MODEL_COLUMNS.iter().for_each(|s| add(s));
-    // (context, source) keys; `@id` rows only reword a command label, which is in `plain`.
-    let mut keys: BTreeSet<(String, String)> = plain.into_iter().map(|s| (String::new(), s)).collect();
-    for (_, _, app) in CRAFT_I18N {
-        keys.extend(rows(app).into_iter().filter(|(context, ..)| context != "@id").map(|(context, source, _)| (context, source)));
-    }
-    keys
+    plain
 }
 
 /// The translation gaps report (`cargo xtask i18n-report`, a step of `cargo xtask ci`): for
@@ -1574,4 +1582,65 @@ fn image_paste_and_home_notifications_are_translated() {
             }
         }
     }
+}
+
+/// The English strings PSG PDF's own source shows ([`source_strings`]), without the keys that
+/// come only from other languages' catalogs (rows for strings this version no longer has), plus
+/// the words of the shared PSG widgets and of the updater. A contextual or plural row of a
+/// catalog counts when its English is one of these.
+fn psg_source_keys() -> std::collections::BTreeSet<(String, String)> {
+    let source = source_strings();
+    let mut keys: std::collections::BTreeSet<(String, String)> = source.iter().map(|s| (String::new(), s.clone())).collect();
+    for (_, _, app) in CRAFT_I18N {
+        for (context, english, _) in rows(app) {
+            if context != "@id" && !context.is_empty() && source.contains(&english) {
+                keys.insert((context, english));
+            }
+        }
+    }
+    let widgets = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../desktop-ui/src");
+    for entry in std::fs::read_dir(widgets).into_iter().flatten().flatten() {
+        let text = std::fs::read_to_string(entry.path()).unwrap_or_default();
+        for key in psg_i18n::check::source_keys(&text) {
+            // The shared widgets' key names are looked up as keys (`key_name`).
+            let context = if matches!(key.english.as_str(), "Ctrl" | "Shift") { "key" } else { "" };
+            keys.insert((context.to_owned(), key.english));
+        }
+    }
+    keys.extend(psg_i18n::updater::TEXT.iter().map(|s| (String::new(), (*s).to_owned())));
+    keys
+}
+
+/// PSG offers ten languages (`psg_i18n::LANGUAGES`), and none may ship with gaps: every string
+/// PSG PDF's source shows has a translation in each of them. Set `PSG_I18N_GAPS_DIR` to write
+/// each language's missing strings to `<dir>/<code>.tsv` for translating.
+#[test]
+fn psg_languages_are_complete() {
+    if !catalogs_embedded() {
+        println!("psg_languages_are_complete: skipped, built without craft-i18n (set CRAFT_I18N_DIR)");
+        return;
+    }
+    let keys = psg_source_keys();
+    let dir = std::env::var_os("PSG_I18N_GAPS_DIR").map(std::path::PathBuf::from);
+    let mut failures = Vec::new();
+    for code in psg_i18n::translated().map(|l| l.code) {
+        let lang = Lang::from_code(code).expect("every PSG language has a craft-i18n catalog");
+        let found = |context: &str, source: &str| lang.i18n().get(lang.lang, context, source).is_some();
+        let missing: Vec<&(String, String)> = keys
+            .iter()
+            .filter(|(context, source)| match context.as_str() {
+                "" => !found("", source),
+                context => !found(context, source) && (context == "@plural" || !found("", source)),
+            })
+            .collect();
+        if let Some(dir) = &dir {
+            let _ = std::fs::create_dir_all(dir);
+            let text: String = missing.iter().map(|(c, s)| format!("{c}\t{}\n", s.replace('\n', "\\n"))).collect();
+            let _ = std::fs::write(dir.join(format!("{code}.tsv")), text);
+        }
+        if !missing.is_empty() {
+            failures.push(format!("{code}: {} missing", missing.len()));
+        }
+    }
+    assert!(failures.is_empty(), "{} source strings; {}", keys.len(), failures.join(", "));
 }

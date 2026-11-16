@@ -12,6 +12,8 @@ workspace = true
 [dependencies]
 # The design tokens (colours, radii, spacing, sizes, tones), shared with packaging and the web.
 psg-brand = { workspace = true }
+# The few words the components draw themselves go through the app's translator.
+psg-i18n = { workspace = true }
 egui = { workspace = true, features = ["default_fonts"] }
 # Inter Regular is embedded once, by pdfcraft-fonts (also used for typed signatures).
 pdfcraft-fonts = { workspace = true }
