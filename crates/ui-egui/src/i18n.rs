@@ -453,12 +453,15 @@ fn windows_ui_language() -> Option<String> {
 }
 
 /// The first supported language in a macOS `defaults read` list or Windows UI-culture output.
-#[cfg_attr(not(any(target_os = "macos", target_os = "windows")), allow(dead_code))]
+/// Only the tests read lists without a filter; Auto detection uses [`first_supported_where`]
+/// with `Lang::offered`, so outside tests this would be dead code on macOS and Windows.
+#[cfg(test)]
 fn first_supported(list: &str) -> Option<Lang> {
     first_supported_where(list, |_| true)
 }
 
-/// [`first_supported`] among the languages `accept` takes.
+/// The first language in a macOS `defaults read` list or Windows UI-culture output that
+/// `accept` takes.
 #[cfg_attr(not(any(target_os = "macos", target_os = "windows")), allow(dead_code))]
 fn first_supported_where(list: &str, accept: impl Fn(Lang) -> bool) -> Option<Lang> {
     list.split(['(', ')', ',', '"', '\n']).map(str::trim).filter(|s| !s.is_empty()).find_map(|t| lang_from_tag(t).filter(|l| accept(*l)))
