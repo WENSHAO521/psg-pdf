@@ -40,6 +40,7 @@ impl RunOutput {
 /// Standard input is closed and both output streams are captured (up to [`MAX_CAPTURE`] each).
 pub fn run(mut cmd: Command, timeout: Duration, cancel: Option<&Arc<AtomicBool>>) -> std::io::Result<RunOutput> {
     cmd.stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped());
+    hide_console(&mut cmd);
     // Its own process group on Unix, so a timeout can stop latexmk *and* the pdflatex it started.
     #[cfg(unix)]
     {
@@ -109,16 +110,29 @@ fn kill_tree(child: &mut Child) {
     }
     #[cfg(windows)]
     {
-        let _ = Command::new("taskkill")
-            .args(["/PID", &pid.to_string(), "/T", "/F"])
-            .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status();
+        let mut taskkill = Command::new("taskkill");
+        hide_console(&mut taskkill);
+        let _ = taskkill.args(["/PID", &pid.to_string(), "/T", "/F"]).stdin(Stdio::null()).stdout(Stdio::null()).stderr(Stdio::null()).status();
     }
     #[cfg(not(any(unix, windows)))]
     let _ = pid;
     let _ = child.kill();
+}
+
+/// On Windows, start console programs (latexmk, perl, pdflatex, biber, pandoc, taskkill) without
+/// a console window: the GUI app has none, so Windows would otherwise open one per run and flash
+/// it on screen. Their output is captured and shown in the app (Typesetting ▸ logs) instead. The
+/// headless commands use the same path and print what they capture. Elsewhere this does nothing.
+pub fn hide_console(cmd: &mut Command) {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        /// `CREATE_NO_WINDOW` from the Windows process creation flags.
+        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+    }
+    #[cfg(not(windows))]
+    let _ = cmd;
 }
 
 /// The first line a program prints for `--version`, or `None` if it can't be run.

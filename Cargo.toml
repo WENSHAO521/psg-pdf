@@ -44,6 +44,7 @@ pdfcraft-annot = { path = "crates/annot", version = "0.20.0" }
 pdfcraft-audit = { path = "crates/audit", version = "0.20.0" }
 pdfcraft-fonts = { path = "crates/fonts", version = "0.20.0" }
 psg-brand = { path = "crates/brand", version = "0.20.0" }
+psg-desktop-ui = { path = "crates/desktop-ui", version = "0.20.0" }
 pdfcraft-model = { path = "crates/model", version = "0.20.0" }
 pdfcraft-content = { path = "crates/content", version = "0.20.0" }
 pdfcraft-redact = { path = "crates/redact", version = "0.20.0" }

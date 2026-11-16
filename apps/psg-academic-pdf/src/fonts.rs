@@ -1,12 +1,11 @@
-//! Interface fonts: egui's defaults, then the CJK and Korean faces of the craft-fonts build input
+//! Interface fonts: the PSG Desktop Design System's Inter and JetBrains Mono (shared with PSG PDF),
+//! then the CJK and Korean faces of the craft-fonts build input
 //! (OFL, embedded in release builds), so Chinese, Japanese and Korean names, titles and the
 //! translated interface show as text instead of boxes. The face for the interface language comes
 //! first, so a line of Chinese is not drawn half in a Japanese face. Without craft-fonts these
 //! scripts show as boxes (the same degraded mode as PSG PDF without it).
 
-use std::sync::Arc;
-
-use egui::{FontData, FontDefinitions, FontFamily};
+use egui::FontDefinitions;
 
 /// Install the fonts for interface language `lang` (a code from [`crate::i18n::LANGUAGES`]).
 pub fn install(ctx: &egui::Context, lang: &str) {
@@ -36,15 +35,7 @@ fn faces(lang: &str) -> Vec<&'static pdfcraft_fonts::CraftFont> {
 }
 
 fn definitions(lang: &str) -> FontDefinitions {
-    let mut fonts = FontDefinitions::default();
-    for face in faces(lang) {
-        let name = face.name();
-        fonts.font_data.insert(name.clone(), Arc::new(FontData::from_static(face.bytes)));
-        for family in [FontFamily::Proportional, FontFamily::Monospace] {
-            fonts.families.entry(family).or_default().push(name.clone());
-        }
-    }
-    fonts
+    psg_desktop_ui::fonts::definitions(faces(lang).into_iter().map(|f| psg_desktop_ui::fonts::Fallback { name: f.name(), bytes: f.bytes }))
 }
 
 #[cfg(test)]

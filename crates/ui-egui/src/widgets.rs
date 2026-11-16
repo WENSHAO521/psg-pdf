@@ -507,17 +507,21 @@ pub fn toast(app: &mut PdfCraftApp, ctx: &egui::Context) {
         .pivot(Align2::CENTER_BOTTOM)
         .fixed_pos(screen.center_bottom() - vec2(0.0, lift))
         .show(ctx, |ui| {
-            egui::Frame::NONE
-                .fill(if t.dark() { Color32::from_rgb(0xEC, 0xEC, 0xEF) } else { Color32::from_rgb(0x2A, 0x2A, 0x2F) })
-                .corner_radius(CornerRadius::same(8))
-                .inner_margin(egui::Margin::symmetric(16, 10))
+            // The PSG Desktop Design System's notification: a raised card with an accent edge, the
+            // same as PSG Academic PDF's notifications.
+            let shown = egui::Frame::NONE
+                .fill(t.card)
+                .stroke(egui::Stroke::new(1.0, t.border))
+                .corner_radius(CornerRadius::same(psg_brand::radius::CARD))
+                .shadow(egui::Shadow { offset: [0, 4], blur: 16, spread: 0, color: t.page_shadow })
+                .inner_margin(egui::Margin { left: 20, right: 16, top: 10, bottom: 10 })
                 .show(ui, |ui| {
                     // An Area remembers its previous content width. A short notice
                     // must not force the next validation message into a narrow column.
                     // Allow natural short labels; wrap longer ones within the viewport,
                     // including the frame's 32 points and 16-point outside margins.
                     ui.set_max_width((screen.width() - 64.0).clamp(1.0, 560.0));
-                    let ink = if t.dark() { Color32::from_rgb(0x22, 0x22, 0x26) } else { Color32::WHITE };
+                    let ink = t.text;
                     let text = |ui: &mut egui::Ui| {
                         ui.horizontal_wrapped(|ui| {
                             ui.add(egui::Label::new(egui::RichText::new(msg).color(ink)).wrap());
@@ -543,6 +547,9 @@ pub fn toast(app: &mut PdfCraftApp, ctx: &egui::Context) {
                         None => text(ui),
                     }
                 });
+            let r = shown.response.rect;
+            let edge = egui::Rect::from_min_size(r.min + vec2(8.0, 10.0), vec2(3.0, (r.height() - 20.0).max(4.0)));
+            ui.painter().rect_filled(edge, CornerRadius::same(2), t.accent);
         });
     ctx.request_repaint_after(std::time::Duration::from_millis(100));
 }

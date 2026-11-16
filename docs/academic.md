@@ -68,7 +68,7 @@ templates are read from:
 2. `templates/academic/` beside the executable;
 3. `../share/psg-academic-pdf/templates/` relative to the executable (Linux packages).
 
-A broken template is skipped and listed in the Activity tab or on standard error.
+A broken template is skipped and listed in the Template Library and the activity log, or on standard error.
 
 ## Status
 
@@ -87,7 +87,8 @@ Implemented and tested:
 
 Phase two:
 
-- **Source and PDF** tab: the manuscript body and the project's `.bib` files in an editor with
+- **Manuscript ▸ Source** (phase four: Editor, Split or PDF, with a draggable, remembered split and
+  an outline of the `\section` headings): the manuscript body and the project's `.bib` files in an editor with
   line numbers, next to the PDF. Lines with a problem are marked; Ctrl+S / ⌘S saves, and the
   file is saved before every compilation.
 - **Problems** lists the checks made before compiling and the compiler's diagnostics; "Go to
@@ -101,8 +102,8 @@ Phase two:
   keys, missing required fields, malformed DOIs and years, citations without an entry and
   entries nothing cites.
 - **Interface languages**: English, Simplified and Traditional Chinese, Japanese, Korean and
-  German (`i18n/psg-academic/<code>.tsv`), following the system language or the choice in the
-  side panel. Chinese, Japanese and Korean interface text uses the craft-fonts faces, so a build
+  German (`i18n/psg-academic/<code>.tsv`), following the system language or the choice in
+  Settings. Chinese, Japanese and Korean interface text uses the craft-fonts faces, so a build
   without `CRAFT_FONTS_DIR` shows boxes for them (release builds set it). Messages produced by
   TeX, and the generated details of the checks, stay in English; their hints are translated.
 

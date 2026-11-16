@@ -170,3 +170,152 @@
 	{id} · {engine} · bibliography: {bibliography}	{id} · {engine} · 참고문헌: {bibliography}
 	{n} problems found before compiling; see Problems.	컴파일 전에 문제 {n}개를 찾았습니다. '문제'를 확인하세요.
 	{path} is a Word manuscript; install Pandoc to import it.	{path}은(는) Word 원고입니다. 가져오려면 Pandoc을 설치하세요.
+	A .tex or .docx file becomes the body of a new project	.tex 또는 .docx 파일이 새 프로젝트의 본문이 됩니다
+	About	정보
+	Add bibliography file…	참고문헌 파일 추가…
+	All ({n})	전체 ({n})
+	An open project keeps the template it was created with; the selection applies to new projects.	열려 있는 프로젝트는 만들 때의 템플릿을 유지합니다. 여기서 고른 템플릿은 새 프로젝트에 적용됩니다.
+	Article details	논문 정보
+	Authors	저자
+	Authors refer to these by number.	저자는 번호로 이 소속을 가리킵니다.
+	Auto Typeset	자동 조판
+	Before typesetting	조판 전
+	Before you export	내보내기 전 확인
+	Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):	PSG Academic PDF는 내장 템플릿 외에 다음 폴더에서도 템플릿을 읽습니다(각 템플릿은 template.toml이 있는 폴더입니다):
+	Bibliography: {tool}	참고문헌: {tool}
+	Built in	내장
+	Cancelled	취소됨
+	Check and export the finished PDF	완성된 PDF를 확인하고 내보내기
+	Check compatibility	호환성 확인
+	Check the finished article and save the PDF where it is needed.	완성된 논문을 확인하고 PDF를 필요한 곳에 저장합니다.
+	Checking TeX…	TeX 확인 중…
+	Coming later	추후 제공
+	Current project	현재 프로젝트
+	Dark	어둡게
+	Dashboard	대시보드
+	Data folder:	데이터 폴더:
+	Edit manuscript	원고 편집
+	Editor	편집기
+	Engine: pdfLaTeX	엔진: pdfLaTeX
+	Error	오류
+	Errors ({n})	오류 ({n})
+	Errors stop typesetting; warnings are worth a look before export.	오류가 있으면 조판이 멈춥니다. 경고는 내보내기 전에 확인해 보세요.
+	Export	내보내기
+	Failed	실패
+	File	파일
+	Filter by key, author or title	키, 저자 또는 제목으로 필터
+	Finished	완료
+	Follow system	시스템 설정 따르기
+	From the last typesetting run	지난 조판 결과
+	Get beta updates	베타 업데이트 받기
+	Idle	대기 중
+	Import a manuscript	원고 가져오기
+	Import a manuscript or create a project from a template to start.	원고를 가져오거나 템플릿으로 프로젝트를 만들어 시작하세요.
+	Import manuscript…	원고 가져오기…
+	Import template (.zip)…	템플릿 가져오기(.zip)…
+	Interface size	인터페이스 크기
+	Join beta	베타 참여
+	Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.	베타 채널에 참여할까요? 베타에는 미완성 기능과 버그가 있을 수 있습니다. 이후 PSG Academic PDF는 새 베타마다, 그리고 더 새로운 정식 버전이 나오면 업데이트합니다.
+	Journal templates set the layout, fonts and citation style. New projects use the selected template.	학술지 템플릿이 레이아웃, 글꼴, 인용 형식을 정합니다. 새 프로젝트는 선택한 템플릿을 사용합니다.
+	Language and appearance	언어 및 모양
+	Leave beta	베타 나가기
+	Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	베타 채널을 나갈까요? PSG Academic PDF는 현재 버전을 유지하고, 이보다 새로운 정식 버전이 나오면 다시 업데이트합니다. 이전 버전으로 돌아가지는 않습니다.
+	Light	밝게
+	Line {n}	{n}번째 줄
+	Manuscript	원고
+	Manuscript as a new project…	원고로 새 프로젝트…
+	Missing	없음
+	Name	이름
+	New project from this template	이 템플릿으로 새 프로젝트
+	New projects use the {template} template. Choose another in the Template Library.	새 프로젝트는 {template} 템플릿을 사용합니다. 템플릿 라이브러리에서 다른 템플릿을 고를 수 있습니다.
+	No PDF yet	아직 PDF가 없습니다
+	No PDF yet.	아직 PDF가 없습니다.
+	No \section headings yet.	아직 \section 제목이 없습니다.
+	No bibliography	참고문헌 없음
+	No bibliography entries yet.	아직 참고문헌 항목이 없습니다.
+	No errors	오류 없음
+	No manuscript open	열린 원고가 없습니다
+	No project open	열린 프로젝트가 없습니다
+	Not typeset in this session	이번 세션에서 아직 조판 안 함
+	Nothing typeset in this session yet.	이번 세션에서 아직 조판한 것이 없습니다.
+	Open another project…	다른 프로젝트 열기…
+	Open or create a project first.	먼저 프로젝트를 열거나 만드세요.
+	Open or create a project to import into it.	가져오려면 프로젝트를 열거나 만드세요.
+	Open or create a project, then typeset it to export a PDF.	프로젝트를 열거나 만든 뒤 조판하면 PDF를 내보낼 수 있습니다.
+	Open project…	프로젝트 열기…
+	Outline	개요
+	PDF	PDF
+	Planned for a later version; not available yet.	이후 버전에서 제공할 예정이며 아직 사용할 수 없습니다.
+	Press Auto Typeset first.	먼저 “자동 조판”을 누르세요.
+	Press Auto Typeset to typeset the manuscript; the PDF appears here.	“자동 조판”을 누르면 원고를 조판하고 PDF가 여기에 표시됩니다.
+	Preview	미리 보기
+	Problems	문제
+	Projects you open or create appear here.	열거나 만든 프로젝트가 여기에 표시됩니다.
+	Publication	출판 정보
+	Recent projects	최근 프로젝트
+	Redraw	다시 그리기
+	Remove from the list (the folder is kept)	목록에서 제거(폴더는 유지)
+	Required publication details are filled in	필수 출판 정보가 입력되었습니다
+	Reset	재설정
+	Review problems	문제 검토
+	Running	실행 중
+	Runs in this session	이번 세션의 실행
+	Save the file ({keys})	파일 저장 ({keys})
+	Save, check and typeset with latexmk and pdfLaTeX ({keys})	저장, 검사 후 latexmk와 pdfLaTeX로 조판 ({keys})
+	Saved with the project ({keys}) and before every typesetting run.	프로젝트와 함께 저장되며({keys}) 조판 전마다 저장됩니다.
+	Saved.	저장했습니다.
+	See Manuscript ▸ Title & abstract, Authors and Publication.	“원고 ▸ 제목과 초록, 저자, 출판 정보”를 확인하세요.
+	Selected for new projects	새 프로젝트용으로 선택됨
+	Settings	설정
+	Settings for this project	이 프로젝트 설정
+	Settings ▸ TeX installation	설정 ▸ TeX 설치
+	Shortcuts:	단축키:
+	Show the PDF beside the manuscript	원고 옆에 PDF 표시
+	Size	크기
+	Source	소스
+	Split	나란히
+	Start a project	프로젝트 시작
+	Suggested name	제안 이름
+	Switch area	영역 전환
+	TeX is not ready: see Settings ▸ TeX installation.	TeX가 준비되지 않았습니다. “설정 ▸ TeX 설치”를 확인하세요.
+	TeX not found	TeX를 찾을 수 없음
+	TeX ready	TeX 준비됨
+	TeX ready, no Biber	TeX 준비됨, Biber 없음
+	Template Library	템플릿 라이브러리
+	Template: {template}	템플릿: {template}
+	The project has been typeset	프로젝트가 조판되었습니다
+	Theme	테마
+	Timed out	시간 초과
+	Title & abstract	제목과 초록
+	Typeset	조판 시각
+	Typeset accepted articles into publication-ready PDFs with your journal's template.	채택된 논문을 학술지 템플릿으로 출판용 PDF로 조판합니다.
+	Typeset in {secs} s with {n} warning(s).	{secs}초 만에 조판했습니다(경고 {n}개).
+	Typeset the project first.	먼저 프로젝트를 조판하세요.
+	Typeset to see errors and warnings here.	조판하면 오류와 경고가 여기에 표시됩니다.
+	Typeset to see latexmk's output here.	조판하면 latexmk 출력이 여기에 표시됩니다.
+	Typesetting cancelled.	조판을 취소했습니다.
+	Typesetting failed after {secs} s with {n} error(s).	{secs}초 후 조판에 실패했습니다(오류 {n}개).
+	Typesetting for {secs} s…	조판 중 ({secs}초)…
+	Typesetting is already running.	이미 조판 중입니다.
+	Typesetting stopped: it took longer than {secs} s.	조판을 멈췄습니다: {secs}초를 넘었습니다.
+	Typesetting with latexmk and pdfLaTeX…	latexmk와 pdfLaTeX로 조판 중…
+	Unsaved	저장 안 됨
+	Unsaved changes	저장하지 않은 변경 사항
+	Untitled article	제목 없는 논문
+	Updates	업데이트
+	Used by this project	이 프로젝트에서 사용 중
+	Warning	경고
+	Warnings ({n})	경고 ({n})
+	Where templates come from	템플릿 위치
+	Worth a look, but they don't stop the export.	확인해 볼 만하지만 내보내기를 막지는 않습니다.
+	latexmk runs pdfLaTeX (and Biber for the bibliography) in the project folder, without shell escape.	latexmk가 프로젝트 폴더에서 pdfLaTeX(참고문헌에는 Biber)를 shell escape 없이 실행합니다.
+	pdfLaTeX	pdfLaTeX
+	via latexmk, shell escape off	latexmk 사용, shell escape 끔
+	{id} · licence {licence}	{id} · 라이선스 {licence}
+	{name} (open)	{name} (열림)
+	{n} error(s)	오류 {n}개
+	{n} error(s): see Problems.	오류 {n}개: “문제”를 확인하세요.
+	{n} pages	{n}쪽
+	{n} warning(s)	경고 {n}개
+	{n} words	{n}단어
+	Fit width	너비 맞춤

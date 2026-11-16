@@ -170,3 +170,152 @@
 	{id} · {engine} · bibliography: {bibliography}	{id} · {engine} · Literatur: {bibliography}
 	{n} problems found before compiling; see Problems.	{n} Probleme vor dem Kompilieren gefunden; siehe Probleme.
 	{path} is a Word manuscript; install Pandoc to import it.	{path} ist ein Word-Manuskript; installieren Sie Pandoc, um es zu importieren.
+	A .tex or .docx file becomes the body of a new project	Eine .tex- oder .docx-Datei wird zum Text eines neuen Projekts
+	About	Über
+	Add bibliography file…	Literaturdatei hinzufügen…
+	All ({n})	Alle ({n})
+	An open project keeps the template it was created with; the selection applies to new projects.	Ein geöffnetes Projekt behält seine Vorlage; die Auswahl gilt für neue Projekte.
+	Article details	Artikelangaben
+	Authors	Autoren
+	Authors refer to these by number.	Autoren verweisen über die Nummer darauf.
+	Auto Typeset	Automatisch setzen
+	Before typesetting	Vor dem Setzen
+	Before you export	Vor dem Export
+	Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):	Neben den eingebauten Vorlagen liest PSG Academic PDF Vorlagen aus diesen Ordnern (jede Vorlage ist ein Ordner mit einer template.toml):
+	Bibliography: {tool}	Literatur: {tool}
+	Built in	Eingebaut
+	Cancelled	Abgebrochen
+	Check and export the finished PDF	Fertiges PDF prüfen und exportieren
+	Check compatibility	Kompatibilität prüfen
+	Check the finished article and save the PDF where it is needed.	Fertigen Artikel prüfen und das PDF dort speichern, wo es gebraucht wird.
+	Checking TeX…	TeX wird geprüft…
+	Coming later	Folgt später
+	Current project	Aktuelles Projekt
+	Dark	Dunkel
+	Dashboard	Übersicht
+	Data folder:	Datenordner:
+	Edit manuscript	Manuskript bearbeiten
+	Editor	Editor
+	Engine: pdfLaTeX	Engine: pdfLaTeX
+	Error	Fehler
+	Errors ({n})	Fehler ({n})
+	Errors stop typesetting; warnings are worth a look before export.	Fehler halten den Satz an; Warnungen sollte man vor dem Export ansehen.
+	Export	Export
+	Failed	Fehlgeschlagen
+	File	Datei
+	Filter by key, author or title	Nach Schlüssel, Autor oder Titel filtern
+	Finished	Fertig
+	Follow system	Wie System
+	From the last typesetting run	Aus dem letzten Satzlauf
+	Get beta updates	Beta-Updates erhalten
+	Idle	Bereit
+	Import a manuscript	Manuskript importieren
+	Import a manuscript or create a project from a template to start.	Zum Start ein Manuskript importieren oder ein Projekt aus einer Vorlage anlegen.
+	Import manuscript…	Manuskript importieren…
+	Import template (.zip)…	Vorlage importieren (.zip)…
+	Interface size	Oberflächengröße
+	Join beta	Beta beitreten
+	Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.	Dem Beta-Kanal beitreten? Betas können unfertige Funktionen und Fehler haben. PSG Academic PDF aktualisiert dann auf jede neue Beta und auf jede neuere stabile Version.
+	Journal templates set the layout, fonts and citation style. New projects use the selected template.	Zeitschriftenvorlagen legen Layout, Schriften und Zitierstil fest. Neue Projekte verwenden die gewählte Vorlage.
+	Language and appearance	Sprache und Darstellung
+	Leave beta	Beta verlassen
+	Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	Den Beta-Kanal verlassen? PSG Academic PDF behält seine Version und aktualisiert erst wieder auf die erste neuere stabile Version. Es kehrt nie zu einer älteren Version zurück.
+	Light	Hell
+	Line {n}	Zeile {n}
+	Manuscript	Manuskript
+	Manuscript as a new project…	Manuskript als neues Projekt…
+	Missing	Fehlt
+	Name	Name
+	New project from this template	Neues Projekt mit dieser Vorlage
+	New projects use the {template} template. Choose another in the Template Library.	Neue Projekte verwenden die Vorlage {template}. Eine andere wählen Sie in der Vorlagenbibliothek.
+	No PDF yet	Noch kein PDF
+	No PDF yet.	Noch kein PDF.
+	No \section headings yet.	Noch keine \section-Überschriften.
+	No bibliography	Ohne Literatur
+	No bibliography entries yet.	Noch keine Literatureinträge.
+	No errors	Keine Fehler
+	No manuscript open	Kein Manuskript geöffnet
+	No project open	Kein Projekt geöffnet
+	Not typeset in this session	In dieser Sitzung noch nicht gesetzt
+	Nothing typeset in this session yet.	In dieser Sitzung wurde noch nichts gesetzt.
+	Open another project…	Anderes Projekt öffnen…
+	Open or create a project first.	Zuerst ein Projekt öffnen oder anlegen.
+	Open or create a project to import into it.	Zum Importieren ein Projekt öffnen oder anlegen.
+	Open or create a project, then typeset it to export a PDF.	Projekt öffnen oder anlegen und setzen, um ein PDF zu exportieren.
+	Open project…	Projekt öffnen…
+	Outline	Gliederung
+	PDF	PDF
+	Planned for a later version; not available yet.	Für eine spätere Version geplant; noch nicht verfügbar.
+	Press Auto Typeset first.	Zuerst „Automatisch setzen“ drücken.
+	Press Auto Typeset to typeset the manuscript; the PDF appears here.	„Automatisch setzen“ setzt das Manuskript; das PDF erscheint hier.
+	Preview	Vorschau
+	Problems	Probleme
+	Projects you open or create appear here.	Geöffnete oder angelegte Projekte erscheinen hier.
+	Publication	Veröffentlichung
+	Recent projects	Zuletzt verwendete Projekte
+	Redraw	Neu zeichnen
+	Remove from the list (the folder is kept)	Aus der Liste entfernen (der Ordner bleibt)
+	Required publication details are filled in	Pflichtangaben zur Veröffentlichung sind ausgefüllt
+	Reset	Zurücksetzen
+	Review problems	Probleme ansehen
+	Running	Läuft
+	Runs in this session	Läufe in dieser Sitzung
+	Save the file ({keys})	Datei speichern ({keys})
+	Save, check and typeset with latexmk and pdfLaTeX ({keys})	Speichern, prüfen und mit latexmk und pdfLaTeX setzen ({keys})
+	Saved with the project ({keys}) and before every typesetting run.	Wird mit dem Projekt ({keys}) und vor jedem Satzlauf gespeichert.
+	Saved.	Gespeichert.
+	See Manuscript ▸ Title & abstract, Authors and Publication.	Siehe Manuskript ▸ Titel & Abstract, Autoren und Veröffentlichung.
+	Selected for new projects	Für neue Projekte gewählt
+	Settings	Einstellungen
+	Settings for this project	Einstellungen dieses Projekts
+	Settings ▸ TeX installation	Einstellungen ▸ TeX-Installation
+	Shortcuts:	Tastenkürzel:
+	Show the PDF beside the manuscript	PDF neben dem Manuskript zeigen
+	Size	Größe
+	Source	Quelltext
+	Split	Geteilt
+	Start a project	Projekt beginnen
+	Suggested name	Vorgeschlagener Name
+	Switch area	Bereich wechseln
+	TeX is not ready: see Settings ▸ TeX installation.	TeX ist nicht bereit: siehe Einstellungen ▸ TeX-Installation.
+	TeX not found	TeX nicht gefunden
+	TeX ready	TeX bereit
+	TeX ready, no Biber	TeX bereit, ohne Biber
+	Template Library	Vorlagenbibliothek
+	Template: {template}	Vorlage: {template}
+	The project has been typeset	Das Projekt ist gesetzt
+	Theme	Farbschema
+	Timed out	Zeit überschritten
+	Title & abstract	Titel & Abstract
+	Typeset	Gesetzt
+	Typeset accepted articles into publication-ready PDFs with your journal's template.	Angenommene Artikel mit der Vorlage Ihrer Zeitschrift zu druckfertigen PDFs setzen.
+	Typeset in {secs} s with {n} warning(s).	In {secs} s gesetzt, {n} Warnung(en).
+	Typeset the project first.	Zuerst das Projekt setzen.
+	Typeset to see errors and warnings here.	Nach dem Setzen stehen Fehler und Warnungen hier.
+	Typeset to see latexmk's output here.	Nach dem Setzen steht die Ausgabe von latexmk hier.
+	Typesetting cancelled.	Satz abgebrochen.
+	Typesetting failed after {secs} s with {n} error(s).	Satz nach {secs} s fehlgeschlagen, {n} Fehler.
+	Typesetting for {secs} s…	Satz läuft seit {secs} s…
+	Typesetting is already running.	Der Satz läuft bereits.
+	Typesetting stopped: it took longer than {secs} s.	Satz angehalten: Er dauerte länger als {secs} s.
+	Typesetting with latexmk and pdfLaTeX…	Satz mit latexmk und pdfLaTeX…
+	Unsaved	Ungespeichert
+	Unsaved changes	Ungespeicherte Änderungen
+	Untitled article	Unbenannter Artikel
+	Updates	Updates
+	Used by this project	Von diesem Projekt verwendet
+	Warning	Warnung
+	Warnings ({n})	Warnungen ({n})
+	Where templates come from	Woher Vorlagen kommen
+	Worth a look, but they don't stop the export.	Einen Blick wert, aber sie halten den Export nicht auf.
+	latexmk runs pdfLaTeX (and Biber for the bibliography) in the project folder, without shell escape.	latexmk führt pdfLaTeX (und Biber für die Literatur) im Projektordner aus, ohne Shell-Escape.
+	pdfLaTeX	pdfLaTeX
+	via latexmk, shell escape off	über latexmk, Shell-Escape aus
+	{id} · licence {licence}	{id} · Lizenz {licence}
+	{name} (open)	{name} (geöffnet)
+	{n} error(s)	{n} Fehler
+	{n} error(s): see Problems.	{n} Fehler: siehe Probleme.
+	{n} pages	{n} Seiten
+	{n} warning(s)	{n} Warnung(en)
+	{n} words	{n} Wörter
+	Fit width	Breite anpassen

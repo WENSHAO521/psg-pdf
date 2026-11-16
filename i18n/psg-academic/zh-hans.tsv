@@ -170,3 +170,152 @@
 	{id} · {engine} · bibliography: {bibliography}	{id} · {engine} · 参考文献：{bibliography}
 	{n} problems found before compiling; see Problems.	编译前发现 {n} 个问题；见“问题”。
 	{path} is a Word manuscript; install Pandoc to import it.	{path} 是 Word 稿件；请安装 Pandoc 后导入。
+	A .tex or .docx file becomes the body of a new project	一个 .tex 或 .docx 文件将成为新项目的正文
+	About	关于
+	Add bibliography file…	添加参考文献文件…
+	All ({n})	全部（{n}）
+	An open project keeps the template it was created with; the selection applies to new projects.	已打开的项目保留创建时的模板；此处的选择用于新项目。
+	Article details	文章信息
+	Authors	作者
+	Authors refer to these by number.	作者通过编号引用这些机构。
+	Auto Typeset	自动排版
+	Before typesetting	排版前
+	Before you export	导出前检查
+	Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):	除内置模板外，PSG Academic PDF 还会从以下文件夹读取模板（每个模板是一个含 template.toml 的文件夹）：
+	Bibliography: {tool}	参考文献：{tool}
+	Built in	内置
+	Cancelled	已取消
+	Check and export the finished PDF	检查并导出完成的 PDF
+	Check compatibility	检查兼容性
+	Check the finished article and save the PDF where it is needed.	检查完成的文章，并把 PDF 保存到需要的位置。
+	Checking TeX…	正在检查 TeX…
+	Coming later	后续版本提供
+	Current project	当前项目
+	Dark	深色
+	Dashboard	概览
+	Data folder:	数据文件夹：
+	Edit manuscript	编辑文稿
+	Editor	编辑器
+	Engine: pdfLaTeX	引擎：pdfLaTeX
+	Error	错误
+	Errors ({n})	错误（{n}）
+	Errors stop typesetting; warnings are worth a look before export.	错误会中止排版；导出前最好看看警告。
+	Export	导出
+	Failed	失败
+	File	文件
+	Filter by key, author or title	按键名、作者或标题筛选
+	Finished	已完成
+	Follow system	跟随系统
+	From the last typesetting run	来自上次排版
+	Get beta updates	获取测试版更新
+	Idle	空闲
+	Import a manuscript	导入文稿
+	Import a manuscript or create a project from a template to start.	导入文稿或从模板新建项目即可开始。
+	Import manuscript…	导入文稿…
+	Import template (.zip)…	导入模板（.zip）…
+	Interface size	界面大小
+	Join beta	加入测试版
+	Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.	加入测试版通道？测试版可能有未完成的功能和错误。之后 PSG Academic PDF 会更新到每个新测试版，以及更新的正式版。
+	Journal templates set the layout, fonts and citation style. New projects use the selected template.	期刊模板决定版式、字体和引用格式。新项目使用所选模板。
+	Language and appearance	语言和外观
+	Leave beta	退出测试版
+	Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	退出测试版通道？PSG Academic PDF 保留当前版本，直到出现比它更新的正式版才会再更新。它不会退回旧版本。
+	Light	浅色
+	Line {n}	第 {n} 行
+	Manuscript	文稿
+	Manuscript as a new project…	以文稿新建项目…
+	Missing	缺失
+	Name	姓名
+	New project from this template	用此模板新建项目
+	New projects use the {template} template. Choose another in the Template Library.	新项目使用 {template} 模板。可在模板库中选择其他模板。
+	No PDF yet	还没有 PDF
+	No PDF yet.	还没有 PDF。
+	No \section headings yet.	还没有 \section 标题。
+	No bibliography	无参考文献
+	No bibliography entries yet.	还没有参考文献条目。
+	No errors	没有错误
+	No manuscript open	没有打开的文稿
+	No project open	没有打开的项目
+	Not typeset in this session	本次尚未排版
+	Nothing typeset in this session yet.	本次还没有排版过。
+	Open another project…	打开其他项目…
+	Open or create a project first.	请先打开或新建项目。
+	Open or create a project to import into it.	打开或新建项目后才能向其中导入。
+	Open or create a project, then typeset it to export a PDF.	打开或新建项目并排版后即可导出 PDF。
+	Open project…	打开项目…
+	Outline	大纲
+	PDF	PDF
+	Planned for a later version; not available yet.	计划在后续版本提供，目前尚不可用。
+	Press Auto Typeset first.	请先点击“自动排版”。
+	Press Auto Typeset to typeset the manuscript; the PDF appears here.	点击“自动排版”排版文稿，PDF 会显示在这里。
+	Preview	预览
+	Problems	问题
+	Projects you open or create appear here.	打开或新建的项目会显示在这里。
+	Publication	出版信息
+	Recent projects	最近的项目
+	Redraw	重新绘制
+	Remove from the list (the folder is kept)	从列表中移除（文件夹保留）
+	Required publication details are filled in	必填的出版信息已填写
+	Reset	重置
+	Review problems	查看问题
+	Running	运行中
+	Runs in this session	本次的排版记录
+	Save the file ({keys})	保存文件（{keys}）
+	Save, check and typeset with latexmk and pdfLaTeX ({keys})	保存、检查并用 latexmk 和 pdfLaTeX 排版（{keys}）
+	Saved with the project ({keys}) and before every typesetting run.	随项目保存（{keys}），每次排版前也会保存。
+	Saved.	已保存。
+	See Manuscript ▸ Title & abstract, Authors and Publication.	请查看“文稿 ▸ 标题与摘要、作者、出版信息”。
+	Selected for new projects	新项目将使用
+	Settings	设置
+	Settings for this project	本项目的设置
+	Settings ▸ TeX installation	设置 ▸ TeX 安装
+	Shortcuts:	快捷键：
+	Show the PDF beside the manuscript	在文稿旁显示 PDF
+	Size	大小
+	Source	源文件
+	Split	并排
+	Start a project	开始一个项目
+	Suggested name	建议文件名
+	Switch area	切换功能区
+	TeX is not ready: see Settings ▸ TeX installation.	TeX 尚未就绪：请查看“设置 ▸ TeX 安装”。
+	TeX not found	未找到 TeX
+	TeX ready	TeX 已就绪
+	TeX ready, no Biber	TeX 已就绪，缺少 Biber
+	Template Library	模板库
+	Template: {template}	模板：{template}
+	The project has been typeset	项目已排版
+	Theme	主题
+	Timed out	已超时
+	Title & abstract	标题与摘要
+	Typeset	排版时间
+	Typeset accepted articles into publication-ready PDFs with your journal's template.	使用期刊模板，将已录用文章排版为可出版的 PDF。
+	Typeset in {secs} s with {n} warning(s).	排版完成，用时 {secs} 秒，{n} 个警告。
+	Typeset the project first.	请先排版项目。
+	Typeset to see errors and warnings here.	排版后会在这里显示错误和警告。
+	Typeset to see latexmk's output here.	排版后会在这里显示 latexmk 的输出。
+	Typesetting cancelled.	排版已取消。
+	Typesetting failed after {secs} s with {n} error(s).	排版失败，用时 {secs} 秒，{n} 个错误。
+	Typesetting for {secs} s…	已排版 {secs} 秒…
+	Typesetting is already running.	排版正在进行。
+	Typesetting stopped: it took longer than {secs} s.	排版已停止：用时超过 {secs} 秒。
+	Typesetting with latexmk and pdfLaTeX…	正在用 latexmk 和 pdfLaTeX 排版…
+	Unsaved	未保存
+	Unsaved changes	有未保存的更改
+	Untitled article	未命名文章
+	Updates	更新
+	Used by this project	本项目使用
+	Warning	警告
+	Warnings ({n})	警告（{n}）
+	Where templates come from	模板来源
+	Worth a look, but they don't stop the export.	值得一看，但不会阻止导出。
+	latexmk runs pdfLaTeX (and Biber for the bibliography) in the project folder, without shell escape.	latexmk 在项目文件夹中运行 pdfLaTeX（以及处理参考文献的 Biber），不启用 shell escape。
+	pdfLaTeX	pdfLaTeX
+	via latexmk, shell escape off	经 latexmk，shell escape 关闭
+	{id} · licence {licence}	{id} · 许可 {licence}
+	{name} (open)	{name}（已打开）
+	{n} error(s)	{n} 个错误
+	{n} error(s): see Problems.	{n} 个错误：请查看“问题”。
+	{n} pages	{n} 页
+	{n} warning(s)	{n} 个警告
+	{n} words	{n} 词
+	Fit width	适合宽度
