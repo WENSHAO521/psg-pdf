@@ -58,7 +58,7 @@ impl AcademicApp {
     /// A scrolling column of forms, with the metadata's problems above them.
     fn form_page(&mut self, ui: &mut egui::Ui, form: fn(&mut Self, &mut egui::Ui)) {
         egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-            ui.set_max_width(820.0);
+            ui.set_max_width(ui.available_width().min(820.0));
             if let Some(project) = &self.project {
                 for issue in project.file.metadata.validate() {
                     let tone = if issue.blocking { Tone::Danger } else { Tone::Warning };
@@ -373,6 +373,8 @@ impl AcademicApp {
             .inner_margin(egui::Margin::same(psg_brand::space::S as i8))
             .show(ui, |ui| {
                 ui.set_min_size(ui.available_size());
+                // A narrow pane keeps the controls and drops the title, so nothing overlaps.
+                let roomy = ui.available_width() >= 420.0;
                 ui.horizontal(|ui| {
                     // The controls first, from the right, and the title in what is left of the
                     // row, shortened if it must be: longer translations ("PDF-Vorschau",
@@ -390,6 +392,9 @@ impl AcademicApp {
                             self.load_preview(&ctx);
                         }
                         ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
+                            if !roomy {
+                                return;
+                            }
                             ui.add(egui::Label::new(egui::RichText::new(t("PDF preview")).strong()).truncate());
                             if self.preview.total_pages > 0 {
                                 let pages = tn(self.preview.total_pages, "{n} page", "{n} pages", &[]);

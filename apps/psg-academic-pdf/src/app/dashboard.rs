@@ -11,7 +11,7 @@ use crate::i18n::{t, tf, tn};
 impl AcademicApp {
     pub(super) fn dashboard_page(&mut self, ui: &mut egui::Ui) {
         egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-            ui.set_max_width(980.0);
+            ui.set_max_width(ui.available_width().min(980.0));
             widgets::page_header(ui, t("Dashboard"), Some(t("Typeset accepted articles into publication-ready PDFs with your journal's template.")));
             if self.project.is_some() {
                 self.project_summary(ui);
@@ -19,12 +19,19 @@ impl AcademicApp {
                 self.start_card(ui);
             }
             ui.add_space(psg_brand::space::L);
-            ui.columns(2, |cols| {
-                if let [left, right] = cols {
-                    self.recent_card(left);
-                    self.tex_card(right);
-                }
-            });
+            // Side by side when there is room, stacked on a narrow window.
+            if ui.available_width() >= 900.0 {
+                ui.columns(2, |cols| {
+                    if let [left, right] = cols {
+                        self.recent_card(left);
+                        self.tex_card(right);
+                    }
+                });
+            } else {
+                self.recent_card(ui);
+                ui.add_space(psg_brand::space::L);
+                self.tex_card(ui);
+            }
         });
     }
 
@@ -212,7 +219,10 @@ impl AcademicApp {
                             ui.label(tool.name);
                         });
                         match &tool.path {
-                            Some(p) => ui.label(tool.version.clone().unwrap_or_else(|| t("found").into())).on_hover_text(p.display().to_string()),
+                            // Version lines can be long; they end in "…" rather than widening the card.
+                            Some(p) => ui
+                                .add(egui::Label::new(tool.version.clone().unwrap_or_else(|| t("found").into())).truncate())
+                                .on_hover_text(p.display().to_string()),
                             None if tool.name == "pandoc" => widgets::muted(ui, t("not found (optional, for DOCX import)")),
                             None => ui.colored_label(ui.visuals().error_fg_color, t("not found")),
                         };

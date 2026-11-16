@@ -9,7 +9,7 @@ use crate::i18n::{t, tn};
 impl AcademicApp {
     pub(super) fn export_page(&mut self, ui: &mut egui::Ui) {
         egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-            ui.set_max_width(820.0);
+            ui.set_max_width(ui.available_width().min(820.0));
             widgets::page_header(ui, t("Export"), Some(t("Check the finished article and save the PDF where it is needed.")));
             let Some(project) = &self.project else {
                 widgets::empty_state(ui, t("No project open"), t("Open or create a project, then typeset it to export a PDF."), |_| {});

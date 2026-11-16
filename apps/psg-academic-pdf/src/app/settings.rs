@@ -9,7 +9,7 @@ use crate::i18n::t;
 impl AcademicApp {
     pub(super) fn settings_page(&mut self, ui: &mut egui::Ui) {
         egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-            ui.set_max_width(820.0);
+            ui.set_max_width(ui.available_width().min(820.0));
             widgets::page_header(ui, t("Settings"), None);
             widgets::card(ui, |ui| {
                 ui.set_width(ui.available_width());

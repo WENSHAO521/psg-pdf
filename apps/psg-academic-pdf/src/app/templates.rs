@@ -10,7 +10,7 @@ use crate::i18n::{t, tf};
 impl AcademicApp {
     pub(super) fn templates_page(&mut self, ui: &mut egui::Ui) {
         egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-            ui.set_max_width(1100.0);
+            ui.set_max_width(ui.available_width().min(1100.0));
             widgets::page_header(ui, t("Template Library"), Some(t("Journal templates set the layout, fonts and citation style. New projects use the selected template.")));
             ui.horizontal_wrapped(|ui| {
                 let soon = t("Planned for a later version; not available yet.");

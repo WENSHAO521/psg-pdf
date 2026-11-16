@@ -36,7 +36,7 @@ impl AcademicApp {
         let editable = self.editable_files();
         let filter = self.problem_filter;
         egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-            ui.set_max_width(980.0);
+            ui.set_max_width(ui.available_width().min(980.0));
             widgets::section_header(ui, t("Before typesetting"));
             let pre: Vec<&Diagnostic> = self.preflight.iter().filter(|d| keep(filter, d)).collect();
             if pre.is_empty() {

@@ -1,7 +1,7 @@
 //! The shared components. Each one reads the [`Palette`] of the product the app installed, so the
 //! same call draws a deep-blue control in PSG PDF and a purple one in PSG Academic PDF.
 
-use egui::{Align, Align2, CornerRadius, Layout, Response, RichText, Sense, Stroke, StrokeKind, Ui, Vec2, vec2};
+use egui::{Align, CornerRadius, Layout, Response, RichText, Sense, Stroke, StrokeKind, Ui, Vec2, vec2};
 use psg_brand::{Tone, radius, size, space, text};
 
 use crate::fonts;
@@ -84,12 +84,21 @@ pub fn ghost(ui: &mut Ui, label: impl Into<String>) -> Response {
 /// A small rounded label in `tone`: a status, a count, a tag.
 pub fn chip(ui: &mut Ui, tone: Tone, label: impl Into<String>) -> Response {
     let c = Palette::of(ui).tone(tone);
-    egui::Frame::NONE
-        .fill(c.soft)
-        .corner_radius(CornerRadius::same(radius::SMALL))
-        .inner_margin(egui::Margin::symmetric(6, 1))
-        .show(ui, |ui| ui.label(RichText::new(label.into()).font(fonts::medium(text::SMALL)).color(c.text)))
-        .inner
+    let label = label.into();
+    // Measured first and allocated whole, so a wrapping row moves the chip to the next line
+    // instead of squeezing it; a chip wider than the row is cut with "…" rather than broken.
+    let max = (ui.available_width().max(ui.max_rect().width()) - 12.0).max(24.0);
+    let mut job = egui::text::LayoutJob::simple_singleline(label.clone(), fonts::medium(text::SMALL), c.text);
+    job.wrap = egui::text::TextWrapping::truncate_at_width(max);
+    let galley = ui.fonts_mut(|f| f.layout_job(job));
+    let size = galley.size() + vec2(12.0, 2.0);
+    let (rect, resp) = ui.allocate_exact_size(size, Sense::hover());
+    resp.widget_info(|| egui::WidgetInfo::labeled(egui::Role::Label, true, &label));
+    if ui.is_rect_visible(rect) {
+        ui.painter().rect_filled(rect, CornerRadius::same(radius::SMALL), c.soft);
+        ui.painter().galley(rect.min + vec2(6.0, 1.0), galley, c.text);
+    }
+    resp
 }
 
 /// A coloured dot in `tone`, for a status beside a label.
@@ -219,9 +228,10 @@ pub fn empty_state(ui: &mut Ui, title: &str, body: &str, actions: impl FnOnce(&m
     });
 }
 
-/// One entry of a navigation rail: a label, an optional count in `tone`, the accent bar when
-/// `selected`. `compact` draws only the first letter (the rail collapsed on a narrow window).
-pub fn nav_item(ui: &mut Ui, label: &str, selected: bool, count: Option<(usize, Tone)>, compact: bool) -> Response {
+/// One entry of a navigation rail: a Lucide icon (see [`crate::icons`]), a label, an optional
+/// count in `tone`, the accent bar when `selected`. `compact` draws only the icon, with the label
+/// as its tooltip (the rail collapsed on a narrow window).
+pub fn nav_item(ui: &mut Ui, icon: &str, label: &str, selected: bool, count: Option<(usize, Tone)>, compact: bool) -> Response {
     let p = Palette::of(ui);
     let height = 34.0;
     let (rect, resp) = ui.allocate_exact_size(vec2(ui.available_width(), height), Sense::click());
@@ -243,13 +253,15 @@ pub fn nav_item(ui: &mut Ui, label: &str, selected: bool, count: Option<(usize, 
     }
     let colour = if selected { p.accent_text } else { p.text };
     let font = if selected { fonts::semibold(text::BODY) } else { fonts::medium(text::BODY) };
+    let icon_colour = if selected { p.accent_text } else { p.icon };
     if compact {
-        let initial: String = label.chars().next().map(|c| c.to_uppercase().collect()).unwrap_or_default();
-        painter.text(rect.center(), Align2::CENTER_CENTER, initial, fonts::semibold(text::HEADING), colour);
+        crate::icons::paint(ui, rect, icon, 18.0, icon_colour);
     } else {
-        let left = rect.left() + space::L;
+        let icon_rect = egui::Rect::from_center_size(egui::pos2(rect.left() + space::L + 9.0, rect.center().y), vec2(18.0, 18.0));
+        crate::icons::paint(ui, icon_rect, icon, 18.0, icon_colour);
+        let left = icon_rect.right() + space::S + 2.0;
         let right_reserved = if count.is_some() { 36.0 } else { 0.0 };
-        let galley = painter.layout(label.to_owned(), font, colour, rect.width() - space::L - space::S - right_reserved);
+        let galley = painter.layout(label.to_owned(), font, colour, (rect.right() - left - space::S - right_reserved).max(0.0));
         let y = rect.center().y - galley.size().y * 0.5;
         painter.galley(egui::pos2(left, y), galley, colour);
     }
