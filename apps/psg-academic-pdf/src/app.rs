@@ -1,10 +1,16 @@
-//! The PSG Academic PDF window: project and template on the left, metadata and settings in the
-//! side panel, and the PDF preview, problems and logs in the middle.
+//! The PSG Academic PDF window: a typesetting workspace built from the PSG Desktop Design System
+//! (`psg-desktop-ui`).
+//!
+//! A toolbar carries the four main actions (Import, Auto Typeset, Preview, Export); a navigation
+//! rail on the left switches between the workspace's areas (Dashboard, Manuscript, Template
+//! Library, Typesetting, Problems, Export, Settings); a status bar shows the TeX installation, the
+//! engine (always pdfLaTeX) and the last run; notifications stack in the corner. Each area is
+//! drawn by a module under `app/`.
 //!
 //! The workspace's disallowed egui checkbox and combo box (clippy.toml) are about PSG PDF's own
 //! theme, which draws a checkbox as a circle, and about combo boxes whose contents change while
-//! open. This window uses egui's default visuals, where a checkbox is square, and its template
-//! list doesn't change while the menu is open, so egui's own widgets are used here.
+//! open. This window's style keeps egui's square checkbox, and its lists don't change while a menu
+//! is open, so egui's own widgets are used here.
 #![allow(clippy::disallowed_methods, clippy::disallowed_types)]
 
 use std::path::PathBuf;
@@ -15,30 +21,104 @@ use std::time::Instant;
 
 use psg_academic::bib::BibEntry;
 use psg_academic::pandoc::{ManuscriptImporter, PandocImporter};
-use psg_academic::{Author, CompileReport, Diagnostic, Outcome, Project, PublicationMetadata, Severity, Template, TexEnvironment, compile, template};
+use psg_academic::{CompileReport, Diagnostic, Outcome, Project, PublicationMetadata, Severity, Template, TexEnvironment, template};
+use psg_desktop_ui::notice::Notices;
+use psg_desktop_ui::style::ThemeChoice;
+use psg_desktop_ui::{Tone, layout, widgets};
 
 use crate::data_dir::DataDir;
 use crate::i18n::{t, tf};
 use crate::launch::{self, ManuscriptKind, Request};
-use crate::preview::{MAX_PREVIEW_PAGES, PageSlot, Preview};
+use crate::preview::Preview;
+use crate::recent::Recent;
 use crate::source::SourceEditor;
 use crate::updates::Updates;
+
+mod dashboard;
+mod export;
+mod manuscript;
+mod problems;
+mod settings;
+mod templates;
+mod typesetting;
 
 /// The program's display name (PSG design system, `psg-brand`).
 pub const APP_NAME: &str = crate::theme::PRODUCT.name();
 /// The organisation that publishes it.
 pub const PUBLISHER: &str = psg_brand::PUBLISHER;
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum Tab {
-    Preview,
-    /// The source editor and the PDF side by side.
-    Source,
-    References,
+/// The areas of the workspace, in the order the navigation rail lists them.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Page {
+    Dashboard,
+    Manuscript,
+    Templates,
+    Typesetting,
     Problems,
+    Export,
+    Settings,
+}
+
+impl Page {
+    pub const ALL: [Page; 7] = [Page::Dashboard, Page::Manuscript, Page::Templates, Page::Typesetting, Page::Problems, Page::Export, Page::Settings];
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Page::Dashboard => t("Dashboard"),
+            Page::Manuscript => t("Manuscript"),
+            Page::Templates => t("Template Library"),
+            Page::Typesetting => t("Typesetting"),
+            Page::Problems => t("Problems"),
+            Page::Export => t("Export"),
+            Page::Settings => t("Settings"),
+        }
+    }
+}
+
+/// What the Manuscript area shows.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ManuscriptTab {
+    /// The source editor, alone, beside the PDF, or the PDF alone ([`SourceView`]).
+    Source,
+    /// Title, short title, type, keywords and abstract.
+    Article,
+    /// Authors and affiliations.
+    Authors,
+    /// Journal, issue, dates and licence.
+    Publication,
+    /// The bibliography entries.
+    References,
+}
+
+/// How the source editor and the PDF preview share the Manuscript area.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SourceView {
+    Editor,
+    Split,
+    Preview,
+}
+
+/// Which log the Typesetting area shows.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LogView {
     Output,
     TexLog,
     Activity,
+}
+
+/// Which problems the Problems area lists.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ProblemFilter {
+    All,
+    Errors,
+    Warnings,
+}
+
+/// One finished typesetting run, for the Typesetting area's history.
+pub struct RunRecord {
+    pub at: String,
+    pub outcome: Outcome,
+    pub summary: String,
 }
 
 struct Running {
@@ -54,6 +134,11 @@ struct Buffers {
     author_affiliations: Vec<String>,
 }
 
+/// Where the layout of the workspace is remembered between runs (egui's persisted memory).
+fn layout_id() -> egui::Id {
+    egui::Id::unique("psg-academic-layout")
+}
+
 pub struct AcademicApp {
     env: Option<TexEnvironment>,
     env_rx: Option<Receiver<TexEnvironment>>,
@@ -67,10 +152,25 @@ pub struct AcademicApp {
     report: Option<CompileReport>,
     preview: Preview,
     zoom: f32,
-    tab: Tab,
+    /// Draw preview pages no wider than their pane.
+    fit_width: bool,
+    page: Page,
+    manuscript_tab: ManuscriptTab,
+    source_view: SourceView,
+    /// The source editor's share of the Manuscript area in the split view.
+    split_ratio: f32,
+    show_outline: bool,
+    log_view: LogView,
+    problem_filter: ProblemFilter,
+    history: Vec<RunRecord>,
+    /// The last thing that happened, in the status bar.
     status: String,
+    notices: Notices,
+    /// Notifications raised where no egui context is at hand, shown at the next frame.
+    queued: Vec<(Tone, String)>,
     activity: Vec<String>,
     updates: Updates,
+    recent: Recent,
     /// Paths to open (command line, Open with, Finder, drops), handled once the TeX check is
     /// done: a Word manuscript needs to know where Pandoc is.
     pending: Vec<PathBuf>,
@@ -81,6 +181,10 @@ pub struct AcademicApp {
     bib_filter: String,
     /// Where the chosen interface language is saved ("" or missing: follow the system).
     language_file: PathBuf,
+    /// Where the chosen theme is saved ("system", "light" or "dark").
+    theme_file: PathBuf,
+    theme: ThemeChoice,
+    data_root: PathBuf,
     #[cfg(target_os = "macos")]
     os_events: Option<crate::apple_events::OsEventsFn>,
 }
@@ -94,6 +198,10 @@ impl AcademicApp {
         crate::i18n::set(if chosen.trim().is_empty() { crate::i18n::system() } else { chosen.trim() });
         crate::fonts::install(ctx, crate::i18n::current());
         crate::theme::apply(ctx);
+        let theme_file = data.root.join("theme.txt");
+        let theme = ThemeChoice::from_key(&std::fs::read_to_string(&theme_file).unwrap_or_default());
+        psg_desktop_ui::style::set_theme(ctx, theme);
+        let (split_ratio, show_outline) = ctx.data_mut(|d| d.get_persisted::<(f32, bool)>(layout_id())).unwrap_or((0.5, true));
         let mut app = Self {
             env: None,
             env_rx: None,
@@ -107,16 +215,30 @@ impl AcademicApp {
             report: None,
             preview: Preview::default(),
             zoom: 1.0,
-            tab: Tab::Preview,
+            fit_width: true,
+            page: Page::Dashboard,
+            manuscript_tab: ManuscriptTab::Source,
+            source_view: SourceView::Split,
+            split_ratio,
+            show_outline,
+            log_view: LogView::Output,
+            problem_filter: ProblemFilter::All,
+            history: Vec::new(),
             status: t("Checking the TeX installation…").into(),
+            notices: Notices::default(),
+            queued: Vec::new(),
             activity: Vec::new(),
             updates: Updates::with_channel_file(data.root.join("update-channel.txt")),
+            recent: Recent::load(data.root.join("recent-projects.txt")),
             pending: paths,
             source: SourceEditor::default(),
             preflight: Vec::new(),
             bib: Vec::new(),
             bib_filter: String::new(),
             language_file,
+            theme_file,
+            theme,
+            data_root: data.root.clone(),
             #[cfg(target_os = "macos")]
             os_events: None,
         };
@@ -131,6 +253,90 @@ impl AcademicApp {
         }
         app.detect_tex(ctx);
         app
+    }
+
+    /// Show a notification and record it in the activity log.
+    fn notify(&mut self, ctx: &egui::Context, tone: Tone, text: impl Into<String>) {
+        let text = text.into();
+        self.notices.push(tone, text.clone(), ctx.input(|i| i.time));
+        self.status = text.clone();
+        self.note(text);
+    }
+
+    /// The number of errors and warnings, before compiling and from the last compilation.
+    fn problem_counts(&self) -> (usize, usize) {
+        let all = self.preflight.iter().chain(self.report.iter().flat_map(|r| r.diagnostics.iter()));
+        all.fold((0, 0), |(e, w), d| match d.severity {
+            Severity::Error => (e + 1, w),
+            Severity::Warning => (e, w + 1),
+        })
+    }
+
+    /// Whether everything a compilation needs is there: a project and the TeX tools it uses.
+    fn can_compile(&self) -> bool {
+        self.project.is_some()
+            && self.running.is_none()
+            && self.env.as_ref().is_some_and(|e| e.missing(self.project.as_ref().is_none_or(|p| p.file.uses_biber)).is_empty())
+    }
+
+    /// Why the Auto Typeset action is unavailable, for its tooltip.
+    fn why_not_compile(&self) -> &'static str {
+        if self.project.is_none() {
+            t("Open or create a project first.")
+        } else if self.running.is_some() {
+            t("Typesetting is already running.")
+        } else if self.env.is_none() {
+            t("Checking the TeX installation…")
+        } else {
+            t("TeX is not ready: see Settings ▸ TeX installation.")
+        }
+    }
+
+    fn has_pdf(&self) -> bool {
+        self.running.is_none() && self.project.as_ref().is_some_and(|p| p.pdf_path().is_file())
+    }
+
+    /// Show the PDF beside the manuscript, drawing it first if it isn't drawn yet.
+    fn show_preview(&mut self, ctx: &egui::Context) {
+        self.page = Page::Manuscript;
+        self.manuscript_tab = ManuscriptTab::Source;
+        if self.source_view == SourceView::Editor {
+            self.source_view = SourceView::Split;
+        }
+        if self.preview.pages.is_empty() && !self.preview.rendering && self.has_pdf() {
+            self.load_preview(ctx);
+        }
+    }
+
+    /// Save the manuscript file shown and the project's metadata and settings. Quietly does
+    /// nothing without a project. False when something couldn't be saved (already reported).
+    fn save_all(&mut self) -> bool {
+        self.apply_buffers();
+        let saved_source = self.save_source();
+        let Some(project) = &self.project else { return saved_source };
+        match project.save() {
+            Ok(()) => saved_source,
+            Err(e) => {
+                self.fail(tf("Could not save the project: {error}", &[("error", &e.to_string())]));
+                false
+            }
+        }
+    }
+
+    /// Choose a manuscript (.tex or, with Pandoc, .docx) and start a project around it from the
+    /// selected template.
+    fn import_new(&mut self) {
+        let pandoc = self.env.as_ref().is_some_and(|e| e.pandoc.found());
+        let mut dialog = rfd::FileDialog::new().set_title(t("Import a manuscript")).add_filter("LaTeX", &["tex"]);
+        if pandoc {
+            dialog = dialog.add_filter("Word", &["docx"]);
+        }
+        let Some(path) = dialog.pick_file() else { return };
+        self.pending.push(path);
+    }
+
+    fn remember_layout(&self, ctx: &egui::Context) {
+        ctx.data_mut(|d| d.insert_persisted(layout_id(), (self.split_ratio, self.show_outline)));
     }
 
     /// Where Finder's open-documents events come from (macOS).
@@ -223,9 +429,12 @@ impl AcademicApp {
         }
     }
 
+    /// Report a failure: in the status bar, the activity log and a notification that stays
+    /// until dismissed.
     fn fail(&mut self, text: impl Into<String>) {
         let text = text.into();
         self.status = text.clone();
+        self.queued.push((Tone::Danger, text.clone()));
         self.note(text);
     }
 
@@ -278,15 +487,29 @@ impl AcademicApp {
     }
 
     fn finished(&mut self, report: CompileReport, ctx: &egui::Context) {
-        self.status = report.summary();
-        self.note(report.summary());
+        let summary = summary(&report);
+        self.history.push(RunRecord { at: chrono::Local::now().format("%H:%M:%S").to_string(), outcome: report.outcome, summary: summary.clone() });
+        if self.history.len() > 50 {
+            self.history.remove(0);
+        }
         match report.outcome {
             Outcome::Succeeded => {
-                self.tab = Tab::Preview;
+                self.notify(ctx, Tone::Success, summary);
+                // The preview updates where it is shown; from elsewhere, show the result.
+                if self.page != Page::Manuscript {
+                    self.page = Page::Typesetting;
+                }
                 self.load_preview(ctx);
             }
-            Outcome::Failed => self.tab = Tab::Problems,
-            Outcome::TimedOut | Outcome::Cancelled => self.tab = Tab::Output,
+            Outcome::Failed => {
+                self.notify(ctx, Tone::Danger, summary);
+                self.page = Page::Problems;
+            }
+            Outcome::TimedOut | Outcome::Cancelled => {
+                self.notify(ctx, Tone::Warning, summary);
+                self.page = Page::Typesetting;
+                self.log_view = LogView::Output;
+            }
         }
         self.report = Some(report);
     }
@@ -301,6 +524,9 @@ impl AcademicApp {
     }
 
     fn set_project(&mut self, project: Project) {
+        // The project being left keeps what was typed into it.
+        self.save_all();
+        self.recent.add(&project.dir);
         self.buffers.keywords = project.file.metadata.keywords.join("; ");
         self.buffers.author_affiliations = project.file.metadata.authors.iter().map(|a| join_numbers(&a.affiliations)).collect();
         self.note(tf("Project: {path} (template {template})", &[("path", &project.dir.display().to_string()), ("template", &project.file.template)]));
@@ -308,8 +534,13 @@ impl AcademicApp {
         self.source.load(&project.dir, &project.file.body);
         self.project = Some(project);
         self.report = None;
+        self.history.clear();
         self.preview.clear();
         self.refresh_checks();
+        if self.page == Page::Dashboard || self.page == Page::Templates {
+            self.page = Page::Manuscript;
+            self.manuscript_tab = ManuscriptTab::Source;
+        }
     }
 
     /// Run the checks that need no TeX: the manuscript's scripts and the bibliography.
@@ -360,7 +591,11 @@ impl AcademicApp {
         if let Some(line) = line {
             self.source.go_to(line);
         }
-        self.tab = Tab::Source;
+        self.page = Page::Manuscript;
+        self.manuscript_tab = ManuscriptTab::Source;
+        if self.source_view == SourceView::Preview {
+            self.source_view = SourceView::Split;
+        }
     }
 
     /// The files the source editor offers: the body, then the bibliography files.
@@ -450,7 +685,9 @@ impl AcademicApp {
                     self.note(line.to_owned());
                 }
                 if note.lines().count() > 1 {
-                    self.tab = Tab::Activity;
+                    self.page = Page::Typesetting;
+                    self.log_view = LogView::Activity;
+                    self.queued.push((Tone::Danger, self.status.clone()));
                 }
             }
             Err(e) => self.fail(tf("Import failed: {error}", &[("error", &e.to_string())])),
@@ -512,7 +749,8 @@ impl AcademicApp {
         match spawned {
             Ok(_) => {
                 self.running = Some(Running { rx, cancel, started: Instant::now() });
-                self.status = t("Compiling with latexmk and pdfLaTeX…").into();
+                self.status = t("Typesetting with latexmk and pdfLaTeX…").into();
+                self.log_view = LogView::Output;
                 self.note(t("Compilation started."));
             }
             Err(e) => self.fail(tf("Could not start the compilation: {error}", &[("error", &e.to_string())])),
@@ -530,6 +768,7 @@ impl AcademicApp {
         match result {
             Ok(()) => {
                 self.status = tf("Exported {path}.", &[("path", &dest.display().to_string())]);
+                self.queued.push((Tone::Success, self.status.clone()));
                 self.note(self.status.clone());
             }
             Err(e) => self.fail(tf("Export failed: {error}", &[("error", &e.to_string())])),
@@ -549,519 +788,214 @@ impl AcademicApp {
         }
     }
 
-    fn top_bar(&mut self, ui: &mut egui::Ui) {
+    /// The toolbar: the product, the open project, and the four main actions.
+    fn toolbar(&mut self, ui: &mut egui::Ui) {
         let ctx = ui.ctx().clone();
-        egui::Panel::top("psg-top").show(ui, |ui| {
-            ui.horizontal_wrapped(|ui| {
-                crate::theme::product_heading(ui);
-                ui.separator();
-                let busy = self.running.is_some();
-                let can_compile = self.project.is_some()
-                    && self.env.as_ref().is_some_and(|e| e.missing(self.project.as_ref().is_none_or(|p| p.file.uses_biber)).is_empty());
-                if ui
-                    .add_enabled(can_compile && !busy, crate::theme::primary_button(ui, t("Compile")))
-                    .on_hover_text(t("Typeset with latexmk and pdfLaTeX"))
+        layout::toolbar(ui, "psg-toolbar", |ui| {
+            widgets::product_name(ui, env!("CARGO_PKG_VERSION"));
+            ui.add_space(psg_brand::space::S);
+            let p = psg_desktop_ui::Palette::of(ui);
+            let project = self.project.as_ref().map(project_title).unwrap_or_else(|| t("No project open").to_owned());
+            ui.add(egui::Label::new(egui::RichText::new(project).color(p.text_muted)).truncate())
+                .on_hover_text(self.project.as_ref().map(|p| p.dir.display().to_string()).unwrap_or_default());
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                let has_pdf = self.has_pdf();
+                if widgets::button_enabled(ui, has_pdf, widgets::ButtonKind::Secondary, t("Export"), t("Typeset the project first."))
+                    .on_hover_text(t("Check and export the finished PDF"))
                     .clicked()
                 {
-                    self.start_compile(&ctx);
+                    self.page = Page::Export;
                 }
-                if busy
-                    && ui.button(t("Cancel")).clicked()
-                    && let Some(r) = &self.running
-                {
-                    r.cancel.store(true, Ordering::Relaxed);
-                    self.note(t("Cancelling…"));
-                }
-                let has_pdf = self.project.as_ref().is_some_and(|p| p.pdf_path().is_file()) && !busy;
-                if ui.add_enabled(has_pdf, egui::Button::new(t("Export PDF…"))).clicked() {
-                    self.export();
-                }
-                if ui
-                    .add_enabled(has_pdf, egui::Button::new(t("Open in PSG PDF")))
-                    .on_hover_text(t("Open the compiled PDF in PSG PDF for review, annotation and further editing"))
+                if widgets::button_enabled(ui, has_pdf, widgets::ButtonKind::Secondary, t("Preview"), t("Typeset the project first."))
+                    .on_hover_text(t("Show the PDF beside the manuscript"))
                     .clicked()
                 {
-                    self.open_in_psg_pdf();
+                    self.show_preview(&ctx);
                 }
-                ui.separator();
-                if let Some(r) = &self.running {
+                if let Some((cancel, started)) = self.running.as_ref().map(|r| (r.cancel.clone(), r.started)) {
+                    if widgets::button(ui, widgets::ButtonKind::Danger, t("Cancel")).clicked() {
+                        cancel.store(true, Ordering::Relaxed);
+                        self.note(t("Cancelling…"));
+                    }
+                    ui.label(format!("{:.0} s", started.elapsed().as_secs_f32()));
                     ui.spinner();
-                    ui.label(format!("{:.0} s", r.started.elapsed().as_secs_f32()));
-                    ctx.request_repaint_after(std::time::Duration::from_millis(250));
+                } else {
+                    let why = self.why_not_compile();
+                    let keys = psg_desktop_ui::keys::command("R", false);
+                    if widgets::button_enabled(ui, self.can_compile(), widgets::ButtonKind::Primary, t("Auto Typeset"), why)
+                        .on_hover_text(tf("Save, check and typeset with latexmk and pdfLaTeX ({keys})", &[("keys", &keys)]))
+                        .clicked()
+                    {
+                        self.start_compile(&ctx);
+                    }
                 }
-                ui.label(&self.status);
+                self.import_menu(ui);
             });
         });
     }
 
-    /// The interface language: the system's, or one picked here (saved in the data folder).
-    fn language_picker(&mut self, ui: &mut egui::Ui) {
-        ui.horizontal(|ui| {
-            ui.label(t("Language"));
-            let current = crate::i18n::current();
-            let name = crate::i18n::LANGUAGES.iter().find(|(c, _)| *c == current).map_or("English", |(_, n)| *n);
-            let mut chosen = None;
-            egui::ComboBox::from_id_salt("language").selected_text(name).show_ui(ui, |ui| {
-                for (code, name) in crate::i18n::LANGUAGES {
-                    if ui.selectable_label(code == current, name).clicked() {
-                        chosen = Some(code);
-                    }
-                }
-            });
-            if let Some(code) = chosen {
-                crate::i18n::set(code);
-                crate::fonts::install(ui.ctx(), code);
-                if let Err(e) = std::fs::write(&self.language_file, code) {
-                    self.note(format!("{}: {e}", self.language_file.display()));
-                }
-            }
-        });
-    }
-
-    fn tex_status(&mut self, ui: &mut egui::Ui) {
-        ui.heading(t("TeX installation"));
-        match &self.env {
-            None => {
-                ui.horizontal(|ui| {
-                    ui.spinner();
-                    ui.label(t("Checking…"));
-                });
-            }
-            Some(env) => {
-                egui::Grid::new("tex-grid").num_columns(2).show(ui, |ui| {
-                    for tool in [&env.pdflatex, &env.latexmk, &env.biber, &env.pandoc] {
-                        ui.label(tool.name);
-                        match &tool.path {
-                            Some(p) => ui.label(tool.version.clone().unwrap_or_else(|| t("found").into())).on_hover_text(p.display().to_string()),
-                            None if tool.name == "pandoc" => ui.weak(t("not found (optional, for DOCX import)")),
-                            None => ui.colored_label(ui.visuals().error_fg_color, t("not found")),
-                        };
-                        ui.end_row();
-                    }
-                });
-            }
-        }
-        if ui.add_enabled(self.env_rx.is_none(), egui::Button::new(t("Check again"))).clicked() {
-            let ctx = ui.ctx().clone();
-            self.env = None;
-            self.detect_tex(&ctx);
-        }
-    }
-
-    fn project_section(&mut self, ui: &mut egui::Ui) {
-        ui.heading(t("Project"));
-        ui.label(t("Journal template"));
-        let current = self.templates.get(self.selected_template).map(|tpl| tpl.manifest.name.clone()).unwrap_or_else(|| t("(none)").into());
-        egui::ComboBox::from_id_salt("template").selected_text(current).width(ui.available_width()).show_ui(ui, |ui| {
-            for (i, tpl) in self.templates.iter().enumerate() {
-                ui.selectable_value(&mut self.selected_template, i, &tpl.manifest.name).on_hover_text(&tpl.manifest.description);
-            }
-        });
-        if let Some(tpl) = self.templates.get(self.selected_template) {
-            ui.weak(tf(
-                "{id} · {engine} · bibliography: {bibliography}",
-                &[("id", &tpl.manifest.id), ("engine", &tpl.manifest.engine), ("bibliography", &tpl.manifest.bibliography)],
-            ));
-        }
-        ui.horizontal_wrapped(|ui| {
-            if ui
-                .button(t("New project"))
-                .on_hover_text(tf("Create the project in {path}", &[("path", &self.workspace.display().to_string())]))
-                .clicked()
-            {
-                self.new_project();
-            }
-            if ui.button(t("New in folder…")).clicked() {
-                self.new_project_in_folder();
-            }
-            if ui.button(t("Open…")).clicked() {
-                self.open_project();
-            }
-        });
-        let Some(project) = &self.project else {
-            ui.weak(t("No project yet. Choose a template and press New project."));
-            return;
-        };
-        ui.label(egui::RichText::new(project.dir.display().to_string()).small())
-            .on_hover_text(t("The project folder: compilation happens here and only here"));
-        ui.add_space(4.0);
-        ui.label(t("Import"));
+    /// Import: a manuscript (new project when none is open), Word via Pandoc, or extra files.
+    fn import_menu(&mut self, ui: &mut egui::Ui) {
+        let label = widgets::button_widget(ui, widgets::ButtonKind::Secondary, t("Import"), psg_brand::size::CONTROL);
+        let busy = self.running.is_some() || self.env.is_none();
         let pandoc_version = self.env.as_ref().and_then(|e| e.pandoc.version.clone());
         let pandoc_too_old = pandoc_version.as_deref().and_then(psg_academic::pandoc::sandbox_supported) == Some(false);
         let pandoc = self.env.as_ref().is_some_and(|e| e.pandoc.found()) && !pandoc_too_old;
-        ui.horizontal_wrapped(|ui| {
-            if ui.button(t("Manuscript (.tex)…")).on_hover_text(t("Replaces the article body; a full document keeps only its body")).clicked() {
-                self.import_manuscript();
-            }
-            if ui
-                .add_enabled(pandoc, egui::Button::new(t("Word (.docx)…")))
-                .on_hover_text(t("Experimental: converts with the local Pandoc"))
-                .on_disabled_hover_text(if pandoc_too_old {
-                    t("This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer")
-                } else {
-                    t("Install Pandoc to import .docx (experimental)")
-                })
-                .clicked()
-            {
-                self.import_docx();
-            }
-            if ui.button(t("Bibliography / figures…")).clicked() {
-                self.add_files();
-            }
-        });
-    }
-
-    fn settings_section(&mut self, ui: &mut egui::Ui) {
-        let Some(project) = &mut self.project else { return };
-        ui.heading(t("Typesetting"));
-        let s = &mut project.file.settings;
-        ui.horizontal(|ui| {
-            ui.label(t("Engine"));
-            ui.weak(t("pdfLaTeX via latexmk (shell escape off)"));
-        });
-        ui.horizontal(|ui| {
-            ui.label(t("Time limit"));
-            let (min, max) = (compile::MIN_TIMEOUT.as_secs(), compile::MAX_TIMEOUT.as_secs());
-            ui.add(egui::DragValue::new(&mut s.timeout_secs).range(min..=max).suffix(" s"));
-        });
-        ui.checkbox(&mut s.force_rebuild, t("Rebuild everything each time"));
-        ui.horizontal(|ui| {
-            ui.label(t("Preview zoom"));
-            ui.add(egui::Slider::new(&mut self.zoom, 0.5..=3.0).step_by(0.25));
-        });
-        if ui.add_enabled(!self.preview.rendering && project.pdf_path().is_file(), egui::Button::new(t("Redraw preview"))).clicked() {
-            let ctx = ui.ctx().clone();
-            self.load_preview(&ctx);
-        }
-    }
-
-    fn metadata_section(&mut self, ui: &mut egui::Ui) {
-        let Some(project) = &mut self.project else { return };
-        let m = &mut project.file.metadata;
-        ui.heading(t("Publication metadata"));
-        egui::CollapsingHeader::new(t("Journal and issue")).default_open(true).show(ui, |ui| {
-            egui::Grid::new("journal-grid").num_columns(2).show(ui, |ui| {
-                for (label, value) in [
-                    ("Journal", &mut m.journal),
-                    ("Abbreviation", &mut m.journal_abbrev),
-                    ("ISSN", &mut m.issn),
-                    ("Volume", &mut m.volume),
-                    ("Issue", &mut m.issue),
-                    ("Year", &mut m.year),
-                    ("Pages", &mut m.pages),
-                    ("Article no.", &mut m.article_number),
-                    ("DOI", &mut m.doi),
-                ] {
-                    ui.label(t(label));
-                    ui.text_edit_singleline(value);
-                    ui.end_row();
-                }
-            });
-        });
-        egui::CollapsingHeader::new(t("Article")).default_open(true).show(ui, |ui| {
-            egui::Grid::new("article-grid").num_columns(2).show(ui, |ui| {
-                for (label, value) in [("Type", &mut m.article_type), ("Title", &mut m.title), ("Short title", &mut m.short_title)] {
-                    ui.label(t(label));
-                    ui.text_edit_singleline(value);
-                    ui.end_row();
-                }
-                ui.label(t("Keywords"));
-                ui.text_edit_singleline(&mut self.buffers.keywords).on_hover_text(t("Separate keywords with ; or ,"));
-                ui.end_row();
-            });
-            ui.label(t("Abstract"));
-            ui.add(egui::TextEdit::multiline(&mut m.abstract_text).desired_rows(5).desired_width(f32::INFINITY));
-        });
-        egui::CollapsingHeader::new(t("Authors and affiliations")).default_open(false).show(ui, |ui| {
-            let mut remove = None;
-            self.buffers.author_affiliations.resize(m.authors.len(), String::new());
-            for (i, (author, aff)) in m.authors.iter_mut().zip(self.buffers.author_affiliations.iter_mut()).enumerate() {
-                ui.push_id(("author", i), |ui| {
-                    egui::Grid::new("author").num_columns(2).show(ui, |ui| {
-                        ui.label(tf("Author {n}", &[("n", &(i + 1).to_string())]));
-                        ui.text_edit_singleline(&mut author.name);
-                        ui.end_row();
-                        ui.label(t("Affiliations"));
-                        ui.text_edit_singleline(aff).on_hover_text(t("Affiliation numbers, e.g. 1, 2"));
-                        ui.end_row();
-                        ui.label(t("ORCID iD"));
-                        ui.text_edit_singleline(&mut author.orcid);
-                        ui.end_row();
-                        ui.label(t("Email"));
-                        ui.text_edit_singleline(&mut author.email);
-                        ui.end_row();
-                    });
-                    ui.horizontal(|ui| {
-                        ui.checkbox(&mut author.corresponding, t("Corresponding author"));
-                        if ui.small_button(t("Remove")).clicked() {
-                            remove = Some(i);
-                        }
-                    });
-                    ui.separator();
-                });
-            }
-            if let Some(i) = remove {
-                m.authors.remove(i);
-                self.buffers.author_affiliations.remove(i);
-            }
-            if ui.button(t("Add author")).clicked() {
-                m.authors.push(Author::default());
-                self.buffers.author_affiliations.push(String::new());
-            }
-            ui.add_space(6.0);
-            let mut remove = None;
-            for (i, a) in m.affiliations.iter_mut().enumerate() {
-                ui.horizontal(|ui| {
-                    ui.label(format!("{}", i + 1));
-                    ui.text_edit_singleline(a);
-                    if ui.small_button("✕").clicked() {
-                        remove = Some(i);
+        ui.add_enabled_ui(!busy, |ui| {
+            egui::containers::menu::MenuButton::from_button(label).ui(ui, |ui| {
+                ui.set_min_width(260.0);
+                if self.project.is_none() {
+                    if ui
+                        .button(t("Manuscript as a new project…"))
+                        .on_hover_text(t("A .tex or .docx file becomes the body of a new project"))
+                        .clicked()
+                    {
+                        self.import_new();
                     }
-                });
-            }
-            if let Some(i) = remove {
-                m.affiliations.remove(i);
-            }
-            if ui.button(t("Add affiliation")).clicked() {
-                m.affiliations.push(String::new());
-            }
-        });
-        egui::CollapsingHeader::new(t("Dates and licence")).default_open(false).show(ui, |ui| {
-            egui::Grid::new("dates-grid").num_columns(2).show(ui, |ui| {
-                for (label, value) in [
-                    ("Received", &mut m.received),
-                    ("Revised", &mut m.revised),
-                    ("Accepted", &mut m.accepted),
-                    ("Published", &mut m.published),
-                    ("Copyright", &mut m.copyright),
-                ] {
-                    ui.label(t(label));
-                    ui.add(egui::TextEdit::singleline(value).hint_text(if label == "Copyright" { "" } else { "YYYY-MM-DD" }));
-                    ui.end_row();
+                    ui.weak(t("Open or create a project to import into it."));
+                    return;
+                }
+                if ui.button(t("Manuscript (.tex)…")).on_hover_text(t("Replaces the article body; a full document keeps only its body")).clicked() {
+                    self.import_manuscript();
+                }
+                if ui
+                    .add_enabled(pandoc, egui::Button::new(t("Word (.docx)…")))
+                    .on_hover_text(t("Experimental: converts with the local Pandoc"))
+                    .on_disabled_hover_text(if pandoc_too_old {
+                        t("This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer")
+                    } else {
+                        t("Install Pandoc to import .docx (experimental)")
+                    })
+                    .clicked()
+                {
+                    self.import_docx();
+                }
+                ui.separator();
+                if ui.button(t("Bibliography / figures…")).clicked() {
+                    self.add_files();
                 }
             });
-            ui.label(t("Licence statement"));
-            ui.add(egui::TextEdit::multiline(&mut m.licence).desired_rows(2).desired_width(f32::INFINITY));
         });
-        let issues = m.validate();
-        if !issues.is_empty() {
-            ui.add_space(4.0);
-            for issue in issues {
-                let color = if issue.blocking { ui.visuals().error_fg_color } else { ui.visuals().warn_fg_color };
-                ui.colored_label(color, format!("{}: {}", issue.field, issue.message));
+    }
+
+    /// The navigation rail: one entry per area, with the number of problems on Problems.
+    fn nav(&mut self, ui: &mut egui::Ui) {
+        let compact = layout::is_compact(ui.ctx());
+        layout::nav_rail(ui, "psg-nav", compact, |ui| {
+            let (errors, warnings) = self.problem_counts();
+            for page in Page::ALL {
+                if page == Page::Settings {
+                    // Settings sits at the bottom of the rail, apart from the workflow.
+                    ui.add_space((ui.available_height() - 40.0).max(psg_brand::space::S));
+                }
+                let count = match page {
+                    Page::Problems if errors > 0 => Some((errors, Tone::Danger)),
+                    Page::Problems => Some((warnings, Tone::Warning)),
+                    _ => None,
+                };
+                if widgets::nav_item(ui, page.label(), self.page == page, count, compact).clicked() {
+                    self.page = page;
+                }
+            }
+        });
+    }
+
+    /// The status bar: TeX, the engine, what happened last, and the language.
+    fn status_bar(&mut self, ui: &mut egui::Ui) {
+        layout::status_bar(ui, "psg-status", |ui| {
+            let (tone, tex) = match &self.env {
+                None => (Tone::Info, t("Checking TeX…")),
+                Some(env) if env.missing(true).is_empty() => (Tone::Success, t("TeX ready")),
+                Some(env) if env.missing(false).is_empty() => (Tone::Warning, t("TeX ready, no Biber")),
+                Some(_) => (Tone::Danger, t("TeX not found")),
+            };
+            widgets::status_dot(ui, tone);
+            if ui.add(egui::Label::new(tex).sense(egui::Sense::click())).on_hover_text(t("Settings ▸ TeX installation")).clicked() {
+                self.page = Page::Settings;
+            }
+            ui.separator();
+            ui.label(t("Engine: pdfLaTeX"));
+            ui.separator();
+            ui.add(egui::Label::new(self.status.as_str()).truncate());
+            ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                ui.label(crate::i18n::LANGUAGES.iter().find(|(c, _)| *c == crate::i18n::current()).map_or("English", |(_, n)| *n));
+                if self.source.dirty() {
+                    ui.separator();
+                    ui.label(t("Unsaved changes"));
+                }
+            });
+        });
+    }
+
+    fn keyboard(&mut self, ctx: &egui::Context) {
+        use psg_desktop_ui::keys::consume_command;
+        if consume_command(ctx, egui::Key::S, false) && self.save_all() && self.project.is_some() {
+            self.notify(ctx, Tone::Success, t("Saved."));
+        }
+        if consume_command(ctx, egui::Key::R, false) && self.can_compile() {
+            self.start_compile(ctx);
+        }
+        if consume_command(ctx, egui::Key::E, false) && self.has_pdf() {
+            self.page = Page::Export;
+        }
+        if consume_command(ctx, egui::Key::O, false) && self.running.is_none() {
+            self.open_project();
+        }
+        // Ctrl+1 … Ctrl+7 switch areas.
+        let keys = [egui::Key::Num1, egui::Key::Num2, egui::Key::Num3, egui::Key::Num4, egui::Key::Num5, egui::Key::Num6, egui::Key::Num7];
+        for (key, page) in keys.into_iter().zip(Page::ALL) {
+            if consume_command(ctx, key, false) {
+                self.page = page;
             }
         }
     }
 
     fn central(&mut self, ui: &mut egui::Ui) {
-        egui::CentralPanel::default().show(ui, |ui| {
-            let problems = self.report.as_ref().map_or(0, |r| r.diagnostics.len()) + self.preflight.len();
-            ui.horizontal(|ui| {
-                ui.selectable_value(&mut self.tab, Tab::Preview, t("PDF preview"));
-                ui.selectable_value(&mut self.tab, Tab::Source, t("Source and PDF"));
-                ui.selectable_value(&mut self.tab, Tab::References, tf("References ({n})", &[("n", &self.bib.len().to_string())]));
-                ui.selectable_value(&mut self.tab, Tab::Problems, tf("Problems ({n})", &[("n", &problems.to_string())]));
-                ui.selectable_value(&mut self.tab, Tab::Output, t("Compile output"));
-                ui.selectable_value(&mut self.tab, Tab::TexLog, t("TeX log"));
-                ui.selectable_value(&mut self.tab, Tab::Activity, t("Activity"));
-            });
-            ui.separator();
-            match self.tab {
-                Tab::Preview => self.preview_tab(ui),
-                Tab::Source => self.source_tab(ui),
-                Tab::References => self.references_tab(ui),
-                Tab::Problems => self.problems_tab(ui),
-                Tab::Output => {
-                    let text = self
-                        .report
-                        .as_ref()
-                        .map(|r| format!("$ {}\n\n{}", r.command, r.output))
-                        .unwrap_or_else(|| t("Compile to see latexmk's output here.").into());
-                    log_view(ui, &text);
-                }
-                Tab::TexLog => {
-                    let text = self.report.as_ref().and_then(|r| r.tex_log.clone()).unwrap_or_else(|| t("No TeX log yet.").into());
-                    log_view(ui, &text);
-                }
-                Tab::Activity => log_view(ui, &self.activity.join("\n")),
-            }
-        });
-    }
-
-    /// The source editor on the left and the PDF on the right.
-    fn source_tab(&mut self, ui: &mut egui::Ui) {
-        if self.project.is_none() {
-            ui.weak(t("Open or create a project to edit its manuscript."));
-            return;
-        }
-        let save = ui.input_mut(|i| i.consume_key(egui::Modifiers::COMMAND, egui::Key::S));
-        ui.horizontal(|ui| {
-            if ui.add_enabled(self.source.dirty(), egui::Button::new(t("Save"))).on_hover_text(t("Save the file (Ctrl+S / ⌘S)")).clicked() || save {
-                self.save_source();
-            }
-            if ui.button(t("Reload from disk")).on_hover_text(t("Discard unsaved changes and read the file again")).clicked()
-                && let Some(project) = &self.project
-            {
-                let (dir, file) = (project.dir.clone(), self.source.file.clone());
-                self.source.load(&dir, &file);
-            }
-            if self.source.dirty() {
-                ui.weak(t("Unsaved changes; they are saved before compiling."));
-            }
-        });
-        let files = self.editable_files();
-        let file = self.source.file.clone();
-        let marked: Vec<u32> = self
-            .preflight
-            .iter()
-            .chain(self.report.iter().flat_map(|r| r.diagnostics.iter()))
-            .filter(|d| d.file.as_deref().is_some_and(|f| f.trim_start_matches("./") == file))
-            .filter_map(|d| d.line)
-            .collect();
-        let width = ui.available_width();
-        let mut picked = None;
-        ui.columns(2, |cols| {
-            if let [left, right] = cols {
-                left.set_min_width(width * 0.3);
-                picked = self.source.show(left, &files, &marked);
-                self.preview_tab(right);
-            }
-        });
-        if let Some(name) = picked {
-            self.go_to(&name, None);
-        }
-    }
-
-    fn references_tab(&mut self, ui: &mut egui::Ui) {
-        let Some(project) = &self.project else {
-            ui.weak(t("Open or create a project to see its bibliography."));
-            return;
-        };
-        if !project.file.uses_biber {
-            ui.weak(t("This template doesn't use a bibliography file."));
-        }
-        ui.horizontal(|ui| {
-            ui.label(t("Filter"));
-            ui.text_edit_singleline(&mut self.bib_filter);
-            if ui.button(t("Check again")).clicked() {
-                self.refresh_checks();
-            }
-        });
-        let filter = self.bib_filter.to_lowercase();
-        let mut go = None;
-        egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-            egui::Grid::new("bib-grid").num_columns(3).striped(true).show(ui, |ui| {
-                ui.strong(t("Key"));
-                ui.strong(t("Type"));
-                ui.strong(t("Entry"));
-                ui.end_row();
-                for (file, e) in &self.bib {
-                    let summary = e.summary();
-                    if !filter.is_empty() && !e.key.to_lowercase().contains(&filter) && !summary.to_lowercase().contains(&filter) {
-                        continue;
-                    }
-                    if ui.link(&e.key).on_hover_text(format!("{file}:{}", e.line)).clicked() {
-                        go = Some((file.clone(), e.line));
-                    }
-                    ui.label(&e.kind);
-                    ui.label(summary);
-                    ui.end_row();
-                }
-            });
-        });
-        if let Some((file, line)) = go {
-            self.go_to(&file, Some(line));
-        }
-    }
-
-    fn preview_tab(&mut self, ui: &mut egui::Ui) {
-        if let Some(e) = &self.preview.error {
-            ui.colored_label(ui.visuals().error_fg_color, e);
-        }
-        if self.preview.pages.is_empty() {
-            if self.preview.rendering {
-                ui.spinner();
-            } else {
-                ui.weak(t("Compile the project to see the PDF here."));
-            }
-            return;
-        }
-        if self.preview.total_pages > MAX_PREVIEW_PAGES {
-            ui.weak(tf(
-                "Showing the first {shown} of {total} pages.",
-                &[("shown", &MAX_PREVIEW_PAGES.to_string()), ("total", &self.preview.total_pages.to_string())],
-            ));
-        }
-        let ppp = ui.ctx().pixels_per_point();
-        egui::ScrollArea::both().auto_shrink([false, false]).show(ui, |ui| {
-            ui.vertical_centered(|ui| {
-                for (i, page) in self.preview.pages.iter().enumerate() {
-                    match page {
-                        PageSlot::Ready(texture, size) => {
-                            ui.add(egui::Image::new((texture.id(), *size / ppp)));
-                        }
-                        PageSlot::Pending => {
-                            ui.add_sized([200.0, 280.0], egui::Spinner::new());
-                        }
-                        PageSlot::Failed(e) => {
-                            ui.colored_label(ui.visuals().error_fg_color, tf("Page {n}: {error}", &[("n", &(i + 1).to_string()), ("error", e)]));
-                        }
-                    }
-                    ui.add_space(12.0);
-                }
-            });
-        });
-    }
-
-    fn problems_tab(&mut self, ui: &mut egui::Ui) {
-        let mut go = None;
-        let editable = self.editable_files();
-        egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-            ui.heading(t("Before compiling"));
-            if self.project.is_none() {
-                ui.weak(t("Open or create a project to check it."));
-            } else if self.preflight.is_empty() {
-                ui.weak(t("No problems in the manuscript's scripts or the bibliography."));
-            }
-            for (i, d) in self.preflight.iter().enumerate() {
-                ui.push_id(("pre", i), |ui| {
-                    if let Some(target) = problem_row(ui, d, &editable) {
-                        go = Some(target);
-                    }
-                });
-            }
-            ui.add_space(8.0);
-            ui.heading(t("From the last compilation"));
-            let Some(report) = &self.report else {
-                ui.weak(t("Compile to see errors and warnings here."));
-                return;
-            };
-            ui.label(report.summary());
-            if report.diagnostics.is_empty() {
-                ui.weak(t("No errors or warnings."));
-            }
-            for (i, d) in report.diagnostics.iter().enumerate() {
-                ui.push_id(("tex", i), |ui| {
-                    if let Some(target) = problem_row(ui, d, &editable) {
-                        go = Some(target);
-                    }
-                });
-            }
-        });
-        if let Some((file, line)) = go {
-            self.go_to(&file, line);
-        }
+        let p = psg_desktop_ui::Palette::of(ui);
+        let fill = if matches!(self.page, Page::Manuscript | Page::Typesetting) { p.panel } else { p.canvas };
+        egui::CentralPanel::default().frame(egui::Frame::NONE.fill(fill).inner_margin(egui::Margin::same(psg_brand::space::L as i8))).show(
+            ui,
+            |ui| match self.page {
+                Page::Dashboard => self.dashboard_page(ui),
+                Page::Manuscript => self.manuscript_page(ui),
+                Page::Templates => self.templates_page(ui),
+                Page::Typesetting => self.typesetting_page(ui),
+                Page::Problems => self.problems_page(ui),
+                Page::Export => self.export_page(ui),
+                Page::Settings => self.settings_page(ui),
+            },
+        );
     }
 }
 
-/// One problem: its message in the severity's colour, a hint when there is one, and "Go to line"
-/// for a problem in a file the editor shows. Returns the place to go to when that is pressed.
-fn problem_row(ui: &mut egui::Ui, d: &Diagnostic, editable: &[String]) -> Option<(String, Option<u32>)> {
-    let color = match d.severity {
-        Severity::Error => ui.visuals().error_fg_color,
-        Severity::Warning => ui.visuals().warn_fg_color,
-    };
-    // The advice for a script the templates can't set is a sentence of its own, in this language.
+/// The project's title for the toolbar: the article's short title, else its title, else the folder.
+fn project_title(project: &Project) -> String {
+    let m = &project.file.metadata;
+    [&m.short_title, &m.title]
+        .into_iter()
+        .map(|s| s.trim())
+        .find(|s| !s.is_empty())
+        .map(str::to_owned)
+        .or_else(|| project.dir.file_name().map(|n| n.to_string_lossy().into_owned()))
+        .unwrap_or_default()
+}
+
+/// The report's outcome in the interface language.
+fn summary(report: &CompileReport) -> String {
+    let secs = format!("{:.1}", report.elapsed.as_secs_f32());
+    match report.outcome {
+        Outcome::Succeeded => tf("Typeset in {secs} s with {n} warning(s).", &[("secs", &secs), ("n", &report.warnings().count().to_string())]),
+        Outcome::Failed => {
+            tf("Typesetting failed after {secs} s with {n} error(s).", &[("secs", &secs), ("n", &report.errors().count().max(1).to_string())])
+        }
+        Outcome::TimedOut => tf("Typesetting stopped: it took longer than {secs} s.", &[("secs", &secs)]),
+        Outcome::Cancelled => t("Typesetting cancelled.").to_owned(),
+    }
+}
+
+/// A problem's message (without its place) and its hint, if any. The advice for a script the templates can't set is
+/// a sentence of its own, shown (translated) as the hint instead of inside the message.
+fn problem_text(d: &Diagnostic) -> (String, Option<&'static str>) {
     let advice = [
         psg_academic::scripts::Script::Han,
         psg_academic::scripts::Script::Greek,
@@ -1072,28 +1006,9 @@ fn problem_row(ui: &mut egui::Ui, d: &Diagnostic, editable: &[String]) -> Option
     .into_iter()
     .map(psg_academic::scripts::Script::advice)
     .find(|a| d.message.ends_with(a));
-    let text = d.to_string();
-    let text = advice.map_or(text.as_str(), |a| text.trim_end_matches(a).trim_end());
-    let mut go = None;
-    ui.horizontal_wrapped(|ui| {
-        ui.colored_label(color, text);
-        let file = d.file.as_deref().map(|f| f.trim_start_matches("./")).filter(|f| editable.iter().any(|e| e == f));
-        if let Some(file) = file
-            && ui.small_button(if d.line.is_some() { t("Go to line") } else { t("Open file") }).clicked()
-        {
-            go = Some((file.to_owned(), d.line));
-        }
-    });
-    if let Some(hint) = advice.or_else(|| d.hint()) {
-        ui.indent("hint", |ui| ui.weak(t(hint)));
-    }
-    go
-}
-
-fn log_view(ui: &mut egui::Ui, text: &str) {
-    egui::ScrollArea::both().auto_shrink([false, false]).stick_to_bottom(true).show(ui, |ui| {
-        ui.add(egui::Label::new(egui::RichText::new(text).monospace().size(12.0)).wrap_mode(egui::TextWrapMode::Extend).selectable(true));
-    });
+    // The file and line are shown beside the message, so only the message is returned.
+    let text = advice.map_or(d.message.as_str(), |a| d.message.trim_end_matches(a).trim_end()).to_owned();
+    (text, advice.or_else(|| d.hint()))
 }
 
 fn join_numbers(n: &[usize]) -> String {
@@ -1121,41 +1036,31 @@ impl eframe::App for AcademicApp {
         self.open_pending();
         // A ready update waits while a compilation runs.
         if self.updates.frame(&ctx, self.running.is_none()) || quit {
+            self.save_all();
             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
         }
         if self.running.is_some() || self.preview.rendering || self.env_rx.is_some() {
             ctx.request_repaint_after(std::time::Duration::from_millis(200));
         }
-        self.top_bar(ui);
-        egui::Panel::left("psg-side").resizable(true).default_size(380.0).min_size(300.0).show(ui, |ui| {
-            egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
-                self.project_section(ui);
-                ui.separator();
-                self.settings_section(ui);
-                ui.separator();
-                self.metadata_section(ui);
-                ui.separator();
-                self.tex_status(ui);
-                ui.separator();
-                self.language_picker(ui);
-                ui.add_space(8.0);
-                ui.weak(format!("{APP_NAME} {} · {PUBLISHER}", crate::theme::display_version()));
-                ui.weak(t("PDF engine: PdfCraft (MIT OR Apache-2.0)"));
-                if ui.small_button(t("Check for updates…")).clicked() {
-                    self.updates.request_check();
-                }
-                if let Some(error) = self.updates.channel_ui(ui) {
-                    self.note(error);
-                }
-            });
-        });
+        let now = ctx.input(|i| i.time);
+        for (tone, text) in std::mem::take(&mut self.queued) {
+            self.notices.push(tone, text, now);
+        }
+        self.keyboard(&ctx);
+        self.toolbar(ui);
+        self.status_bar(ui);
+        self.nav(ui);
         self.central(ui);
+        self.notices.show(&ctx);
+        self.remember_layout(&ctx);
     }
 
     fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
         if let Some(r) = &self.running {
             r.cancel.store(true, Ordering::Relaxed);
         }
+        // What was typed into the metadata is kept, as the manuscript file is when it is saved.
+        self.save_all();
         self.updates.exiting();
     }
 }

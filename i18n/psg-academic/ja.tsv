@@ -170,3 +170,152 @@
 	{id} · {engine} · bibliography: {bibliography}	{id} · {engine} · 参考文献: {bibliography}
 	{n} problems found before compiling; see Problems.	コンパイル前に {n} 件の問題が見つかりました。「問題」を見てください。
 	{path} is a Word manuscript; install Pandoc to import it.	{path} は Word の原稿です。読み込むには Pandoc をインストールしてください。
+	A .tex or .docx file becomes the body of a new project	.tex または .docx ファイルが新しいプロジェクトの本文になります
+	About	このアプリについて
+	Add bibliography file…	文献ファイルを追加…
+	All ({n})	すべて（{n}）
+	An open project keeps the template it was created with; the selection applies to new projects.	開いているプロジェクトは作成時のテンプレートのままです。ここでの選択は新しいプロジェクトに適用されます。
+	Article details	論文の情報
+	Authors	著者
+	Authors refer to these by number.	著者はこれらを番号で参照します。
+	Auto Typeset	自動組版
+	Before typesetting	組版の前
+	Before you export	書き出す前に
+	Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):	PSG Academic PDF は組み込みテンプレートのほか、次のフォルダーからもテンプレートを読み込みます（各テンプレートは template.toml を含むフォルダーです）：
+	Bibliography: {tool}	文献処理：{tool}
+	Built in	組み込み
+	Cancelled	キャンセル済み
+	Check and export the finished PDF	完成した PDF を確認して書き出す
+	Check compatibility	互換性を確認
+	Check the finished article and save the PDF where it is needed.	完成した論文を確認し、PDF を必要な場所に保存します。
+	Checking TeX…	TeX を確認中…
+	Coming later	今後対応予定
+	Current project	現在のプロジェクト
+	Dark	ダーク
+	Dashboard	ダッシュボード
+	Data folder:	データフォルダー：
+	Edit manuscript	原稿を編集
+	Editor	エディター
+	Engine: pdfLaTeX	エンジン：pdfLaTeX
+	Error	エラー
+	Errors ({n})	エラー（{n}）
+	Errors stop typesetting; warnings are worth a look before export.	エラーがあると組版は止まります。警告は書き出す前に確認してください。
+	Export	書き出し
+	Failed	失敗
+	File	ファイル
+	Filter by key, author or title	キー・著者・タイトルで絞り込み
+	Finished	完了
+	Follow system	システムに合わせる
+	From the last typesetting run	前回の組版から
+	Get beta updates	ベータ版の更新を受け取る
+	Idle	待機中
+	Import a manuscript	原稿を読み込む
+	Import a manuscript or create a project from a template to start.	原稿を読み込むか、テンプレートからプロジェクトを作成して始めましょう。
+	Import manuscript…	原稿を読み込む…
+	Import template (.zip)…	テンプレートを読み込む（.zip）…
+	Interface size	表示サイズ
+	Join beta	ベータに参加
+	Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.	ベータチャンネルに参加しますか？ベータ版には未完成の機能や不具合があることがあります。PSG Academic PDF は新しいベータ版ごとに、また新しい安定版が出ればそれに更新されます。
+	Journal templates set the layout, fonts and citation style. New projects use the selected template.	ジャーナルのテンプレートがレイアウト、フォント、引用スタイルを決めます。新しいプロジェクトは選択したテンプレートを使います。
+	Language and appearance	言語と外観
+	Leave beta	ベータをやめる
+	Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	ベータチャンネルをやめますか？PSG Academic PDF は今のバージョンのままで、それより新しい安定版が出たときに更新されます。古いバージョンには戻りません。
+	Light	ライト
+	Line {n}	{n} 行目
+	Manuscript	原稿
+	Manuscript as a new project…	原稿から新しいプロジェクト…
+	Missing	見つかりません
+	Name	氏名
+	New project from this template	このテンプレートで新規作成
+	New projects use the {template} template. Choose another in the Template Library.	新しいプロジェクトは {template} テンプレートを使います。別のものはテンプレートライブラリで選べます。
+	No PDF yet	PDF はまだありません
+	No PDF yet.	PDF はまだありません。
+	No \section headings yet.	\section の見出しはまだありません。
+	No bibliography	文献なし
+	No bibliography entries yet.	文献の項目はまだありません。
+	No errors	エラーなし
+	No manuscript open	開いている原稿はありません
+	No project open	開いているプロジェクトはありません
+	Not typeset in this session	このセッションでは未組版
+	Nothing typeset in this session yet.	このセッションではまだ何も組版していません。
+	Open another project…	別のプロジェクトを開く…
+	Open or create a project first.	まずプロジェクトを開くか作成してください。
+	Open or create a project to import into it.	読み込むには、プロジェクトを開くか作成してください。
+	Open or create a project, then typeset it to export a PDF.	プロジェクトを開くか作成し、組版すると PDF を書き出せます。
+	Open project…	プロジェクトを開く…
+	Outline	アウトライン
+	PDF	PDF
+	Planned for a later version; not available yet.	今後のバージョンで対応予定です。まだ使えません。
+	Press Auto Typeset first.	まず「自動組版」を押してください。
+	Press Auto Typeset to typeset the manuscript; the PDF appears here.	「自動組版」を押すと原稿が組版され、PDF がここに表示されます。
+	Preview	プレビュー
+	Problems	問題
+	Projects you open or create appear here.	開いたり作成したりしたプロジェクトがここに表示されます。
+	Publication	出版情報
+	Recent projects	最近のプロジェクト
+	Redraw	再描画
+	Remove from the list (the folder is kept)	一覧から外す（フォルダーは残ります）
+	Required publication details are filled in	必須の出版情報が入力されています
+	Reset	リセット
+	Review problems	問題を確認
+	Running	実行中
+	Runs in this session	このセッションの実行
+	Save the file ({keys})	ファイルを保存（{keys}）
+	Save, check and typeset with latexmk and pdfLaTeX ({keys})	保存・確認して latexmk と pdfLaTeX で組版（{keys}）
+	Saved with the project ({keys}) and before every typesetting run.	プロジェクトと一緒に保存され（{keys}）、組版の前にも毎回保存されます。
+	Saved.	保存しました。
+	See Manuscript ▸ Title & abstract, Authors and Publication.	「原稿 ▸ タイトルと要旨、著者、出版情報」を確認してください。
+	Selected for new projects	新規プロジェクト用
+	Settings	設定
+	Settings for this project	このプロジェクトの設定
+	Settings ▸ TeX installation	設定 ▸ TeX のインストール
+	Shortcuts:	ショートカット：
+	Show the PDF beside the manuscript	原稿の横に PDF を表示
+	Size	サイズ
+	Source	ソース
+	Split	左右に並べる
+	Start a project	プロジェクトを始める
+	Suggested name	推奨ファイル名
+	Switch area	エリアを切り替え
+	TeX is not ready: see Settings ▸ TeX installation.	TeX の準備ができていません。「設定 ▸ TeX のインストール」を確認してください。
+	TeX not found	TeX が見つかりません
+	TeX ready	TeX 準備完了
+	TeX ready, no Biber	TeX 準備完了（Biber なし）
+	Template Library	テンプレートライブラリ
+	Template: {template}	テンプレート：{template}
+	The project has been typeset	プロジェクトは組版済み
+	Theme	テーマ
+	Timed out	時間切れ
+	Title & abstract	タイトルと要旨
+	Typeset	組版日時
+	Typeset accepted articles into publication-ready PDFs with your journal's template.	採択された論文を、ジャーナルのテンプレートで出版用の PDF に組版します。
+	Typeset in {secs} s with {n} warning(s).	{secs} 秒で組版しました（警告 {n} 件）。
+	Typeset the project first.	まずプロジェクトを組版してください。
+	Typeset to see errors and warnings here.	組版するとエラーと警告がここに表示されます。
+	Typeset to see latexmk's output here.	組版すると latexmk の出力がここに表示されます。
+	Typesetting cancelled.	組版をキャンセルしました。
+	Typesetting failed after {secs} s with {n} error(s).	{secs} 秒後に組版が失敗しました（エラー {n} 件）。
+	Typesetting for {secs} s…	組版中（{secs} 秒）…
+	Typesetting is already running.	組版を実行中です。
+	Typesetting stopped: it took longer than {secs} s.	組版を止めました：{secs} 秒を超えました。
+	Typesetting with latexmk and pdfLaTeX…	latexmk と pdfLaTeX で組版中…
+	Unsaved	未保存
+	Unsaved changes	未保存の変更があります
+	Untitled article	無題の論文
+	Updates	アップデート
+	Used by this project	このプロジェクトで使用中
+	Warning	警告
+	Warnings ({n})	警告（{n}）
+	Where templates come from	テンプレートの場所
+	Worth a look, but they don't stop the export.	確認をおすすめしますが、書き出しは止まりません。
+	latexmk runs pdfLaTeX (and Biber for the bibliography) in the project folder, without shell escape.	latexmk がプロジェクトフォルダーで pdfLaTeX（文献には Biber）を実行します。shell escape は使いません。
+	pdfLaTeX	pdfLaTeX
+	via latexmk, shell escape off	latexmk 経由、shell escape オフ
+	{id} · licence {licence}	{id} · ライセンス {licence}
+	{name} (open)	{name}（開いています）
+	{n} error(s)	エラー {n} 件
+	{n} error(s): see Problems.	エラー {n} 件：「問題」を確認してください。
+	{n} pages	{n} ページ
+	{n} warning(s)	警告 {n} 件
+	{n} words	{n} 語
+	Fit width	幅に合わせる

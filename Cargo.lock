@@ -5315,6 +5315,7 @@ dependencies = [
  "pdfcraft-render",
  "psg-academic",
  "psg-brand",
+ "psg-desktop-ui",
  "rfd",
  "sys-locale",
  "tempfile",

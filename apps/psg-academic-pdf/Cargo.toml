@@ -12,6 +12,8 @@ workspace = true
 [dependencies]
 # The PSG design system: name, brand colours, release badge (docs/brand.md).
 psg-brand = { workspace = true }
+# The PSG Desktop Design System: theme, fonts and components shared with PSG PDF.
+psg-desktop-ui = { workspace = true }
 # Templates, metadata, TeX detection and sandboxed latexmk compilation.
 psg-academic = { path = "../../crates/academic" }
 # The shared PdfCraft engine draws the PDF preview (the same renderer PSG PDF uses).
