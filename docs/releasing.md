@@ -332,7 +332,7 @@ products' installers without publishing them; add the `full-ci` label to do that
 ## Scanner detections
 
 Antivirus and reputation scanners sometimes flag a released file. Check the facts before you change
-code or answer publicly. The first report was [issue #747](https://github.com/storytold/pdfcraft/issues/747),
+code or answer publicly. The first report was issue #747,
 a match of the `CobaltStrikeBeacon` family rule.
 
 1. **Confirm the file is the release.** Compare its SHA-256 with `SHA256SUMS.txt` on the GitHub
@@ -367,5 +367,5 @@ a match of the `CobaltStrikeBeacon` family rule.
    current one does not. Don't alter PdfCraft's binaries to change a scanner's result. That changes
    nothing about the software.
 7. **Report.** To the scanner, send the file's SHA-256, the release URL, the rule name and revision,
-   and the matched identifiers and offsets. Report PdfCraft problems at
-   <https://github.com/storytold/pdfcraft/issues> with the same facts.
+   and the matched identifiers and offsets. Report PSG problems at
+   <https://github.com/WENSHAO521/psg-pdf/issues> with the same facts.

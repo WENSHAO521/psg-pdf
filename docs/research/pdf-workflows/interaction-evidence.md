@@ -20,16 +20,16 @@ absence claims.
 
 | Area | Inspected evidence | What that evidence establishes |
 |---|---|---|
-| Command discovery and dispatch | [`commands.rs`](https://github.com/storytold/pdfcraft/blob/3f044b6263aa6605c3aa44ca6d065e1ab37d13b6/crates/ui-egui/src/commands.rs), [`palette.rs`](https://github.com/storytold/pdfcraft/blob/3f044b6263aa6605c3aa44ca6d065e1ab37d13b6/crates/ui-egui/src/palette.rs) | Menus, shortcuts, palette and other entry points share command metadata/dispatch. The palette is an existing feature, not an absent research concept. |
-| Measurement | [`measure_ui.rs`](https://github.com/storytold/pdfcraft/blob/3f044b6263aa6605c3aa44ca6d065e1ab37d13b6/crates/ui-egui/src/measure_ui.rs) | Distance/perimeter/area controls, calibration, snapping and saved-measurement state exist. An older session-only calibration description does not describe every current persisted scale. |
-| Comparison | [`compare_ui.rs`](https://github.com/storytold/pdfcraft/blob/3f044b6263aa6605c3aa44ca6d065e1ab37d13b6/crates/ui-egui/src/compare_ui.rs) | Text changes, visual regions, document highlights, report and comment actions exist. This older source link does not establish all later split-view behaviour. |
-| OCR | [`ocr_ui.rs`](https://github.com/storytold/pdfcraft/blob/3f044b6263aa6605c3aa44ca6d065e1ab37d13b6/crates/ui-egui/src/ocr_ui.rs) | Background recognition, cancellation request and multiple-file processing exist. Cancellation can retain pages already recognized; it is not synonymous with rollback. |
-| Accessibility review | [`accessibility.rs` tests](https://github.com/storytold/pdfcraft/blob/3f044b6263aa6605c3aa44ca6d065e1ab37d13b6/crates/ui-egui/tests/accessibility.rs) | Source includes checks for finding navigation, Tags-panel review, automatic text tagging and per-document skipped-rule state. Tests were inspected, not executed for this handoff. |
-| Interface appearance | [`theme.rs`](https://github.com/storytold/pdfcraft/blob/3f044b6263aa6605c3aa44ca6d065e1ab37d13b6/crates/ui-egui/src/theme.rs) | A shared token type and System/Light/Dark preferences exist. Their presence is not a measured contrast result. |
-| International text input | [`commands.rs` tests](https://github.com/storytold/pdfcraft/blob/3f044b6263aa6605c3aa44ca6d065e1ab37d13b6/crates/ui-egui/tests/commands.rs) | Palette tests cover idle composition frames, Chinese preedit/commit, cancellation and outside-click behaviour. This does not establish native input-method behaviour in every editable field. |
-| Automation conventions | [`automation/README.md`](https://github.com/storytold/pdfcraft/blob/3f044b6263aa6605c3aa44ca6d065e1ab37d13b6/crates/automation/README.md) | The documented contract uses displayed top-left rectangles, 1-based pages/positions, confined paths and a shared tool table. Historical mixed-coordinate criticism is not current evidence of a defect. |
+| Command discovery and dispatch | `commands.rs`, `palette.rs` | Menus, shortcuts, palette and other entry points share command metadata/dispatch. The palette is an existing feature, not an absent research concept. |
+| Measurement | `measure_ui.rs` | Distance/perimeter/area controls, calibration, snapping and saved-measurement state exist. An older session-only calibration description does not describe every current persisted scale. |
+| Comparison | `compare_ui.rs` | Text changes, visual regions, document highlights, report and comment actions exist. This older source link does not establish all later split-view behaviour. |
+| OCR | `ocr_ui.rs` | Background recognition, cancellation request and multiple-file processing exist. Cancellation can retain pages already recognized; it is not synonymous with rollback. |
+| Accessibility review | `accessibility.rs` tests | Source includes checks for finding navigation, Tags-panel review, automatic text tagging and per-document skipped-rule state. Tests were inspected, not executed for this handoff. |
+| Interface appearance | `theme.rs` | A shared token type and System/Light/Dark preferences exist. Their presence is not a measured contrast result. |
+| International text input | `commands.rs` tests | Palette tests cover idle composition frames, Chinese preedit/commit, cancellation and outside-click behaviour. This does not establish native input-method behaviour in every editable field. |
+| Automation conventions | `automation/README.md` | The documented contract uses displayed top-left rectangles, 1-based pages/positions, confined paths and a shared tool table. Historical mixed-coordinate criticism is not current evidence of a defect. |
 
-The later [feature checklist](https://github.com/storytold/pdfcraft/blob/924c4da4ac2879ac9107c6c82e20ac6be5570f0a/parity/acrobat-features.toml)
+The later feature checklist
 marks synchronized side-by-side comparison shipped. Its notes describe two document
 views when the older version remains open and the window is at least 1000 pixels wide;
 synchronization follows offsets rather than matching content. The record identifies
@@ -37,7 +37,7 @@ page-size drift and old-tab closure as limits. It also records Action Wizard
 creation/editing/running and recursive CLI/MCP folder batches with bounded recipes,
 relative paths, collision-safe output names and per-file reports.
 
-The later [roadmap](https://github.com/storytold/pdfcraft/blob/924c4da4ac2879ac9107c6c82e20ac6be5570f0a/ROADMAP.md)
+The later roadmap
 records changed-on-disk Save confirmation and a shared staging-file writer. It describes
 new outputs being reopened/checked before publication. These are existing safety
 mechanisms; the archived research is not evidence that atomic saves or conflict
