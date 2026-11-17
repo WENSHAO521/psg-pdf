@@ -183,12 +183,17 @@ pub(crate) fn paint_left(ui: &egui::Ui, pos: egui::Pos2, text: &str, font: egui:
 }
 
 /// A mode-bar tab: text with an underline when active.
+/// The text size of [`mode_tab`], which the menu titles beside the tabs share.
+pub const MODE_TAB_SIZE: f32 = 13.5;
+/// The height of [`mode_tab`], whose label is centred in it.
+pub const MODE_TAB_HEIGHT: f32 = 48.0;
+
 pub fn mode_tab(ui: &mut egui::Ui, label: &str, active: bool) -> Response {
     let t = Tokens::get(ui.ctx());
-    let font = if active { theme::semibold(13.5) } else { theme::medium(13.5) };
+    let font = if active { theme::semibold(MODE_TAB_SIZE) } else { theme::medium(MODE_TAB_SIZE) };
     let w = ui.fonts_mut(|f| f.layout_no_wrap(label.to_owned(), font.clone(), t.text).size().x);
     // Keep in step with `mode_tab_width`.
-    let (rect, resp) = ui.allocate_exact_size(vec2(w + 22.0, 48.0), Sense::click());
+    let (rect, resp) = ui.allocate_exact_size(vec2(w + 22.0, MODE_TAB_HEIGHT), Sense::click());
     resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, ui.is_enabled(), active, label));
     let press = theme::Press::track(ui, &resp);
     let well = rect.shrink2(vec2(2.0, 9.0));
@@ -211,7 +216,7 @@ pub fn mode_tab(ui: &mut egui::Ui, label: &str, active: bool) -> Response {
 /// Width [`mode_tab`] takes for `label` (the semibold, active, form is the widest).
 pub fn mode_tab_width(ui: &egui::Ui, label: &str) -> f32 {
     let t = Tokens::get(ui.ctx());
-    ui.fonts_mut(|f| f.layout_no_wrap(label.to_owned(), theme::semibold(13.5), t.text).size().x) + 22.0
+    ui.fonts_mut(|f| f.layout_no_wrap(label.to_owned(), theme::semibold(MODE_TAB_SIZE), t.text).size().x) + 22.0
 }
 
 /// Rounded pill button; `primary` fills with the accent.
