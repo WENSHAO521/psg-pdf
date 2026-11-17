@@ -1,9 +1,9 @@
-//! The shared interface fonts: Noto Serif CJK TC (思源宋體) for all interface text in every
-//! language, when the build has it (the craft-fonts input with `packaging/fetch-psg-fonts.sh`,
-//! as every release build does); Inter otherwise and as its fallback; JetBrains Mono for code,
-//! logs and TeX source. Inter and JetBrains Mono are OFL files in `assets/fonts/`, recorded in
-//! ATTRIBUTION.toml, embedded once for both apps: Inter Regular through `pdfcraft-fonts`, the
-//! others here.
+//! The shared interface fonts: the Kai faces 霞鶩文楷 TC and Lite, with Gowun Batang for Korean,
+//! for all interface text ([`interface_faces`]), when the build has them (the craft-fonts input
+//! with `packaging/fetch-psg-fonts.sh`, as every release build does); Inter otherwise and as
+//! their fallback; JetBrains Mono for code, logs and TeX source. Inter and JetBrains Mono are OFL
+//! files in `assets/fonts/`, recorded in ATTRIBUTION.toml, embedded once for both apps: Inter
+//! Regular through `pdfcraft-fonts`, the others here.
 
 use std::sync::Arc;
 
@@ -63,60 +63,108 @@ pub fn definitions(fallbacks: impl IntoIterator<Item = Fallback>) -> FontDefinit
         stack.extend(rest.iter().cloned());
         fonts.families.insert(FontFamily::Name(family.into()), stack);
     }
-    use_interface_face(&mut fonts);
     fonts
 }
 
-/// The registered name of the interface face in `style`.
-pub fn interface_face_name(style: &str) -> String {
-    format!("{INTERFACE_FAMILY} {style}")
+/// The faces PSG draws its interface in for one interface language: regular text, medium labels
+/// (tabs, navigation) and headings, and the faces tried right after them.
+pub struct InterfaceFaces {
+    pub regular: &'static pdfcraft_fonts::CraftFont,
+    pub medium: &'static pdfcraft_fonts::CraftFont,
+    pub heading: &'static pdfcraft_fonts::CraftFont,
+    pub then: Vec<&'static pdfcraft_fonts::CraftFont>,
 }
 
-/// The family of PSG's interface face.
-pub const INTERFACE_FAMILY: &str = "Noto Serif CJK TC";
+/// LXGW WenKai TC (霞鶩文楷 TC): Traditional Chinese, Japanese and every Latin-script language.
+pub const KAI_TC: &str = "LXGW WenKai TC";
+/// LXGW WenKai Lite (霞鶩文楷 Lite): Simplified Chinese, with its Simplified glyph forms.
+pub const KAI_SC: &str = "LXGW WenKai Lite";
+/// Gowun Batang (고운바탕): Korean, a soft brush-drawn Myeongjo that sits well beside the Kai faces.
+pub const KOREAN: &str = "Gowun Batang";
 
-/// Put Noto Serif CJK TC first for all interface text, in every language: Regular for the
-/// proportional and medium families (the build carries no Medium weight; Regular keeps the
-/// installers smaller), SemiBold for the semibold family, and Regular right after JetBrains Mono
-/// for the CJK, Hangul and accented letters code and logs show. The existing faces stay behind
-/// it as fallbacks. Without the face (a build without the craft-fonts input, the web build)
-/// `fonts` is unchanged. Both apps call this on their own font definitions.
-pub fn use_interface_face(fonts: &mut FontDefinitions) {
-    let (Some(regular), semibold) = (pdfcraft_fonts::psg_ui_font("Regular"), pdfcraft_fonts::psg_ui_font("SemiBold")) else {
-        return;
-    };
-    let regular_name = interface_face_name("Regular");
-    fonts.font_data.insert(regular_name.clone(), Arc::new(FontData::from_static(regular.bytes)));
-    let semibold_name = match semibold {
-        Some(face) => {
-            let name = interface_face_name("SemiBold");
-            fonts.font_data.insert(name.clone(), Arc::new(FontData::from_static(face.bytes)));
-            name
+/// The interface faces for language `lang` (a code such as `zh-hant`, `ko`, `en`): 霞鶩文楷 TC for
+/// Traditional Chinese, Japanese, English, German, French, Spanish, Portuguese and Vietnamese
+/// (it has their letters, kana and tone marks), 霞鶩文楷 Lite for Simplified Chinese, and Gowun
+/// Batang for Korean, which the Kai faces lack (霞鶩文楷 TC follows it for Hanja). `None` when the
+/// build lacks them (a build without the craft-fonts input, the web build): the interface then
+/// keeps Inter.
+pub fn interface_faces(lang: &str) -> Option<InterfaceFaces> {
+    let face = pdfcraft_fonts::psg_ui_font;
+    let tc = face(KAI_TC, "Regular")?;
+    let tc_medium = face(KAI_TC, "Medium").unwrap_or(tc);
+    Some(match lang {
+        "zh-hans" => match face(KAI_SC, "Regular") {
+            Some(sc) => {
+                let sc_medium = face(KAI_SC, "Medium").unwrap_or(sc);
+                InterfaceFaces { regular: sc, medium: sc_medium, heading: sc_medium, then: vec![tc] }
+            }
+            None => InterfaceFaces { regular: tc, medium: tc_medium, heading: tc_medium, then: Vec::new() },
+        },
+        "ko" => match face(KOREAN, "Regular") {
+            Some(ko) => InterfaceFaces { regular: ko, medium: ko, heading: face(KOREAN, "Bold").unwrap_or(ko), then: vec![tc] },
+            None => InterfaceFaces { regular: tc, medium: tc_medium, heading: tc_medium, then: Vec::new() },
+        },
+        _ => InterfaceFaces { regular: tc, medium: tc_medium, heading: tc_medium, then: Vec::new() },
+    })
+}
+
+/// Put the interface faces for language `lang` ([`interface_faces`]) first: the regular face for
+/// proportional text, the medium face for the medium family, the heading face for the semibold
+/// family, each followed by the regular face and then the faces after it; the regular face also
+/// comes right after JetBrains Mono, for the CJK, Hangul and accented letters code and logs show.
+/// Everything already there stays behind them as fallbacks (symbols, Arabic, Hebrew…). Without
+/// the faces `fonts` is unchanged. Both apps call this on their own font definitions, and again
+/// whenever the interface language changes.
+pub fn use_interface_face(fonts: &mut FontDefinitions, lang: &str) {
+    let Some(faces) = interface_faces(lang) else { return };
+    let mut add = |f: &'static pdfcraft_fonts::CraftFont| {
+        let name = f.name();
+        if !fonts.font_data.contains_key(&name) {
+            fonts.font_data.insert(name.clone(), Arc::new(FontData::from_static(f.bytes)));
         }
-        None => regular_name.clone(),
+        name
     };
-    let mut first = |family: FontFamily, at: usize, name: &str| {
+    let regular = add(faces.regular);
+    let medium = add(faces.medium);
+    let heading = add(faces.heading);
+    let then: Vec<String> = faces.then.iter().map(|f| add(f)).collect();
+    let mut lead = |family: FontFamily, at: usize, names: &[&String]| {
         let stack = fonts.families.entry(family).or_default();
-        stack.retain(|n| n != name);
-        stack.insert(at.min(stack.len()), name.to_owned());
+        stack.retain(|n| !names.contains(&n));
+        for (i, name) in names.iter().enumerate() {
+            stack.insert((at + i).min(stack.len()), (*name).clone());
+        }
     };
-    first(FontFamily::Proportional, 0, &regular_name);
-    first(FontFamily::Name(MEDIUM.into()), 0, &regular_name);
-    first(FontFamily::Name(SEMIBOLD.into()), 0, &semibold_name);
-    first(FontFamily::Monospace, 1, &regular_name);
+    let with = |first: &String| -> Vec<String> {
+        let mut v = vec![first.clone()];
+        for n in std::iter::once(&regular).chain(then.iter()) {
+            if !v.contains(n) {
+                v.push(n.clone());
+            }
+        }
+        v
+    };
+    for (family, first) in
+        [(FontFamily::Proportional, &regular), (FontFamily::Name(MEDIUM.into()), &medium), (FontFamily::Name(SEMIBOLD.into()), &heading)]
+    {
+        let names = with(first);
+        lead(family, 0, &names.iter().collect::<Vec<_>>());
+    }
+    let names = with(&regular);
+    lead(FontFamily::Monospace, 1, &names.iter().collect::<Vec<_>>());
 }
 
-/// The interface face (Noto Serif CJK TC Regular, else Inter Regular) at `size` points.
+/// The interface face (霞鶩文楷 or Gowun Batang, else Inter Regular) at `size` points.
 pub fn regular(size: f32) -> FontId {
     FontId::proportional(size)
 }
 
-/// The medium interface family (Noto Serif CJK TC Regular, else Inter Medium) at `size` points (labels that need a little weight: tabs, navigation).
+/// The medium interface family (霞鶩文楷 Medium or Gowun Batang, else Inter Medium) at `size` points (labels that need a little weight: tabs, navigation).
 pub fn medium(size: f32) -> FontId {
     FontId::new(size, FontFamily::Name(MEDIUM.into()))
 }
 
-/// The semibold interface family (Noto Serif CJK TC SemiBold, else Inter SemiBold) at `size` points (titles, headings, primary buttons).
+/// The semibold interface family (霞鶩文楷 Medium or Gowun Batang Bold, else Inter SemiBold) at `size` points (titles, headings, primary buttons).
 pub fn semibold(size: f32) -> FontId {
     FontId::new(size, FontFamily::Name(SEMIBOLD.into()))
 }

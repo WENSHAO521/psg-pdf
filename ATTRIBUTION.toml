@@ -3200,15 +3200,37 @@ kind = "font"
 usage = "Japanese fallback in the interface (BIZ UDPGothic first) and Japanese glyphs in edited PDF text (Shippori Mincho); Simplified Chinese interface fallback on native builds only (LXGW WenKai Lite Regular, font SHA-256 f799a538a3355877e597a0ae04050e897932c9ae7689eb9227c2953c5dd549ea, OFL SHA-256 0333a85fe077b6849f8e417acc44e8bd879442ceb681e271acf93e2d57fd4e2e, read from fonts/simplified-chinese-manifest.txt and never embedded on wasm); Arabic interface text, file names and document titles (Noto Sans Arabic); status captions of named-layer signatures in Arabic, Japanese, Thai and Devanagari, drawn as filled outlines into the display copy by crates/sign/src/status_layers.rs; the web build embeds BIZ UDPGothic Regular and the pinned small Arabic, Hebrew, Thai and Devanagari faces; the selected craft-fonts revision contains no Telugu face. Other non-Japanese CJK faces retain the general 4 MiB cap; the reviewed native-only LXGW fallback has a separate 16 MiB cap. Open-source OFL releases are permitted under current AGENTS.md §1.1"
 
 [[build_input]]
-name = "noto-serif-cjk-tc"
+name = "lxgw-wenkai-tc"
 option = "CRAFT_FONTS_DIR"
-title = "Noto Serif CJK TC (Source Han Serif TC) Regular and SemiBold: PSG's interface face"
-author = "The Noto Project Authors (Google); Source Han Serif design by Adobe, released under OFL-1.1"
-source = "https://github.com/notofonts/noto-cjk at tag Serif2.003 (commit 9b0f1436e455d902de067a2501422e5dc71ad16b), Serif/OTF/TraditionalChinese/NotoSerifCJKtc-Regular.otf (SHA-256 234301038e76e7c35c43113785024700c4e4fe7bdce1d1fbbc42fca7e6683798), NotoSerifCJKtc-SemiBold.otf (SHA-256 422e868b6a983caa3a661f6580295fbaf00f26694087e86810fa58577e9be27a) and Serif/LICENSE (SHA-256 6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2); downloaded and checked by packaging/fetch-psg-fonts.sh into the craft-fonts input (fonts/noto-serif-cjk-tc, fonts/psg-ui-manifest.txt), which packaging/fetch-craft-fonts.sh runs for every release build"
+title = "LXGW WenKai TC (霞鶩文楷 TC) Regular and Medium: PSG's interface face"
+author = "The LXGW WenKai Project Authors (lxgw), derived from Fontworks' Klee One (OFL-1.1)"
+source = "https://github.com/lxgw/LxgwWenkaiTC release v1.530 (tag commit c52809f35e5f3a03e90d1c7bac9011adac48e7cf), LXGWWenKaiTC-Regular.ttf (SHA-256 6662480a3f95b4a90c80b189c679617a48adce3a505118a6af63ce5a482b83fa), LXGWWenKaiTC-Medium.ttf (SHA-256 649efd8516f42d36eacc05480d5dbd2713fb28fbd2bbee8ea76fc40875045c49) and OFL.txt (SHA-256 1a13783bf4337242834b60309cdcdbeb566ae3f923576fdbba8b78db9d174def); downloaded and checked by packaging/fetch-psg-fonts.sh into the craft-fonts input (fonts/lxgw-wenkai-tc, fonts/psg-ui-manifest.txt), which packaging/fetch-craft-fonts.sh runs for every release build"
 licence = "OFL-1.1"
-attribution = "https://github.com/notofonts/noto-cjk/blob/Serif2.003/Serif/LICENSE"
+attribution = "https://github.com/lxgw/LxgwWenkaiTC/blob/v1.530/OFL.txt"
 kind = "font"
-usage = "The interface face of PSG PDF and PSG Academic PDF in all ten interface languages (crates/desktop-ui/src/fonts.rs use_interface_face): Regular for text, SemiBold for headings, with Inter and the craft-fonts faces behind it as fallbacks. Native builds only, never embedded on wasm, never written into PDFs. Not committed to this repository (AGENTS.md §1.4); the open-source release from Google's Noto project, not a copy installed by an Adobe product (AGENTS.md §1.1). The OFL text ships as OFL-noto-serif-cjk-tc.txt beside the other font licences"
+usage = "The interface face of PSG PDF and PSG Academic PDF in Traditional Chinese, Japanese, English, German, French, Spanish, Portuguese and Vietnamese (crates/desktop-ui/src/fonts.rs use_interface_face): Regular for text, Medium for labels and headings, with Inter and the craft-fonts faces behind it as fallbacks; also the Hanja fallback behind Gowun Batang in Korean. Native builds only, never embedded on wasm, never written into PDFs. Not committed to this repository (AGENTS.md §1.4). The OFL text ships as OFL-lxgw-wenkai-tc.txt beside the other font licences"
+
+[[build_input]]
+name = "lxgw-wenkai-lite-medium"
+option = "CRAFT_FONTS_DIR"
+title = "LXGW WenKai Lite (霞鶩文楷 Lite) Medium: PSG's Simplified Chinese heading face"
+author = "The LXGW WenKai Project Authors (lxgw), derived from Fontworks' Klee One (OFL-1.1)"
+source = "https://github.com/lxgw/LxgwWenKai-Lite release v1.530 (tag commit b712c83d98acf977bacfb7fb010207802808bda9), LXGWWenKaiLite-Medium.ttf (SHA-256 9282063131640c9558a102560cf6d6f8ecc4bb441e74f2bcff032ce4786238d0) and OFL.txt (SHA-256 0333a85fe077b6849f8e417acc44e8bd879442ceb681e271acf93e2d57fd4e2e); downloaded and checked by packaging/fetch-psg-fonts.sh into the craft-fonts input (fonts/lxgw-wenkai-lite, fonts/psg-ui-manifest.txt), which packaging/fetch-craft-fonts.sh runs for every release build"
+licence = "OFL-1.1"
+attribution = "https://github.com/lxgw/LxgwWenKai-Lite/blob/v1.530/OFL.txt"
+kind = "font"
+usage = "Labels and headings of PSG PDF and PSG Academic PDF in Simplified Chinese (crates/desktop-ui/src/fonts.rs use_interface_face), beside LXGW WenKai Lite Regular, which the craft-fonts input already has. Native builds only, never embedded on wasm, never written into PDFs. Not committed to this repository (AGENTS.md §1.4). The OFL text ships as OFL-lxgw-wenkai-lite.txt beside the other font licences"
+
+[[build_input]]
+name = "gowun-batang"
+option = "CRAFT_FONTS_DIR"
+title = "Gowun Batang (고운바탕) Regular and Bold: PSG's Korean interface face"
+author = "The Gowun Batang Project Authors (Yanghee Ryu)"
+source = "https://github.com/google/fonts at commit 7af0d90b4d532ffa4b041937b560c6df4e7b1e95, ofl/gowunbatang/GowunBatang-Regular.ttf (SHA-256 466c593e7147412e748af4856d5ad14709b5a860bdf62b9c2546f2c5874e9849), GowunBatang-Bold.ttf (SHA-256 dbfcaa646e5831e7478524924f02906f550285a5050699b4e38c9950b3ec4b94) and OFL.txt (SHA-256 49a57cc769fa9affd6eefb9070a61e3d3f6b757c97cafb15848bc6d1c81acc78); downloaded and checked by packaging/fetch-psg-fonts.sh into the craft-fonts input (fonts/gowun-batang, fonts/psg-ui-manifest.txt), which packaging/fetch-craft-fonts.sh runs for every release build"
+licence = "OFL-1.1"
+attribution = "https://github.com/google/fonts/blob/7af0d90b4d532ffa4b041937b560c6df4e7b1e95/ofl/gowunbatang/OFL.txt"
+kind = "font"
+usage = "The interface face of PSG PDF and PSG Academic PDF in Korean (crates/desktop-ui/src/fonts.rs use_interface_face): Regular for text and labels, Bold for headings, with LXGW WenKai TC for Hanja and Inter behind it. Native builds only, never embedded on wasm, never written into PDFs. Not committed to this repository (AGENTS.md §1.4). The OFL text ships as OFL-gowun-batang.txt beside the other font licences"
 
 [[asset]]
 path = "crates/sign/tests/data/x509-rsa-sha1.pdf"

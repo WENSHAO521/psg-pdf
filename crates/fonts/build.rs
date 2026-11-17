@@ -36,11 +36,11 @@ fn main() {
     }
 }
 
-/// `PSG_UI_FONTS`: PSG's interface face (Noto Serif CJK TC), from `fonts/psg-ui-manifest.txt`,
-/// which `packaging/fetch-psg-fonts.sh` adds to the craft-fonts input. Kept apart from
-/// `CRAFT_FONTS`, so the PDF writers and the script fallbacks never pick it. Native builds only
-/// (two 24 MB faces would break the web build's 25 MiB file limit). Optional: without it the
-/// interface keeps Inter.
+/// `PSG_UI_FONTS`: PSG's interface faces (LXGW WenKai TC, LXGW WenKai Lite Medium, Gowun
+/// Batang), from `fonts/psg-ui-manifest.txt`, which `packaging/fetch-psg-fonts.sh` adds to the
+/// craft-fonts input. Kept apart from `CRAFT_FONTS`, so the PDF writers and the script fallbacks
+/// never pick them. Native builds only (some 60 MB of faces would break the web build's 25 MiB
+/// file limit). Optional: without them the interface keeps Inter.
 fn psg_ui_fonts() -> String {
     let mut src = String::from("pub static PSG_UI_FONTS: &[CraftFont] = &[\n");
     let wasm = std::env::var("CARGO_CFG_TARGET_ARCH").is_ok_and(|a| a == "wasm32");

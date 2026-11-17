@@ -182,6 +182,9 @@ pub enum CjkPreference {
     Default,
     SimplifiedChinese,
     TraditionalChinese,
+    /// Korean: its own interface face (Gowun Batang) leads, so changing to or from Korean
+    /// installs the fonts again.
+    Korean,
 }
 
 impl CjkPreference {
@@ -190,6 +193,7 @@ impl CjkPreference {
         match code {
             "zh-hans" => Self::SimplifiedChinese,
             "zh-hant" => Self::TraditionalChinese,
+            "ko" => Self::Korean,
             _ => Self::Default,
         }
     }
@@ -231,7 +235,7 @@ fn installed_fallback_need(cjk: CjkPreference, has_embedded_hans: bool) -> crate
         CjkPreference::SimplifiedChinese if has_embedded_hans => Need::Other,
         CjkPreference::SimplifiedChinese => Need::Hans,
         CjkPreference::TraditionalChinese => Need::Hant,
-        CjkPreference::Default => Need::Other,
+        CjkPreference::Default | CjkPreference::Korean => Need::Other,
     }
 }
 
@@ -396,8 +400,9 @@ fn font_definitions_for_platform(prefer_hans: bool, platform: FontPolicyPlatform
         stack.extend(fallback.iter().cloned());
         fonts.families.insert(FontFamily::Name(fam.into()), stack);
     }
-    // PSG's interface face (Noto Serif CJK TC) first, in every language, when the build has it.
-    psg_desktop_ui::fonts::use_interface_face(&mut fonts);
+    // PSG's Kai interface faces for the interface language first, when the build has them.
+    let lang = if prefer_hans { "zh-hans" } else { crate::i18n::current().code() };
+    psg_desktop_ui::fonts::use_interface_face(&mut fonts, lang);
     fonts
 }
 
