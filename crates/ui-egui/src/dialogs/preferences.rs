@@ -544,6 +544,12 @@ pub(crate) fn preferences_body(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tok
     });
     ui.add_space(12.0);
 
+    // Card: AI assistant (the providers people bring, with their own keys)
+    preference_card(ui, t, tl!("AI assistant"), Some("sparkles"), &mut ctx, |ui, ctx| {
+        crate::panels::ai::preferences_card(ui, app, t, ctx);
+    });
+    ui.add_space(12.0);
+
     if ctx.first_match_scrolled {
         ui.data_mut(|d| d.insert_temp(last_scrolled_id, query.clone()));
     } else if query.trim().is_empty() {

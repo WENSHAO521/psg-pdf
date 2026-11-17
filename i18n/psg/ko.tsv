@@ -275,3 +275,56 @@
 	{n} lines	{n}줄
 	{n} word(s) to review	검토할 단어 {n}개
 	Some content could not be read for device colour	일부 콘텐츠를 읽을 수 없어 장치 색상 사용 여부를 확인하지 못했습니다
+	(Only the first {n} of {total} pages fit in the request.)	(요청에는 {total}쪽 중 처음 {n}쪽만 담을 수 있었습니다.)
+	AI assistant settings	AI 어시스턴트 설정
+	AI providers aren't available in this version.	이 버전에서는 AI 공급자를 사용할 수 없습니다.
+	API address	API 주소
+	API format	API 형식
+	API key	API 키
+	API version	API 버전
+	Add a provider	공급자 추가
+	Add an AI provider in Preferences ▸ AI assistant first.	먼저 환경설정 ▸ AI 어시스턴트에서 AI 공급자를 추가하세요.
+	Connected: the provider answered.	연결됨: 공급자가 응답했습니다.
+	Couldn't reach the provider: {detail}	공급자에 연결할 수 없습니다: {detail}
+	Custom (any address)	사용자 지정(모든 주소)
+	Deployment	배포
+	Edit provider	공급자 편집
+	Fetch models	모델 목록 가져오기
+	Found {n} models.	모델 {n}개를 찾았습니다.
+	Longest answer	최대 답변 길이
+	Models this provider offers	이 공급자가 제공하는 모델
+	New provider	새 공급자
+	No API key is saved for this provider. Add one in Preferences ▸ AI assistant.	이 공급자에 저장된 API 키가 없습니다. 환경설정 ▸ AI 어시스턴트에서 추가하세요.
+	Open a document first.	먼저 문서를 여세요.
+	Open a document to use the assistant.	어시스턴트를 쓰려면 문서를 여세요.
+	Paste your key	키를 붙여 넣으세요
+	Saved — type to replace	저장됨 — 입력하면 바뀝니다
+	Show or hide the key	키 표시 또는 숨기기
+	Test connection	연결 테스트
+	The answer stopped at the length limit.	답변이 길이 제한에서 끊겼습니다.
+	The provider answered with an error: {detail}	공급자가 오류로 응답했습니다: {detail}
+	The provider doesn't know this model or address: {detail}	공급자가 이 모델이나 주소를 알지 못합니다: {detail}
+	The provider refused the API key: {detail}	공급자가 API 키를 거부했습니다: {detail}
+	The provider's answer couldn't be read: {detail}	공급자의 응답을 읽을 수 없습니다: {detail}
+	The provider's rate limit or quota was reached: {detail}	공급자의 사용량 제한 또는 할당량에 도달했습니다: {detail}
+	The request stopped unexpectedly.	요청이 예기치 않게 중단되었습니다.
+	The system keychain isn't available, so the key is kept only until PSG PDF quits.	시스템 키체인을 사용할 수 없어 키는 PSG PDF를 종료할 때까지만 보관됩니다.
+	The system keychain refused: {detail}	시스템 키체인이 거부했습니다: {detail}
+	The text of this document is sent to {provider}.	이 문서의 텍스트가 {provider}(으)로 전송됩니다.
+	This address isn't encrypted (http://): the key and the document cross the network as plain text.	이 주소는 암호화되지 않았습니다(http://). 키와 문서가 평문으로 네트워크를 지나갑니다.
+	This document has no text to send. Scanned pages need Scan & OCR first.	이 문서에는 보낼 텍스트가 없습니다. 스캔한 페이지는 먼저 스캔 및 OCR을 실행하세요.
+	This provider runs on your computer: the document stays here.	이 공급자는 내 컴퓨터에서 실행되므로 문서가 밖으로 나가지 않습니다.
+	This provider's settings need attention: {detail}	이 공급자의 설정을 확인해야 합니다: {detail}
+	Translate into	번역할 언어
+	Translate into {language}	{language}(으)로 번역
+	Type a question	질문을 입력하세요
+	Use this provider	이 공급자 사용
+	Waiting for {provider}…	{provider} 응답을 기다리는 중…
+	Whole document	문서 전체
+	You	나
+	no key	키 없음
+	tokens (0: the provider's default)	토큰(0: 공급자 기본값)
+	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	원하는 AI 서비스를 내 API 키로 사용하세요: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, Ollama로 내 컴퓨터에서 실행하는 모델, 또는 OpenAI 호환 서비스.
+	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	공급자를 추가하기 전까지는 꺼져 있습니다. 어떤 AI 서비스든 내 API 키로 쓸 수 있고, 키는 PSG PDF 설정이 아니라 시스템 키체인에 보관됩니다. 질문한 문서만, 질문할 때만 전송됩니다.
+	Ask	묻기
+	OpenAI-compatible	OpenAI 호환

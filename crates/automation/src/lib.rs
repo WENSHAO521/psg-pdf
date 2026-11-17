@@ -15,6 +15,7 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
 mod a11y;
+mod ai;
 mod batch;
 mod bates;
 mod comments;
@@ -103,6 +104,9 @@ pub struct Automation {
     next_ocr_review: u64,
     /// What object_copy copied, for object_paste into any open document.
     objects_clipboard: Option<pdfcraft_engine::ObjectClipboard>,
+    /// How `ai_ask` reaches an AI provider. None by default: this crate and `pdfcraft-cli` open
+    /// no sockets (`cargo xtask netcheck`), so only a host that hands one over can send.
+    ai_transport: Option<Arc<psg_ai::net::Transport>>,
 }
 
 impl Default for Automation {
@@ -124,7 +128,15 @@ impl Automation {
             ocr_reviews: HashMap::new(),
             next_ocr_review: 0,
             objects_clipboard: None,
+            ai_transport: None,
         }
+    }
+
+    /// Let `ai_ask` send requests through `transport` (the host's HTTP client). Without one,
+    /// `ai_ask` refuses: nothing in this crate opens a socket.
+    pub fn with_ai_transport(mut self, transport: Arc<psg_ai::net::Transport>) -> Self {
+        self.ai_transport = Some(transport);
+        self
     }
 
     /// Confine every path the tools read or write to `root` (relative paths resolve inside it).

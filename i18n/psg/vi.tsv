@@ -257,3 +257,56 @@
 	{n} lines	{n} dòng
 	{n} word(s) to review	{n} từ cần xem lại
 	Some content could not be read for device colour	Không đọc được một số nội dung để kiểm tra màu thiết bị
+	(Only the first {n} of {total} pages fit in the request.)	(Chỉ {n} trang đầu trong {total} trang vừa với yêu cầu.)
+	AI assistant settings	Cài đặt trợ lý AI
+	AI providers aren't available in this version.	Phiên bản này không dùng được nhà cung cấp AI.
+	API address	Địa chỉ API
+	API format	Định dạng API
+	API key	Khóa API
+	API version	Phiên bản API
+	Add a provider	Thêm nhà cung cấp
+	Add an AI provider in Preferences ▸ AI assistant first.	Hãy thêm nhà cung cấp AI trong Tùy chọn ▸ Trợ lý AI trước.
+	Connected: the provider answered.	Đã kết nối: nhà cung cấp đã phản hồi.
+	Couldn't reach the provider: {detail}	Không kết nối được nhà cung cấp: {detail}
+	Custom (any address)	Tùy chỉnh (địa chỉ bất kỳ)
+	Deployment	Triển khai
+	Edit provider	Sửa nhà cung cấp
+	Fetch models	Lấy danh sách mô hình
+	Found {n} models.	Đã tìm thấy {n} mô hình.
+	Longest answer	Câu trả lời dài nhất
+	Models this provider offers	Các mô hình nhà cung cấp này có
+	New provider	Nhà cung cấp mới
+	No API key is saved for this provider. Add one in Preferences ▸ AI assistant.	Chưa lưu khóa API cho nhà cung cấp này. Hãy thêm trong Tùy chọn ▸ Trợ lý AI.
+	Open a document first.	Hãy mở tài liệu trước.
+	Open a document to use the assistant.	Mở một tài liệu để dùng trợ lý.
+	Paste your key	Dán khóa của bạn
+	Saved — type to replace	Đã lưu — nhập để thay
+	Show or hide the key	Hiện hoặc ẩn khóa
+	Test connection	Kiểm tra kết nối
+	The answer stopped at the length limit.	Câu trả lời dừng ở giới hạn độ dài.
+	The provider answered with an error: {detail}	Nhà cung cấp trả về lỗi: {detail}
+	The provider doesn't know this model or address: {detail}	Nhà cung cấp không nhận ra mô hình hoặc địa chỉ này: {detail}
+	The provider refused the API key: {detail}	Nhà cung cấp từ chối khóa API: {detail}
+	The provider's answer couldn't be read: {detail}	Không đọc được phản hồi của nhà cung cấp: {detail}
+	The provider's rate limit or quota was reached: {detail}	Đã chạm giới hạn tốc độ hoặc hạn mức của nhà cung cấp: {detail}
+	The request stopped unexpectedly.	Yêu cầu dừng đột ngột.
+	The system keychain isn't available, so the key is kept only until PSG PDF quits.	Chuỗi khóa hệ thống không khả dụng nên khóa chỉ được giữ đến khi thoát PSG PDF.
+	The system keychain refused: {detail}	Chuỗi khóa hệ thống từ chối: {detail}
+	The text of this document is sent to {provider}.	Văn bản của tài liệu này được gửi tới {provider}.
+	This address isn't encrypted (http://): the key and the document cross the network as plain text.	Địa chỉ này không mã hóa (http://): khóa và tài liệu đi qua mạng dưới dạng văn bản thường.
+	This document has no text to send. Scanned pages need Scan & OCR first.	Tài liệu này không có văn bản để gửi. Trang quét cần chạy Quét & OCR trước.
+	This provider runs on your computer: the document stays here.	Nhà cung cấp này chạy trên máy của bạn: tài liệu không rời khỏi máy.
+	This provider's settings need attention: {detail}	Cần sửa cài đặt của nhà cung cấp này: {detail}
+	Translate into	Dịch sang
+	Translate into {language}	Dịch sang {language}
+	Type a question	Nhập câu hỏi
+	Use this provider	Dùng nhà cung cấp này
+	Waiting for {provider}…	Đang chờ {provider}…
+	Whole document	Toàn bộ tài liệu
+	You	Bạn
+	no key	chưa có khóa
+	tokens (0: the provider's default)	token (0: mặc định của nhà cung cấp)
+	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	Dùng dịch vụ AI bạn chọn với khóa API của riêng bạn: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, mô hình chạy trên máy bạn qua Ollama, hoặc bất kỳ dịch vụ tương thích OpenAI nào.
+	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	Tắt cho đến khi bạn thêm nhà cung cấp. Dùng khóa API của riêng bạn với bất kỳ dịch vụ AI nào; khóa được giữ trong chuỗi khóa hệ thống, không bao giờ trong cài đặt của PSG PDF. Chỉ tài liệu bạn hỏi mới được gửi, và chỉ khi bạn hỏi.
+	Ask	Hỏi
+	OpenAI-compatible	Tương thích OpenAI

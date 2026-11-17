@@ -2977,7 +2977,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "db36c2ce6d4b429ce01ad5bc806e2213ca2614f3d704a0c2817166078a92b575"
+sha256 = "9e05a59d56c684ca8f21e01d191345cf60715701565218f168383d0e00afb7f0"
 
 [[asset]]
 path = "i18n/psg/es.tsv"
@@ -2988,7 +2988,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "8a953afe76dd5ceaca9c34ca5ed6a3ce9ce7418780b6bd24252f89a9bc6cb3bf"
+sha256 = "80db43fa3842cc39231cbe7fd749c0afae832f21604da10baaadf1beca27fd46"
 
 [[asset]]
 path = "i18n/psg/fr.tsv"
@@ -2999,7 +2999,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "5863f015b74b06605d9ac93dc480ccc7fe1fd2b94297e965eee53b42a153361b"
+sha256 = "788650f2c86979fdef5d675dfede07e162fef339326e46a6d236d75677c91bac"
 
 [[asset]]
 path = "i18n/psg/ja.tsv"
@@ -3010,7 +3010,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "317aad7a648e1f3117d9e34a331ad2f9e8e842bd67bd781fd1babed3ce5cb42a"
+sha256 = "12bb3295ef2350259cf8b6105e0552ffecdea06501b52ea4be7243177cf598f5"
 
 [[asset]]
 path = "i18n/psg/ko.tsv"
@@ -3021,7 +3021,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "ce56a7f7a1da5641a82ed64645c10a142d5b54e545b24541ed585a0d979fd6d5"
+sha256 = "d379903e266ee3bfd787cb63ac9a47abdb9c63a09a48799ffa19b6c5aab64679"
 
 [[asset]]
 path = "i18n/psg/pt-br.tsv"
@@ -3032,7 +3032,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "2c2eb5ea1e79ecadcff87f89f5e38962e7a82ed39484712bc5aed419a1ae70b3"
+sha256 = "83cbbc501ec5d4718af9dcc39e727ae03fe3ca35048900c4fa8eb6cfa102808d"
 
 [[asset]]
 path = "i18n/psg/vi.tsv"
@@ -3043,7 +3043,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "3be44e2574997f0e5ac57e3ec9c89dbc2309a59a2dd178bf5fc4e7bcafbc7f20"
+sha256 = "758e4d11ac10bbd9e3da2a4de4b65e4a5bd041fd3423f514a5882335bba5479a"
 
 [[asset]]
 path = "i18n/psg/zh-hans.tsv"
@@ -3054,7 +3054,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "0f66bb6d85fa8bb59249b658dc63e7cd9acccea9ca25a449c5ec63f97c225005"
+sha256 = "13b36df58e46d269d9bbfedfa0670d505268ba1018bb7d12e9496fa305865589"
 
 [[asset]]
 path = "i18n/psg/zh-hant.tsv"
@@ -3065,7 +3065,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "d4957ce56d0e168ea2e10ad689295ecaaa8d575b21157b3f4dace80942a07d49"
+sha256 = "762a4e86f36824a8f17be6cd53b36ad5f7b6fcb335a388b2bd5d692595e18f24"
 
 [[asset]]
 path = "i18n/psg-academic/de.tsv"

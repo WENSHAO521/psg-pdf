@@ -317,3 +317,55 @@
 	{} annotations aren't allowed	不允许 {} 注释
 	… and {n} more	…另有 {n} 项
 	Some content could not be read for device colour	部分内容无法读取，无法判断是否使用设备颜色
+	(Only the first {n} of {total} pages fit in the request.)	（请求只能容纳 {total} 页中的前 {n} 页。）
+	AI assistant settings	AI 助手设置
+	AI providers aren't available in this version.	此版本无法使用 AI 提供商。
+	API address	API 地址
+	API format	API 格式
+	API key	API 密钥
+	API version	API 版本
+	Add a provider	添加提供商
+	Add an AI provider in Preferences ▸ AI assistant first.	请先在“偏好设置 ▸ AI 助手”中添加 AI 提供商。
+	Connected: the provider answered.	已连接：提供商有回应。
+	Couldn't reach the provider: {detail}	无法连接提供商：{detail}
+	Custom (any address)	自定义（任意地址）
+	Deployment	部署
+	Edit provider	编辑提供商
+	Fetch models	获取模型列表
+	Found {n} models.	找到 {n} 个模型。
+	Longest answer	最长回答
+	Models this provider offers	此提供商提供的模型
+	New provider	新提供商
+	No API key is saved for this provider. Add one in Preferences ▸ AI assistant.	此提供商尚未保存 API 密钥。请在“偏好设置 ▸ AI 助手”中添加。
+	Open a document first.	请先打开文档。
+	Open a document to use the assistant.	打开文档即可使用助手。
+	Paste your key	粘贴您的密钥
+	Saved — type to replace	已保存——输入以替换
+	Show or hide the key	显示或隐藏密钥
+	Test connection	测试连接
+	The answer stopped at the length limit.	回答在长度上限处被截断。
+	The provider answered with an error: {detail}	提供商返回错误：{detail}
+	The provider doesn't know this model or address: {detail}	提供商不认识这个模型或地址：{detail}
+	The provider refused the API key: {detail}	提供商拒绝了 API 密钥：{detail}
+	The provider's answer couldn't be read: {detail}	无法读取提供商的回应：{detail}
+	The provider's rate limit or quota was reached: {detail}	已达到提供商的速率限制或配额：{detail}
+	The request stopped unexpectedly.	请求意外中止。
+	The system keychain isn't available, so the key is kept only until PSG PDF quits.	系统钥匙串不可用，因此密钥只保留到 PSG PDF 退出为止。
+	The system keychain refused: {detail}	系统钥匙串拒绝了操作：{detail}
+	The text of this document is sent to {provider}.	此文档的文字会发送给 {provider}。
+	This address isn't encrypted (http://): the key and the document cross the network as plain text.	此地址未加密（http://）：密钥和文档将以明文在网络上传输。
+	This document has no text to send. Scanned pages need Scan & OCR first.	此文档没有可发送的文字。扫描页面需要先进行扫描与 OCR。
+	This provider runs on your computer: the document stays here.	此提供商在您的电脑上运行：文档不会离开本机。
+	This provider's settings need attention: {detail}	此提供商的设置需要修改：{detail}
+	Translate into	翻译成
+	Translate into {language}	翻译成{language}
+	Type a question	输入问题
+	Use this provider	使用此提供商
+	Waiting for {provider}…	正在等待 {provider}…
+	Whole document	整个文档
+	You	您
+	no key	无密钥
+	tokens (0: the provider's default)	个 token（0：提供商默认值）
+	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	使用您自己选择的 AI 服务和自己的 API 密钥：OpenAI、Anthropic Claude、Google Gemini、Azure OpenAI、DeepSeek、通义千问、通过 Ollama 在本机运行的模型，或任何兼容 OpenAI 的服务。
+	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	添加提供商之前保持关闭。可用自己的 API 密钥连接任何 AI 服务；密钥保存在系统钥匙串中，绝不写入 PSG PDF 的设置。只有在您提问时，才会发送您所询问的文档。
+	OpenAI-compatible	兼容 OpenAI

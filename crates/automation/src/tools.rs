@@ -269,6 +269,31 @@ pub fn tools() -> Vec<ToolDef> {
                 }),
                 &["doc"],
             )),
+        t("ai_ask", "Ask an AI provider about a document", "Summarize a document, answer a question about it, or translate it, with an AI provider the call names: format \"openai\" (OpenAI and every OpenAI-compatible service: DeepSeek, Mistral, Groq, OpenRouter, Ollama, LM Studio, vLLM…), \"anthropic\", \"gemini\" or \"azure\" (model = the deployment name), its base_url (for openai, the address that ends before /chat/completions, e.g. https://api.openai.com/v1 or http://localhost:11434/v1) and model. The API key is read from the PSG_AI_API_KEY environment variable, never from the arguments; a local server needs none. The text of the pages (default all) is sent to that provider, each page under a [Page N] line, at most 120000 characters (text_truncated and pages_sent say when fewer pages fit), and answers cite pages as (p. N). Copy permission is required. Scanned pages without text need ocr first. Nothing in the document changes. The automation tools open no sockets themselves: the request goes through the HTTP transport of the host that runs them, and a host without one (pdfcraft-cli) refuses.")
+            .ro()
+            .with(schema(
+                json!({
+                    "doc": doc(),
+                    "task": { "type": "string", "enum": ["summarize", "ask", "translate"] },
+                    "question": { "type": "string", "maxLength": 8000, "description": "The question, for task ask." },
+                    "language": { "type": "string", "maxLength": 64, "description": "For translate: the language to translate into, by its English name (default English)." },
+                    "answer_language": { "type": "string", "maxLength": 64, "description": "The language to answer in, by its English name (default English)." },
+                    "pages": pages("to send (default: all)"),
+                    "provider": {
+                        "type": "object",
+                        "properties": {
+                            "format": { "type": "string", "enum": ["openai", "anthropic", "gemini", "azure"] },
+                            "base_url": { "type": "string", "description": "https://…, or http:// for a server on this computer or network." },
+                            "model": { "type": "string" },
+                            "api_version": { "type": "string", "description": "Azure only (default 2024-10-21)." },
+                            "max_tokens": { "type": "integer", "minimum": 0, "maximum": 200000, "description": "The longest answer, in tokens (0: the provider's default; Anthropic gets 4096)." }
+                        },
+                        "required": ["format", "base_url", "model"],
+                        "additionalProperties": false
+                    }
+                }),
+                &["doc", "task", "provider"],
+            )),
         t("text_find", "Find text", "Find a phrase (case-insensitive, whitespace-normalised) and return matches in page order with page and line rectangles in points (origin top-left). Reads growing batches, looking one match past the limit for a continuation. Failed pages do not discard readable matches: warnings contains up to 100 {page, error, error_truncated} entries (errors capped at 1024 UTF-8 bytes), warning_count counts failed pages, and warnings_truncated reports a capped list. complete is false after a page failure or when more matches exist; next is present only for a match-limit continuation. With stop_at_limit the search ends at the limit-th match instead of looking for one more, so a lone early match doesn't read the rest of the document.")
             .ro()
             .cmd("edit.find")

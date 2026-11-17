@@ -9801,11 +9801,11 @@ title = "AI provider interface (local model or own endpoint), off by default"
 area = "N"
 tier = "P2"
 milestone = "M13"
-status = "planned"
+status = "shipped"
 commands = []
-tools = []
-evidence = []
-notes = ""
+tools = ["ai_ask"]
+evidence = ["crates/ai/src/tests.rs::every_preset_makes_a_usable_profile", "crates/ai/src/tests.rs::chats_and_model_lists_go_through_the_transport_given", "crates/ui-egui/src/panels/ai.rs::a_saved_provider_keeps_its_key_out_of_the_settings_file", "crates/ui-egui/src/panels/ai.rs::the_preferences_card_adds_a_provider", "crates/ui-egui/src/panels/ai.rs::test_connection_and_fetch_models_report_in_the_form", "crates/automation/tests/it/automation.rs::ai_ask_reports_provider_errors_and_bad_arguments_an_agent_can_fix"]
+notes = "PSG PDF: Preferences > AI assistant adds any number of providers with the user's own API key, from presets (OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Mistral, xAI, Groq, OpenRouter, Together, Perplexity, Qwen DashScope, Moonshot Kimi, Zhipu GLM, Volcengine Doubao, SiliconFlow, Ollama, LM Studio) or a custom address in any of the four API formats (OpenAI-compatible chat completions, Anthropic Messages, Gemini generateContent, Azure OpenAI deployments). Test connection and Fetch models check it before saving. Keys go to the OS credential store (crate psg-ai, keyring), never the settings file; where the store refuses, the key lasts the session. Off until a provider is added; nothing is sent until an action is chosen; redirects are not followed and plain-http remote addresses are warned about. Headless: ai_ask names the provider in its arguments, reads the key from PSG_AI_API_KEY and sends through the HTTP transport its host provides; pdfcraft-cli provides none, because its batch path opens no sockets (cargo xtask netcheck). No streaming yet; PSG Academic PDF does not use it yet."
 
 [[feature]]
 id = "misc.ai-summary"
@@ -9813,11 +9813,11 @@ title = "Summarize a document"
 area = "N"
 tier = "P2"
 milestone = "M13"
-status = "planned"
+status = "shipped"
 commands = []
-tools = []
-evidence = []
-notes = ""
+tools = ["ai_ask"]
+evidence = ["crates/ui-egui/src/panels/ai.rs::summarize_and_a_follow_up_question_go_to_the_provider_with_the_document", "crates/automation/tests/it/automation.rs::ai_ask_sends_the_chosen_pages_to_the_named_provider"]
+notes = "All tools > AI assistant > Summarize (whole document or current page): the pages' extracted text, each under a [Page N] line and at most 120000 characters (the reply says when fewer pages fit), goes to the provider in use, which is asked for an overview and key points with pages. Translate into one of the ten interface languages works the same way. Scanned pages need OCR first; copy-protected documents are refused."
 
 [[feature]]
 id = "misc.ai-ask"
@@ -9825,11 +9825,11 @@ title = "Ask questions with citations to pages"
 area = "N"
 tier = "P2"
 milestone = "M13"
-status = "planned"
+status = "shipped"
 commands = []
-tools = []
-evidence = []
-notes = ""
+tools = ["ai_ask"]
+evidence = ["crates/ui-egui/src/panels/ai.rs::summarize_and_a_follow_up_question_go_to_the_provider_with_the_document", "crates/ui-egui/src/panels/ai.rs::current_page_only_sends_that_page_and_errors_show_in_the_panel"]
+notes = "Questions typed in the AI assistant panel keep the conversation (follow-ups carry the earlier turns); the model is told to cite pages as (p. N) and to say when the document doesn't answer. Citations are text, not links yet."
 
 [[feature]]
 id = "misc.ai-conversational-edit"

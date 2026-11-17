@@ -28,6 +28,8 @@ psg-brand = { workspace = true }
 psg-desktop-ui = { workspace = true }
 # The ten PSG interface languages and the hook the shared widgets translate through.
 psg-i18n = { workspace = true }
+# The bring-your-own AI provider behind All tools ▸ AI assistant.
+psg-ai = { workspace = true }
 pdfcraft-cos = { workspace = true }
 pdfcraft-content = { workspace = true }
 pdfcraft-ocr = { workspace = true }
@@ -62,6 +64,12 @@ skrifa = "0.44"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 craft-update = { workspace = true }
+# The AI assistant's requests: the same ureq and TLS set-up craft-update already builds (rustls
+# with ring, the OS certificate verifier), so they add no second HTTP stack.
+ureq = { version = "3.4", default-features = false, features = ["rustls-no-provider", "_ring", "gzip", "platform-verifier"] }
+# The AI assistant's API keys live in the OS credential store: macOS Keychain, Windows Credential
+# Manager, the Secret Service on Linux. Never in the settings file.
+keyring = "4"
 # Control-channel tokens.
 getrandom = "0.4"
 # Create ▸ Clipboard (images; already in the tree through egui-winit).
