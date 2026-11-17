@@ -78,7 +78,6 @@
 	DOI	DOI
 	Dark	Tối
 	Dashboard	Tổng quan
-	Data folder:	Thư mục dữ liệu:
 	Dates and licence	Ngày tháng và giấy phép
 	Development build	Bản phát triển
 	Discard unsaved changes and read the file again	Bỏ các thay đổi chưa lưu và đọc lại tệp
@@ -355,3 +354,25 @@
 @other	{n} problem found before compiling; see Problems.	Phát hiện {n} vấn đề trước khi biên dịch; xem Vấn đề.
 @other	{n} warning	{n} cảnh báo
 @other	{n} word	{n} từ
+	Data folder	Thư mục dữ liệu
+	New projects and the app's settings are kept in this folder.	Các dự án mới và cài đặt của ứng dụng được lưu trong thư mục này.
+	Chosen	Đã chọn
+	Default	Mặc định
+	Moving the data folder…	Đang di chuyển thư mục dữ liệu…
+	Move the projects and settings to {path}?	Di chuyển các dự án và cài đặt đến {path}?
+	Everything is copied and checked first; the old copies are removed only after that.	Mọi thứ được sao chép và kiểm tra trước; bản cũ chỉ bị xóa sau đó.
+	Move data	Di chuyển dữ liệu
+	Change…	Thay đổi…
+	Use the default folder	Dùng thư mục mặc định
+	Open folder	Mở thư mục
+	Choose where to keep projects and settings	Chọn nơi lưu các dự án và cài đặt
+	Moving the data folder from {path}.	Đang di chuyển thư mục dữ liệu từ {path}.
+	Could not move the data folder: {error}	Không thể di chuyển thư mục dữ liệu: {error}
+	Projects and settings are now kept in {path}.	Các dự án và cài đặt giờ được lưu trong {path}.
+	Everything was copied, but some old files could not be removed from {path}. You can delete them yourself.	Đã sao chép tất cả, nhưng không thể xóa một số tệp cũ trong {path}. Bạn có thể tự xóa chúng.
+	{path} is not a full path. Choose a folder.	{path} không phải là đường dẫn đầy đủ. Hãy chọn một thư mục.
+	That is the folder already in use.	Đó là thư mục đang được dùng.
+	{path} is inside the data folder. Choose a folder outside it.	{path} nằm trong thư mục dữ liệu. Hãy chọn một thư mục bên ngoài.
+	{path} already exists there. Nothing was moved; choose an empty folder.	{path} đã có ở đó. Không dự án hay cài đặt nào được di chuyển; hãy chọn một thư mục trống.
+	That folder holds too many files to be a data folder. Nothing was moved.	Thư mục đó có quá nhiều tệp để là thư mục dữ liệu. Không dự án hay cài đặt nào được di chuyển.
+	Could not move the data folder ({path}: {error}). Nothing was changed.	Không thể di chuyển thư mục dữ liệu ({path}: {error}). Không có gì thay đổi.

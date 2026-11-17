@@ -2977,7 +2977,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "e8d0f2c3228c3fce17f38b24e420fa838b37b53acf38826e8732ea7403cd434a"
+sha256 = "db36c2ce6d4b429ce01ad5bc806e2213ca2614f3d704a0c2817166078a92b575"
 
 [[asset]]
 path = "i18n/psg/es.tsv"
@@ -2988,7 +2988,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "939416e27017c270e0c40daa4ab6677e86bb6b20d59e72f1fc21ce57faec787f"
+sha256 = "8a953afe76dd5ceaca9c34ca5ed6a3ce9ce7418780b6bd24252f89a9bc6cb3bf"
 
 [[asset]]
 path = "i18n/psg/fr.tsv"
@@ -2999,7 +2999,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "879fff271ee47c987fe30588c1465265f3dc0a1b04b08cc9bc11a368d756d140"
+sha256 = "5863f015b74b06605d9ac93dc480ccc7fe1fd2b94297e965eee53b42a153361b"
 
 [[asset]]
 path = "i18n/psg/ja.tsv"
@@ -3010,7 +3010,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "2bf1a69bd3e71225f31fbd84cbd79481b18c0ebaa40b455d56375061305b00e2"
+sha256 = "317aad7a648e1f3117d9e34a331ad2f9e8e842bd67bd781fd1babed3ce5cb42a"
 
 [[asset]]
 path = "i18n/psg/ko.tsv"
@@ -3021,7 +3021,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "23c75571b9164e8ffcfb85ae1153bb7bd3d6c3d7946bcc20e72f63046c88283d"
+sha256 = "ce56a7f7a1da5641a82ed64645c10a142d5b54e545b24541ed585a0d979fd6d5"
 
 [[asset]]
 path = "i18n/psg/pt-br.tsv"
@@ -3032,7 +3032,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "6bda28a450a60db58ee834074b16c8d74bb2385eaa649e7c3b4c3e7cbc5a6e99"
+sha256 = "2c2eb5ea1e79ecadcff87f89f5e38962e7a82ed39484712bc5aed419a1ae70b3"
 
 [[asset]]
 path = "i18n/psg/vi.tsv"
@@ -3043,7 +3043,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "63cb873fb5c4fd977c3648796ca731429652b5ba98ecea5a5302cf6e3cfe4b17"
+sha256 = "3be44e2574997f0e5ac57e3ec9c89dbc2309a59a2dd178bf5fc4e7bcafbc7f20"
 
 [[asset]]
 path = "i18n/psg/zh-hans.tsv"
@@ -3054,7 +3054,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "c1bfc09f87fcbf2481d1c5937187760bce7a8c6fe24e6475691380ad372647e0"
+sha256 = "0f66bb6d85fa8bb59249b658dc63e7cd9acccea9ca25a449c5ec63f97c225005"
 
 [[asset]]
 path = "i18n/psg/zh-hant.tsv"
@@ -3065,7 +3065,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "97cb52d783b3099a3c4c664f3e54f5daac51b250221242dd328934ce49fbdb37"
+sha256 = "d4957ce56d0e168ea2e10ad689295ecaaa8d575b21157b3f4dace80942a07d49"
 
 [[asset]]
 path = "i18n/psg-academic/de.tsv"
@@ -3076,7 +3076,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "88d1dce06cbd45385e2bebc123954c3997e61052007336b52f9f1fdd59a89d0f"
+sha256 = "4dd55e9bdbb80f5c17ff7c8900cb04088a7feffb200dbae6ff7f2702d383a40b"
 
 [[asset]]
 path = "i18n/psg-academic/es.tsv"
@@ -3087,7 +3087,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "10ace3efe857a8398266feb86839c2eb820b1d0df217e7fc8949938132e7598a"
+sha256 = "a0225f8be317db926278fa427a318edd5224a424e1eced2317107bbdb3b61b44"
 
 [[asset]]
 path = "i18n/psg-academic/fr.tsv"
@@ -3098,7 +3098,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "c2ace76e2facf3d00c9acc4008817048c79669030f98ecf2ad7afcf287e0be9d"
+sha256 = "13d19975842d536db540b12ea91567cff4a6e6b0ce9ec4cdd05ff807622b3d28"
 
 [[asset]]
 path = "i18n/psg-academic/ja.tsv"
@@ -3109,7 +3109,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "1bd858a8eb113dd3dc897f07e0e8268ea7171545cc331b7ec0dea9ae721662a5"
+sha256 = "33d975a1f13e067ffdfc573a16ba35df1a81525a51cb356f0a35ee121e798ecf"
 
 [[asset]]
 path = "i18n/psg-academic/ko.tsv"
@@ -3120,7 +3120,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "79610000f2a20230fc28ed231b817cefd91319efeceac0e03be028656d0d430c"
+sha256 = "8725e108f2723975916965676bedd4f2f4b9790157b22769f7684e8986f84c20"
 
 [[asset]]
 path = "i18n/psg-academic/pt-br.tsv"
@@ -3131,7 +3131,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "e24b6136cb75b68000a267c9c8b12f401295b9773a707f65930e5172b1dbabe8"
+sha256 = "d8cbb76a791f9fe1c820a25a368b506fdf27ad92e5be40784bd05c9bae0d5ae7"
 
 [[asset]]
 path = "i18n/psg-academic/vi.tsv"
@@ -3142,7 +3142,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "38e85682c5dd57b3845c329e050e3d9dca730ad909305d64e590f6085e23f258"
+sha256 = "f52776ed668d1405268b19c526575dfe98d9bae626bcd530538d4f532cb7f5e4"
 
 [[asset]]
 path = "i18n/psg-academic/zh-hans.tsv"
@@ -3153,7 +3153,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "09cceffc1e1e18e99c40a2bddb0e7044ecf1bb7e24c3354eef62d9df361be683"
+sha256 = "d3f15196f5540fbf3dae2a0f7f11dfcc409b06001f5ca28f6b7640590df6f3a9"
 
 [[asset]]
 path = "i18n/psg-academic/zh-hant.tsv"
@@ -3164,7 +3164,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "9765b29ad7f0fe877856a1223c49eb43792c0086f11f7b5efde7df3d1ee679e6"
+sha256 = "46ce8f16ea93ee608b000aa842fa82647e4f6ddc5805521cba9479a85f08ec9b"
 
 [[asset]]
 path = "i18n/glossary.tsv"
@@ -3200,15 +3200,37 @@ kind = "font"
 usage = "Japanese fallback in the interface (BIZ UDPGothic first) and Japanese glyphs in edited PDF text (Shippori Mincho); Simplified Chinese interface fallback on native builds only (LXGW WenKai Lite Regular, font SHA-256 f799a538a3355877e597a0ae04050e897932c9ae7689eb9227c2953c5dd549ea, OFL SHA-256 0333a85fe077b6849f8e417acc44e8bd879442ceb681e271acf93e2d57fd4e2e, read from fonts/simplified-chinese-manifest.txt and never embedded on wasm); Arabic interface text, file names and document titles (Noto Sans Arabic); status captions of named-layer signatures in Arabic, Japanese, Thai and Devanagari, drawn as filled outlines into the display copy by crates/sign/src/status_layers.rs; the web build embeds BIZ UDPGothic Regular and the pinned small Arabic, Hebrew, Thai and Devanagari faces; the selected craft-fonts revision contains no Telugu face. Other non-Japanese CJK faces retain the general 4 MiB cap; the reviewed native-only LXGW fallback has a separate 16 MiB cap. Open-source OFL releases are permitted under current AGENTS.md §1.1"
 
 [[build_input]]
-name = "noto-serif-cjk-tc"
+name = "lxgw-wenkai-tc"
 option = "CRAFT_FONTS_DIR"
-title = "Noto Serif CJK TC (Source Han Serif TC) Regular and SemiBold: PSG's interface face"
-author = "The Noto Project Authors (Google); Source Han Serif design by Adobe, released under OFL-1.1"
-source = "https://github.com/notofonts/noto-cjk at tag Serif2.003 (commit 9b0f1436e455d902de067a2501422e5dc71ad16b), Serif/OTF/TraditionalChinese/NotoSerifCJKtc-Regular.otf (SHA-256 234301038e76e7c35c43113785024700c4e4fe7bdce1d1fbbc42fca7e6683798), NotoSerifCJKtc-SemiBold.otf (SHA-256 422e868b6a983caa3a661f6580295fbaf00f26694087e86810fa58577e9be27a) and Serif/LICENSE (SHA-256 6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2); downloaded and checked by packaging/fetch-psg-fonts.sh into the craft-fonts input (fonts/noto-serif-cjk-tc, fonts/psg-ui-manifest.txt), which packaging/fetch-craft-fonts.sh runs for every release build"
+title = "LXGW WenKai TC (霞鶩文楷 TC) Regular and Medium: PSG's interface face"
+author = "The LXGW WenKai Project Authors (lxgw), derived from Fontworks' Klee One (OFL-1.1)"
+source = "https://github.com/lxgw/LxgwWenkaiTC release v1.530 (tag commit c52809f35e5f3a03e90d1c7bac9011adac48e7cf), LXGWWenKaiTC-Regular.ttf (SHA-256 6662480a3f95b4a90c80b189c679617a48adce3a505118a6af63ce5a482b83fa), LXGWWenKaiTC-Medium.ttf (SHA-256 649efd8516f42d36eacc05480d5dbd2713fb28fbd2bbee8ea76fc40875045c49) and OFL.txt (SHA-256 1a13783bf4337242834b60309cdcdbeb566ae3f923576fdbba8b78db9d174def); downloaded and checked by packaging/fetch-psg-fonts.sh into the craft-fonts input (fonts/lxgw-wenkai-tc, fonts/psg-ui-manifest.txt), which packaging/fetch-craft-fonts.sh runs for every release build"
 licence = "OFL-1.1"
-attribution = "https://github.com/notofonts/noto-cjk/blob/Serif2.003/Serif/LICENSE"
+attribution = "https://github.com/lxgw/LxgwWenkaiTC/blob/v1.530/OFL.txt"
 kind = "font"
-usage = "The interface face of PSG PDF and PSG Academic PDF in all ten interface languages (crates/desktop-ui/src/fonts.rs use_interface_face): Regular for text, SemiBold for headings, with Inter and the craft-fonts faces behind it as fallbacks. Native builds only, never embedded on wasm, never written into PDFs. Not committed to this repository (AGENTS.md §1.4); the open-source release from Google's Noto project, not a copy installed by an Adobe product (AGENTS.md §1.1). The OFL text ships as OFL-noto-serif-cjk-tc.txt beside the other font licences"
+usage = "The interface face of PSG PDF and PSG Academic PDF in Traditional Chinese, Japanese, English, German, French, Spanish, Portuguese and Vietnamese (crates/desktop-ui/src/fonts.rs use_interface_face): Regular for text, Medium for labels and headings, with Inter and the craft-fonts faces behind it as fallbacks; also the Hanja fallback behind Gowun Batang in Korean. Native builds only, never embedded on wasm, never written into PDFs. Not committed to this repository (AGENTS.md §1.4). The OFL text ships as OFL-lxgw-wenkai-tc.txt beside the other font licences"
+
+[[build_input]]
+name = "lxgw-wenkai-lite-medium"
+option = "CRAFT_FONTS_DIR"
+title = "LXGW WenKai Lite (霞鶩文楷 Lite) Medium: PSG's Simplified Chinese heading face"
+author = "The LXGW WenKai Project Authors (lxgw), derived from Fontworks' Klee One (OFL-1.1)"
+source = "https://github.com/lxgw/LxgwWenKai-Lite release v1.530 (tag commit b712c83d98acf977bacfb7fb010207802808bda9), LXGWWenKaiLite-Medium.ttf (SHA-256 9282063131640c9558a102560cf6d6f8ecc4bb441e74f2bcff032ce4786238d0) and OFL.txt (SHA-256 0333a85fe077b6849f8e417acc44e8bd879442ceb681e271acf93e2d57fd4e2e); downloaded and checked by packaging/fetch-psg-fonts.sh into the craft-fonts input (fonts/lxgw-wenkai-lite, fonts/psg-ui-manifest.txt), which packaging/fetch-craft-fonts.sh runs for every release build"
+licence = "OFL-1.1"
+attribution = "https://github.com/lxgw/LxgwWenKai-Lite/blob/v1.530/OFL.txt"
+kind = "font"
+usage = "Labels and headings of PSG PDF and PSG Academic PDF in Simplified Chinese (crates/desktop-ui/src/fonts.rs use_interface_face), beside LXGW WenKai Lite Regular, which the craft-fonts input already has. Native builds only, never embedded on wasm, never written into PDFs. Not committed to this repository (AGENTS.md §1.4). The OFL text ships as OFL-lxgw-wenkai-lite.txt beside the other font licences"
+
+[[build_input]]
+name = "gowun-batang"
+option = "CRAFT_FONTS_DIR"
+title = "Gowun Batang (고운바탕) Regular and Bold: PSG's Korean interface face"
+author = "The Gowun Batang Project Authors (Yanghee Ryu)"
+source = "https://github.com/google/fonts at commit 7af0d90b4d532ffa4b041937b560c6df4e7b1e95, ofl/gowunbatang/GowunBatang-Regular.ttf (SHA-256 466c593e7147412e748af4856d5ad14709b5a860bdf62b9c2546f2c5874e9849), GowunBatang-Bold.ttf (SHA-256 dbfcaa646e5831e7478524924f02906f550285a5050699b4e38c9950b3ec4b94) and OFL.txt (SHA-256 49a57cc769fa9affd6eefb9070a61e3d3f6b757c97cafb15848bc6d1c81acc78); downloaded and checked by packaging/fetch-psg-fonts.sh into the craft-fonts input (fonts/gowun-batang, fonts/psg-ui-manifest.txt), which packaging/fetch-craft-fonts.sh runs for every release build"
+licence = "OFL-1.1"
+attribution = "https://github.com/google/fonts/blob/7af0d90b4d532ffa4b041937b560c6df4e7b1e95/ofl/gowunbatang/OFL.txt"
+kind = "font"
+usage = "The interface face of PSG PDF and PSG Academic PDF in Korean (crates/desktop-ui/src/fonts.rs use_interface_face): Regular for text and labels, Bold for headings, with LXGW WenKai TC for Hanja and Inter behind it. Native builds only, never embedded on wasm, never written into PDFs. Not committed to this repository (AGENTS.md §1.4). The OFL text ships as OFL-gowun-batang.txt beside the other font licences"
 
 [[asset]]
 path = "crates/sign/tests/data/x509-rsa-sha1.pdf"

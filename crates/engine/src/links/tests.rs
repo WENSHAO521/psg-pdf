@@ -111,11 +111,15 @@ fn remote_document_paths_to_other_computers_and_devices_are_refused() {
 }
 
 #[test]
-fn urls_name_psg_pdf_and_its_upstream() {
+fn urls_are_psgs_own() {
     assert_eq!(super::GITHUB, format!("https://github.com/WENSHAO521/{}", super::APP));
-    assert_eq!(super::APP_PAGE, "https://github.com/storytold/pdfcraft");
+    assert_eq!(super::APP_PAGE, "https://pdf.panorama-sg.com/");
+    assert_eq!(super::PUBLISHER_PAGE, "https://panorama-sg.com/");
     for l in super::LINKS {
         assert!(l.url.starts_with("https://"), "{}", l.url);
+        // Only PSG's own sites and repository: no upstream or community address (the upstream is
+        // credited in plain text instead).
+        assert!(l.url.contains("panorama-sg.com") || l.url.starts_with(super::GITHUB), "{}", l.url);
         assert!(crate::commands::command(l.command).is_some(), "{} is a registered command", l.command);
     }
 }

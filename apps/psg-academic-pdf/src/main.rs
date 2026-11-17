@@ -22,6 +22,7 @@ mod outline;
 mod preview;
 mod psg_pdf;
 mod recent;
+mod relocate;
 mod source;
 mod startup;
 mod tex_setup;

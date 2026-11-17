@@ -77,7 +77,6 @@
 	DOI	DOI
 	Dark	Dunkel
 	Dashboard	Übersicht
-	Data folder:	Datenordner:
 	Dates and licence	Daten und Lizenz
 	Development build	Entwicklungsversion
 	Discard unsaved changes and read the file again	Ungespeicherte Änderungen verwerfen und Datei neu einlesen
@@ -362,3 +361,25 @@
 @other	{n} warning	{n} Warnungen
 @one	{n} word	{n} Wort
 @other	{n} word	{n} Wörter
+	Data folder	Datenordner
+	New projects and the app's settings are kept in this folder.	Neue Projekte und die Einstellungen der App werden in diesem Ordner gespeichert.
+	Chosen	Gewählt
+	Default	Standard
+	Moving the data folder…	Datenordner wird verschoben…
+	Move the projects and settings to {path}?	Projekte und Einstellungen nach {path} verschieben?
+	Everything is copied and checked first; the old copies are removed only after that.	Alles wird zuerst kopiert und geprüft; erst danach werden die alten Kopien entfernt.
+	Move data	Daten verschieben
+	Change…	Ändern…
+	Use the default folder	Standardordner verwenden
+	Open folder	Ordner öffnen
+	Choose where to keep projects and settings	Speicherort für Projekte und Einstellungen wählen
+	Moving the data folder from {path}.	Datenordner wird aus {path} verschoben.
+	Could not move the data folder: {error}	Der Datenordner konnte nicht verschoben werden: {error}
+	Projects and settings are now kept in {path}.	Projekte und Einstellungen liegen jetzt in {path}.
+	Everything was copied, but some old files could not be removed from {path}. You can delete them yourself.	Alles wurde kopiert, aber einige alte Dateien in {path} konnten nicht entfernt werden. Sie können sie selbst löschen.
+	{path} is not a full path. Choose a folder.	{path} ist kein vollständiger Pfad. Wählen Sie einen Ordner.
+	That is the folder already in use.	Das ist bereits der verwendete Ordner.
+	{path} is inside the data folder. Choose a folder outside it.	{path} liegt im Datenordner. Wählen Sie einen Ordner außerhalb davon.
+	{path} already exists there. Nothing was moved; choose an empty folder.	{path} ist dort bereits vorhanden. Keine Projekte oder Einstellungen wurden verschoben; wählen Sie einen leeren Ordner.
+	That folder holds too many files to be a data folder. Nothing was moved.	Dieser Ordner enthält zu viele Dateien für einen Datenordner. Keine Projekte oder Einstellungen wurden verschoben.
+	Could not move the data folder ({path}: {error}). Nothing was changed.	Der Datenordner konnte nicht verschoben werden ({path}: {error}). Nichts wurde geändert.

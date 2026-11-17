@@ -10,7 +10,7 @@ use craft_update::{CheckResultDialog, CheckResultResponse};
 use crate::PdfCraftApp;
 
 /// Where every PdfCraft release is listed.
-pub const RELEASES_PAGE: &str = "https://github.com/storytold/pdfcraft/releases";
+pub const RELEASES_PAGE: &str = psg_brand::RELEASES;
 
 /// Stands in for the network in tests.
 #[cfg(not(target_arch = "wasm32"))]
@@ -273,7 +273,8 @@ mod tests {
     fn the_beta_preference_sets_the_channel_of_the_next_check() {
         let mut app = PdfCraftApp::new();
         app.poll_updates();
-        assert!(!app.updates.updater.prereleases(), "stable by default");
+        let own = psg_brand::Release::of(pdfcraft_engine::build_info::VERSION).follows_betas_by_default();
+        assert_eq!(app.updates.updater.prereleases(), own, "the build's own channel by default");
         app.beta_updates = true;
         app.poll_updates();
         assert!(app.updates.updater.prereleases());
@@ -356,7 +357,7 @@ mod tests {
             tag: "v99.0.0".into(),
             version: craft_update::parse_version("99.0.0"),
             name: "PSG PDF 99.0.0".into(),
-            html_url: "https://github.com/storytold/pdfcraft/releases/tag/v99.0.0".into(),
+            html_url: "https://github.com/WENSHAO521/psg-pdf/releases/tag/v99.0.0".into(),
             ..Default::default()
         });
         assert!(app.updates.updater.prompt_open());

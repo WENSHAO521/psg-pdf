@@ -78,7 +78,6 @@
 	DOI	DOI
 	Dark	Oscuro
 	Dashboard	Panel
-	Data folder:	Carpeta de datos:
 	Dates and licence	Fechas y licencia
 	Development build	Versión de desarrollo
 	Discard unsaved changes and read the file again	Descartar los cambios sin guardar y volver a leer el archivo
@@ -363,3 +362,25 @@
 @other	{n} warning	{n} advertencias
 @one	{n} word	{n} palabra
 @other	{n} word	{n} palabras
+	Data folder	Carpeta de datos
+	New projects and the app's settings are kept in this folder.	Los proyectos nuevos y los ajustes de la aplicación se guardan en esta carpeta.
+	Chosen	Elegida
+	Default	Predeterminada
+	Moving the data folder…	Moviendo la carpeta de datos…
+	Move the projects and settings to {path}?	¿Mover los proyectos y los ajustes a {path}?
+	Everything is copied and checked first; the old copies are removed only after that.	Primero se copia y se comprueba todo; las copias antiguas solo se eliminan después.
+	Move data	Mover datos
+	Change…	Cambiar…
+	Use the default folder	Usar la carpeta predeterminada
+	Open folder	Abrir carpeta
+	Choose where to keep projects and settings	Elija dónde guardar los proyectos y los ajustes
+	Moving the data folder from {path}.	Moviendo la carpeta de datos desde {path}.
+	Could not move the data folder: {error}	No se pudo mover la carpeta de datos: {error}
+	Projects and settings are now kept in {path}.	Los proyectos y los ajustes se guardan ahora en {path}.
+	Everything was copied, but some old files could not be removed from {path}. You can delete them yourself.	Se copió todo, pero no se pudieron eliminar algunos archivos antiguos de {path}. Puede eliminarlos usted.
+	{path} is not a full path. Choose a folder.	{path} no es una ruta completa. Elija una carpeta.
+	That is the folder already in use.	Esa es la carpeta que ya se usa.
+	{path} is inside the data folder. Choose a folder outside it.	{path} está dentro de la carpeta de datos. Elija una carpeta fuera de ella.
+	{path} already exists there. Nothing was moved; choose an empty folder.	{path} ya existe allí. No se movió ningún proyecto ni ajuste; elija una carpeta vacía.
+	That folder holds too many files to be a data folder. Nothing was moved.	Esa carpeta tiene demasiados archivos para ser una carpeta de datos. No se movió ningún proyecto ni ajuste.
+	Could not move the data folder ({path}: {error}). Nothing was changed.	No se pudo mover la carpeta de datos ({path}: {error}). No se cambió nada.

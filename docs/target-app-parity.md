@@ -49,7 +49,7 @@ The gap between the numbers is the story of this release: most of what an Acroba
 for *exists*, but much of it is shallower than Acrobat's, rendering is still borrowed, quality has
 never been measured side by side with Acrobat, and the first public releases (0.4.0, 0.5.0) drew
 245 open issues in two days, including one that made our encrypted files unreadable in Acrobat
-([#774](https://github.com/storytold/pdfcraft/issues/774), fixed by #836).
+(#774, fixed by #836).
 
 ## How this was measured
 

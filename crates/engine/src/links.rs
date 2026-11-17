@@ -1,5 +1,6 @@
-//! Where PSG PDF and the upstream PdfCraft project live on the web. One table, so the Help menu,
-//! the About dialog, the home screen, the CLI and the README agree.
+//! Where PSG PDF lives on the web. One table, so the Help menu, the About dialog, the home screen,
+//! the CLI and the README agree. Only PSG's own addresses belong here: the upstream project is
+//! credited in plain text (About, README, NOTICE), never linked.
 
 use icu_properties::props::Script;
 use std::path::{Path, PathBuf};
@@ -9,8 +10,10 @@ pub const APP: &str = "psg-pdf";
 
 /// PSG PDF's source repository.
 pub const GITHUB: &str = "https://github.com/WENSHAO521/psg-pdf";
-/// The upstream project PSG PDF is based on.
-pub const APP_PAGE: &str = "https://github.com/storytold/pdfcraft";
+/// PSG PDF's website (`psg_brand::PDF_WEBSITE`; the engine sits below the brand crate).
+pub const APP_PAGE: &str = "https://pdf.panorama-sg.com/";
+/// Panorama Scholarly Group's website (`psg_brand::WEBSITE`).
+pub const PUBLISHER_PAGE: &str = "https://panorama-sg.com/";
 
 /// A link and the registry command that opens it.
 #[derive(Clone, Copy, Debug)]
@@ -24,8 +27,9 @@ pub struct Link {
 
 /// In the order they are shown.
 pub const LINKS: &[Link] = &[
+    Link { command: "help.app_page", label: "PSG PDF website", url: APP_PAGE, icon: "globe" },
+    Link { command: "help.publisher_page", label: "Panorama Scholarly Group website", url: PUBLISHER_PAGE, icon: "house" },
     Link { command: "help.github", label: "PSG PDF on GitHub", url: GITHUB, icon: "code-xml" },
-    Link { command: "help.app_page", label: "PdfCraft (upstream project)", url: APP_PAGE, icon: "globe" },
 ];
 
 pub fn for_command(id: &str) -> Option<&'static Link> {

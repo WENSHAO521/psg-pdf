@@ -716,6 +716,7 @@ fn beta_channel(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens, ctx: &mut 
         ui.horizontal(|ui| {
             if ui.button(confirm).clicked() {
                 app.beta_updates = join;
+                app.beta_updates_chosen = true;
                 app.beta_updates_pending = None;
             }
             if ui.button(tl!("Cancel")).clicked() {

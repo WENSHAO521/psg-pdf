@@ -77,7 +77,6 @@
 	DOI	DOI
 	Dark	深色
 	Dashboard	總覽
-	Data folder:	資料夾：
 	Dates and licence	日期與授權
 	Development build	開發版本
 	Discard unsaved changes and read the file again	捨棄未儲存的變更並重新讀取檔案
@@ -354,3 +353,25 @@
 @other	{n} problem found before compiling; see Problems.	編譯前發現 {n} 個問題；請查看「問題」。
 @other	{n} warning	{n} 個警告
 @other	{n} word	{n} 個字詞
+	Data folder	資料夾
+	New projects and the app's settings are kept in this folder.	新專案與應用程式設定都保存在此資料夾。
+	Chosen	自訂
+	Default	預設
+	Moving the data folder…	正在搬移資料夾…
+	Move the projects and settings to {path}?	要將專案與設定搬移到 {path} 嗎？
+	Everything is copied and checked first; the old copies are removed only after that.	會先複製並核對所有檔案，確認無誤後才刪除舊檔案。
+	Move data	搬移資料
+	Change…	更改…
+	Use the default folder	改回預設資料夾
+	Open folder	開啟資料夾
+	Choose where to keep projects and settings	選擇保存專案與設定的位置
+	Moving the data folder from {path}.	正在從 {path} 搬移資料夾。
+	Could not move the data folder: {error}	無法搬移資料夾：{error}
+	Projects and settings are now kept in {path}.	專案與設定現在保存在 {path}。
+	Everything was copied, but some old files could not be removed from {path}. You can delete them yourself.	所有檔案已複製完成，但 {path} 中有些舊檔案無法刪除，您可以自行刪除。
+	{path} is not a full path. Choose a folder.	{path} 不是完整路徑，請選擇一個資料夾。
+	That is the folder already in use.	這就是目前使用中的資料夾。
+	{path} is inside the data folder. Choose a folder outside it.	{path} 位於目前的資料夾內，請選擇其外的資料夾。
+	{path} already exists there. Nothing was moved; choose an empty folder.	該處已有 {path}。未搬移任何專案或設定，請選擇空的資料夾。
+	That folder holds too many files to be a data folder. Nothing was moved.	該資料夾檔案過多，不像是資料夾。未搬移任何專案或設定。
+	Could not move the data folder ({path}: {error}). Nothing was changed.	無法搬移資料夾（{path}：{error}），未做任何變更。

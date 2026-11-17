@@ -86,6 +86,16 @@ fn release_kinds_come_from_the_version() {
     assert_eq!(Release::of(""), Release::Stable);
 }
 
+/// An installed beta follows the beta channel until its user picks one, so it is offered the
+/// next beta instead of saying "up to date" until the next stable release.
+#[test]
+fn only_a_beta_follows_the_beta_channel_by_default() {
+    assert!(Release::of("0.20.1-beta.65").follows_betas_by_default());
+    assert!(Release::of("0.20.1-beta").follows_betas_by_default());
+    assert!(!Release::of("0.20.0").follows_betas_by_default());
+    assert!(!Release::of("0.20.1-dev").follows_betas_by_default());
+}
+
 #[test]
 fn versions_and_titles_read_as_people_expect() {
     assert_eq!(display_version("0.19.0"), "0.19.0");

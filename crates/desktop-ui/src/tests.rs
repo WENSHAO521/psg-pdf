@@ -106,10 +106,9 @@ fn components_are_accessible() {
 
 #[test]
 fn shared_fonts_put_inter_and_jetbrains_mono_first() {
+    // PSG's interface faces go in front per language, separately (the last test).
     let defs = crate::fonts::definitions([]);
-    // Behind PSG's interface face when the build has it (the next test).
-    let lead = if pdfcraft_fonts::psg_ui_font("Regular").is_some() { 1 } else { 0 };
-    assert_eq!(defs.families.get(&egui::FontFamily::Proportional).and_then(|f| f.get(lead)).map(String::as_str), Some("Inter"));
+    assert_eq!(defs.families.get(&egui::FontFamily::Proportional).and_then(|f| f.first()).map(String::as_str), Some("Inter"));
     assert_eq!(defs.families.get(&egui::FontFamily::Monospace).and_then(|f| f.first()).map(String::as_str), Some("JetBrainsMono"));
     assert!(defs.families.contains_key(&egui::FontFamily::Name(crate::fonts::SEMIBOLD.into())));
 }
@@ -196,32 +195,50 @@ fn chips_wrap_inside_a_narrow_row() {
     assert!(used.get() <= 160.5, "the chip row grew to {} points", used.get());
 }
 
-/// With PSG's interface face in the build, Noto Serif CJK TC leads every interface family, in
-/// every language, with Inter behind it; without it the definitions are Inter's as before.
+/// With PSG's interface faces in the build, each language's face leads every interface family
+/// with Inter behind it: 霞鶩文楷 TC for Traditional Chinese, Japanese and the Latin-script
+/// languages, 霞鶩文楷 Lite for Simplified Chinese, Gowun Batang for Korean. Without them the
+/// definitions are Inter's as before.
 #[test]
 fn the_interface_face_leads_every_family_when_the_build_has_it() {
-    let defs = crate::fonts::definitions([]);
-    let first = |family: egui::FontFamily| defs.families.get(&family).and_then(|s| s.first().cloned()).unwrap_or_default();
+    use crate::fonts::{KAI_SC, KAI_TC, KOREAN};
     let medium = egui::FontFamily::Name(crate::fonts::MEDIUM.into());
     let semibold = egui::FontFamily::Name(crate::fonts::SEMIBOLD.into());
-    if pdfcraft_fonts::psg_ui_font("Regular").is_none() {
-        eprintln!("built without the interface face (CRAFT_FONTS_DIR with packaging/fetch-psg-fonts.sh): Inter leads");
-        assert_eq!(first(egui::FontFamily::Proportional), "Inter");
-        assert_eq!(first(semibold), "Inter-SemiBold");
+    let name = |family: &str, style: &str| pdfcraft_fonts::psg_ui_font(family, style).map(|f| f.name()).unwrap_or_default();
+    if pdfcraft_fonts::psg_ui_font(KAI_TC, "Regular").is_none() {
+        eprintln!("built without the interface faces (CRAFT_FONTS_DIR with packaging/fetch-psg-fonts.sh): Inter leads");
+        let mut defs = crate::fonts::definitions([]);
+        crate::fonts::use_interface_face(&mut defs, "zh-hant");
+        assert_eq!(defs.families[&egui::FontFamily::Proportional].first().map(String::as_str), Some("Inter"));
+        assert_eq!(defs.families[&semibold].first().map(String::as_str), Some("Inter-SemiBold"));
         return;
     }
-    let regular = crate::fonts::interface_face_name("Regular");
-    assert_eq!(first(egui::FontFamily::Proportional), regular);
-    assert_eq!(first(medium), regular);
-    assert_eq!(first(semibold), crate::fonts::interface_face_name("SemiBold"));
-    let mono = &defs.families[&egui::FontFamily::Monospace];
-    assert_eq!(mono.first().map(String::as_str), Some("JetBrainsMono"), "code stays monospaced");
-    assert_eq!(mono.get(1), Some(&regular));
-    assert!(defs.families[&egui::FontFamily::Proportional].contains(&"Inter".to_owned()), "Inter stays as a fallback");
-    // Every interface language's own letters are in the face.
-    let face = pdfcraft_fonts::psg_ui_font("Regular").map(|f| f.bytes).unwrap_or_default();
-    for text in ["設定", "设置", "設定する", "설정", "Einstellungen ß", "Paramètres", "Configuración", "Configurações", "Cài đặt"]
-    {
-        assert!(text.chars().filter(|c| !c.is_whitespace()).all(|c| pdfcraft_fonts::face_has(face, c)), "{text}");
+    let cases = [
+        ("zh-hant", (KAI_TC, "Regular"), (KAI_TC, "Medium"), (KAI_TC, "Medium"), "設定 檔案"),
+        ("en", (KAI_TC, "Regular"), (KAI_TC, "Medium"), (KAI_TC, "Medium"), "Settings"),
+        ("ja", (KAI_TC, "Regular"), (KAI_TC, "Medium"), (KAI_TC, "Medium"), "設定する ファイル"),
+        ("de", (KAI_TC, "Regular"), (KAI_TC, "Medium"), (KAI_TC, "Medium"), "Einstellungen ß Ä"),
+        ("fr", (KAI_TC, "Regular"), (KAI_TC, "Medium"), (KAI_TC, "Medium"), "Paramètres œ"),
+        ("es", (KAI_TC, "Regular"), (KAI_TC, "Medium"), (KAI_TC, "Medium"), "Configuración ñ ¿"),
+        ("pt-br", (KAI_TC, "Regular"), (KAI_TC, "Medium"), (KAI_TC, "Medium"), "Configurações"),
+        ("vi", (KAI_TC, "Regular"), (KAI_TC, "Medium"), (KAI_TC, "Medium"), "Cài đặt Tệp ữ"),
+        ("zh-hans", (KAI_SC, "Regular"), (KAI_SC, "Medium"), (KAI_SC, "Medium"), "设置 文件"),
+        ("ko", (KOREAN, "Regular"), (KOREAN, "Regular"), (KOREAN, "Bold"), "설정 파일"),
+    ];
+    for (lang, regular, med, heading, text) in cases {
+        let mut defs = crate::fonts::definitions([]);
+        crate::fonts::use_interface_face(&mut defs, lang);
+        let first = |family: &egui::FontFamily| defs.families.get(family).and_then(|s| s.first().cloned()).unwrap_or_default();
+        let regular_name = name(regular.0, regular.1);
+        assert_eq!(first(&egui::FontFamily::Proportional), regular_name, "{lang}");
+        assert_eq!(first(&medium), name(med.0, med.1), "{lang}");
+        assert_eq!(first(&semibold), name(heading.0, heading.1), "{lang}");
+        let mono = &defs.families[&egui::FontFamily::Monospace];
+        assert_eq!(mono.first().map(String::as_str), Some("JetBrainsMono"), "code stays monospaced ({lang})");
+        assert_eq!(mono.get(1), Some(&regular_name), "{lang}");
+        assert!(defs.families[&egui::FontFamily::Proportional].contains(&"Inter".to_owned()), "Inter stays as a fallback ({lang})");
+        // The language's own letters are in its face.
+        let face = pdfcraft_fonts::psg_ui_font(regular.0, regular.1).map(|f| f.bytes).unwrap_or_default();
+        assert!(text.chars().filter(|c| !c.is_whitespace()).all(|c| pdfcraft_fonts::face_has(face, c)), "{lang}: {text}");
     }
 }
