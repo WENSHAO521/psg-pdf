@@ -107,7 +107,9 @@ fn components_are_accessible() {
 #[test]
 fn shared_fonts_put_inter_and_jetbrains_mono_first() {
     let defs = crate::fonts::definitions([]);
-    assert_eq!(defs.families.get(&egui::FontFamily::Proportional).and_then(|f| f.first()).map(String::as_str), Some("Inter"));
+    // Behind PSG's interface face when the build has it (the next test).
+    let lead = if pdfcraft_fonts::psg_ui_font("Regular").is_some() { 1 } else { 0 };
+    assert_eq!(defs.families.get(&egui::FontFamily::Proportional).and_then(|f| f.get(lead)).map(String::as_str), Some("Inter"));
     assert_eq!(defs.families.get(&egui::FontFamily::Monospace).and_then(|f| f.first()).map(String::as_str), Some("JetBrainsMono"));
     assert!(defs.families.contains_key(&egui::FontFamily::Name(crate::fonts::SEMIBOLD.into())));
 }
@@ -192,4 +194,34 @@ fn chips_wrap_inside_a_narrow_row() {
     harness.run();
     drop(harness);
     assert!(used.get() <= 160.5, "the chip row grew to {} points", used.get());
+}
+
+/// With PSG's interface face in the build, Noto Serif CJK TC leads every interface family, in
+/// every language, with Inter behind it; without it the definitions are Inter's as before.
+#[test]
+fn the_interface_face_leads_every_family_when_the_build_has_it() {
+    let defs = crate::fonts::definitions([]);
+    let first = |family: egui::FontFamily| defs.families.get(&family).and_then(|s| s.first().cloned()).unwrap_or_default();
+    let medium = egui::FontFamily::Name(crate::fonts::MEDIUM.into());
+    let semibold = egui::FontFamily::Name(crate::fonts::SEMIBOLD.into());
+    if pdfcraft_fonts::psg_ui_font("Regular").is_none() {
+        eprintln!("built without the interface face (CRAFT_FONTS_DIR with packaging/fetch-psg-fonts.sh): Inter leads");
+        assert_eq!(first(egui::FontFamily::Proportional), "Inter");
+        assert_eq!(first(semibold), "Inter-SemiBold");
+        return;
+    }
+    let regular = crate::fonts::interface_face_name("Regular");
+    assert_eq!(first(egui::FontFamily::Proportional), regular);
+    assert_eq!(first(medium), regular);
+    assert_eq!(first(semibold), crate::fonts::interface_face_name("SemiBold"));
+    let mono = &defs.families[&egui::FontFamily::Monospace];
+    assert_eq!(mono.first().map(String::as_str), Some("JetBrainsMono"), "code stays monospaced");
+    assert_eq!(mono.get(1), Some(&regular));
+    assert!(defs.families[&egui::FontFamily::Proportional].contains(&"Inter".to_owned()), "Inter stays as a fallback");
+    // Every interface language's own letters are in the face.
+    let face = pdfcraft_fonts::psg_ui_font("Regular").map(|f| f.bytes).unwrap_or_default();
+    for text in ["設定", "设置", "設定する", "설정", "Einstellungen ß", "Paramètres", "Configuración", "Configurações", "Cài đặt"]
+    {
+        assert!(text.chars().filter(|c| !c.is_whitespace()).all(|c| pdfcraft_fonts::face_has(face, c)), "{text}");
+    }
 }

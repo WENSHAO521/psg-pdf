@@ -1,6 +1,9 @@
-//! The shared interface fonts: Inter for text, JetBrains Mono for code, logs and TeX source (both
-//! OFL, `assets/fonts/`, recorded in ATTRIBUTION.toml). Each file is embedded once for both apps:
-//! Inter Regular through `pdfcraft-fonts`, the others here.
+//! The shared interface fonts: Noto Serif CJK TC (思源宋體) for all interface text in every
+//! language, when the build has it (the craft-fonts input with `packaging/fetch-psg-fonts.sh`,
+//! as every release build does); Inter otherwise and as its fallback; JetBrains Mono for code,
+//! logs and TeX source. Inter and JetBrains Mono are OFL files in `assets/fonts/`, recorded in
+//! ATTRIBUTION.toml, embedded once for both apps: Inter Regular through `pdfcraft-fonts`, the
+//! others here.
 
 use std::sync::Arc;
 
@@ -60,20 +63,60 @@ pub fn definitions(fallbacks: impl IntoIterator<Item = Fallback>) -> FontDefinit
         stack.extend(rest.iter().cloned());
         fonts.families.insert(FontFamily::Name(family.into()), stack);
     }
+    use_interface_face(&mut fonts);
     fonts
 }
 
-/// Inter Regular at `size` points.
+/// The registered name of the interface face in `style`.
+pub fn interface_face_name(style: &str) -> String {
+    format!("{INTERFACE_FAMILY} {style}")
+}
+
+/// The family of PSG's interface face.
+pub const INTERFACE_FAMILY: &str = "Noto Serif CJK TC";
+
+/// Put Noto Serif CJK TC first for all interface text, in every language: Regular for the
+/// proportional and medium families (the build carries no Medium weight; Regular keeps the
+/// installers smaller), SemiBold for the semibold family, and Regular right after JetBrains Mono
+/// for the CJK, Hangul and accented letters code and logs show. The existing faces stay behind
+/// it as fallbacks. Without the face (a build without the craft-fonts input, the web build)
+/// `fonts` is unchanged. Both apps call this on their own font definitions.
+pub fn use_interface_face(fonts: &mut FontDefinitions) {
+    let (Some(regular), semibold) = (pdfcraft_fonts::psg_ui_font("Regular"), pdfcraft_fonts::psg_ui_font("SemiBold")) else {
+        return;
+    };
+    let regular_name = interface_face_name("Regular");
+    fonts.font_data.insert(regular_name.clone(), Arc::new(FontData::from_static(regular.bytes)));
+    let semibold_name = match semibold {
+        Some(face) => {
+            let name = interface_face_name("SemiBold");
+            fonts.font_data.insert(name.clone(), Arc::new(FontData::from_static(face.bytes)));
+            name
+        }
+        None => regular_name.clone(),
+    };
+    let mut first = |family: FontFamily, at: usize, name: &str| {
+        let stack = fonts.families.entry(family).or_default();
+        stack.retain(|n| n != name);
+        stack.insert(at.min(stack.len()), name.to_owned());
+    };
+    first(FontFamily::Proportional, 0, &regular_name);
+    first(FontFamily::Name(MEDIUM.into()), 0, &regular_name);
+    first(FontFamily::Name(SEMIBOLD.into()), 0, &semibold_name);
+    first(FontFamily::Monospace, 1, &regular_name);
+}
+
+/// The interface face (Noto Serif CJK TC Regular, else Inter Regular) at `size` points.
 pub fn regular(size: f32) -> FontId {
     FontId::proportional(size)
 }
 
-/// Inter Medium at `size` points (labels that need a little weight: tabs, navigation).
+/// The medium interface family (Noto Serif CJK TC Regular, else Inter Medium) at `size` points (labels that need a little weight: tabs, navigation).
 pub fn medium(size: f32) -> FontId {
     FontId::new(size, FontFamily::Name(MEDIUM.into()))
 }
 
-/// Inter SemiBold at `size` points (titles, headings, primary buttons).
+/// The semibold interface family (Noto Serif CJK TC SemiBold, else Inter SemiBold) at `size` points (titles, headings, primary buttons).
 pub fn semibold(size: f32) -> FontId {
     FontId::new(size, FontFamily::Name(SEMIBOLD.into()))
 }

@@ -27,6 +27,13 @@ impl CraftFont {
     }
 }
 
+/// PSG's interface face in `style` (`"Regular"`, `"SemiBold"`): Noto Serif CJK TC, drawn for
+/// every interface language. `None` when built without it (no `CRAFT_FONTS_DIR`, or a
+/// craft-fonts input that `packaging/fetch-psg-fonts.sh` did not add it to, and on the web).
+pub fn psg_ui_font(style: &str) -> Option<&'static CraftFont> {
+    PSG_UI_FONTS.iter().find(|f| f.style == style)
+}
+
 /// The `Jpan` craft-fonts faces in the order the interface prefers them: BIZ UDPGothic (a UI
 /// face) first, then the rest in manifest order. Empty without craft-fonts.
 pub fn ui_japanese_fonts() -> Vec<&'static CraftFont> {
