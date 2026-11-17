@@ -52,9 +52,16 @@ expect an Authenticode signature): install the first signed release by hand, onc
 
 ## Channels
 
-- **Stable** (default): only stable releases are offered.
-- **Beta**: the newest release is offered, beta or stable. A copy on `0.20.0-beta.3` updates to
-  `0.20.0-beta.4`, then to `0.20.0` when it ships, then to `0.21.0-beta.1`.
+- **Stable** (the default of a stable release): only stable releases are offered.
+- **Beta** (the default of a beta): the newest release is offered, beta or stable. A copy on
+  `0.20.0-beta.3` updates to `0.20.0-beta.4`, then to `0.20.0` when it ships, then to
+  `0.21.0-beta.1`.
+
+Until the user picks a channel, each copy follows its own build's: an installed beta follows the
+betas, so it is offered the next beta. (Before this, every copy started on stable, and a beta
+newer than the latest stable release kept saying it was up to date.) A picked channel is kept
+and always wins, also across updates: PSG PDF keeps it as `update_channel` in its settings, PSG
+Academic PDF in `update-channel.txt`.
 
 PSG PDF: *Preferences ▸ General ▸ Get beta updates* (`beta_updates`). PSG Academic PDF: *Get beta
 updates* under *Check for updates*. Joining and leaving each ask for a second confirmation.

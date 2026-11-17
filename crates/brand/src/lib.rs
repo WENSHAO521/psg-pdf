@@ -386,6 +386,14 @@ impl Release {
             Release::Development => Some("Development build"),
         }
     }
+
+    /// The update channel a copy of this release follows until its user picks one: a beta
+    /// follows the beta channel (`true`), so that it is offered the next beta. On the stable
+    /// channel a beta is never offered anything until a newer stable release, which is how
+    /// installed betas used to say "up to date" while newer betas were out.
+    pub fn follows_betas_by_default(self) -> bool {
+        matches!(self, Release::Beta(_))
+    }
 }
 
 /// `version` as people read it: `0.19.0`, `0.19.0 Beta 3`, or the version unchanged for a
