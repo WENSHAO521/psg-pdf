@@ -273,3 +273,4 @@
 	{name}: {n} low-confidence word(s) on pages {pages}	{name}: {pages}페이지에 신뢰도 낮은 단어 {n}개
 	{n} lines	{n}줄
 	{n} word(s) to review	검토할 단어 {n}개
+	Some content could not be read for device colour	일부 콘텐츠를 읽을 수 없어 장치 색상 사용 여부를 확인하지 못했습니다

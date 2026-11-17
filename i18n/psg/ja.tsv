@@ -313,3 +313,4 @@
 	{} annotation on page {p} isn't tagged	{p} ページの {} 注釈にタグが付いていません
 	{} annotations aren't allowed	{} 注釈は使えません
 	… and {n} more	…ほか {n} 件
+	Some content could not be read for device colour	一部のコンテンツを読み取れず、デバイスカラーの使用を確認できませんでした

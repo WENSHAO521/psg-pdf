@@ -315,3 +315,4 @@
 	{} annotation on page {p} isn't tagged	第 {p} 页的 {} 注释未加标签
 	{} annotations aren't allowed	不允许 {} 注释
 	… and {n} more	…另有 {n} 项
+	Some content could not be read for device colour	部分内容无法读取，无法判断是否使用设备颜色

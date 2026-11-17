@@ -174,3 +174,4 @@
 	{app} {version} is the newest version available.	{app} {version} es la versión más reciente.
 	{font}, {size} pt	{font}, {size} pt
 	{n} lines	{n} líneas
+	Some content could not be read for device colour	No se pudo leer parte del contenido para comprobar el color de dispositivo

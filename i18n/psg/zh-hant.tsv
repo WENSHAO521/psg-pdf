@@ -317,3 +317,4 @@
 	{} annotation on page {p} isn't tagged	第 {p} 頁的 {} 註解未加標籤
 	{} annotations aren't allowed	不允許 {} 註解
 	… and {n} more	…另有 {n} 項
+	Some content could not be read for device colour	部分內容無法讀取，無法判斷是否使用裝置色彩
