@@ -20,6 +20,7 @@ use std::sync::mpsc::{Receiver, channel};
 use std::time::Instant;
 
 use psg_academic::bib::BibEntry;
+use psg_academic::managed::ManagedTex;
 use psg_academic::pandoc::{ManuscriptImporter, PandocImporter};
 use psg_academic::{CompileReport, Diagnostic, Outcome, Project, PublicationMetadata, Severity, Template, TexEnvironment, template};
 use psg_desktop_ui::notice::Notices;
@@ -32,6 +33,7 @@ use crate::launch::{self, ManuscriptKind, Request};
 use crate::preview::Preview;
 use crate::recent::Recent;
 use crate::source::SourceEditor;
+use crate::tex_setup::{self, Job, Progress};
 use crate::updates::Updates;
 
 mod dashboard;
@@ -135,8 +137,18 @@ pub struct RunRecord {
     pub summary: String,
 }
 
+/// Installing or updating PSG's own TeX, in the background.
+pub(crate) struct TexJob {
+    rx: Receiver<tex_setup::Event>,
+    pub(crate) job: Job,
+    pub(crate) progress: Progress,
+}
+
+/// A compilation's report and the TeX packages installed for it.
+type CompileResult = Result<(CompileReport, Vec<String>), String>;
+
 struct Running {
-    rx: Receiver<Result<CompileReport, String>>,
+    rx: Receiver<CompileResult>,
     cancel: Arc<AtomicBool>,
     started: Instant,
 }
@@ -156,6 +168,13 @@ fn layout_id() -> egui::Id {
 pub struct AcademicApp {
     env: Option<TexEnvironment>,
     env_rx: Option<Receiver<TexEnvironment>>,
+    /// PSG's own TeX, which the app installs and keeps up to date (`None`: no folder for it).
+    managed: Option<ManagedTex>,
+    tex_job: Option<TexJob>,
+    /// The automatic install or update was started in this run (it isn't retried by itself).
+    tex_auto_started: bool,
+    /// Why the last install or update failed, shown in the TeX card.
+    tex_error: Option<String>,
     templates: Vec<Template>,
     template_problems: Vec<String>,
     selected_template: usize,
@@ -224,6 +243,10 @@ impl AcademicApp {
         let mut app = Self {
             env: None,
             env_rx: None,
+            managed: tex_setup::managed_for(&data.root, data.portable),
+            tex_job: None,
+            tex_auto_started: false,
+            tex_error: None,
             templates,
             template_problems,
             selected_template: 0,
@@ -301,6 +324,12 @@ impl AcademicApp {
         self.project.is_some()
             && self.running.is_none()
             && self.env.as_ref().is_some_and(|e| e.missing(self.project.as_ref().is_none_or(|p| p.file.uses_biber)).is_empty())
+            && !self.tex_busy()
+    }
+
+    /// PSG's TeX, which the compilation would use, is being installed or updated.
+    fn tex_busy(&self) -> bool {
+        self.tex_job.is_some() && self.env.as_ref().is_none_or(|e| e.managed || !e.missing(true).is_empty())
     }
 
     /// Why the Auto Typeset action is unavailable, for its tooltip.
@@ -311,6 +340,8 @@ impl AcademicApp {
             t("Typesetting is already running.")
         } else if self.env.is_none() {
             t("Checking the TeX installation…")
+        } else if self.tex_busy() {
+            t("TeX is being installed or updated; typesetting starts once it is done.")
         } else {
             t("TeX is not ready: see Settings ▸ TeX installation.")
         }
@@ -463,10 +494,11 @@ impl AcademicApp {
     }
 
     fn detect_tex(&mut self, ctx: &egui::Context) {
+        let bin = tex_setup::bin_dir(self.managed.as_ref());
         let (tx, rx) = channel();
         let ctx = ctx.clone();
         let spawned = std::thread::Builder::new().name("psg-tex-detect".into()).spawn(move || {
-            let _ = tx.send(TexEnvironment::detect());
+            let _ = tx.send(TexEnvironment::detect_with(bin.as_deref()));
             ctx.request_repaint();
         });
         match spawned {
@@ -481,6 +513,7 @@ impl AcademicApp {
         {
             self.env_rx = None;
             let missing = env.missing(true);
+            let installing = self.managed.as_ref().is_some_and(|m| !m.installed());
             if missing.is_empty() {
                 self.status = t("TeX is ready.").into();
                 self.note(format!(
@@ -490,24 +523,116 @@ impl AcademicApp {
                     env.biber.version.as_deref().unwrap_or("?"),
                     if env.pandoc.found() { ", pandoc found" } else { "" }
                 ));
+            } else if installing {
+                self.status = t("Installing TeX for PSG Academic PDF…").into();
+                self.note(tf("TeX not found yet ({tools}); PSG Academic PDF installs its own.", &[("tools", &missing.join(", "))]));
             } else {
                 self.fail(tf(
-                    "TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.",
+                    "TeX is not ready: {tools} not found. Press Install TeX in Settings ▸ TeX installation.",
                     &[("tools", &missing.join(", "))],
                 ));
             }
             self.env = Some(env);
+            self.start_tex_maintenance(ctx);
         }
+        self.poll_tex_job(ctx);
         if let Some(running) = &self.running
             && let Ok(result) = running.rx.try_recv()
         {
             self.running = None;
             match result {
-                Ok(report) => self.finished(report, ctx),
+                Ok((report, installed)) => {
+                    if !installed.is_empty() {
+                        self.note(tf("Installed the TeX packages this document needs: {packages}", &[("packages", &installed.join(", "))]));
+                    }
+                    self.finished(report, ctx)
+                }
                 Err(e) => self.fail(e),
             }
         }
         self.preview.poll(ctx);
+    }
+
+    /// Install PSG's TeX if it isn't, or update it if a week has passed: once per run, by itself.
+    fn start_tex_maintenance(&mut self, ctx: &egui::Context) {
+        if self.tex_auto_started || self.tex_job.is_some() {
+            return;
+        }
+        let Some(tex) = &self.managed else { return };
+        let job = if !tex.installed() {
+            Job::Install
+        } else if tex.update_due(psg_academic::managed::now_utc()) {
+            Job::Update
+        } else {
+            return;
+        };
+        self.tex_auto_started = true;
+        self.start_tex_job(ctx, job);
+    }
+
+    /// Start installing or updating PSG's TeX (Settings ▸ TeX installation, or by itself).
+    pub(crate) fn start_tex_job(&mut self, ctx: &egui::Context, job: Job) {
+        if self.tex_job.is_some() || self.running.is_some() {
+            return;
+        }
+        let Some(tex) = self.managed.clone() else {
+            self.fail(t("There is no folder PSG Academic PDF can install TeX in."));
+            return;
+        };
+        let repaint = ctx.clone();
+        match tex_setup::start(tex, job, move || repaint.request_repaint()) {
+            Ok(rx) => {
+                self.tex_error = None;
+                let progress = if job == Job::Install { Progress::Looking } else { Progress::Updating };
+                self.tex_job = Some(TexJob { rx, job, progress });
+                self.note(match job {
+                    Job::Install => t("Installing TeX for PSG Academic PDF…"),
+                    Job::Update => t("Updating TeX…"),
+                });
+            }
+            Err(e) => self.fail(tf("Could not install TeX: {error}", &[("error", &e.to_string())])),
+        }
+    }
+
+    fn poll_tex_job(&mut self, ctx: &egui::Context) {
+        let Some(job) = &mut self.tex_job else { return };
+        let mut finished = None;
+        while let Ok(event) = job.rx.try_recv() {
+            match event {
+                tex_setup::Event::Progress(p) => job.progress = p,
+                tex_setup::Event::Finished(result) => finished = Some(result),
+            }
+        }
+        let Some(result) = finished else { return };
+        let kind = job.job;
+        self.tex_job = None;
+        match result {
+            Ok(tex_setup::Done::Installed(release)) => {
+                self.notify(
+                    ctx,
+                    Tone::Success,
+                    tf("TeX is installed (TinyTeX {release}) and will keep itself up to date.", &[("release", &release)]),
+                );
+                self.detect_tex(ctx);
+            }
+            Ok(tex_setup::Done::Updated) => {
+                self.note(t("TeX is up to date."));
+                self.detect_tex(ctx);
+            }
+            Err(e) => {
+                let text = match kind {
+                    Job::Install => tf("Could not install TeX: {error}", &[("error", &e)]),
+                    Job::Update => tf("Could not update TeX: {error}", &[("error", &e)]),
+                };
+                self.tex_error = Some(text.clone());
+                if kind == Job::Install {
+                    self.fail(text);
+                } else {
+                    // A failed weekly update leaves a working TeX: say so quietly.
+                    self.note(text);
+                }
+            }
+        }
     }
 
     fn finished(&mut self, report: CompileReport, ctx: &egui::Context) {
@@ -765,8 +890,10 @@ impl AcademicApp {
         let (tx, rx) = channel();
         let flag = cancel.clone();
         let repaint = ctx.clone();
+        let managed = self.managed.clone();
         let spawned = std::thread::Builder::new().name("psg-compile".into()).spawn(move || {
-            let result = project.compile(&env, Some(&flag)).map_err(|e| e.to_string());
+            // PSG's TeX installs a package a document needs but doesn't have, then compiles again.
+            let result = psg_academic::managed::compile_completing(&project, &env, managed.as_ref(), Some(&flag)).map_err(|e| e.to_string());
             let _ = tx.send(result);
             repaint.request_repaint();
         });
@@ -928,6 +1055,8 @@ impl AcademicApp {
     fn status_bar(&mut self, ui: &mut egui::Ui) {
         layout::status_bar(ui, "psg-status", |ui| {
             let (tone, tex) = match &self.env {
+                _ if self.tex_job.as_ref().is_some_and(|j| j.job == Job::Install) => (Tone::Info, t("Installing TeX…")),
+                _ if self.tex_job.is_some() => (Tone::Info, t("Updating TeX…")),
                 None => (Tone::Info, t("Checking TeX…")),
                 Some(env) if env.missing(true).is_empty() => (Tone::Success, t("TeX ready")),
                 Some(env) if env.missing(false).is_empty() => (Tone::Warning, t("TeX ready, no Biber")),
@@ -1074,7 +1203,7 @@ impl eframe::App for AcademicApp {
             self.save_all();
             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
         }
-        if self.running.is_some() || self.preview.rendering || self.env_rx.is_some() {
+        if self.running.is_some() || self.preview.rendering || self.env_rx.is_some() || self.tex_job.is_some() {
             ctx.request_repaint_after(std::time::Duration::from_millis(200));
         }
         let now = ctx.input(|i| i.time);

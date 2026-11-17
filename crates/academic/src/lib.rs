@@ -5,6 +5,7 @@
 //! this machine with the local TeX installation (pdfLaTeX through latexmk, with BibLaTeX and
 //! Biber); nothing is uploaded.
 //!
+//! - [`managed`] installs, updates and completes PSG's own TeX (TinyTeX), so nobody installs TeX.
 //! - [`tex`] finds pdflatex, latexmk, biber and pandoc.
 //! - [`compile`] runs latexmk in the project directory with shell escape off, kpathsea's paranoid
 //!   file access, a time limit and cancellation, and turns the logs into [`diagnostics`].
@@ -28,6 +29,7 @@ pub const fn mark(english: &'static str) -> &'static str {
 }
 pub mod compile;
 pub mod diagnostics;
+pub mod managed;
 pub mod metadata;
 pub mod pandoc;
 pub mod paths;
@@ -51,7 +53,9 @@ pub use tex::TexEnvironment;
 pub enum Error {
     #[error("{path}: {source}")]
     Io { path: String, source: std::io::Error },
-    #[error("TeX is not ready: {0} not found. Install TeX Live (with latexmk and biber) and make sure it is on the PATH.")]
+    #[error(
+        "TeX is not ready: {0} not found. PSG Academic PDF installs its own TeX; wait for it to finish (Settings ▸ TeX installation), or press Install again there."
+    )]
     TexMissing(String),
     #[error("{0}")]
     Template(String),

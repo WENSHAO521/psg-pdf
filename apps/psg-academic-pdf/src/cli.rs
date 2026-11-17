@@ -3,6 +3,7 @@
 //!
 //! ```text
 //! psg-academic-pdf check-tex
+//! psg-academic-pdf install-tex | update-tex
 //! psg-academic-pdf templates
 //! psg-academic-pdf new <dir> [--template <id>]
 //! psg-academic-pdf check <dir>
@@ -12,8 +13,53 @@
 use std::path::PathBuf;
 use std::time::Duration;
 
+use psg_academic::managed::ManagedTex;
 use psg_academic::pandoc::{ManuscriptImporter, PandocImporter};
 use psg_academic::{Outcome, Project, PublicationMetadata, TexEnvironment, template};
+
+use crate::tex_setup::{self, Job, Progress};
+
+/// PSG's own TeX for this run (the same folder the window uses).
+fn managed() -> Option<ManagedTex> {
+    let data = crate::data_dir::DataDir::for_this_run(crate::app::APP_NAME);
+    tex_setup::managed_for(&data.root, data.portable)
+}
+
+/// The TeX programs, PSG's own first.
+fn detect() -> (TexEnvironment, Option<ManagedTex>) {
+    let tex = managed();
+    (TexEnvironment::detect_with(tex_setup::bin_dir(tex.as_ref()).as_deref()), tex)
+}
+
+fn tex_job(job: Job) -> Result<(), String> {
+    let tex = managed().ok_or("there is no folder to install TeX in")?;
+    say(&format!("PSG TeX folder: {}", tex.root.display()));
+    if job == Job::Update && !tex.installed() {
+        return Err("PSG's TeX is not installed; run install-tex first".into());
+    }
+    let mut last = None;
+    let mut progress = |p: Progress| {
+        let line = match p {
+            Progress::Looking => "Looking for the newest TinyTeX release…".to_owned(),
+            Progress::Downloading { total, .. } => format!("Downloading {} MB…", total / 1_048_576),
+            Progress::Unpacking => "Unpacking…".to_owned(),
+            Progress::Packages => "Adding the packages the templates use…".to_owned(),
+            Progress::Updating => "Updating with tlmgr…".to_owned(),
+        };
+        if last.as_ref() != Some(&line) {
+            say(&line);
+            last = Some(line);
+        }
+    };
+    match job {
+        Job::Install => say(&format!("Installed TinyTeX {}.", tex_setup::install(&tex, &mut progress)?)),
+        Job::Update => match tex_setup::update(&tex, &mut progress)? {
+            tex_setup::Done::Updated => say("TeX is up to date."),
+            tex_setup::Done::Installed(release) => say(&format!("Reinstalled from TinyTeX {release} (a new TeX Live year).")),
+        },
+    }
+    Ok(())
+}
 
 pub const USAGE: &str = "\
 Usage: psg-academic-pdf [command]
@@ -22,6 +68,9 @@ Without a command, opens the PSG Academic PDF window.
 
 Commands:
   check-tex                      show which TeX programs were found
+  install-tex                    download and install PSG's own TeX (TinyTeX) now,
+                                 replacing an earlier one
+  update-tex                     update PSG's own TeX (the window does this weekly)
   templates                      list the journal templates
   new <dir> [--template <id>]    start a project in <dir> (default template: psg-article)
   check <dir>                    list the problems found before compiling (scripts the
@@ -44,6 +93,8 @@ pub fn run(args: &[String]) -> Option<i32> {
             0
         }
         "check-tex" => check_tex(),
+        "install-tex" => report(tex_job(Job::Install)),
+        "update-tex" => report(tex_job(Job::Update)),
         "templates" => templates(),
         "new" => report(new(rest)),
         "check" => check(rest),
@@ -97,7 +148,12 @@ fn check(args: &[String]) -> i32 {
 }
 
 fn check_tex() -> i32 {
-    let env = TexEnvironment::detect();
+    let (env, tex) = detect();
+    match &tex {
+        Some(tex) if env.managed => say(&format!("PSG TeX   {} (TinyTeX {})", tex.root.display(), tex.state().release)),
+        Some(tex) => say(&format!("PSG TeX   not installed in {} (install-tex installs it)", tex.root.display())),
+        None => {}
+    }
     for tool in [&env.pdflatex, &env.latexmk, &env.biber, &env.pandoc] {
         match (&tool.path, &tool.version) {
             (Some(p), v) => say(&format!("{:<9} {}  ({})", tool.name, p.display(), v.as_deref().unwrap_or("version unknown"))),
@@ -143,7 +199,7 @@ fn new(args: &[String]) -> Result<(), String> {
 fn compile(args: &[String]) -> Result<(), String> {
     let dir = args.first().filter(|a| !a.starts_with("--")).ok_or("compile: name the project folder")?;
     let mut project = Project::open(&PathBuf::from(dir)).map_err(|e| e.to_string())?;
-    let env = TexEnvironment::detect();
+    let (env, tex) = detect();
     if let Some(manuscript) = flag(args, "--manuscript") {
         let path = PathBuf::from(manuscript);
         let note = if manuscript.to_ascii_lowercase().ends_with(".docx") {
@@ -159,7 +215,10 @@ fn compile(args: &[String]) -> Result<(), String> {
         project.file.settings.timeout_secs = secs;
         project.save().map_err(|e| e.to_string())?;
     }
-    let report = project.compile(&env, None).map_err(|e| e.to_string())?;
+    let (report, installed) = psg_academic::managed::compile_completing(&project, &env, tex.as_ref(), None).map_err(|e| e.to_string())?;
+    if !installed.is_empty() {
+        say(&format!("Installed the TeX packages this document needs: {}", installed.join(", ")));
+    }
     for d in &report.diagnostics {
         complain(&d.to_string());
         if let Some(hint) = d.hint() {

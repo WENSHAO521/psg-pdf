@@ -16,6 +16,7 @@
 	Add bibliography file…	添加参考文献文件…
 	Add bibliography, figures or other files	添加参考文献、图片或其他文件
 	Added {path} as {name}	已将 {path} 添加为 {name}
+	Adding the packages the templates use…	正在添加模板所需的宏包…
 	Affiliation numbers, e.g. 1, 2	单位编号，例如 1, 2
 	Affiliations	单位
 	All ({n})	全部（{n}）
@@ -62,11 +63,13 @@
 	Could not check for updates.	无法检查更新。
 	Could not check the TeX installation: {error}	无法检查 TeX 安装：{error}
 	Could not create the project: {error}	无法创建项目：{error}
+	Could not install TeX: {error}	无法安装 TeX：{error}
 	Could not open the project: {error}	无法打开项目：{error}
 	Could not read {path}: {error}	无法读取 {path}：{error}
 	Could not save the project: {error}	无法保存项目：{error}
 	Could not save {file}: {error}	无法保存 {file}：{error}
 	Could not start the compilation: {error}	无法开始编译：{error}
+	Could not update TeX: {error}	无法更新 TeX：{error}
 	Couldn't start the update ({error})	无法开始更新（{error}）
 	Create the project in {path}	在 {path} 中创建项目
 	Ctrl	Ctrl
@@ -79,6 +82,7 @@
 	Discard unsaved changes and read the file again	放弃未保存的更改并重新读取文件
 	Dismiss	关闭
 	Download	下载
+	Downloading TeX: {done} of {total} MB	正在下载 TeX：{done} / {total} MB
 	Downloading and installing update…	正在下载并安装更新…
 	Edit manuscript	编辑稿件
 	Editor	编辑器
@@ -117,6 +121,11 @@
 	Import template (.zip)…	导入模板（.zip）…
 	Import the manuscript body (LaTeX)	导入稿件正文（LaTeX）
 	Install Pandoc to import .docx (experimental)	安装 Pandoc 后可导入 .docx（实验功能）
+	Install TeX	安装 TeX
+	Installed by PSG Academic PDF (TinyTeX {release}), updated {date}. Updates itself weekly.	由 PSG Academic PDF 安装（TinyTeX {release}），{date} 更新，每周自动更新。
+	Installed the TeX packages this document needs: {packages}	已安装此文档需要的 TeX 宏包：{packages}
+	Installing TeX for PSG Academic PDF…	正在为 PSG Academic PDF 安装 TeX…
+	Installing TeX…	正在安装 TeX…
 	Installing update…	正在安装更新…
 	Interface size	界面大小
 	Issue	期
@@ -135,6 +144,7 @@
 	Licence statement	许可声明
 	Light	浅色
 	Line {n}	第 {n} 行
+	Looking for the newest TeX…	正在查找最新的 TeX…
 	Manuscript	稿件
 	Manuscript (.tex)…	稿件（.tex）…
 	Manuscript as a new project…	以稿件新建项目…
@@ -184,6 +194,7 @@
 	PDF	PDF
 	PDF engine: PdfCraft (MIT OR Apache-2.0)	PDF 引擎：PdfCraft（MIT OR Apache-2.0）
 	PDF preview	PDF 预览
+	PSG Academic PDF installs TeX by itself; nothing needs to be installed by hand.	PSG Academic PDF 会自动安装 TeX，无需手动安装任何东西。
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	未安装 PSG PDF，因此已在默认阅读器中打开 PDF。PSG PDF 需要单独下载。
 	Page {n}: {error}	第 {n} 页：{error}
 	Pages	页码
@@ -242,11 +253,15 @@
 	Supported files	支持的文件
 	Switch area	切换功能区
 	TeX installation	TeX 安装
+	TeX is being installed or updated; typesetting starts once it is done.	正在安装或更新 TeX，完成后即可排版。
+	TeX is installed (TinyTeX {release}) and will keep itself up to date.	TeX 已安装（TinyTeX {release}），之后会自动保持最新。
 	TeX is not ready: see Settings ▸ TeX installation.	TeX 尚未就绪：请查看“设置 ▸ TeX 安装”。
-	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX 尚未就绪：未找到 {tools}。请安装含 latexmk 和 biber 的 TeX Live，然后点击“重新检查”。
+	TeX is not ready: {tools} not found. Press Install TeX in Settings ▸ TeX installation.	TeX 尚未就绪：找不到 {tools}。请在“设置 ▸ TeX 安装”中点击“安装 TeX”。
 	TeX is ready.	TeX 已就绪。
+	TeX is up to date.	TeX 已是最新。
 	TeX log	TeX 日志
 	TeX not found	未找到 TeX
+	TeX not found yet ({tools}); PSG Academic PDF installs its own.	尚未找到 TeX（{tools}），PSG Academic PDF 将自行安装。
 	TeX ready	TeX 已就绪
 	TeX ready, no Biber	TeX 已就绪，缺少 Biber
 	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX 遇到致命错误而停止。请先修正列表中的第一个错误，后面的错误往往由它引起。
@@ -266,6 +281,7 @@
 	The update is installed. Close {app} to finish; it restarts by itself.	更新已安装。关闭 {app} 即可完成，它会自动重新启动。
 	The update stopped unexpectedly.	更新意外中止。
 	Theme	主题
+	There is no folder PSG Academic PDF can install TeX in.	没有可供 PSG Academic PDF 安装 TeX 的文件夹。
 	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	此 Pandoc 版本过旧：导入 DOCX 需要 Pandoc 2.15 或更新版本
 	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	参考文献中没有这个引用键。请在 .bib 文件中添加该条目，或更正引用键。
 	This template doesn't use a bibliography file.	此模板不使用参考文献文件。
@@ -286,15 +302,20 @@
 	Typesetting stopped: it took longer than {secs} s.	排版已停止：用时超过 {secs} 秒。
 	Typesetting with latexmk and pdfLaTeX…	正在用 latexmk 和 pdfLaTeX 排版…
 	Unbalanced braces: a { without its } (or the other way round) near this line.	括号不配对：这一行附近有 { 缺少对应的 }（或相反）。
+	Unpacking TeX…	正在解压 TeX…
 	Unsaved	未保存
 	Unsaved changes	有未保存的更改
 	Untitled article	未命名文章
 	Update	更新
+	Update TeX now	立即更新 TeX
 	Update and Restart	更新并重启
 	Update ready. Close {app} to install it.	更新已就绪。关闭 {app} 即可安装。
 	Updates	更新
+	Updating TeX…	正在更新 TeX…
 	Used by this project	本项目使用
+	Using the TeX found on this computer until PSG Academic PDF has installed its own.	在 PSG Academic PDF 安装好自己的 TeX 之前，暂时使用本机已有的 TeX。
 	Volume	卷
+	Wait for the current task to finish.	请等待当前任务完成。
 	Warning	警告
 	Warnings ({n})	警告（{n}）
 	What's new	新功能
@@ -302,6 +323,7 @@
 	Word (.docx)…	Word（.docx）…
 	Worth a look, but they don't stop the export.	值得一看，但不会阻止导出。
 	Year	年份
+	being installed…	正在安装…
 	by {developer}	来自 {developer}
 	found	已找到
 	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk 通常会重复运行直到这条消失。如果一直存在，请开启“每次都完整重建”后重新编译。

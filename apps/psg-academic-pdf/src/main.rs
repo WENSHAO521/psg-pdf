@@ -25,6 +25,7 @@ mod recent;
 mod relocate;
 mod source;
 mod startup;
+mod tex_setup;
 mod theme;
 mod updates;
 

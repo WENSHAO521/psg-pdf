@@ -1,7 +1,8 @@
 //! Finding the local TeX installation: pdflatex, latexmk, biber and (optionally) pandoc.
 //!
-//! Nothing is downloaded or installed: PSG Academic PDF uses what TeX Live (or MiKTeX) put on
-//! the `PATH`, and says plainly what is missing.
+//! PSG's own TeX ([`crate::managed`]), which the app installs itself, comes first; until it is
+//! installed, a TeX Live (or MiKTeX) already on the `PATH` is used. Pandoc is only ever looked
+//! for on the `PATH`.
 
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
@@ -39,12 +40,30 @@ pub struct TexEnvironment {
     pub biber: Tool,
     /// Optional: converts DOCX manuscripts (see [`crate::pandoc`]).
     pub pandoc: Tool,
+    /// pdflatex is PSG's own TeX ([`crate::managed`]), not one found on the `PATH`.
+    pub managed: bool,
 }
 
 impl TexEnvironment {
     /// Look for the programs on the process's `PATH` and ask each for its version.
     pub fn detect() -> Self {
-        Self::detect_in(std::env::var_os("PATH").as_deref(), true)
+        Self::detect_with(None)
+    }
+
+    /// Look in PSG's own TeX programs folder `managed_bin` first, then on the `PATH`.
+    pub fn detect_with(managed_bin: Option<&Path>) -> Self {
+        let path = std::env::var_os("PATH");
+        let Some(bin) = managed_bin.filter(|b| b.is_dir()) else { return Self::detect_in(path.as_deref(), true) };
+        let mut dirs = vec![bin.to_path_buf()];
+        if let Some(path) = &path {
+            dirs.extend(std::env::split_paths(path));
+        }
+        let joined = std::env::join_paths(dirs).ok();
+        let mut env = Self::detect_in(joined.as_deref().or(path.as_deref()), true);
+        // Pandoc is never part of PSG's TeX.
+        env.pandoc = Tool::locate("pandoc", path.as_deref(), true);
+        env.managed = env.tex_bin_dir() == Some(bin);
+        env
     }
 
     /// Look for the programs on `search_path` (a `PATH`-style list). `with_versions` runs each
@@ -55,6 +74,7 @@ impl TexEnvironment {
             latexmk: Tool::locate("latexmk", search_path, with_versions),
             biber: Tool::locate("biber", search_path, with_versions),
             pandoc: Tool::locate("pandoc", search_path, with_versions),
+            managed: false,
         }
     }
 
@@ -136,6 +156,17 @@ mod tests {
         assert_eq!(env.missing(true), vec!["biber"]);
         assert!(env.missing(false).is_empty());
         assert_eq!(env.tex_bin_dir(), Some(dir.path()));
+    }
+
+    #[test]
+    fn psg_tex_comes_before_the_path() {
+        let managed = tempfile::tempdir().unwrap();
+        fake_program(managed.path(), "pdflatex");
+        fake_program(managed.path(), "latexmk");
+        let env = TexEnvironment::detect_with(Some(managed.path()));
+        assert!(env.managed);
+        assert_eq!(env.tex_bin_dir(), Some(managed.path()));
+        assert!(!TexEnvironment::detect_with(Some(&managed.path().join("missing"))).managed);
     }
 
     #[test]

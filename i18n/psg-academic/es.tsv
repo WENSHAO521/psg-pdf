@@ -17,6 +17,7 @@
 	Add bibliography file…	Añadir archivo de bibliografía…
 	Add bibliography, figures or other files	Añadir bibliografía, figuras u otros archivos
 	Added {path} as {name}	{path} añadido como {name}
+	Adding the packages the templates use…	Añadiendo los paquetes que usan las plantillas…
 	Affiliation numbers, e.g. 1, 2	Números de afiliación, p. ej. 1, 2
 	Affiliations	Afiliaciones
 	All ({n})	Todo ({n})
@@ -63,11 +64,13 @@
 	Could not check for updates.	No se pudo buscar actualizaciones.
 	Could not check the TeX installation: {error}	No se pudo comprobar la instalación de TeX: {error}
 	Could not create the project: {error}	No se pudo crear el proyecto: {error}
+	Could not install TeX: {error}	No se pudo instalar TeX: {error}
 	Could not open the project: {error}	No se pudo abrir el proyecto: {error}
 	Could not read {path}: {error}	No se pudo leer {path}: {error}
 	Could not save the project: {error}	No se pudo guardar el proyecto: {error}
 	Could not save {file}: {error}	No se pudo guardar {file}: {error}
 	Could not start the compilation: {error}	No se pudo iniciar la compilación: {error}
+	Could not update TeX: {error}	No se pudo actualizar TeX: {error}
 	Couldn't start the update ({error})	No se pudo iniciar la actualización ({error})
 	Create the project in {path}	Crear el proyecto en {path}
 	Ctrl	Ctrl
@@ -80,6 +83,7 @@
 	Discard unsaved changes and read the file again	Descartar los cambios sin guardar y volver a leer el archivo
 	Dismiss	Cerrar
 	Download	Descargar
+	Downloading TeX: {done} of {total} MB	Descargando TeX: {done} de {total} MB
 	Downloading and installing update…	Descargando e instalando la actualización…
 	Edit manuscript	Editar manuscrito
 	Editor	Editor
@@ -118,6 +122,11 @@
 	Import template (.zip)…	Importar plantilla (.zip)…
 	Import the manuscript body (LaTeX)	Importar el cuerpo del manuscrito (LaTeX)
 	Install Pandoc to import .docx (experimental)	Instale Pandoc para importar .docx (experimental)
+	Install TeX	Instalar TeX
+	Installed by PSG Academic PDF (TinyTeX {release}), updated {date}. Updates itself weekly.	Instalado por PSG Academic PDF (TinyTeX {release}), actualizado el {date}. Se actualiza solo cada semana.
+	Installed the TeX packages this document needs: {packages}	Se instalaron los paquetes de TeX que necesita este documento: {packages}
+	Installing TeX for PSG Academic PDF…	Instalando TeX para PSG Academic PDF…
+	Installing TeX…	Instalando TeX…
 	Installing update…	Instalando la actualización…
 	Interface size	Tamaño de la interfaz
 	Issue	Número
@@ -136,6 +145,7 @@
 	Licence statement	Declaración de licencia
 	Light	Claro
 	Line {n}	Línea {n}
+	Looking for the newest TeX…	Buscando la versión más reciente de TeX…
 	Manuscript	Manuscrito
 	Manuscript (.tex)…	Manuscrito (.tex)…
 	Manuscript as a new project…	Manuscrito como proyecto nuevo…
@@ -185,6 +195,7 @@
 	PDF	PDF
 	PDF engine: PdfCraft (MIT OR Apache-2.0)	Motor PDF: PdfCraft (MIT OR Apache-2.0)
 	PDF preview	Vista previa del PDF
+	PSG Academic PDF installs TeX by itself; nothing needs to be installed by hand.	PSG Academic PDF instala TeX por sí solo; no hace falta instalar nada a mano.
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF no está instalado, así que el PDF se abrió en el visor predeterminado. PSG PDF se descarga por separado.
 	Page {n}: {error}	Página {n}: {error}
 	Pages	Páginas
@@ -243,11 +254,15 @@
 	Supported files	Archivos compatibles
 	Switch area	Cambiar de área
 	TeX installation	Instalación de TeX
+	TeX is being installed or updated; typesetting starts once it is done.	TeX se está instalando o actualizando; la maquetación podrá empezar cuando termine.
+	TeX is installed (TinyTeX {release}) and will keep itself up to date.	TeX está instalado (TinyTeX {release}) y se mantendrá actualizado solo.
 	TeX is not ready: see Settings ▸ TeX installation.	TeX no está listo: vea Ajustes ▸ Instalación de TeX.
-	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX no está listo: no se encontró {tools}. Instale TeX Live con latexmk y biber y pulse Volver a comprobar.
+	TeX is not ready: {tools} not found. Press Install TeX in Settings ▸ TeX installation.	TeX no está listo: no se encontró {tools}. Pulsa «Instalar TeX» en Ajustes ▸ Instalación de TeX.
 	TeX is ready.	TeX está listo.
+	TeX is up to date.	TeX está actualizado.
 	TeX log	Registro de TeX
 	TeX not found	TeX no encontrado
+	TeX not found yet ({tools}); PSG Academic PDF installs its own.	Aún no se encontró TeX ({tools}); PSG Academic PDF instala el suyo.
 	TeX ready	TeX listo
 	TeX ready, no Biber	TeX listo, sin Biber
 	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX se detuvo en un error fatal. Corrija el primer error de la lista; los siguientes suelen derivarse de él.
@@ -267,6 +282,7 @@
 	The update is installed. Close {app} to finish; it restarts by itself.	La actualización está instalada. Cierre {app} para terminar; se reiniciará solo.
 	The update stopped unexpectedly.	La actualización se detuvo inesperadamente.
 	Theme	Tema
+	There is no folder PSG Academic PDF can install TeX in.	No hay ninguna carpeta donde PSG Academic PDF pueda instalar TeX.
 	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	Este Pandoc es demasiado antiguo: la importación de DOCX necesita Pandoc 2.15 o posterior
 	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	Esta clave de cita no está en la bibliografía. Añada la entrada al archivo .bib o corrija la clave.
 	This template doesn't use a bibliography file.	Esta plantilla no usa archivo de bibliografía.
@@ -287,15 +303,20 @@
 	Typesetting stopped: it took longer than {secs} s.	Maquetación detenida: tardó más de {secs} s.
 	Typesetting with latexmk and pdfLaTeX…	Maquetando con latexmk y pdfLaTeX…
 	Unbalanced braces: a { without its } (or the other way round) near this line.	Llaves desequilibradas: una { sin su } (o al revés) cerca de esta línea.
+	Unpacking TeX…	Descomprimiendo TeX…
 	Unsaved	Sin guardar
 	Unsaved changes	Cambios sin guardar
 	Untitled article	Artículo sin título
 	Update	Actualizar
+	Update TeX now	Actualizar TeX ahora
 	Update and Restart	Actualizar y reiniciar
 	Update ready. Close {app} to install it.	Actualización lista. Cierre {app} para instalarla.
 	Updates	Actualizaciones
+	Updating TeX…	Actualizando TeX…
 	Used by this project	Usada por este proyecto
+	Using the TeX found on this computer until PSG Academic PDF has installed its own.	Se usa el TeX de este equipo hasta que PSG Academic PDF instale el suyo.
 	Volume	Volumen
+	Wait for the current task to finish.	Espera a que termine la tarea en curso.
 	Warning	Advertencia
 	Warnings ({n})	Advertencias ({n})
 	What's new	Novedades
@@ -303,6 +324,7 @@
 	Word (.docx)…	Word (.docx)…
 	Worth a look, but they don't stop the export.	Conviene revisarlas, pero no impiden exportar.
 	Year	Año
+	being installed…	instalándose…
 	by {developer}	de {developer}
 	found	encontrado
 	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk normalmente repite hasta que esto desaparece. Si persiste, active «Reconstruir todo cada vez» y vuelva a compilar.

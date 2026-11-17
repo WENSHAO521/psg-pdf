@@ -254,6 +254,7 @@ mod tests {
             latexmk: tool("latexmk"),
             biber: tool("biber"),
             pandoc: Tool { name: "pandoc", path: None, version: None },
+            managed: false,
         }
     }
 

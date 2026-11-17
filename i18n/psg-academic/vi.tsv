@@ -17,6 +17,7 @@
 	Add bibliography file…	Thêm tệp tài liệu tham khảo…
 	Add bibliography, figures or other files	Thêm tài liệu tham khảo, hình hoặc tệp khác
 	Added {path} as {name}	Đã thêm {path} với tên {name}
+	Adding the packages the templates use…	Đang thêm các gói mà mẫu cần…
 	Affiliation numbers, e.g. 1, 2	Số thứ tự đơn vị, ví dụ 1, 2
 	Affiliations	Đơn vị công tác
 	All ({n})	Tất cả ({n})
@@ -63,11 +64,13 @@
 	Could not check for updates.	Không thể kiểm tra bản cập nhật.
 	Could not check the TeX installation: {error}	Không thể kiểm tra bản cài đặt TeX: {error}
 	Could not create the project: {error}	Không thể tạo dự án: {error}
+	Could not install TeX: {error}	Không thể cài đặt TeX: {error}
 	Could not open the project: {error}	Không thể mở dự án: {error}
 	Could not read {path}: {error}	Không thể đọc {path}: {error}
 	Could not save the project: {error}	Không thể lưu dự án: {error}
 	Could not save {file}: {error}	Không thể lưu {file}: {error}
 	Could not start the compilation: {error}	Không thể bắt đầu biên dịch: {error}
+	Could not update TeX: {error}	Không thể cập nhật TeX: {error}
 	Couldn't start the update ({error})	Không thể bắt đầu cập nhật ({error})
 	Create the project in {path}	Tạo dự án trong {path}
 	Ctrl	Ctrl
@@ -80,6 +83,7 @@
 	Discard unsaved changes and read the file again	Bỏ các thay đổi chưa lưu và đọc lại tệp
 	Dismiss	Đóng
 	Download	Tải về
+	Downloading TeX: {done} of {total} MB	Đang tải TeX: {done} / {total} MB
 	Downloading and installing update…	Đang tải về và cài đặt bản cập nhật…
 	Edit manuscript	Sửa bản thảo
 	Editor	Trình soạn thảo
@@ -118,6 +122,11 @@
 	Import template (.zip)…	Nhập mẫu (.zip)…
 	Import the manuscript body (LaTeX)	Nhập phần thân bản thảo (LaTeX)
 	Install Pandoc to import .docx (experimental)	Cài Pandoc để nhập .docx (thử nghiệm)
+	Install TeX	Cài đặt TeX
+	Installed by PSG Academic PDF (TinyTeX {release}), updated {date}. Updates itself weekly.	Do PSG Academic PDF cài đặt (TinyTeX {release}), cập nhật ngày {date}. Tự cập nhật hằng tuần.
+	Installed the TeX packages this document needs: {packages}	Đã cài các gói TeX mà tài liệu này cần: {packages}
+	Installing TeX for PSG Academic PDF…	Đang cài đặt TeX cho PSG Academic PDF…
+	Installing TeX…	Đang cài đặt TeX…
 	Installing update…	Đang cài đặt bản cập nhật…
 	Interface size	Cỡ giao diện
 	Issue	Số
@@ -136,6 +145,7 @@
 	Licence statement	Tuyên bố giấy phép
 	Light	Sáng
 	Line {n}	Dòng {n}
+	Looking for the newest TeX…	Đang tìm bản TeX mới nhất…
 	Manuscript	Bản thảo
 	Manuscript (.tex)…	Bản thảo (.tex)…
 	Manuscript as a new project…	Bản thảo thành dự án mới…
@@ -185,6 +195,7 @@
 	PDF	PDF
 	PDF engine: PdfCraft (MIT OR Apache-2.0)	Bộ máy PDF: PdfCraft (MIT OR Apache-2.0)
 	PDF preview	Xem trước PDF
+	PSG Academic PDF installs TeX by itself; nothing needs to be installed by hand.	PSG Academic PDF tự cài đặt TeX; không cần cài gì thủ công.
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	Chưa cài PSG PDF nên PDF được mở bằng trình xem mặc định. PSG PDF được tải về riêng.
 	Page {n}: {error}	Trang {n}: {error}
 	Pages	Trang
@@ -243,11 +254,15 @@
 	Supported files	Tệp được hỗ trợ
 	Switch area	Chuyển khu vực
 	TeX installation	Bản cài đặt TeX
+	TeX is being installed or updated; typesetting starts once it is done.	TeX đang được cài đặt hoặc cập nhật; có thể dàn trang khi xong.
+	TeX is installed (TinyTeX {release}) and will keep itself up to date.	Đã cài đặt TeX (TinyTeX {release}) và sẽ tự cập nhật.
 	TeX is not ready: see Settings ▸ TeX installation.	TeX chưa sẵn sàng: xem Cài đặt ▸ Bản cài đặt TeX.
-	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX chưa sẵn sàng: không tìm thấy {tools}. Hãy cài TeX Live kèm latexmk và biber, rồi nhấn Kiểm tra lại.
+	TeX is not ready: {tools} not found. Press Install TeX in Settings ▸ TeX installation.	TeX chưa sẵn sàng: không tìm thấy {tools}. Hãy nhấn “Cài đặt TeX” trong Cài đặt ▸ Bản cài đặt TeX.
 	TeX is ready.	TeX đã sẵn sàng.
+	TeX is up to date.	TeX đã là bản mới nhất.
 	TeX log	Nhật ký TeX
 	TeX not found	Không tìm thấy TeX
+	TeX not found yet ({tools}); PSG Academic PDF installs its own.	Chưa tìm thấy TeX ({tools}); PSG Academic PDF sẽ tự cài bản riêng.
 	TeX ready	TeX sẵn sàng
 	TeX ready, no Biber	TeX sẵn sàng, không có Biber
 	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX đã dừng ở một lỗi nghiêm trọng. Hãy sửa lỗi đầu tiên trong danh sách; các lỗi sau thường bắt nguồn từ nó.
@@ -267,6 +282,7 @@
 	The update is installed. Close {app} to finish; it restarts by itself.	Đã cài bản cập nhật. Hãy đóng {app} để hoàn tất; ứng dụng sẽ tự khởi động lại.
 	The update stopped unexpectedly.	Cập nhật dừng lại ngoài dự kiến.
 	Theme	Chủ đề
+	There is no folder PSG Academic PDF can install TeX in.	Không có thư mục nào để PSG Academic PDF cài đặt TeX.
 	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	Pandoc này quá cũ: nhập DOCX cần Pandoc 2.15 trở lên
 	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	Khóa trích dẫn này không có trong tài liệu tham khảo. Hãy thêm mục vào tệp .bib hoặc sửa lại khóa.
 	This template doesn't use a bibliography file.	Mẫu này không dùng tệp tài liệu tham khảo.
@@ -287,15 +303,20 @@
 	Typesetting stopped: it took longer than {secs} s.	Đã dừng dàn trang: quá {secs} giây.
 	Typesetting with latexmk and pdfLaTeX…	Đang dàn trang bằng latexmk và pdfLaTeX…
 	Unbalanced braces: a { without its } (or the other way round) near this line.	Dấu ngoặc nhọn không cân: có { mà thiếu } (hoặc ngược lại) gần dòng này.
+	Unpacking TeX…	Đang giải nén TeX…
 	Unsaved	Chưa lưu
 	Unsaved changes	Có thay đổi chưa lưu
 	Untitled article	Bài báo chưa có tiêu đề
 	Update	Cập nhật
+	Update TeX now	Cập nhật TeX ngay
 	Update and Restart	Cập nhật và khởi động lại
 	Update ready. Close {app} to install it.	Bản cập nhật đã sẵn sàng. Hãy đóng {app} để cài đặt.
 	Updates	Cập nhật
+	Updating TeX…	Đang cập nhật TeX…
 	Used by this project	Được dự án này dùng
+	Using the TeX found on this computer until PSG Academic PDF has installed its own.	Đang dùng TeX có sẵn trên máy cho đến khi PSG Academic PDF cài xong bản riêng.
 	Volume	Tập
+	Wait for the current task to finish.	Hãy đợi tác vụ hiện tại hoàn tất.
 	Warning	Cảnh báo
 	Warnings ({n})	Cảnh báo ({n})
 	What's new	Có gì mới
@@ -303,6 +324,7 @@
 	Word (.docx)…	Word (.docx)…
 	Worth a look, but they don't stop the export.	Nên xem qua, nhưng chúng không chặn việc xuất.
 	Year	Năm
+	being installed…	đang cài đặt…
 	by {developer}	của {developer}
 	found	đã tìm thấy
 	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk thường chạy lại cho đến khi điều này biến mất. Nếu vẫn còn, hãy bật "Dựng lại toàn bộ mỗi lần" và biên dịch lại.

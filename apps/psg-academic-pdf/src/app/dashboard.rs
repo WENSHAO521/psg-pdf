@@ -7,6 +7,7 @@ use psg_desktop_ui::{Tone, widgets};
 
 use super::{AcademicApp, Page};
 use crate::i18n::{t, tf, tn};
+use crate::tex_setup::{Job, Progress};
 
 impl AcademicApp {
     pub(super) fn dashboard_page(&mut self, ui: &mut egui::Ui) {
@@ -195,8 +196,10 @@ impl AcademicApp {
         });
     }
 
-    /// The tools found, their versions, and Check again.
+    /// Where TeX comes from, the tools found and their versions, the install or update under
+    /// way, and Check again / Update / Install.
     pub(super) fn tex_status(&mut self, ui: &mut egui::Ui) {
+        self.tex_source(ui);
         match &self.env {
             None => {
                 ui.horizontal(|ui| {
@@ -212,6 +215,8 @@ impl AcademicApp {
                                 Tone::Success
                             } else if tool.name == "pandoc" {
                                 Tone::Neutral
+                            } else if self.tex_job.is_some() {
+                                Tone::Info
                             } else {
                                 Tone::Danger
                             };
@@ -224,6 +229,7 @@ impl AcademicApp {
                                 .add(egui::Label::new(tool.version.clone().unwrap_or_else(|| t("found").into())).truncate())
                                 .on_hover_text(p.display().to_string()),
                             None if tool.name == "pandoc" => widgets::muted(ui, t("not found (optional, for DOCX import)")),
+                            None if self.tex_job.is_some() => widgets::muted(ui, t("being installed…")),
                             None => ui.colored_label(ui.visuals().error_fg_color, t("not found")),
                         };
                         ui.end_row();
@@ -231,13 +237,75 @@ impl AcademicApp {
                 });
             }
         }
+        if let Some(job) = &self.tex_job {
+            ui.add_space(psg_brand::space::S);
+            let (text, fraction) = match job.progress {
+                Progress::Looking => (t("Looking for the newest TeX…").to_owned(), None),
+                Progress::Downloading { done, total } => {
+                    let mb = |b: u64| format!("{:.0}", b as f64 / 1_048_576.0);
+                    let fraction = (total > 0).then(|| (done as f64 / total as f64).clamp(0.0, 1.0) as f32);
+                    (tf("Downloading TeX: {done} of {total} MB", &[("done", &mb(done)), ("total", &mb(total))]), fraction)
+                }
+                Progress::Unpacking => (t("Unpacking TeX…").to_owned(), None),
+                Progress::Packages => (t("Adding the packages the templates use…").to_owned(), None),
+                Progress::Updating => (t("Updating TeX…").to_owned(), None),
+            };
+            ui.horizontal(|ui| {
+                ui.spinner();
+                ui.label(text);
+            });
+            if let Some(fraction) = fraction {
+                ui.add(egui::ProgressBar::new(fraction).show_percentage());
+            }
+        } else if let Some(error) = &self.tex_error {
+            ui.add_space(psg_brand::space::S);
+            ui.colored_label(ui.visuals().error_fg_color, error.as_str());
+        }
         ui.add_space(psg_brand::space::S);
         ui.horizontal(|ui| {
-            if widgets::button_enabled(ui, self.env_rx.is_none(), widgets::ButtonKind::Secondary, t("Check again"), "").clicked() {
+            let idle = self.env_rx.is_none() && self.tex_job.is_none();
+            if widgets::button_enabled(ui, idle, widgets::ButtonKind::Secondary, t("Check again"), "").clicked() {
                 let ctx = ui.ctx().clone();
                 self.env = None;
                 self.detect_tex(&ctx);
             }
+            let Some(tex) = &self.managed else { return };
+            let installed = tex.installed();
+            let free = idle && self.running.is_none();
+            if installed {
+                if widgets::button_enabled(ui, free, widgets::ButtonKind::Secondary, t("Update TeX now"), t("Wait for the current task to finish."))
+                    .clicked()
+                {
+                    let ctx = ui.ctx().clone();
+                    self.start_tex_job(&ctx, Job::Update);
+                }
+            } else if widgets::button_enabled(ui, free, widgets::ButtonKind::Primary, t("Install TeX"), t("Wait for the current task to finish."))
+                .clicked()
+            {
+                let ctx = ui.ctx().clone();
+                self.start_tex_job(&ctx, Job::Install);
+            }
         });
+    }
+
+    /// One line on where TeX comes from: PSG's own (which release, when updated), or the one
+    /// found on this computer while PSG's is not installed yet.
+    fn tex_source(&self, ui: &mut egui::Ui) {
+        let Some(tex) = &self.managed else { return };
+        let text = if self.env.as_ref().is_some_and(|e| e.managed) {
+            let state = tex.state();
+            let date = |s: &str| chrono::DateTime::parse_from_rfc3339(s).map(|d| d.with_timezone(&chrono::Local).format("%Y-%m-%d").to_string()).ok();
+            let updated = date(&state.updated_at).or_else(|| date(&state.installed_at)).unwrap_or_else(|| "?".into());
+            tf(
+                "Installed by PSG Academic PDF (TinyTeX {release}), updated {date}. Updates itself weekly.",
+                &[("release", &state.release), ("date", &updated)],
+            )
+        } else if self.env.as_ref().is_some_and(|e| e.pdflatex.found()) {
+            t("Using the TeX found on this computer until PSG Academic PDF has installed its own.").to_owned()
+        } else {
+            t("PSG Academic PDF installs TeX by itself; nothing needs to be installed by hand.").to_owned()
+        };
+        widgets::muted(ui, text);
+        ui.add_space(psg_brand::space::XS);
     }
 }
