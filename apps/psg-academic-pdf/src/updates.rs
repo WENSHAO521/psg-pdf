@@ -69,6 +69,12 @@ fn channel_from(kept: Option<&str>, version: &str) -> bool {
 }
 
 impl Updates {
+    /// Keep the channel in `channel_file` from now on (the data folder moved). The channel in use
+    /// is unchanged; the move carried the file over.
+    pub fn set_channel_file(&mut self, channel_file: PathBuf) {
+        self.channel_file = Some(channel_file);
+    }
+
     /// Updates whose channel is kept in `channel_file`.
     pub fn with_channel_file(channel_file: PathBuf) -> Self {
         let beta = channel_from(std::fs::read_to_string(&channel_file).ok().as_deref(), env!("CARGO_PKG_VERSION"));

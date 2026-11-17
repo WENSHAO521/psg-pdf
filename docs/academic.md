@@ -70,6 +70,29 @@ templates are read from:
 
 A broken template is skipped and listed in the Template Library and the activity log, or on standard error.
 
+## The data folder
+
+Projects made with New project, the recent projects list and the app's settings (language,
+theme, update channel, window layout) live in the data folder: eframe's per-user folder for PSG
+Academic PDF by default, or `PSGAcademicPDFData` beside the exe in the portable zip. Settings ▸
+Data folder shows it and can move it:
+
+- **Change…** picks a folder. An empty folder is used as it is; a folder that already holds
+  files gets a `PSG Academic PDF` folder inside it. A folder inside the current one is refused.
+- The move copies everything and checks each file's size before changing anything. A failure
+  (a full disk, a drive pulled out) removes what was copied and leaves the old folder as it was.
+  A project that already exists at the new place stops the move before anything is copied; only
+  the app's own settings files there are replaced.
+- Then the new place is written to `data-location.txt` in the default folder and the old copies
+  are removed (folders only when empty). The open project is saved first and opened again from
+  the new place; the recent projects list follows the projects that moved.
+- **Use the default folder** moves everything back and removes `data-location.txt`.
+- `data-location.txt` lives in the default folder, which installers and updates never touch, so
+  the choice survives updates. If the chosen folder can't be used at start-up (a disconnected
+  drive), that run uses the default folder and the activity log says why; the choice is kept.
+- The log stays in the old folder for the rest of that run; the next run logs in the new one.
+  Projects made with "New project in folder…" or opened from elsewhere are not moved.
+
 ## Start-up and the log file
 
 Each run writes `logs/psg-academic-pdf.log` in the data folder (eframe's per-user folder for

@@ -35,6 +35,7 @@ use crate::source::SourceEditor;
 use crate::updates::Updates;
 
 mod dashboard;
+mod data_folder;
 mod export;
 mod manuscript;
 mod problems;
@@ -199,7 +200,9 @@ pub struct AcademicApp {
     /// Where the chosen theme is saved ("system", "light" or "dark").
     theme_file: PathBuf,
     theme: ThemeChoice,
-    data_root: PathBuf,
+    /// The data folder in use and the default one.
+    data: DataDir,
+    relocation: data_folder::Relocation,
     #[cfg(target_os = "macos")]
     os_events: Option<crate::apple_events::OsEventsFn>,
 }
@@ -255,12 +258,16 @@ impl AcademicApp {
             language,
             theme_file,
             theme,
-            data_root: data.root.clone(),
+            data: data.clone(),
+            relocation: data_folder::Relocation::Idle,
             #[cfg(target_os = "macos")]
             os_events: None,
         };
         if data.portable {
             app.note(tf("Portable mode: settings and projects are kept in {path}.", &[("path", &data.root.display().to_string())]));
+        }
+        if data.is_custom() {
+            app.note(format!("Data folder (chosen): {}", data.root.display()));
         }
         if let Some(note) = data.note {
             app.note(note);
@@ -1060,6 +1067,7 @@ impl eframe::App for AcademicApp {
         let ctx = ui.ctx().clone();
         let quit = self.take_os_paths(&ctx);
         self.poll(&ctx);
+        self.poll_relocation(&ctx);
         self.open_pending();
         // A ready update waits while a compilation runs.
         if self.updates.frame(&ctx, self.running.is_none()) || quit {

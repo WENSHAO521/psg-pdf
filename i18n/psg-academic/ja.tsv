@@ -74,7 +74,6 @@
 	DOI	DOI
 	Dark	ダーク
 	Dashboard	ダッシュボード
-	Data folder:	データフォルダー：
 	Dates and licence	日付とライセンス
 	Development build	開発ビルド
 	Discard unsaved changes and read the file again	保存していない変更を破棄してファイルを読み直す
@@ -332,3 +331,25 @@
 @other	{n} problem found before compiling; see Problems.	コンパイル前に {n} 件の問題が見つかりました。問題を確認してください。
 @other	{n} warning	警告 {n} 件
 @other	{n} word	{n} 語
+	Data folder	データフォルダー
+	New projects and the app's settings are kept in this folder.	新しいプロジェクトとアプリの設定はこのフォルダーに保存されます。
+	Chosen	指定済み
+	Default	既定
+	Moving the data folder…	データフォルダーを移動しています…
+	Move the projects and settings to {path}?	プロジェクトと設定を {path} に移動しますか？
+	Everything is copied and checked first; the old copies are removed only after that.	すべてのファイルを先にコピーして確認し、その後で古いファイルを削除します。
+	Move data	データを移動
+	Change…	変更…
+	Use the default folder	既定のフォルダーに戻す
+	Open folder	フォルダーを開く
+	Choose where to keep projects and settings	プロジェクトと設定の保存先を選択
+	Moving the data folder from {path}.	{path} からデータフォルダーを移動しています。
+	Could not move the data folder: {error}	データフォルダーを移動できませんでした：{error}
+	Projects and settings are now kept in {path}.	プロジェクトと設定は {path} に保存されるようになりました。
+	Everything was copied, but some old files could not be removed from {path}. You can delete them yourself.	すべてコピーしましたが、{path} の古いファイルの一部を削除できませんでした。手動で削除してください。
+	{path} is not a full path. Choose a folder.	{path} は完全なパスではありません。フォルダーを選択してください。
+	That is the folder already in use.	それは現在使用中のフォルダーです。
+	{path} is inside the data folder. Choose a folder outside it.	{path} はデータフォルダーの中にあります。その外のフォルダーを選択してください。
+	{path} already exists there. Nothing was moved; choose an empty folder.	移動先に {path} が既にあります。プロジェクトも設定も移動していません。空のフォルダーを選択してください。
+	That folder holds too many files to be a data folder. Nothing was moved.	そのフォルダーはファイルが多すぎるため、データフォルダーではないようです。プロジェクトも設定も移動していません。
+	Could not move the data folder ({path}: {error}). Nothing was changed.	データフォルダーを移動できませんでした（{path}：{error}）。何も変更していません。
