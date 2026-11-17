@@ -314,3 +314,55 @@
 	{} annotations aren't allowed	{} 注釈は使えません
 	… and {n} more	…ほか {n} 件
 	Some content could not be read for device colour	一部のコンテンツを読み取れず、デバイスカラーの使用を確認できませんでした
+	(Only the first {n} of {total} pages fit in the request.)	（リクエストに収まったのは {total} ページ中の最初の {n} ページだけです。）
+	AI assistant settings	AI アシスタントの設定
+	AI providers aren't available in this version.	このバージョンでは AI プロバイダーを使えません。
+	API address	API のアドレス
+	API format	API の形式
+	API key	API キー
+	API version	API バージョン
+	Add a provider	プロバイダーを追加
+	Add an AI provider in Preferences ▸ AI assistant first.	先に［環境設定 ▸ AI アシスタント］で AI プロバイダーを追加してください。
+	Connected: the provider answered.	接続しました。プロバイダーが応答しました。
+	Couldn't reach the provider: {detail}	プロバイダーに接続できません: {detail}
+	Custom (any address)	カスタム（任意のアドレス）
+	Deployment	デプロイ
+	Edit provider	プロバイダーを編集
+	Fetch models	モデル一覧を取得
+	Found {n} models.	{n} 個のモデルが見つかりました。
+	Longest answer	回答の最大長
+	Models this provider offers	このプロバイダーのモデル
+	New provider	新しいプロバイダー
+	No API key is saved for this provider. Add one in Preferences ▸ AI assistant.	このプロバイダーの API キーが保存されていません。［環境設定 ▸ AI アシスタント］で追加してください。
+	Open a document first.	先に文書を開いてください。
+	Open a document to use the assistant.	アシスタントを使うには文書を開いてください。
+	Paste your key	キーを貼り付け
+	Saved — type to replace	保存済み — 入力すると置き換え
+	Show or hide the key	キーの表示／非表示
+	Test connection	接続をテスト
+	The answer stopped at the length limit.	回答は長さの上限で途切れました。
+	The provider answered with an error: {detail}	プロバイダーがエラーを返しました: {detail}
+	The provider doesn't know this model or address: {detail}	プロバイダーはこのモデルまたはアドレスを認識しません: {detail}
+	The provider refused the API key: {detail}	プロバイダーが API キーを拒否しました: {detail}
+	The provider's answer couldn't be read: {detail}	プロバイダーの応答を読み取れません: {detail}
+	The provider's rate limit or quota was reached: {detail}	プロバイダーのレート制限またはクォータに達しました: {detail}
+	The request stopped unexpectedly.	リクエストが予期せず停止しました。
+	The system keychain isn't available, so the key is kept only until PSG PDF quits.	システムのキーチェーンが使えないため、キーは PSG PDF を終了するまでしか保持されません。
+	The system keychain refused: {detail}	システムのキーチェーンが拒否しました: {detail}
+	The text of this document is sent to {provider}.	この文書のテキストは {provider} に送信されます。
+	This address isn't encrypted (http://): the key and the document cross the network as plain text.	このアドレスは暗号化されていません（http://）。キーと文書は平文でネットワークを通ります。
+	This document has no text to send. Scanned pages need Scan & OCR first.	この文書には送信できるテキストがありません。スキャンしたページは先に［スキャンと OCR］が必要です。
+	This provider runs on your computer: the document stays here.	このプロバイダーはお使いのコンピューターで動作します。文書は外に出ません。
+	This provider's settings need attention: {detail}	このプロバイダーの設定を確認してください: {detail}
+	Translate into	翻訳先
+	Translate into {language}	{language}に翻訳
+	Type a question	質問を入力
+	Use this provider	このプロバイダーを使う
+	Waiting for {provider}…	{provider} を待っています…
+	Whole document	文書全体
+	You	あなた
+	no key	キーなし
+	tokens (0: the provider's default)	トークン（0: プロバイダーの既定値）
+	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	お好きな AI サービスをご自分の API キーで使えます: OpenAI、Anthropic Claude、Google Gemini、Azure OpenAI、DeepSeek、Qwen、Ollama で自分のコンピューターで動かすモデル、または OpenAI 互換のサービス。
+	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	プロバイダーを追加するまではオフです。どの AI サービスもご自分の API キーで使えます。キーは PSG PDF の設定ではなくシステムのキーチェーンに保存されます。送信されるのは質問した文書だけで、質問したときだけです。
+	OpenAI-compatible	OpenAI 互換

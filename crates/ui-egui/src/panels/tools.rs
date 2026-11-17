@@ -222,6 +222,11 @@ fn tool_detail(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens, g: &'static
         crate::measure_ui::panel(app, ui, t);
         return;
     }
+    // AI assistant: the provider in use, its actions and the conversation.
+    if g.id == "ai" {
+        super::ai::panel(app, ui, t);
+        return;
+    }
     // Add a stamp: the palette.
     if g.id == "stamp" {
         stamp_palette(app, ui, t);

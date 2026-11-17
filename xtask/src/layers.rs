@@ -94,6 +94,8 @@ pub const TABLE: &[(&str, Class)] = &[
     ("psg-desktop-ui", Class::Layer(7)),
     // PSG Academic PDF's typesetting core (no UI; depends on no other workspace crate)
     ("psg-academic", Class::Layer(4)),
+    // The bring-your-own AI provider: presets, profiles, requests, keys (no workspace deps)
+    ("psg-ai", Class::Layer(4)),
     // L8 apps + tooling
     ("psg-pdf", Class::Exempt),
     ("psg-academic-pdf", Class::Exempt),

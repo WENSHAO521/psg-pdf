@@ -8,6 +8,8 @@ use pdfcraft_render::{DocInfo, FieldKind, OutlineItem};
 use crate::theme::{self, Tokens};
 use crate::{LeftPanel, PdfCraftApp, RightPanel, icons, widgets};
 
+pub(crate) mod ai;
+mod ai_net;
 pub(super) mod all_tools_ui;
 mod bookmarks;
 pub(super) mod comments_panel;

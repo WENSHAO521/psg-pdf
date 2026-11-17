@@ -161,3 +161,55 @@
 	{font}, {size} pt	{font}, {size} pt
 	{n} lines	{n} Zeilen
 	Some content could not be read for device colour	Einige Inhalte konnten nicht auf Gerätefarben geprüft werden
+	(Only the first {n} of {total} pages fit in the request.)	(Nur die ersten {n} von {total} Seiten passten in die Anfrage.)
+	AI assistant settings	Einstellungen des KI-Assistenten
+	AI providers aren't available in this version.	In dieser Version sind keine KI-Anbieter verfügbar.
+	API address	API-Adresse
+	API format	API-Format
+	API key	API-Schlüssel
+	API version	API-Version
+	Add a provider	Anbieter hinzufügen
+	Add an AI provider in Preferences ▸ AI assistant first.	Fügen Sie zuerst unter Einstellungen ▸ KI-Assistent einen KI-Anbieter hinzu.
+	Connected: the provider answered.	Verbunden: Der Anbieter hat geantwortet.
+	Couldn't reach the provider: {detail}	Der Anbieter ist nicht erreichbar: {detail}
+	Custom (any address)	Benutzerdefiniert (beliebige Adresse)
+	Deployment	Bereitstellung
+	Edit provider	Anbieter bearbeiten
+	Fetch models	Modelle abrufen
+	Found {n} models.	{n} Modelle gefunden.
+	Longest answer	Längste Antwort
+	Models this provider offers	Modelle dieses Anbieters
+	New provider	Neuer Anbieter
+	No API key is saved for this provider. Add one in Preferences ▸ AI assistant.	Für diesen Anbieter ist kein API-Schlüssel gespeichert. Fügen Sie unter Einstellungen ▸ KI-Assistent einen hinzu.
+	Open a document first.	Öffnen Sie zuerst ein Dokument.
+	Open a document to use the assistant.	Öffnen Sie ein Dokument, um den Assistenten zu verwenden.
+	Paste your key	Schlüssel einfügen
+	Saved — type to replace	Gespeichert – zum Ersetzen tippen
+	Show or hide the key	Schlüssel zeigen oder verbergen
+	Test connection	Verbindung testen
+	The answer stopped at the length limit.	Die Antwort endete an der Längengrenze.
+	The provider answered with an error: {detail}	Der Anbieter hat mit einem Fehler geantwortet: {detail}
+	The provider doesn't know this model or address: {detail}	Der Anbieter kennt dieses Modell oder diese Adresse nicht: {detail}
+	The provider refused the API key: {detail}	Der Anbieter hat den API-Schlüssel abgelehnt: {detail}
+	The provider's answer couldn't be read: {detail}	Die Antwort des Anbieters ist nicht lesbar: {detail}
+	The provider's rate limit or quota was reached: {detail}	Ratenlimit oder Kontingent des Anbieters erreicht: {detail}
+	The request stopped unexpectedly.	Die Anfrage wurde unerwartet abgebrochen.
+	The system keychain isn't available, so the key is kept only until PSG PDF quits.	Der Schlüsselbund des Systems ist nicht verfügbar; der Schlüssel bleibt nur, bis PSG PDF beendet wird.
+	The system keychain refused: {detail}	Der Schlüsselbund des Systems hat abgelehnt: {detail}
+	The text of this document is sent to {provider}.	Der Text dieses Dokuments wird an {provider} gesendet.
+	This address isn't encrypted (http://): the key and the document cross the network as plain text.	Diese Adresse ist nicht verschlüsselt (http://): Schlüssel und Dokument gehen im Klartext über das Netzwerk.
+	This document has no text to send. Scanned pages need Scan & OCR first.	Dieses Dokument enthält keinen Text zum Senden. Gescannte Seiten brauchen zuerst Scannen & OCR.
+	This provider runs on your computer: the document stays here.	Dieser Anbieter läuft auf Ihrem Computer: Das Dokument bleibt hier.
+	This provider's settings need attention: {detail}	Die Einstellungen dieses Anbieters müssen angepasst werden: {detail}
+	Translate into	Übersetzen in
+	Translate into {language}	In {language} übersetzen
+	Type a question	Frage eingeben
+	Use this provider	Diesen Anbieter verwenden
+	Waiting for {provider}…	Warten auf {provider} …
+	Whole document	Ganzes Dokument
+	You	Sie
+	no key	kein Schlüssel
+	tokens (0: the provider's default)	Tokens (0: Standard des Anbieters)
+	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	Nutzen Sie den KI-Dienst Ihrer Wahl mit Ihrem eigenen API-Schlüssel: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, ein Modell auf Ihrem eigenen Computer über Ollama oder einen OpenAI-kompatiblen Dienst.
+	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	Aus, bis Sie einen Anbieter hinzufügen. Verwenden Sie Ihren eigenen API-Schlüssel mit einem beliebigen KI-Dienst; der Schlüssel liegt im Schlüsselbund Ihres Systems, nie in den Einstellungen von PSG PDF. Gesendet wird nur das Dokument, nach dem Sie fragen, und nur dann.
+	OpenAI-compatible	OpenAI-kompatibel

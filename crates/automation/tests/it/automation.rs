@@ -14650,3 +14650,87 @@ fn grouped_existing_thai_body_edits_saves_reopens_and_undo_restores_original_gly
     assert_eq!(page_text(&mut a, reopened), [new, old]);
     assert_eq!(ok(&mut a, "content_list", json!({"doc":reopened}))["count"], 0, "editing existing text must not create Add Text objects");
 }
+
+/// A transport that answers every call with `status` and `body`, keeping what it was sent.
+fn ai_transport(
+    status: u16,
+    body: &'static str,
+) -> (std::sync::Arc<psg_ai::net::Transport>, std::sync::Arc<std::sync::Mutex<Vec<psg_ai::HttpCall>>>) {
+    let seen = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+    let log = seen.clone();
+    let send = move |call: &psg_ai::HttpCall| {
+        log.lock().unwrap().push(call.clone());
+        Ok((status, body.to_string()))
+    };
+    (std::sync::Arc::new(send), seen)
+}
+
+#[test]
+fn ai_ask_sends_the_chosen_pages_to_the_named_provider() {
+    let dir = workdir("ai-ask");
+    let (transport, seen) = ai_transport(200, r#"{"choices":[{"message":{"content":"Seite 2 (p. 2)"},"finish_reason":"stop"}]}"#);
+    let mut a = auto(&dir).with_ai_transport(transport);
+    let doc = ok(&mut a, "doc_open", json!({ "path": "a.pdf" }))["doc"].as_u64().unwrap();
+    let url = "http://localhost:11434/v1";
+    let out = ok(
+        &mut a,
+        "ai_ask",
+        json!({ "doc": doc, "task": "translate", "language": "German", "pages": [2, 3], "provider": { "format": "openai", "base_url": url, "model": "local" } }),
+    );
+    assert_eq!(out["answer"], "Seite 2 (p. 2)");
+    assert_eq!((out["pages_sent"].as_u64(), out["pages_requested"].as_u64(), out["text_truncated"].as_bool()), (Some(2), Some(2), Some(false)));
+    let calls = seen.lock().unwrap().clone();
+    assert_eq!(calls.len(), 1);
+    assert_eq!((calls[0].method, calls[0].url.as_str()), ("POST", "http://localhost:11434/v1/chat/completions"));
+    let sent = calls[0].body.clone().unwrap();
+    assert!(sent.contains("[Page 2]\\nPage 2") && sent.contains("[Page 3]\\nPage 3") && !sent.contains("[Page 1]"), "{sent}");
+    assert!(sent.contains("into German") && sent.contains("\"model\":\"local\""), "{sent}");
+    // Nothing in the document changed.
+    assert_eq!(page_text(&mut a, doc), ["Page 1", "Page 2", "Page 3"]);
+}
+
+#[test]
+fn ai_ask_reports_provider_errors_and_bad_arguments_an_agent_can_fix() {
+    let dir = workdir("ai-ask-errors");
+    // Without a transport from the host, nothing is sent.
+    let mut bare = auto(&dir);
+    let doc = ok(&mut bare, "doc_open", json!({ "path": "a.pdf" }))["doc"].as_u64().unwrap();
+    let local = json!({ "format": "openai", "base_url": "http://localhost:11434/v1", "model": "m" });
+    let e = err(&mut bare, "ai_ask", json!({ "doc": doc, "task": "summarize", "provider": local }));
+    assert!(matches!(&e, ToolError::Failed(m) if m.contains("no network access")), "{e}");
+    let (transport, _) = ai_transport(404, r#"{"error":{"message":"model 'nope' not found"}}"#);
+    let mut a = auto(&dir).with_ai_transport(transport);
+    let doc = ok(&mut a, "doc_open", json!({ "path": "a.pdf" }))["doc"].as_u64().unwrap();
+    let e = err(&mut a, "ai_ask", json!({ "doc": doc, "task": "summarize", "provider": local }));
+    assert!(matches!(&e, ToolError::Failed(m) if m.contains("404") && m.contains("model 'nope' not found")), "{e}");
+    let bad = |a: &mut Automation, args: Value| match err(a, "ai_ask", args) {
+        ToolError::InvalidArgs(m) => m,
+        other => panic!("{other}"),
+    };
+    let p = json!({ "format": "openai", "base_url": "https://api.example.com/v1", "model": "m" });
+    assert!(bad(&mut a, json!({ "doc": doc, "task": "ask", "provider": p })).contains("question"));
+    assert!(bad(&mut a, json!({ "doc": doc, "task": "ask", "question": "  ", "provider": p })).contains("question"));
+    assert!(bad(&mut a, json!({ "doc": doc, "task": "guess", "provider": p })).contains("summarize"));
+    assert!(bad(&mut a, json!({ "doc": doc, "task": "summarize" })).contains("provider"));
+    assert!(
+        bad(&mut a, json!({ "doc": doc, "task": "summarize", "provider": { "format": "openai", "base_url": "api.example.com", "model": "m" } }))
+            .contains("https://")
+    );
+    assert!(
+        bad(
+            &mut a,
+            json!({ "doc": doc, "task": "summarize", "provider": { "format": "carrier-pigeon", "base_url": "https://x.example", "model": "m" } })
+        )
+        .contains("format")
+    );
+    assert!(bad(&mut a, json!({ "doc": doc, "task": "summarize", "provider": { "format": "openai", "base_url": "https://x.example", "model": "m", "api_key": "sk" } })).contains("api_key"));
+    // Anthropic needs a key, which only the environment gives.
+    if std::env::var_os("PSG_AI_API_KEY").is_none() {
+        let e = err(
+            &mut a,
+            "ai_ask",
+            json!({ "doc": doc, "task": "summarize", "provider": { "format": "anthropic", "base_url": "https://api.anthropic.com", "model": "claude-sonnet-5-5" } }),
+        );
+        assert!(matches!(&e, ToolError::Failed(m) if m.contains("PSG_AI_API_KEY")), "{e}");
+    }
+}
