@@ -143,6 +143,7 @@ your settings; see [migrating from the suite](docs/products.md#migrating-from-th
 ## Documentation and support
 
 - **[Website](https://pdf.panorama-sg.com/)**: the product site, with downloads for every platform.
+- **[Panorama Scholarly Group](https://panorama-sg.com/)**: the publisher's website.
 - **[Documentation](docs/README.md)**: user guides, the products and their installers,
   building from source, and the engine's technical notes.
 - **[PSG Academic PDF guide](docs/academic-guide.md)**: what it needs and how to make an
@@ -159,7 +160,7 @@ PSG PDF and PSG Academic PDF are made by **Panorama Scholarly Group** and contri
 
 The code is licensed under the [MIT License](LICENSE-MIT) or the
 [Apache License 2.0](LICENSE-APACHE), at your option. Both products are built on the
-[PdfCraft](https://github.com/storytold/pdfcraft) PDF engine by the ArtCraft team (MIT OR
+PdfCraft PDF engine by the ArtCraft team (MIT OR
 Apache-2.0); as PdfCraft's terms require of modified versions, they carry none of its brand.
 Third-party notices are in [NOTICE](NOTICE), and every bundled asset and its licence is listed in
 [ATTRIBUTION.md](ATTRIBUTION.md).

@@ -1,5 +1,6 @@
-//! Interface fonts: the PSG Desktop Design System's Inter and JetBrains Mono (shared with PSG PDF),
-//! then the CJK and Korean faces of the craft-fonts build input
+//! Interface fonts: the PSG Desktop Design System's Kai faces for the interface language (霞鶩文楷;
+//! Gowun Batang for Korean) when the build has them, Inter and JetBrains Mono (shared with PSG
+//! PDF), then the CJK and Korean faces of the craft-fonts build input
 //! (OFL, embedded in release builds), so Chinese, Japanese and Korean names, titles and the
 //! translated interface show as text instead of boxes. The face for the interface language comes
 //! first, so a line of Chinese is not drawn half in a Japanese face. Without craft-fonts these
@@ -35,7 +36,11 @@ fn faces(lang: &str) -> Vec<&'static pdfcraft_fonts::CraftFont> {
 }
 
 fn definitions(lang: &str) -> FontDefinitions {
-    psg_desktop_ui::fonts::definitions(faces(lang).into_iter().map(|f| psg_desktop_ui::fonts::Fallback { name: f.name(), bytes: f.bytes }))
+    let mut fonts =
+        psg_desktop_ui::fonts::definitions(faces(lang).into_iter().map(|f| psg_desktop_ui::fonts::Fallback { name: f.name(), bytes: f.bytes }));
+    // The Kai interface faces for this language first (霞鶩文楷; Gowun Batang for Korean).
+    psg_desktop_ui::fonts::use_interface_face(&mut fonts, lang);
+    fonts
 }
 
 #[cfg(test)]

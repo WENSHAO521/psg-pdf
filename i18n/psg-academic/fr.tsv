@@ -75,7 +75,6 @@
 	DOI	DOI
 	Dark	Sombre
 	Dashboard	Tableau de bord
-	Data folder:	Dossier de données :
 	Dates and licence	Dates et licence
 	Development build	Version de développement
 	Discard unsaved changes and read the file again	Abandonner les modifications non enregistrées et relire le fichier
@@ -341,3 +340,25 @@
 @other	{n} warning	{n} avertissements
 @one	{n} word	{n} mot
 @other	{n} word	{n} mots
+	Data folder	Dossier de données
+	New projects and the app's settings are kept in this folder.	Les nouveaux projets et les réglages de l’application sont conservés dans ce dossier.
+	Chosen	Choisi
+	Default	Par défaut
+	Moving the data folder…	Déplacement du dossier de données…
+	Move the projects and settings to {path}?	Déplacer les projets et les réglages vers {path} ?
+	Everything is copied and checked first; the old copies are removed only after that.	Tout est d’abord copié et vérifié ; les anciennes copies ne sont supprimées qu’ensuite.
+	Move data	Déplacer les données
+	Change…	Modifier…
+	Use the default folder	Utiliser le dossier par défaut
+	Open folder	Ouvrir le dossier
+	Choose where to keep projects and settings	Choisissez où conserver les projets et les réglages
+	Moving the data folder from {path}.	Déplacement du dossier de données depuis {path}.
+	Could not move the data folder: {error}	Impossible de déplacer le dossier de données : {error}
+	Projects and settings are now kept in {path}.	Les projets et les réglages sont désormais conservés dans {path}.
+	Everything was copied, but some old files could not be removed from {path}. You can delete them yourself.	Tout a été copié, mais certains anciens fichiers de {path} n’ont pas pu être supprimés. Vous pouvez les supprimer vous-même.
+	{path} is not a full path. Choose a folder.	{path} n’est pas un chemin complet. Choisissez un dossier.
+	That is the folder already in use.	C’est déjà le dossier utilisé.
+	{path} is inside the data folder. Choose a folder outside it.	{path} se trouve dans le dossier de données. Choisissez un dossier en dehors.
+	{path} already exists there. Nothing was moved; choose an empty folder.	{path} existe déjà à cet endroit. Aucun projet ni réglage n’a été déplacé ; choisissez un dossier vide.
+	That folder holds too many files to be a data folder. Nothing was moved.	Ce dossier contient trop de fichiers pour être un dossier de données. Aucun projet ni réglage n’a été déplacé.
+	Could not move the data folder ({path}: {error}). Nothing was changed.	Impossible de déplacer le dossier de données ({path} : {error}). Rien n’a été modifié.

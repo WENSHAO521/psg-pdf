@@ -5,7 +5,7 @@ People who only want to use them should download an installer from the
 [releases page](https://github.com/WENSHAO521/psg-pdf/releases).
 
 Both products are built from one Rust workspace and share one PDF engine, the
-[PdfCraft](https://github.com/storytold/pdfcraft) engine (MIT OR Apache-2.0) in `crates/`.
+PdfCraft engine (MIT OR Apache-2.0) in `crates/`.
 Rules for contributors and agents are in [AGENTS.md](../AGENTS.md).
 
 ## Repository layout
@@ -32,7 +32,6 @@ assets/app-icon-academic/   PSG Academic PDF icons, generated from the master
 packaging/products.toml     each product's identity: ids, upgrade codes, packages, associations
 docs/products.md            the two products, their installers and migrating from the old suite
 docs/academic.md            PSG Academic PDF: architecture, security, templates
-docs/upstream/              the upstream PdfCraft README, kept for reference
 ```
 
 ## Building

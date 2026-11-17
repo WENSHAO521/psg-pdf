@@ -17,6 +17,10 @@ pub type Rgb = [u8; 3];
 pub const PUBLISHER: &str = "Panorama Scholarly Group";
 /// The short form of [`PUBLISHER`], as in the product names.
 pub const PUBLISHER_SHORT: &str = "PSG";
+/// Panorama Scholarly Group's website.
+pub const WEBSITE: &str = "https://panorama-sg.com/";
+/// PSG PDF's own website.
+pub const PDF_WEBSITE: &str = "https://pdf.panorama-sg.com/";
 /// The repository both products are developed and released from.
 pub const REPOSITORY: &str = "https://github.com/WENSHAO521/psg-pdf";
 /// Where both products' installers are published.
@@ -385,6 +389,14 @@ impl Release {
             Release::Beta(_) => Some("Beta"),
             Release::Development => Some("Development build"),
         }
+    }
+
+    /// The update channel a copy of this release follows until its user picks one: a beta
+    /// follows the beta channel (`true`), so that it is offered the next beta. On the stable
+    /// channel a beta is never offered anything until a newer stable release, which is how
+    /// installed betas used to say "up to date" while newer betas were out.
+    pub fn follows_betas_by_default(self) -> bool {
+        matches!(self, Release::Beta(_))
     }
 }
 

@@ -493,8 +493,13 @@ pub struct PdfCraftApp {
     /// asks only from Help ▸ Check for updates.
     pub update_check_at_start: bool,
     /// Preferences: the beta channel. Updates offer the newest release, betas included; off,
-    /// only stable releases. Kept in the settings.
+    /// only stable releases. Until the user picks a channel (`beta_updates_chosen`), a beta build
+    /// follows the betas and a stable build the stable releases (`prefs::default_beta_updates`).
     pub beta_updates: bool,
+    /// Whether the user picked the channel (Preferences, or the control channel's option). Only a
+    /// picked channel is kept in the settings; otherwise each build follows its own default, so an
+    /// installed beta is offered the next beta.
+    pub beta_updates_chosen: bool,
     /// Preferences: the beta channel choice waiting for its confirmation (`Some(true)` joining,
     /// `Some(false)` leaving). Not kept.
     pub(crate) beta_updates_pending: Option<bool>,
