@@ -1,5 +1,5 @@
-//! Project links: the Help menu, About dialog and home screen open PSG PDF's repository and the
-//! upstream PdfCraft project. No ArtCraft brand or community link remains in PSG PDF.
+//! Project links: the Help menu, About dialog and home screen open PSG's own websites and
+//! repository. No upstream, ArtCraft brand or community link remains in PSG PDF.
 
 use egui_kittest::Harness;
 use egui_kittest::kittest::Queryable;
@@ -24,13 +24,24 @@ fn no_artcraft_community_links_remain() {
     let h = harness(|_| {});
     assert!(h.query_by_label("Discord").is_none());
     assert!(links::LINKS.iter().all(|l| !l.url.contains("artcraft") && !l.url.contains("discord")));
+    assert!(links::LINKS.iter().all(|l| !l.url.contains("storytold") && !l.url.contains("pdfcraft")), "no upstream link");
+}
+
+#[test]
+fn links_match_the_psg_brand() {
+    // The engine sits below the brand crate, so it spells the addresses out; they must agree.
+    assert_eq!(links::APP_PAGE, psg_brand::PDF_WEBSITE);
+    assert_eq!(links::PUBLISHER_PAGE, psg_brand::WEBSITE);
+    assert_eq!(links::GITHUB, psg_brand::REPOSITORY);
 }
 
 #[test]
 fn home_screen_links() {
-    for (label, url) in
-        [("PSG PDF on GitHub", "https://github.com/WENSHAO521/psg-pdf"), ("PdfCraft (upstream project)", "https://github.com/storytold/pdfcraft")]
-    {
+    for (label, url) in [
+        ("PSG PDF website", "https://pdf.panorama-sg.com/"),
+        ("Panorama Scholarly Group website", "https://panorama-sg.com/"),
+        ("PSG PDF on GitHub", "https://github.com/WENSHAO521/psg-pdf"),
+    ] {
         let mut h = harness(|_| {});
         h.get_by_label("Welcome to PSG PDF");
         h.get_by_label(label).click();

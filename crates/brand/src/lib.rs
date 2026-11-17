@@ -17,6 +17,10 @@ pub type Rgb = [u8; 3];
 pub const PUBLISHER: &str = "Panorama Scholarly Group";
 /// The short form of [`PUBLISHER`], as in the product names.
 pub const PUBLISHER_SHORT: &str = "PSG";
+/// Panorama Scholarly Group's website.
+pub const WEBSITE: &str = "https://panorama-sg.com/";
+/// PSG PDF's own website.
+pub const PDF_WEBSITE: &str = "https://pdf.panorama-sg.com/";
 /// The repository both products are developed and released from.
 pub const REPOSITORY: &str = "https://github.com/WENSHAO521/psg-pdf";
 /// Where both products' installers are published.

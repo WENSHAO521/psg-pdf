@@ -72,11 +72,11 @@ update the numbers.
 - **Evidence:** pages are drawn by vendored `hayro` 0.7 with 26 local patches to `hayro-interpret`,
   15 to `hayro`, 3 to `hayro-jbig2` and 17 to `hayro-syntax` (`vendor/README.md`); `lopdf` still
   backs document inspection. All 7 rendering P0 features are `partial`. User reports: TikZ pattern
-  fills drawn wrong ([#794](https://github.com/storytold/pdfcraft/issues/794)), blurry text at
-  1080p/1440p ([#730](https://github.com/storytold/pdfcraft/issues/730)), fixed zoom sizes differ
-  from Acrobat ([#739](https://github.com/storytold/pdfcraft/issues/739)). An outside author
+  fills drawn wrong (#794), blurry text at
+  1080p/1440p (#730), fixed zoom sizes differ
+  from Acrobat (#739). An outside author
   proposes his MIT/Apache renderer as the bridge
-  ([#841](https://github.com/storytold/pdfcraft/issues/841)).
+  (#841).
 - **Impact:** every page a user sees. Wrong glyphs, shadings or blend modes erode trust faster than
   any missing feature.
 - **Fix:** first a fidelity harness (gap 12), then the renderer: own devices (150–250 h in the old
@@ -120,11 +120,11 @@ update the numbers.
 - **Evidence:** `edit.text-edit` is partial (font reused or Helvetica substituted);
   `edit.rtl-cjk-editing`, `edit.rotated-text-editing`, `edit.keep-tags-on-edit`,
   `edit.vector-edit`, `edit.edit-object-tool` are planned. Users:
-  [#766](https://github.com/storytold/pdfcraft/issues/766) (editing Arabic text),
-  [#844](https://github.com/storytold/pdfcraft/issues/844) (several elements now move together on
+  #766 (editing Arabic text),
+  #844 (several elements now move together on
   one page, not across pages),
-  [#787](https://github.com/storytold/pdfcraft/issues/787) (move images between pages),
-  [#791](https://github.com/storytold/pdfcraft/issues/791).
+  #787 (move images between pages),
+  #791.
 - **Impact:** "Edit PDF" is one of Acrobat Pro's top reasons to buy. Substituting Helvetica changes
   how a document looks.
 - **Estimate:** 100–180 h (the longest feature pole, M7). **Doc:** [target-app-parity.md](target-app-parity.md).
@@ -132,11 +132,11 @@ update the numbers.
 ### 5. Chinese UI lacks a web glyph face
 
 - **Missing:** a Simplified Chinese (`Hans`) UI face in the web build and a working fallback. Native release builds embed LXGW WenKai Lite from the pinned craft-fonts native Simplified Chinese manifest.
-- **Evidence:** [#826](https://github.com/storytold/pdfcraft/issues/826),
-  [#688](https://github.com/storytold/pdfcraft/issues/688),
-  [#728](https://github.com/storytold/pdfcraft/issues/728),
-  [#758](https://github.com/storytold/pdfcraft/issues/758),
-  [#689](https://github.com/storytold/pdfcraft/issues/689) (Flatpak) predate the native face; the
+- **Evidence:** #826,
+  #688,
+  #728,
+  #758,
+  #689 (Flatpak) predate the native face; the
   web build still embeds only BIZ UDPGothic Regular plus the small Arabic, Hebrew, Thai and Devanagari faces.
   craft-fonts has Noto Sans CJK SC, but at 16.4 MB it is too large to embed whole; a web face needs
   a cut of it (storytold/craft-libs#213).
@@ -183,7 +183,7 @@ update the numbers.
   pluggable engines; OCR in the
   browser; scanner input.
 - **Evidence:** `ocr.ocr-languages` partial ("the models read only the Latin alphabet without
-  accents"); 19 of 26 OCR features planned; [#744](https://github.com/storytold/pdfcraft/issues/744)
+  accents"); 19 of 26 OCR features planned; #744
   (Dutch). Acrobat ships on-device recognition for dozens of languages.
 - **Impact:** scanned documents are a core Pro workflow outside English.
 - **Estimate:** 40–75 h, partly blocked on openly licensed models. **Doc:**
@@ -194,7 +194,7 @@ update the numbers.
 - **Missing:** Word export that keeps layout; Excel and PowerPoint export; creating PDFs from Office,
   HTML, web pages and PostScript; SVG/XML/EPS/PS/JPEG 2000 export.
 - **Evidence:** `create.export-docx` partial; the synthetic invoice regression for
-  [#773](https://github.com/storytold/pdfcraft/issues/773) now covers absent inferred borders,
+  #773 now covers absent inferred borders,
   floating watermark text and per-page section sizes. Exact font matching, vector rules and
   broader layout fidelity remain incomplete;
   `create.export-xlsx`, `create.export-pptx`, `create.from-office`, `create.from-html` planned.
@@ -224,9 +224,9 @@ update the numbers.
 - **Evidence:** `sign.pkcs11`, `sign.timestamp-servers`, `sign.field-mdp`, `sign.os-trust`,
   `sign.eutl` planned; `sign.pades-bt`, `sign.ltv`, `sign.ocsp-crl` partial (caller-supplied
   evidence). Users ask for Acrobat-like validation
-  ([#824](https://github.com/storytold/pdfcraft/issues/824),
-  [#775](https://github.com/storytold/pdfcraft/issues/775),
-  [#718](https://github.com/storytold/pdfcraft/issues/718)).
+  (#824,
+  #775,
+  #718).
 - **Impact:** government and legal users sign with tokens and need B-LT/B-LTA.
 - **Estimate:** 40–70 h; tokens need hardware to test. **Doc:** [pdf-spec-parity.md](pdf-spec-parity.md).
 

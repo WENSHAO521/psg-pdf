@@ -7323,9 +7323,9 @@ fn links_through_tools() {
     assert_eq!(list["count"], 3);
     let added = list["links"].as_array().unwrap().iter().find(|l| l["to_page"] == 1).unwrap().clone();
     assert_eq!(added["rect"], json!([72.0, 300.0, 200.0, 320.0]));
-    ok(&mut a, "link_edit", json!({ "doc": doc, "page": 1, "index": added["index"], "url": "https://pdfcraft.dev" }));
+    ok(&mut a, "link_edit", json!({ "doc": doc, "page": 1, "index": added["index"], "url": "https://pdf.example" }));
     let list = ok(&mut a, "link_list", json!({ "doc": doc }));
-    assert!(list["links"].as_array().unwrap().iter().any(|l| l["url"] == "https://pdfcraft.dev"));
+    assert!(list["links"].as_array().unwrap().iter().any(|l| l["url"] == "https://pdf.example"));
     ok(&mut a, "link_delete", json!({ "doc": doc, "page": 1, "index": added["index"] }));
     let r = ok(&mut a, "links_remove", json!({ "doc": doc, "pages": [1] }));
     assert_eq!(r["removed"], 2);
