@@ -273,7 +273,8 @@ mod tests {
     fn the_beta_preference_sets_the_channel_of_the_next_check() {
         let mut app = PdfCraftApp::new();
         app.poll_updates();
-        assert!(!app.updates.updater.prereleases(), "stable by default");
+        let own = psg_brand::Release::of(pdfcraft_engine::build_info::VERSION).follows_betas_by_default();
+        assert_eq!(app.updates.updater.prereleases(), own, "the build's own channel by default");
         app.beta_updates = true;
         app.poll_updates();
         assert!(app.updates.updater.prereleases());
