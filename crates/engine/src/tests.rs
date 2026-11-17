@@ -1615,6 +1615,206 @@ fn protected(user: &str, owner: &str, permissions: i32) -> Arc<Vec<u8>> {
     Arc::new(pdfcraft_cos::write_full(&doc, &Default::default()).unwrap())
 }
 
+/// Two pages protected with `algorithm` under the permissions password "boss" (no open
+/// password), restricting changes to `changes`.
+fn protected_with_changes(algorithm: pdfcraft_cos::Algorithm, changes: Changes) -> Arc<Vec<u8>> {
+    protected_pages(2, algorithm, changes, 8)
+}
+
+/// [`protected_with_changes`] with `pages` pages; `seed` gives the file key and salts, so two
+/// files with the same arguments but `pages` share their protection exactly.
+fn protected_pages(pages: usize, algorithm: pdfcraft_cos::Algorithm, changes: Changes, seed: u8) -> Arc<Vec<u8>> {
+    let mut doc = pdfcraft_cos::Document::open(Arc::new(fixture(pages))).unwrap();
+    let protection = Protection { permissions_password: Some("boss".into()), changes, algorithm, ..Protection::default() };
+    doc.set_encryption(&pdfcraft_cos::NewEncryption {
+        algorithm,
+        user_password: "",
+        owner_password: "boss",
+        permissions: protection.permission_bits(),
+        encrypt_metadata: true,
+        seed: [seed; 32],
+    })
+    .unwrap();
+    Arc::new(pdfcraft_cos::write_full(&doc, &Default::default()).unwrap())
+}
+
+/// "Any except extracting pages" (#5081) withholds page extraction on every handler revision. At
+/// revision 3 and later the preset (bit 4 without bit 11) allows no page changes either; at
+/// revision 2, where bit 4 covers assembly, extraction, splitting and being a page source are
+/// still refused because copying is withheld.
+#[test]
+fn extraction_permissions_refuse_any_except_extract_on_every_revision() {
+    use pdfcraft_cos::Algorithm::{Aes128, Aes256, Rc4_40, Rc4_128};
+
+    for algorithm in [Rc4_128, Aes128, Aes256] {
+        let bytes = protected_with_changes(algorithm, Changes::AnyExceptExtract);
+        let doc = pdfcraft_cos::Document::open_with_password(bytes.clone(), None).unwrap();
+        let permissions = doc.permissions().unwrap();
+        assert!(!permissions.extract_pages(), "{algorithm:?}, /P={:#x}", permissions.bits);
+        assert!(!permissions.assemble(), "{algorithm:?}: bit 4 without bit 11 allows no page changes");
+    }
+    let r2 = protected_with_changes(Rc4_40, Changes::AnyExceptExtract);
+    let mut session = Session::new();
+    let r2_id = session.open("r2.pdf", None, r2.clone(), None).unwrap();
+    let permissions = session.get(r2_id).unwrap().permissions().unwrap();
+    assert!(permissions.assemble() && !permissions.extract_pages(), "revision 2, /P={:#x}", permissions.bits);
+    assert_eq!(session.extract(r2_id, &[0]), Err(EditError::NotPermitted("extracting pages")));
+    assert_eq!(session.split(r2_id, &pdfcraft_organize::SplitBy::PageCount(1)), Err(EditError::NotPermitted("splitting the document")));
+    assert_eq!(crate::combine_source_check(&r2, None), Err(crate::SourceProblem::NotPermitted));
+}
+
+/// "Any except extracting pages" (#5081): Extract, Split and Combine refuse the file without the
+/// permissions password and leave it unchanged; Combine takes it with that password.
+#[test]
+fn extraction_permissions_cover_revision_three_to_six_and_leave_no_partial_output() {
+    let bytes = protected_with_changes(pdfcraft_cos::Algorithm::Aes256, Changes::AnyExceptExtract);
+    assert_eq!(crate::combine_source_check(&bytes, None), Err(crate::SourceProblem::NotPermitted));
+    assert_eq!(crate::combine_source_check(&bytes, Some("boss")), Ok(()));
+    let mut restricted = Session::new();
+    let id = restricted.open("restricted.pdf", None, bytes.clone(), None).unwrap();
+    let before = restricted.get(id).unwrap().bytes.clone();
+    assert_eq!(restricted.extract(id, &[0]), Err(EditError::NotPermitted("extracting pages")));
+    assert_eq!(restricted.split(id, &pdfcraft_organize::SplitBy::PageCount(1)), Err(EditError::NotPermitted("splitting the document")));
+    assert_eq!(restricted.split_by_size(id, 1), Err(EditError::NotPermitted("splitting the document")));
+    let doc = restricted.get(id).unwrap();
+    assert_eq!(doc.info.pages.len(), 2);
+    assert!(!doc.dirty);
+    assert_eq!(doc.bytes, before, "a refused extraction leaves the source untouched");
+
+    let sources = vec![("restricted.pdf".into(), bytes.clone(), None)];
+    assert!(matches!(restricted.combine_unlocked(&sources, &[None]), Err(EditError::Source(_))));
+    let combined = restricted.combine_unlocked(&sources, &[Some("boss")]).unwrap();
+    assert_eq!(pdfcraft_organize::page_count(&pdfcraft_cos::Document::open(combined).unwrap()).unwrap(), 2);
+}
+
+/// A file under "Any except extracting pages" (#5081) is refused as an Insert Pages or Replace
+/// Pages source for an unprotected document, which is left as it was, with nothing to undo.
+#[test]
+fn extraction_permissions_refuse_a_restricted_page_source() {
+    let bytes = protected_with_changes(pdfcraft_cos::Algorithm::Aes256, Changes::AnyExceptExtract);
+    let plain = Arc::new(fixture(1));
+    let mut destination = Session::new();
+    let dest = destination.open("destination.pdf", None, plain.clone(), None).unwrap();
+    let insert = Edit::InsertPagesFrom {
+        name: "restricted.pdf".into(),
+        bytes: bytes.clone(),
+        pages: None,
+        at: 1,
+        field_conflicts: pdfcraft_organize::FieldConflicts::Rename,
+    };
+    assert!(matches!(destination.apply(dest, insert), Err(EditError::Source(_))));
+    assert_eq!(destination.get(dest).unwrap().bytes, plain, "a refused insert leaves the destination untouched");
+    assert_eq!(destination.get(dest).unwrap().info.pages.len(), 1);
+    assert_eq!(destination.get(dest).unwrap().can_undo(), None);
+    assert!(matches!(
+        destination.apply(dest, Edit::ReplacePages { pages: vec![0], name: "restricted.pdf".into(), bytes: bytes.clone(), src_pages: vec![0] }),
+        Err(EditError::Source(_))
+    ));
+    assert_eq!(destination.get(dest).unwrap().bytes, plain, "a refused replace leaves the destination untouched");
+}
+
+/// Opened with the permissions password, a file under "Any except extracting pages" (#5081) can
+/// be extracted from and split.
+#[test]
+fn extraction_permissions_yield_to_the_owner_password() {
+    let bytes = protected_with_changes(pdfcraft_cos::Algorithm::Aes256, Changes::AnyExceptExtract);
+    let mut owner = Session::new();
+    let owner_id = owner.open("restricted.pdf", None, bytes, Some("boss")).unwrap();
+    assert!(owner.get(owner_id).unwrap().permissions().unwrap().extract_pages());
+    assert!(owner.extract(owner_id, &[0]).is_ok());
+    assert_eq!(owner.split(owner_id, &pdfcraft_organize::SplitBy::PageCount(1)).unwrap().len(), 2);
+    assert_eq!(owner.split_by_size(owner_id, 1).unwrap().len(), 2);
+}
+
+/// A document that allows page changes but not copying, so not page extraction (#5081), takes
+/// pages back from a file under exactly its own protection (a cut and paste, or another file
+/// made with the same key and `/Encrypt` values), through Insert Pages' file check as well, and
+/// through Replace Pages and its check, and keeps the restriction; the same file is refused as a
+/// source for an unprotected or a differently protected document.
+#[test]
+fn pages_under_the_same_protection_are_inserted_without_page_extraction() {
+    use pdfcraft_cos::Algorithm::Aes256;
+
+    let bytes = protected_pages(2, Aes256, Changes::Pages, 8);
+    let mut same = Session::new();
+    let same_id = same.open("same.pdf", None, bytes.clone(), None).unwrap();
+    let permissions = same.get(same_id).unwrap().permissions().unwrap();
+    assert!(permissions.assemble() && !permissions.extract_pages(), "/P={:#x}", permissions.bits);
+    let insert = |name: &str, bytes: &Arc<Vec<u8>>, at| Edit::InsertPagesFrom {
+        name: name.into(),
+        bytes: bytes.clone(),
+        pages: None,
+        at,
+        field_conflicts: pdfcraft_organize::FieldConflicts::Rename,
+    };
+    // Its own bytes, as Paste inserts them after a cut or copy.
+    same.apply(same_id, insert("same.pdf", &bytes, 2)).unwrap();
+    assert_eq!(same.get(same_id).unwrap().info.pages.len(), 4);
+    assert!(same.get(same_id).unwrap().dirty);
+
+    // A separate file made with the same key and /Encrypt values, and other pages.
+    let other = protected_pages(3, Aes256, Changes::Pages, 8);
+    let (a, b) = (pdfcraft_cos::Document::open(bytes.clone()).unwrap(), pdfcraft_cos::Document::open(other.clone()).unwrap());
+    let (a, b) = (a.security().unwrap(), b.security().unwrap());
+    assert!(a.file_key() == b.file_key() && a.dict() == b.dict(), "the two files share their protection");
+    assert!(matches!(same.page_count_of("other.pdf", &other), Err(EditError::Source(_))), "a plain page source must allow extraction");
+    assert_eq!(same.insert_source(same_id, "other.pdf", &other).map(|(n, _)| n), Ok(3));
+    same.apply(same_id, insert("other.pdf", &other, 4)).unwrap();
+    // Replace Pages takes them on the same terms.
+    let replace = |bytes: &Arc<Vec<u8>>| Edit::ReplacePages { pages: vec![0], name: "other.pdf".into(), bytes: bytes.clone(), src_pages: vec![2] };
+    assert_eq!(same.replace_source(same_id, "other.pdf", &other), Ok(3));
+    same.apply(same_id, replace(&other)).unwrap();
+    assert_eq!(same.get(same_id).unwrap().info.pages.len(), 7);
+    let saved = same.save_bytes(same_id).unwrap();
+    let reopened = pdfcraft_cos::Document::open_with_password(saved, None).unwrap();
+    assert_eq!(pdfcraft_organize::page_count(&reopened).unwrap(), 7);
+    assert!(!reopened.permissions().unwrap().extract_pages(), "same-protection assembly keeps the extraction restriction");
+
+    // Neither an unprotected document nor one under other protection takes them.
+    for destination in [Arc::new(fixture(1)), protected_pages(1, Aes256, Changes::Pages, 9)] {
+        let mut session = Session::new();
+        let dest = session.open("destination.pdf", None, destination, None).unwrap();
+        let before = session.get(dest).unwrap().bytes.clone();
+        assert!(matches!(session.insert_source(dest, "same.pdf", &bytes), Err(EditError::Source(_))));
+        assert!(matches!(session.apply(dest, insert("same.pdf", &bytes, 1)), Err(EditError::Source(_))));
+        assert!(matches!(session.replace_source(dest, "same.pdf", &bytes), Err(EditError::Source(_))));
+        assert!(matches!(session.apply(dest, replace(&bytes)), Err(EditError::Source(_))));
+        assert_eq!(session.get(dest).unwrap().bytes, before, "a refused insert or replace leaves the destination untouched");
+        assert_eq!(session.get(dest).unwrap().info.pages.len(), 1);
+    }
+}
+
+/// Taking pages out also needs copying (bit 5, #5081): a document that withholds only copying
+/// refuses Extract, Split and being a page source, on a revision-2 handler too, whose reserved
+/// bit 11 is always set. The owner password still lifts it.
+#[test]
+fn page_extraction_needs_the_copy_permission_on_every_revision() {
+    for algorithm in [pdfcraft_cos::Algorithm::Rc4_40, pdfcraft_cos::Algorithm::Aes256] {
+        let mut doc = pdfcraft_cos::Document::open(Arc::new(fixture(2))).unwrap();
+        doc.set_encryption(&pdfcraft_cos::NewEncryption {
+            algorithm,
+            user_password: "",
+            owner_password: "boss",
+            permissions: -1 ^ 0b1_0000, // everything but copying
+            encrypt_metadata: true,
+            seed: [9; 32],
+        })
+        .unwrap();
+        let bytes = Arc::new(pdfcraft_cos::write_full(&doc, &Default::default()).unwrap());
+        let mut s = Session::new();
+        let id = s.open("no-copy.pdf", None, bytes.clone(), None).unwrap();
+        let permissions = s.get(id).unwrap().permissions().unwrap();
+        assert!(permissions.assemble() && !permissions.extract_pages(), "{algorithm:?}");
+        assert!(s.get(id).unwrap().allows_assembly() && !s.get(id).unwrap().allows_page_extraction(), "{algorithm:?}");
+        assert_eq!(s.extract(id, &[0]), Err(EditError::NotPermitted("extracting pages")), "{algorithm:?}");
+        assert_eq!(s.split(id, &pdfcraft_organize::SplitBy::PageCount(1)), Err(EditError::NotPermitted("splitting the document")));
+        assert_eq!(crate::combine_source_check(&bytes, None), Err(crate::SourceProblem::NotPermitted), "{algorithm:?}");
+        assert_eq!(crate::combine_source_check(&bytes, Some("boss")), Ok(()), "{algorithm:?}");
+        let owner = s.open("no-copy.pdf", None, bytes, Some("boss")).unwrap();
+        assert!(s.extract(owner, &[0]).is_ok(), "{algorithm:?}");
+    }
+}
+
 #[test]
 fn encrypted_documents_open_edit_and_save_encrypted() {
     let bytes = protected("pw", "owner", -1);
@@ -3337,9 +3537,10 @@ fn the_renderer_check_refuses_text_still_shown_under_a_mark() {
     mark_shown_text(&mut s, id, "SECRET42");
     let doc = s.get(id).unwrap();
     let mut cos = doc.editor.as_ref().unwrap().cos.clone();
-    let marks = pdfcraft_redact::marks(&cos);
+    let model = pdfcraft_model::pages(&cos);
+    let marks: Vec<_> = pdfcraft_redact::marks(&cos).into_iter().filter_map(|m| model.get(m.page).map(|p| (p.obj, m))).collect();
     let refused = |cos: &pdfcraft_cos::Document| {
-        let shown = shown_under_redactions(cos, &marks, &[], &doc.info.pages, None);
+        let shown = shown_under_redactions(cos, &marks, &[], None);
         matches!(shown, Err(EditError::Redact(pdfcraft_redact::RedactError::Residue(n))) if n > 0)
     };
     assert!(refused(&cos));
@@ -7491,13 +7692,15 @@ fn comparing_two_versions_of_a_document() {
     assert!(marks[0].contents.as_deref().unwrap().starts_with("Replaced: \"Monday.\""));
 }
 
+/// Built-in and custom actions run their steps on a file (with JavaScript on), report each
+/// step's progress, and fail cleanly on a file that is not a PDF.
 #[test]
 fn actions_run_their_steps_on_files() {
     let s = Session::new();
     let src = s.create_from_text("t", "Quarterly numbers").unwrap();
     let built = actions::builtin();
     let numbers = built.iter().find(|a| a.name == "Add Page Numbers").unwrap();
-    let r = actions::run_on(numbers, "q.pdf", src.clone(), |_, _| {}).unwrap();
+    let r = actions::run_on(numbers, "q.pdf", src.clone(), true, |_, _| {}).unwrap();
     let mut s2 = Session::new();
     let id = s2.open("out.pdf", None, r.bytes, None).unwrap();
     assert!(page_texts(&s2, id)[0].contains("Page 1 of 1"), "{:?}", page_texts(&s2, id));
@@ -7515,14 +7718,38 @@ fn actions_run_their_steps_on_files() {
         builtin: false,
     };
     let mut steps = Vec::new();
-    let r = actions::run_on(&custom, "q.pdf", src, |i, n| steps.push((i, n))).unwrap();
+    let r = actions::run_on(&custom, "q.pdf", src, true, |i, n| steps.push((i, n))).unwrap();
     assert_eq!(steps, [(0, 4), (1, 4), (2, 4), (3, 4)]);
     assert_eq!(r.log.len(), 4, "{:?}", r.log);
     let id = s2.open("out2.pdf", None, r.bytes, None).unwrap();
     let d = s2.get(id).unwrap();
     assert_eq!(d.info.title.as_deref(), Some("Q3"));
     assert!(page_texts(&s2, id)[0].contains("DRAFT"));
-    assert!(actions::run_on(&custom, "bad.pdf", Arc::new(b"nope".to_vec()), |_, _| {}).is_err());
+    assert!(actions::run_on(&custom, "bad.pdf", Arc::new(b"nope".to_vec()), true, |_, _| {}).is_err());
+}
+
+/// #5080: a "Run a JavaScript" step honours the caller's JavaScript preference. With it on, the
+/// step runs and writes the field; with it off, the step does not run, so `run_on` reports the
+/// refused script's error instead of saving a script-produced value. Before the fix each file
+/// opened in a fresh JavaScript-on session, so the step ran whatever the caller chose.
+#[test]
+fn an_action_runs_a_javascript_step_only_when_javascript_is_on() {
+    let action = actions::Action {
+        name: "Set price".into(),
+        description: String::new(),
+        steps: vec![actions::Step::RunJavaScript("getField('price').value = 3;".into())],
+        builtin: false,
+    };
+    let src = Arc::new(scripted_form());
+    // JavaScript on: the step runs, so the saved file has price = 3.
+    let on = actions::run_on(&action, "f.pdf", src.clone(), true, |_, _| {}).unwrap();
+    let mut s = Session::new();
+    s.set_javascript(false); // read the saved state without re-running any script
+    let id = s.open("on.pdf", None, on.bytes, None).unwrap();
+    let price = s.get(id).unwrap().form.iter().find(|f| f.name == "price").unwrap().value.clone();
+    assert_eq!(price, ["3"], "the script ran with JavaScript on");
+    // JavaScript off: the step does not run, so run_on fails rather than writing a scripted value.
+    assert!(actions::run_on(&action, "f.pdf", src, false, |_, _| {}).is_err());
 }
 
 /// A removal step that fails (here: a signed file can't be rewritten without its hidden data)
@@ -7539,7 +7766,7 @@ fn actions_fail_when_hidden_information_could_not_be_removed() {
     let signed = s.sign(id, &digital_id, SignOptions { page: 1, ..SignOptions::default() }).unwrap();
     let built = actions::builtin();
     let sanitize = built.iter().find(|a| a.name == "Sanitize Documents").unwrap();
-    let e = actions::run_on(sanitize, "signed.pdf", signed, |_, _| {}).map(|r| r.log).unwrap_err();
+    let e = actions::run_on(sanitize, "signed.pdf", signed, true, |_, _| {}).map(|r| r.log).unwrap_err();
     assert!(e.starts_with("Sanitize document:"), "{e}");
 }
 
@@ -10967,7 +11194,7 @@ fn an_action_appends_to_a_file_whose_field_walk_passes_a_signature_over() {
     let bytes = Arc::new(signed_field_named(64 << 10));
     let steps = vec![actions::Step::from_id("set_title", "Checked").unwrap()];
     let title = actions::Action { name: "Title".into(), description: String::new(), steps, builtin: false };
-    let r = actions::run_on(&title, "form.pdf", bytes.clone(), |_, _| {}).unwrap();
+    let r = actions::run_on(&title, "form.pdf", bytes.clone(), true, |_, _| {}).unwrap();
     assert!(r.bytes.starts_with(&bytes[..]), "the action rewrote the file instead of appending to it");
     let mut s = Session::new();
     let id = s.open("out.pdf", None, r.bytes, None).unwrap();
@@ -13477,6 +13704,66 @@ fn image_transform_engine_refuses_singular_matrices_without_mutation() {
         assert!(s.apply(id, Edit::EditPageImage { page: 0, index: 0, change: ImageEdit::Transform(matrix) }).is_err());
         assert_eq!(s.get(id).unwrap().bytes, before);
     }
+}
+
+/// The renderer's check covers a redaction applied inside a batch too, with the marks as they
+/// were when it ran: one the batch itself added is checked, and text a later edit of the batch
+/// puts back under a mark refuses the whole batch.
+#[test]
+fn redactions_applied_in_a_batch_get_the_renderer_check() {
+    let mut s = Session::new().with_clock(|| 1_700_000_000);
+    let page = one_line_page_with("/Font << /F1 4 0 R >>", "", "BT /F1 16 Tf 20 150 Td (Public words then SECRET42) Tj ET");
+    let id = s.open("batch.pdf", None, Arc::new(page), None).unwrap();
+    mark_shown_text(&mut s, id, "SECRET42");
+    let apply = Edit::ApplyRedactions { pages: None };
+    // Text added where the mark was shows under it again: the renderer sees it and refuses.
+    let under = AddedText { rect: [150.0, 130.0, 300.0, 160.0], text: "SECRET42 SECRET42".into(), ..Default::default() };
+    let refused = s.apply(id, Edit::Batch { label: "Redact then write".into(), edits: vec![apply.clone(), Edit::AddText { page: 0, text: under }] });
+    assert!(matches!(refused, Err(EditError::Redact(pdfcraft_redact::RedactError::Residue(n))) if n > 0), "{refused:?}");
+    assert!(page_texts(&s, id)[0].contains("SECRET42"), "nothing changed");
+    assert_eq!(s.get(id).unwrap().redaction_marks(), 1);
+    // Applied alone in a batch, the redaction goes through, and the text is gone.
+    s.apply(id, Edit::Batch { label: "Redact".into(), edits: vec![apply] }).unwrap();
+    assert!(!page_texts(&s, id)[0].contains("SECRET42"), "{:?}", page_texts(&s, id));
+    assert_eq!(s.get(id).unwrap().redaction_marks(), 0);
+}
+
+/// A batch that deletes a page holding a redaction mark and adds pages is refused whole: the
+/// marks cannot be tied to copies, so redaction fails closed. Without added pages it goes through.
+#[test]
+fn a_batch_that_deletes_a_marked_page_and_adds_pages_is_refused() {
+    let mut s = Session::new().with_clock(|| 1_700_000_000);
+    let page = one_line_page_with("/Font << /F1 4 0 R >>", "", "BT /F1 16 Tf 20 150 Td (Public words then SECRET42) Tj ET");
+    let id = s.open("batch.pdf", None, Arc::new(page), None).unwrap();
+    mark_shown_text(&mut s, id, "SECRET42");
+    let edits = vec![
+        Edit::ApplyRedactions { pages: None },
+        Edit::InsertBlankPage { at: 1, width: 612.0, height: 792.0 },
+        Edit::DeletePages { pages: vec![0] },
+    ];
+    let refused = s.apply(id, Edit::Batch { label: "x".into(), edits });
+    assert!(matches!(refused, Err(EditError::Invalid(_))), "{refused:?}");
+    assert!(page_texts(&s, id)[0].contains("SECRET42"), "nothing changed");
+    assert_eq!(s.get(id).unwrap().redaction_marks(), 1);
+}
+
+/// A batch that applies redactions and then copies a page is refused whole: the copy can't be tied
+/// to the marks, so text restored under one would be unchecked. Copying first, or alone, is fine.
+#[test]
+fn a_batch_that_applies_redactions_and_copies_a_page_is_refused() {
+    let mut s = Session::new().with_clock(|| 1_700_000_000);
+    let page = one_line_page_with("/Font << /F1 4 0 R >>", "", "BT /F1 16 Tf 20 150 Td (Public words then SECRET42) Tj ET");
+    let id = s.open("batch.pdf", None, Arc::new(page), None).unwrap();
+    mark_shown_text(&mut s, id, "SECRET42");
+    let apply = Edit::ApplyRedactions { pages: None };
+    let copy = Edit::DuplicatePages { pages: vec![0], at: None };
+    let refused = s.apply(id, Edit::Batch { label: "x".into(), edits: vec![apply.clone(), copy.clone()] });
+    assert!(matches!(&refused, Err(EditError::Invalid(m)) if m.contains("copy pages")), "{refused:?}");
+    assert!(page_texts(&s, id)[0].contains("SECRET42"), "nothing changed");
+    assert_eq!(s.get(id).unwrap().redaction_marks(), 1);
+    // Copying before the redaction is applied puts the mark on the copy too, and both are checked.
+    s.apply(id, Edit::Batch { label: "y".into(), edits: vec![copy, apply] }).unwrap();
+    assert!(page_texts(&s, id).iter().all(|t| !t.contains("SECRET42")), "{:?}", page_texts(&s, id));
 }
 
 /// A reset in an opening script reaches a field of a row an earlier opening script added, before

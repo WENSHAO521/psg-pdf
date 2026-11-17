@@ -29,10 +29,55 @@ fn main() {
         println!("cargo::error=CRAFT_FONTS_REQUIRED is set but CRAFT_FONTS_DIR is missing");
     }
     src.push_str("];\n");
+    src.push_str(&psg_ui_fonts());
     let out = PathBuf::from(std::env::var_os("OUT_DIR").unwrap_or_default()).join("craft_fonts.rs");
     if let Err(e) = std::fs::write(&out, src) {
         println!("cargo::error=writing {}: {e}", out.display());
     }
+}
+
+/// `PSG_UI_FONTS`: PSG's interface face (Noto Serif CJK TC), from `fonts/psg-ui-manifest.txt`,
+/// which `packaging/fetch-psg-fonts.sh` adds to the craft-fonts input. Kept apart from
+/// `CRAFT_FONTS`, so the PDF writers and the script fallbacks never pick it. Native builds only
+/// (two 24 MB faces would break the web build's 25 MiB file limit). Optional: without it the
+/// interface keeps Inter.
+fn psg_ui_fonts() -> String {
+    let mut src = String::from("pub static PSG_UI_FONTS: &[CraftFont] = &[\n");
+    let wasm = std::env::var("CARGO_CFG_TARGET_ARCH").is_ok_and(|a| a == "wasm32");
+    if let (false, Some(dir)) = (wasm, std::env::var_os("CRAFT_FONTS_DIR").map(PathBuf::from)) {
+        let path = dir.join("fonts/psg-ui-manifest.txt");
+        println!("cargo::rerun-if-changed={}", path.display());
+        if path.is_file() {
+            match psg_manifest(&dir, &path) {
+                Ok(entries) => src.push_str(&entries),
+                Err(e) => println!("cargo::error={e}"),
+            }
+        }
+    }
+    src.push_str("];\n");
+    src
+}
+
+/// One `CraftFont { .. }` per line of the PSG interface manifest (same format as craft-fonts').
+fn psg_manifest(dir: &std::path::Path, manifest: &std::path::Path) -> Result<String, String> {
+    let text = std::fs::read_to_string(manifest).map_err(|e| format!("{}: {e}", manifest.display()))?;
+    let mut out = String::new();
+    for line in text.lines().map(str::trim).filter(|l| !l.is_empty() && !l.starts_with('#')) {
+        let f: Vec<&str> = line.split(" | ").map(str::trim).collect();
+        let [family, style, file, scripts, ..] = f.as_slice() else {
+            return Err(format!("{}: malformed line: {line}", manifest.display()));
+        };
+        let path = dir.join(file).canonicalize().map_err(|e| format!("{}: {file}: {e}", manifest.display()))?;
+        println!("cargo::rerun-if-changed={}", path.display());
+        let scripts: Vec<String> = scripts.split(',').map(|s| format!("{:?}", s.trim())).collect();
+        let _ = writeln!(
+            out,
+            "    CraftFont {{ family: {family:?}, style: {style:?}, scripts: &[{}], bytes: include_bytes!({:?}) }},",
+            scripts.join(", "),
+            path.display().to_string(),
+        );
+    }
+    Ok(out)
 }
 
 /// The main manifest, plus the native-only Simplified Chinese manifest. The latter is optional

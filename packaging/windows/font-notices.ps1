@@ -22,10 +22,11 @@ function Get-CraftFontNoticeRow([string] $rootPath, [string] $manifest, [string]
 function Get-CraftFontNotices([string] $FontRoot, [bool] $RequireChinese = $false) {
   $rootPath = (Resolve-Path -LiteralPath $FontRoot).Path
   $notices = @{}
-  foreach ($name in 'manifest.txt', 'simplified-chinese-manifest.txt') {
+  # psg-ui-manifest.txt: PSG's interface face, added by packaging/fetch-psg-fonts.sh (optional).
+  foreach ($name in 'manifest.txt', 'simplified-chinese-manifest.txt', 'psg-ui-manifest.txt') {
     $manifest = Join-Path $rootPath "fonts/$name"
     if (-not (Test-Path -LiteralPath $manifest -PathType Leaf)) {
-      if ($name -eq 'manifest.txt' -or $RequireChinese) { throw "Missing font manifest: $manifest" }
+      if ($name -eq 'manifest.txt' -or ($RequireChinese -and $name -eq 'simplified-chinese-manifest.txt')) { throw "Missing font manifest: $manifest" }
       continue
     }
     foreach ($line in Get-Content -LiteralPath $manifest) {

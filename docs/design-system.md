@@ -31,9 +31,12 @@ spacing step, font file and size from these two crates. Only the accent differs.
 
 ## Type
 
-Inter (Regular, Medium, SemiBold) for the interface and JetBrains Mono for code, logs and TeX
-source, in both products; the craft-fonts CJK, Hangul and Arabic faces follow as fallbacks in
-release builds. Sizes: 12 small, 13 body, 15 heading, 20 title, 28 display. Each font file is
+Noto Serif CJK TC (思源宋體; Regular for text and medium labels, SemiBold for headings) for the
+interface in every language, in both products, and JetBrains Mono for code, logs and TeX source.
+Release builds get the serif face from `packaging/fetch-psg-fonts.sh`, which
+`packaging/fetch-craft-fonts.sh` runs; it is never committed (AGENTS.md §1.4). Inter (Regular,
+Medium, SemiBold) and the craft-fonts CJK, Hangul and Arabic faces follow as fallbacks, and Inter
+is the interface face of a build without that input (tests, the web build). Sizes: 12 small, 13 body, 15 heading, 20 title, 28 display. Each font file is
 embedded once (`psg_desktop_ui::fonts`).
 
 ## Components (`psg_desktop_ui::widgets`, `layout`, `notice`)

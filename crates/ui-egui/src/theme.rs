@@ -396,6 +396,8 @@ fn font_definitions_for_platform(prefer_hans: bool, platform: FontPolicyPlatform
         stack.extend(fallback.iter().cloned());
         fonts.families.insert(FontFamily::Name(fam.into()), stack);
     }
+    // PSG's interface face (Noto Serif CJK TC) first, in every language, when the build has it.
+    psg_desktop_ui::fonts::use_interface_face(&mut fonts);
     fonts
 }
 
