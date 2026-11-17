@@ -10,9 +10,12 @@ metadata. Submission, peer review and editorial management are out of scope.
 apps/psg-academic-pdf      egui/eframe window + headless commands (cli.rs)
   ├── app.rs               project, template, metadata, settings, compile, preview, logs, export
   ├── preview.rs           renders the PDF with pdfcraft-render on a worker thread
-  └── cli.rs               check-tex · templates · new · compile
+  ├── tex_setup.rs         downloads and installs/updates PSG's own TeX in the background
+  └── cli.rs               check-tex · install-tex · update-tex · templates · new · compile
 crates/academic            (psg-academic, no UI, layer 4 in xtask/src/layers.rs)
-  ├── tex.rs               finds pdflatex, latexmk, biber, pandoc on the PATH
+  ├── managed.rs           PSG's own TeX (TinyTeX): layout, unpacking, tlmgr updates,
+  │                        installing the packages a document is missing (academic-tex.md)
+  ├── tex.rs               finds pdflatex, latexmk, biber (PSG's TeX first, then the PATH), pandoc
   ├── process.rs           runs a program with a time limit, cancel flag, bounded capture,
   │                        and kills the whole process tree
   ├── compile.rs           the sandboxed latexmk command and CompileReport

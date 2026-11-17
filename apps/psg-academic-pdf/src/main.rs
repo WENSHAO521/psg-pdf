@@ -24,6 +24,7 @@ mod psg_pdf;
 mod recent;
 mod source;
 mod startup;
+mod tex_setup;
 mod theme;
 mod updates;
 

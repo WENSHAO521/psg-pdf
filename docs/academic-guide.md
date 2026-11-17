@@ -1,24 +1,29 @@
 # PSG Academic PDF guide
 
 PSG Academic PDF prepares the final PDF of an **accepted** article: it fills a journal template
-with the manuscript and its publication metadata, typesets it with the TeX installation on your
-computer and shows the result beside the source. It has no submission, peer-review or editorial
+with the manuscript and its publication metadata, typesets it with TeX on your computer (installed
+for you) and shows the result beside the source. It has no submission, peer-review or editorial
 workflow. For how it works inside (sandboxing, templates, what is implemented), see
 [academic.md](academic.md).
 
-## What it needs: TeX
+## TeX: installed for you
 
-PSG Academic PDF uses the TeX installation that is already on the machine and never downloads one.
-It needs `pdflatex`, `latexmk` and `biber` on the `PATH`. `pandoc` is optional and is used only for
-the experimental `.docx` import.
+You don't install TeX. The first time PSG Academic PDF starts, it downloads its own TeX (TinyTeX,
+a small TeX Live, about 55–75 MB) in the background and adds what the templates need, including
+`latexmk`, Biber and BibLaTeX. Settings ▸ TeX installation (also on the Dashboard) shows the
+progress. After that:
 
-| System | Install |
-|---|---|
-| Debian/Ubuntu | `sudo apt install texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern latexmk biber texlive-bibtex-extra` |
-| macOS | MacTeX (includes latexmk and biber) |
-| Windows | TeX Live (includes latexmk and biber). MiKTeX also works, but see the security note in docs/academic.md. |
+- it updates itself about once a week, and **Update TeX now** updates it at once;
+- when a document uses a package it doesn't have yet, the package is installed during the
+  compilation and the document is compiled again;
+- if TeX Live starts a new yearly release, it reinstalls itself from the newest TinyTeX.
 
-Run `psg-academic-pdf check-tex` to see what was found.
+Until it is installed, a TeX Live or MiKTeX already on the computer is used if there is one. The
+first install needs an internet connection. `pandoc` is optional (the experimental `.docx`
+import) and is not installed for you. See [academic-tex.md](academic-tex.md) for where the files
+go and how to remove them.
+
+From the command line: `psg-academic-pdf install-tex`, `update-tex` and `check-tex`.
 
 ## The workspace
 

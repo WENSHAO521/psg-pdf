@@ -16,6 +16,7 @@
 	Add bibliography file…	文献ファイルを追加…
 	Add bibliography, figures or other files	参考文献、図、その他のファイルを追加
 	Added {path} as {name}	{path} を {name} として追加しました
+	Adding the packages the templates use…	テンプレートが使うパッケージを追加中…
 	Affiliation numbers, e.g. 1, 2	所属番号（例: 1, 2）
 	Affiliations	所属
 	All ({n})	すべて（{n}）
@@ -62,11 +63,13 @@
 	Could not check for updates.	アップデートを確認できませんでした。
 	Could not check the TeX installation: {error}	TeX のインストールを確認できませんでした: {error}
 	Could not create the project: {error}	プロジェクトを作成できませんでした: {error}
+	Could not install TeX: {error}	TeX をインストールできませんでした: {error}
 	Could not open the project: {error}	プロジェクトを開けませんでした: {error}
 	Could not read {path}: {error}	{path} を読み込めませんでした: {error}
 	Could not save the project: {error}	プロジェクトを保存できませんでした: {error}
 	Could not save {file}: {error}	{file} を保存できませんでした: {error}
 	Could not start the compilation: {error}	コンパイルを開始できませんでした: {error}
+	Could not update TeX: {error}	TeX を更新できませんでした: {error}
 	Couldn't start the update ({error})	アップデートを開始できませんでした（{error}）
 	Create the project in {path}	{path} にプロジェクトを作成
 	Ctrl	Ctrl
@@ -80,6 +83,7 @@
 	Discard unsaved changes and read the file again	保存していない変更を破棄してファイルを読み直す
 	Dismiss	閉じる
 	Download	ダウンロード
+	Downloading TeX: {done} of {total} MB	TeX をダウンロード中: {done} / {total} MB
 	Downloading and installing update…	アップデートをダウンロードしてインストールしています…
 	Edit manuscript	原稿を編集
 	Editor	エディター
@@ -118,6 +122,11 @@
 	Import template (.zip)…	テンプレートを読み込む（.zip）…
 	Import the manuscript body (LaTeX)	原稿本文を読み込む（LaTeX）
 	Install Pandoc to import .docx (experimental)	Pandoc をインストールすると .docx を読み込めます（試験的機能）
+	Install TeX	TeX をインストール
+	Installed by PSG Academic PDF (TinyTeX {release}), updated {date}. Updates itself weekly.	PSG Academic PDF がインストール（TinyTeX {release}）、{date} に更新。毎週自動で更新されます。
+	Installed the TeX packages this document needs: {packages}	この文書に必要な TeX パッケージをインストールしました: {packages}
+	Installing TeX for PSG Academic PDF…	PSG Academic PDF 用の TeX をインストール中…
+	Installing TeX…	TeX をインストール中…
 	Installing update…	アップデートをインストールしています…
 	Interface size	表示サイズ
 	Issue	号
@@ -136,6 +145,7 @@
 	Licence statement	ライセンス表記
 	Light	ライト
 	Line {n}	{n} 行目
+	Looking for the newest TeX…	最新の TeX を確認中…
 	Manuscript	原稿
 	Manuscript (.tex)…	原稿（.tex）…
 	Manuscript as a new project…	原稿から新しいプロジェクト…
@@ -185,6 +195,7 @@
 	PDF	PDF
 	PDF engine: PdfCraft (MIT OR Apache-2.0)	PDF エンジン: PdfCraft（MIT OR Apache-2.0）
 	PDF preview	PDF プレビュー
+	PSG Academic PDF installs TeX by itself; nothing needs to be installed by hand.	PSG Academic PDF が TeX を自動でインストールします。手動で入れる必要はありません。
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF がインストールされていないため、既定のビューアーで PDF を開きました。PSG PDF は別途ダウンロードできます。
 	Page {n}: {error}	{n} ページ: {error}
 	Pages	ページ
@@ -243,11 +254,15 @@
 	Supported files	対応ファイル
 	Switch area	エリアを切り替え
 	TeX installation	TeX のインストール
+	TeX is being installed or updated; typesetting starts once it is done.	TeX をインストールまたは更新中です。完了すると組版できます。
+	TeX is installed (TinyTeX {release}) and will keep itself up to date.	TeX をインストールしました（TinyTeX {release}）。今後は自動で最新に保たれます。
 	TeX is not ready: see Settings ▸ TeX installation.	TeX の準備ができていません。「設定 ▸ TeX のインストール」を確認してください。
-	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX の準備ができていません: {tools} が見つかりません。latexmk と biber を含む TeX Live をインストールしてから「再確認」を押してください。
+	TeX is not ready: {tools} not found. Press Install TeX in Settings ▸ TeX installation.	TeX の準備ができていません: {tools} が見つかりません。「設定 ▸ TeX のインストール」で「TeX をインストール」を押してください。
 	TeX is ready.	TeX の準備ができました。
+	TeX is up to date.	TeX は最新です。
 	TeX log	TeX ログ
 	TeX not found	TeX が見つかりません
+	TeX not found yet ({tools}); PSG Academic PDF installs its own.	TeX はまだ見つかりません（{tools}）。PSG Academic PDF が自分でインストールします。
 	TeX ready	TeX 準備完了
 	TeX ready, no Biber	TeX 準備完了（Biber なし）
 	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX が致命的なエラーで止まりました。一覧の最初のエラーを直してください。後のエラーはそれが原因であることが多いです。
@@ -267,6 +282,7 @@
 	The update is installed. Close {app} to finish; it restarts by itself.	アップデートをインストールしました。{app} を閉じると完了し、自動で再起動します。
 	The update stopped unexpectedly.	アップデートが予期せず停止しました。
 	Theme	テーマ
+	There is no folder PSG Academic PDF can install TeX in.	PSG Academic PDF が TeX をインストールできるフォルダーがありません。
 	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	この Pandoc は古すぎます。DOCX の読み込みには Pandoc 2.15 以降が必要です
 	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	この引用キーは参考文献にありません。.bib ファイルに項目を追加するか、キーを直してください。
 	This template doesn't use a bibliography file.	このテンプレートは参考文献ファイルを使いません。
@@ -287,15 +303,20 @@
 	Typesetting stopped: it took longer than {secs} s.	組版を止めました：{secs} 秒を超えました。
 	Typesetting with latexmk and pdfLaTeX…	latexmk と pdfLaTeX で組版中…
 	Unbalanced braces: a { without its } (or the other way round) near this line.	括弧の対応が取れていません。この行の近くに } のない {（またはその逆）があります。
+	Unpacking TeX…	TeX を展開中…
 	Unsaved	未保存
 	Unsaved changes	未保存の変更があります
 	Untitled article	無題の論文
 	Update	アップデート
+	Update TeX now	今すぐ TeX を更新
 	Update and Restart	アップデートして再起動
 	Update ready. Close {app} to install it.	アップデートの準備ができました。{app} を閉じるとインストールされます。
 	Updates	アップデート
+	Updating TeX…	TeX を更新中…
 	Used by this project	このプロジェクトで使用中
+	Using the TeX found on this computer until PSG Academic PDF has installed its own.	PSG Academic PDF 独自の TeX が入るまで、このコンピューターの TeX を使います。
 	Volume	巻
+	Wait for the current task to finish.	現在の処理が終わるまでお待ちください。
 	Warning	警告
 	Warnings ({n})	警告（{n}）
 	What's new	新機能
@@ -303,6 +324,7 @@
 	Word (.docx)…	Word（.docx）…
 	Worth a look, but they don't stop the export.	確認をおすすめしますが、書き出しは止まりません。
 	Year	年
+	being installed…	インストール中…
 	by {developer}	開発元: {developer}
 	found	検出
 	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk は通常これが消えるまで再実行します。残る場合は「毎回すべて再構築する」をオンにしてもう一度コンパイルしてください。
