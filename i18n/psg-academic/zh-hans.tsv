@@ -74,7 +74,6 @@
 	DOI	DOI
 	Dark	深色
 	Dashboard	概览
-	Data folder:	数据文件夹：
 	Dates and licence	日期与许可
 	Development build	开发版本
 	Discard unsaved changes and read the file again	放弃未保存的更改并重新读取文件
@@ -332,3 +331,25 @@
 @other	{n} problem found before compiling; see Problems.	编译前发现 {n} 个问题；请查看“问题”。
 @other	{n} warning	{n} 个警告
 @other	{n} word	{n} 个字词
+	Data folder	数据文件夹
+	New projects and the app's settings are kept in this folder.	新项目和应用设置都保存在此文件夹。
+	Chosen	自定义
+	Default	默认
+	Moving the data folder…	正在移动数据文件夹…
+	Move the projects and settings to {path}?	要将项目和设置移动到 {path} 吗？
+	Everything is copied and checked first; the old copies are removed only after that.	会先复制并核对所有文件，确认无误后才删除旧文件。
+	Move data	移动数据
+	Change…	更改…
+	Use the default folder	改回默认文件夹
+	Open folder	打开文件夹
+	Choose where to keep projects and settings	选择保存项目和设置的位置
+	Moving the data folder from {path}.	正在从 {path} 移动数据文件夹。
+	Could not move the data folder: {error}	无法移动数据文件夹：{error}
+	Projects and settings are now kept in {path}.	项目和设置现在保存在 {path}。
+	Everything was copied, but some old files could not be removed from {path}. You can delete them yourself.	所有文件已复制完成，但 {path} 中有些旧文件无法删除，您可以自行删除。
+	{path} is not a full path. Choose a folder.	{path} 不是完整路径，请选择一个文件夹。
+	That is the folder already in use.	这就是当前使用的文件夹。
+	{path} is inside the data folder. Choose a folder outside it.	{path} 位于当前数据文件夹内，请选择其外的文件夹。
+	{path} already exists there. Nothing was moved; choose an empty folder.	该处已有 {path}。未移动任何项目或设置，请选择空文件夹。
+	That folder holds too many files to be a data folder. Nothing was moved.	该文件夹文件过多，不像是数据文件夹。未移动任何项目或设置。
+	Could not move the data folder ({path}: {error}). Nothing was changed.	无法移动数据文件夹（{path}：{error}），未做任何更改。

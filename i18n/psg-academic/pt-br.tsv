@@ -75,7 +75,6 @@
 	DOI	DOI
 	Dark	Escuro
 	Dashboard	Painel
-	Data folder:	Pasta de dados:
 	Dates and licence	Datas e licença
 	Development build	Versão de desenvolvimento
 	Discard unsaved changes and read the file again	Descartar as alterações não salvas e ler o arquivo de novo
@@ -341,3 +340,25 @@
 @other	{n} warning	{n} avisos
 @one	{n} word	{n} palavra
 @other	{n} word	{n} palavras
+	Data folder	Pasta de dados
+	New projects and the app's settings are kept in this folder.	Os novos projetos e as configurações do aplicativo ficam nesta pasta.
+	Chosen	Escolhida
+	Default	Padrão
+	Moving the data folder…	Movendo a pasta de dados…
+	Move the projects and settings to {path}?	Mover os projetos e as configurações para {path}?
+	Everything is copied and checked first; the old copies are removed only after that.	Tudo é copiado e conferido primeiro; as cópias antigas só são removidas depois.
+	Move data	Mover dados
+	Change…	Alterar…
+	Use the default folder	Usar a pasta padrão
+	Open folder	Abrir pasta
+	Choose where to keep projects and settings	Escolha onde guardar os projetos e as configurações
+	Moving the data folder from {path}.	Movendo a pasta de dados de {path}.
+	Could not move the data folder: {error}	Não foi possível mover a pasta de dados: {error}
+	Projects and settings are now kept in {path}.	Os projetos e as configurações agora ficam em {path}.
+	Everything was copied, but some old files could not be removed from {path}. You can delete them yourself.	Tudo foi copiado, mas alguns arquivos antigos em {path} não puderam ser removidos. Você pode excluí-los.
+	{path} is not a full path. Choose a folder.	{path} não é um caminho completo. Escolha uma pasta.
+	That is the folder already in use.	Essa já é a pasta em uso.
+	{path} is inside the data folder. Choose a folder outside it.	{path} está dentro da pasta de dados. Escolha uma pasta fora dela.
+	{path} already exists there. Nothing was moved; choose an empty folder.	{path} já existe lá. Nenhum projeto ou configuração foi movido; escolha uma pasta vazia.
+	That folder holds too many files to be a data folder. Nothing was moved.	Essa pasta tem arquivos demais para ser uma pasta de dados. Nenhum projeto ou configuração foi movido.
+	Could not move the data folder ({path}: {error}). Nothing was changed.	Não foi possível mover a pasta de dados ({path}: {error}). Nada foi alterado.

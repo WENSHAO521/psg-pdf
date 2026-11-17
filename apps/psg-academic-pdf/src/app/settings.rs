@@ -1,4 +1,4 @@
-//! Settings: language, appearance, the TeX installation, updates and About.
+//! Settings: language, appearance, the TeX installation, the data folder, updates and About.
 
 use psg_desktop_ui::style::ThemeChoice;
 use psg_desktop_ui::widgets;
@@ -61,6 +61,11 @@ impl AcademicApp {
             ui.add_space(psg_brand::space::M);
             widgets::card(ui, |ui| {
                 ui.set_width(ui.available_width());
+                self.data_folder_card(ui);
+            });
+            ui.add_space(psg_brand::space::M);
+            widgets::card(ui, |ui| {
+                ui.set_width(ui.available_width());
                 widgets::section_header(ui, t("Updates"));
                 if widgets::secondary(ui, t("Check for updates…")).clicked() {
                     self.updates.request_check();
@@ -80,8 +85,6 @@ impl AcademicApp {
                 });
                 widgets::muted(ui, PUBLISHER);
                 widgets::muted(ui, t("PDF engine: PdfCraft (MIT OR Apache-2.0)"));
-                widgets::muted(ui, t("Data folder:"));
-                ui.label(egui::RichText::new(self.data_root.display().to_string()).monospace().small());
                 ui.add_space(psg_brand::space::S);
                 ui.horizontal_wrapped(|ui| {
                     widgets::muted(ui, t("Shortcuts:"));
