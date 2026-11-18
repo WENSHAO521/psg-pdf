@@ -377,3 +377,21 @@
 
 # Print readiness
 	Print readiness	印前检查
+
+# Page transitions
+	Blinds	百叶窗
+	Wipe	擦除
+	Dissolve	溶解
+	Glitter	闪烁
+	Fly	飞入
+	Push	推移
+	Cover	覆盖
+	Uncover	揭开
+	Fade	淡入淡出
+	Transition duration	转场时长
+	Inward	向内
+	Outward	向外
+	Opaque background	不透明背景
+	Advance automatically	自动翻页
+	The selected pages have different presentation settings. Applying sets the same values on all of them.	所选页面的演示设置不同。应用后，所有选中的页面将使用相同设置。
+	The document changed while the dialog was open, so nothing was changed.	对话框打开期间文档已更改，因此未应用任何更改。

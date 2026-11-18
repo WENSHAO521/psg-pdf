@@ -117,6 +117,9 @@ fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
     if app.dialog != Some(Dialog::FieldTable) {
         app.field_table_draft = None;
     }
+    if app.dialog != Some(Dialog::PageTransitions) {
+        app.page_transition_draft = None;
+    }
     if app.dialog != Some(Dialog::PrintReadiness) && !app.print_readiness_report.is_empty() {
         app.print_readiness_report = String::new();
     }
@@ -264,6 +267,18 @@ fn dialog_body(ui: &mut egui::Ui, app: &mut PdfCraftApp, dialog: Dialog, req: &m
                 req.page_props_now = Some((d.doc, d.generation, Edit::SetTabOrder { pages: d.pages.clone(), order }));
             }
             req.close = ok || cancel;
+            return false;
+        }
+        Dialog::PageTransitions => {
+            let Some(d) = app.page_transition_draft.as_mut() else {
+                req.close = true;
+                return false;
+            };
+            let (apply, cancel) = crate::organize_panel::transition_body(ui, d);
+            if apply {
+                req.page_props_now = Some((d.doc, d.generation, Edit::SetTransition { pages: d.pages.clone(), spec: d.spec.clone() }));
+            }
+            req.close = apply || cancel;
             return false;
         }
         Dialog::DuplicateField => {
@@ -1963,7 +1978,13 @@ fn finish_actions(app: &mut PdfCraftApp, req: &mut Pending) {
         if app.active_ids().is_some_and(|(_, id)| id == doc) && app.session.get(doc).is_some_and(|d| d.edit_generation() == generation) {
             app.apply_edit(e);
         } else {
-            app.notify_tr("The document changed while the dialog was open, so nothing was changed. Open Page properties again to set the tab order.");
+            if matches!(e, Edit::SetTransition { .. }) {
+                app.notify_tr("The document changed while the dialog was open, so nothing was changed.");
+            } else {
+                app.notify_tr(
+                    "The document changed while the dialog was open, so nothing was changed. Open Page properties again to set the tab order.",
+                );
+            }
         }
     }
     if req.extract_now {

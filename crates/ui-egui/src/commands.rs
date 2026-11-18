@@ -410,6 +410,14 @@ impl PdfCraftApp {
                     self.dialog = Some(Dialog::PageProps);
                 }
             }
+            "page.transitions" => {
+                if let Some((_, id)) = self.active_ids()
+                    && let Some(doc) = self.session.get(id)
+                {
+                    self.page_transition_draft = Some(crate::organize_panel::TransitionDraft::new(doc, targets));
+                    self.dialog = Some(Dialog::PageTransitions);
+                }
+            }
             "bookmark.add" => self.bookmark_action(crate::panels::BmAction::New),
             "bookmark.from_structure" => self.bookmark_action(crate::panels::BmAction::FromStructure),
             "bookmark.from_text_styles" => self.bookmark_action(crate::panels::BmAction::FromTextStyles),

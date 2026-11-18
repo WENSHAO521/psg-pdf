@@ -230,6 +230,24 @@ fn print_production_opens_the_readiness_report() {
 }
 
 #[test]
+fn page_transitions_set_display_time_on_the_selected_pages() {
+    let mut h = harness();
+    h.state_mut().views[0].select_pages(&[0, 2]);
+    h.state_mut().run_command("page.transitions");
+    h.run_steps(2);
+    assert_eq!(h.state().dialog, Some(Dialog::PageTransitions));
+    h.get_by_label("Advance automatically").click();
+    h.run_steps(2);
+    h.get_by_label("Apply").click();
+    h.run_steps(3);
+    let (_, id) = h.state().active_ids().unwrap();
+    let doc = h.state().session.get(id).unwrap();
+    assert_eq!(doc.info.transitions.iter().map(|t| (t.page, t.display)).collect::<Vec<_>>(), [(0, Some(5.0)), (2, Some(5.0))]);
+    assert!(h.state_mut().execute("edit.undo"));
+    assert!(h.state().session.get(id).unwrap().info.transitions.is_empty());
+}
+
+#[test]
 fn a_tool_chosen_with_no_document_asks_for_one_and_runs_on_it() {
     let dir = std::env::temp_dir().join(format!("pdfcraft-tool-open-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();

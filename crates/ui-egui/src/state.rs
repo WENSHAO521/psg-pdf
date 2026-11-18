@@ -119,6 +119,8 @@ pub enum Dialog {
     PrintReadiness,
     /// Organize pages ▸ Page properties (the tab order of the selected pages).
     PageProps,
+    /// Organize pages ▸ Page transitions (the presentation effects on the selected pages).
+    PageTransitions,
     /// Protect Using Password.
     Protect,
     /// Bookmarks ▸ New bookmarks from text styles (#1693).

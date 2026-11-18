@@ -209,7 +209,7 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
                     item("Duplicate pages", "copy-plus", "page.duplicate", Ready),
                     item("Reverse pages", "arrow-up-down", "page.reverse", Ready),
                     item("Page labels", "tag", "page.number", Ready),
-                    item("Page transitions", "presentation", "page.transitions", Planned("M4")),
+                    item("Page transitions", "presentation", "page.transitions", Ready),
                 ],
             },
         ],

@@ -9,7 +9,7 @@
 //! toolbar did, so they run, refuse and undo the same way.
 
 use egui::{Align2, CornerRadius, Rect, Sense, Stroke, vec2};
-use pdfcraft_engine::Edit;
+use pdfcraft_engine::{Edit, TRANSITION_DIRECTIONS, TRANSITION_STYLES, Transition, TransitionSpec};
 
 use crate::canvas::ViewAction;
 use crate::theme::{self, Tokens};
@@ -145,7 +145,7 @@ pub(crate) fn panel(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
         for (icon, label, availability, command) in [
             ("square-dashed-mouse-pointer", "Set page boxes", Availability::Ready, Some("page.boxes")),
             ("crop", "Crop pages", Availability::Ready, Some("page.crop")),
-            ("presentation", "Page transitions", Availability::Later, Some("page.transitions")),
+            ("presentation", "Page transitions", Availability::Ready, Some("page.transitions")),
             ("file-text", "Page templates", Availability::Later, None),
             ("printer", "Print pages", Availability::Ready, Some("print.dialog")),
         ] {
@@ -182,6 +182,142 @@ pub(crate) fn panel(app: &mut PdfCraftApp, ui: &mut egui::Ui, t: &Tokens) {
     if back && !close {
         app.enter_mode(crate::Mode::AllTools);
     }
+}
+
+pub(crate) struct TransitionDraft {
+    pub doc: pdfcraft_engine::DocId,
+    pub generation: u64,
+    pub pages: Vec<usize>,
+    pub spec: TransitionSpec,
+    before: Option<TransitionSpec>,
+}
+
+impl TransitionDraft {
+    pub(crate) fn new(doc: &pdfcraft_engine::Document, pages: Vec<usize>) -> Self {
+        let transitions = &doc.info.transitions;
+        let for_page = |&page: &usize| {
+            let t = transitions.binary_search_by_key(&page, |t| t.page).ok().and_then(|i| transitions.get(i));
+            TransitionSpec {
+                display: t.and_then(|t| t.display),
+                transition: t.and_then(|t| {
+                    Some(Transition {
+                        style: t.style?.name().into(),
+                        duration: t.duration,
+                        horizontal: t.horizontal,
+                        inward: t.inward,
+                        direction: t.direction,
+                        scale: t.scale,
+                        opaque: t.opaque,
+                    })
+                }),
+            }
+        };
+        let mut existing = pages.iter().map(for_page);
+        let before = existing.next().filter(|first| existing.all(|next| &next == first));
+        let spec = before.clone().unwrap_or(TransitionSpec { transition: None, display: None });
+        Self { doc: doc.id, generation: doc.edit_generation(), pages, spec, before }
+    }
+}
+
+fn transition_label(style: &str) -> &str {
+    match style {
+        "Split" => tl!("Split"),
+        "Blinds" => tl!("Blinds"),
+        "Box" => tl!("Box"),
+        "Wipe" => tl!("Wipe"),
+        "Dissolve" => tl!("Dissolve"),
+        "Glitter" => tl!("Glitter"),
+        "R" => tl!("Replace"),
+        "Fly" => tl!("Fly"),
+        "Push" => tl!("Push"),
+        "Cover" => tl!("Cover"),
+        "Uncover" => tl!("Uncover"),
+        "Fade" => tl!("Fade"),
+        _ => tl!("None"),
+    }
+}
+
+pub(crate) fn transition_body(ui: &mut egui::Ui, draft: &mut TransitionDraft) -> (bool, bool) {
+    ui.label(egui::RichText::new(tl!("Page transitions")).font(theme::semibold(18.0)));
+    ui.label(format!("{} ({})", tl!("Pages selected"), draft.pages.len()));
+    if draft.before.is_none() {
+        ui.label(tl!("The selected pages have different presentation settings. Applying sets the same values on all of them."));
+    }
+    ui.horizontal(|ui| {
+        let current = draft.spec.transition.as_ref().map_or("", |t| t.style.as_str());
+        let mut chosen = None;
+        let label = ui.label(tl!("Effect"));
+        craft_ui::ComboBox::from_id_salt("page-transition-effect")
+            .selected_text(transition_label(current))
+            .show_ui(ui, |ui| {
+                for style in std::iter::once("").chain(TRANSITION_STYLES) {
+                    if ui.selectable_label(style == current, transition_label(style)).clicked() {
+                        chosen = Some(style);
+                    }
+                }
+            })
+            .response
+            .labelled_by(label.id);
+        if let Some(style) = chosen.filter(|style| *style != current) {
+            draft.spec.transition = (!style.is_empty()).then(|| Transition::new(style));
+        }
+    });
+    if let Some(transition) = draft.spec.transition.as_mut() {
+        ui.horizontal(|ui| {
+            let label = ui.label(tl!("Transition duration"));
+            ui.add(egui::DragValue::new(&mut transition.duration).range(0.0..=10.0).clamp_existing_to_range(false).speed(0.1).suffix(" s"))
+                .labelled_by(label.id);
+        });
+        if matches!(transition.style.as_str(), "Split" | "Blinds") {
+            ui.horizontal(|ui| {
+                ui.radio_value(&mut transition.horizontal, true, tl!("Horizontal"));
+                ui.radio_value(&mut transition.horizontal, false, tl!("Vertical"));
+            });
+        }
+        if matches!(transition.style.as_str(), "Split" | "Box" | "Fly") {
+            ui.horizontal(|ui| {
+                ui.radio_value(&mut transition.inward, true, tl!("Inward"));
+                ui.radio_value(&mut transition.inward, false, tl!("Outward"));
+            });
+        }
+        if matches!(transition.style.as_str(), "Wipe" | "Glitter" | "Fly" | "Cover" | "Uncover" | "Push") {
+            ui.horizontal(|ui| {
+                ui.label(tl!("Direction"));
+                let text = |direction: Option<u16>| direction.map_or_else(|| tl!("None").to_string(), |d| format!("{d}°"));
+                craft_ui::ComboBox::from_id_salt("page-transition-direction").selected_text(text(transition.direction)).show_ui(ui, |ui| {
+                    for direction in TRANSITION_DIRECTIONS.into_iter().map(Some).chain((transition.style == "Fly").then_some(None)) {
+                        ui.selectable_value(&mut transition.direction, direction, text(direction));
+                    }
+                });
+            });
+        }
+        if transition.style == "Fly" {
+            ui.horizontal(|ui| {
+                let label = ui.label(tl!("Scale"));
+                ui.add(egui::DragValue::new(&mut transition.scale).range(0.01..=10.0).clamp_existing_to_range(false).speed(0.01))
+                    .labelled_by(label.id);
+                ui.checkbox(&mut transition.opaque, tl!("Opaque background"));
+            });
+        }
+    }
+    ui.horizontal(|ui| {
+        let mut timed = draft.spec.display.is_some();
+        let toggle = ui.checkbox(&mut timed, tl!("Advance automatically"));
+        if toggle.changed() {
+            draft.spec.display = timed.then_some(5.0);
+        }
+        if let Some(seconds) = draft.spec.display.as_mut() {
+            ui.add(egui::DragValue::new(seconds).range(0.0..=600.0).clamp_existing_to_range(false).speed(0.1).suffix(" s")).labelled_by(toggle.id);
+        }
+    });
+    ui.add_space(12.0);
+    let (mut apply, mut cancel) = (false, false);
+    ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+        let changed = !draft.pages.is_empty() && draft.before.as_ref() != Some(&draft.spec);
+        apply = ui.add_enabled_ui(changed, |ui| widgets::pill_button(ui, tl!("Apply"), true)).inner.clicked();
+        cancel = widgets::pill_button(ui, tl!("Cancel"), false).clicked();
+    });
+    (apply, cancel)
 }
 
 /// Page Properties ▸ Tab Order for the pages it opened on: Use Row Order, Use Column Order, Use

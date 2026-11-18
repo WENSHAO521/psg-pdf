@@ -429,6 +429,7 @@ pub const COMMANDS: &[CommandSpec] = &[
     c("prepress.convert_colors", "Convert colours…", None, None, Modification, "palette"),
     c("prepress.hairlines", "Fix hairlines…", None, None, Modification, "minus"),
     c("page.properties", "Page properties…", PAGES, None, Modification, "info"),
+    c("page.transitions", "Page transitions", PAGES, None, Assembly, "presentation"),
     c("help.shortcuts", "Keyboard shortcuts", HELP, None, Nothing, "circle-help"),
     c("help.app_page", "PSG PDF website", HELP, None, Nothing, "globe"),
     c("help.publisher_page", "Panorama Scholarly Group website", HELP, None, Nothing, "house"),

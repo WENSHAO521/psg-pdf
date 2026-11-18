@@ -764,6 +764,7 @@ pub struct PdfCraftApp {
     pub duplicate_draft: Option<DuplicateDraft>,
     /// Page Properties: which pages, and the tab order chosen for them.
     pub page_props_draft: Option<PagePropsDraft>,
+    pub(crate) page_transition_draft: Option<organize_panel::TransitionDraft>,
     /// Text field table: the table being set up, and the page it goes on.
     pub field_table_draft: Option<field_table_ui::FieldTableDraft>,
     /// Prepare a form ▸ Preview: fill the form instead of editing its fields.
