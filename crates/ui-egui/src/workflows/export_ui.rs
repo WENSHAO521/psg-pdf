@@ -8,6 +8,8 @@ use std::sync::{Arc, Mutex};
 use egui::{Align, Layout};
 use pdfcraft_engine::export::{ExportSource, Exporter, ImageFormat};
 
+#[cfg(not(target_arch = "wasm32"))]
+use crate::file_filter::AddFilterAnyCase as _;
 use crate::marks_ui::PageRange;
 use crate::theme::{self, Tokens};
 use crate::{PdfCraftApp, widgets};
