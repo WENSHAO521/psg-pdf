@@ -81,8 +81,11 @@ fn chinese_ui_text_prefers_the_chinese_face() {
         let stack = &defs.families[&family];
         let first_zh = stack.iter().position(|n| hans.iter().any(|h| h == n)).expect("a Hans face is a fallback");
         let first_ja = stack.iter().position(|n| n.starts_with("BIZ UDPGothic")).expect("BIZ UDPGothic is a fallback");
-        let own = stack.iter().position(|n| n == "Inter" || n == "JetBrainsMono").expect("the app's own font");
-        assert!(own < first_zh && first_zh < first_ja, "{family:?}: {stack:?}");
+        assert!(first_zh < first_ja, "{family:?}: {stack:?}");
+        if let Some(faces) = psg_desktop_ui::fonts::interface_faces("zh-hans") {
+            let start = usize::from(family == FontFamily::Monospace);
+            assert_eq!(stack.get(start), Some(&faces.regular.name()), "{family:?}: {stack:?}");
+        }
     }
     let mut fonts = Fonts::new(TextOptions::default(), defs);
     for id in families() {
