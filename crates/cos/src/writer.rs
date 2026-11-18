@@ -955,22 +955,20 @@ pub fn pdf_date(unix_secs: i64) -> String {
 }
 
 /// Days since 1970-01-01 → proleptic Gregorian (year, month, day). Total for any `i64` count:
-/// dates past `NaiveDate`'s ±262143-year range keep their proleptic Gregorian year instead of
-/// falling back to the epoch.
+/// dates beyond Jiff's range keep their proleptic Gregorian year.
 ///
-/// The Gregorian calendar repeats every 400 years (146_097 days), so chrono converts the day
+/// The Gregorian calendar repeats every 400 years (146_097 days), so Jiff converts the day
 /// within one cycle and whole cycles go back into the year (an `i128` so the extremes can't
-/// overflow), keeping chrono as the only calendar logic. 1970-01-01 is `num_days_from_ce` 719_163.
+/// overflow).
 pub fn civil_from_days(days: i64) -> (i64, u32, u32) {
-    use chrono::Datelike;
+    const UNIX_EPOCH: jiff::civil::Date = jiff::civil::Date::constant(1970, 1, 1);
     let (cycles, rest) = (days.div_euclid(146_097), days.rem_euclid(146_097));
-    // `rest + 719_163` is 719_163..865_259, always a valid CE day.
-    match i32::try_from(rest + 719_163).ok().and_then(chrono::NaiveDate::from_num_days_from_ce_opt) {
-        Some(d) => {
+    match UNIX_EPOCH.checked_add(jiff::SignedDuration::from_hours(rest * 24)) {
+        Ok(d) => {
             let y = i128::from(d.year()) + i128::from(cycles) * 400;
-            (i64::try_from(y).unwrap_or(if y < 0 { i64::MIN } else { i64::MAX }), d.month(), d.day())
+            (i64::try_from(y).unwrap_or(if y < 0 { i64::MIN } else { i64::MAX }), d.month() as u32, d.day() as u32)
         }
-        None => (1970, 1, 1), // unreachable
+        Err(_) => (1970, 1, 1), // unreachable: the remainder is within 400 years of 1970
     }
 }
 
@@ -1140,7 +1138,7 @@ mod tests {
         assert_eq!(pdf_date(-1), "D:19691231235959Z");
         // Years past 9999 keep the plain zero-padded year (no `+`), as the hand-rolled code did.
         assert_eq!(pdf_date(253_402_300_800), "D:100000101000000Z");
-        // Past chrono's ±262143-year range the proleptic Gregorian date is kept, not the epoch.
+        // Past the date library’s year range the proleptic Gregorian date is kept, not the epoch.
         // Pinned to the old hand-rolled output (which had no year clamp — a negative year keeps
         // its sign, exactly as before).
         assert_eq!(pdf_date(10_000_000_000_000), "D:3188570520174640Z");

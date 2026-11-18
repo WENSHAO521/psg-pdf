@@ -294,7 +294,8 @@ impl AcademicApp {
         let Some(tex) = &self.managed else { return };
         let text = if self.env.as_ref().is_some_and(|e| e.managed) {
             let state = tex.state();
-            let date = |s: &str| chrono::DateTime::parse_from_rfc3339(s).map(|d| d.with_timezone(&chrono::Local).format("%Y-%m-%d").to_string()).ok();
+            let zone = jiff::tz::TimeZone::system();
+            let date = |s: &str| s.parse::<jiff::Timestamp>().ok().map(|t| t.to_zoned_datetime(zone.clone()).date().to_string());
             let updated = date(&state.updated_at).or_else(|| date(&state.installed_at)).unwrap_or_else(|| "?".into());
             tf(
                 "Installed by PSG Academic PDF (TinyTeX {release}), updated {date}. Updates itself weekly.",

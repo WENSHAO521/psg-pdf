@@ -150,7 +150,7 @@ impl PublicationMetadata {
         }
         for (field, value) in [("received", &self.received), ("revised", &self.revised), ("accepted", &self.accepted), ("published", &self.published)]
         {
-            if !value.trim().is_empty() && chrono::NaiveDate::parse_from_str(value.trim(), "%Y-%m-%d").is_err() {
+            if !value.trim().is_empty() && jiff::civil::Date::strptime("%Y-%m-%d", value.trim()).is_err() {
                 issue(field, format!("\"{}\" is not a date written YYYY-MM-DD.", value.trim()), false);
             }
         }

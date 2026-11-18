@@ -251,17 +251,12 @@ fn english_label(command: &CommandRef) -> Option<String> {
     FILL.iter().find(|(id, _)| *id == command.id).map(|(_, label)| (*label).to_owned())
 }
 
-/// The menus the bar itself shows ([`PdfCraftApp::menu_bar`]).
-const BAR_TITLES: &[&str] = &["File", "Edit", "View", "Sign", "Window", "Help"];
-
 /// The English label of a row or title, for its mnemonic in a language whose labels have no ASCII
-/// letter. The bar's own titles get none there: "檔案(F) 編輯(E) 檢視(V)…" crowded the top bar
-/// beside the mode tabs. Alt or F10 still puts the keyboard on the bar (← → and ↩ open the
-/// menus), and every row inside the menus keeps its letter ("開啟(O)…").
+/// letter. Top-level titles and items use the same menu keyboard handling.
 fn english(labeled: Labeled<'_>) -> Option<String> {
     match labeled {
         Labeled::Command(command) => english_label(command),
-        Labeled::Title(shown) => TITLES.iter().filter(|t| !BAR_TITLES.contains(t)).find(|t| tl!(t) == shown).map(|t| (*t).to_owned()),
+        Labeled::Title(shown) => TITLES.iter().find(|t| tl!(t) == shown).map(|t| (*t).to_owned()),
     }
 }
 
@@ -701,13 +696,11 @@ mod tests {
         }
     }
 
-    /// The bar's own titles have no mnemonic letter to show after a label without one ("檔案",
-    /// not "檔案(F)"); the submenus and items inside the menus keep theirs.
     #[test]
-    fn only_the_bars_own_titles_go_without_an_english_mnemonic() {
+    fn menu_titles_and_commands_keep_their_english_mnemonic_fallback() {
         crate::i18n::set_current(crate::i18n::Lang::EN);
-        for title in BAR_TITLES {
-            assert_eq!(english(Labeled::Title(title)), None, "{title}");
+        for title in ["File", "Edit", "View", "Sign", "Window", "Help"] {
+            assert_eq!(english(Labeled::Title(title)).as_deref(), Some(title));
         }
         assert_eq!(english(Labeled::Title("Pages")).as_deref(), Some("Pages"), "a submenu of Edit");
         assert_eq!(english(Labeled::Title("Export")).as_deref(), Some("Export"));

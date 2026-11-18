@@ -44,9 +44,8 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 log = { workspace = true }
 zeroize = { workspace = true }
-# UTC/calendar display (combine modified-time stamp, the form date picker) goes through chrono
-# (no hand-rolled calendar code); std-only, so it stays wasm-safe.
-chrono = { workspace = true }
+# Calendar arithmetic for the form date picker, with the same features on desktop and web.
+jiff = { workspace = true }
 # Monotonic deadlines for work that runs in `logic` with no UI pass (native and web).
 web-time = { workspace = true }
 # Hands rendered rasters to egui as its pixels, without copying; already in the tree through egui and wgpu.

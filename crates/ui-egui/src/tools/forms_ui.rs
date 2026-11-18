@@ -716,20 +716,10 @@ fn calendar(ctx: &egui::Context, view: &mut DocView, field: egui::Rect, fmt: &st
                         (y, m) = if m == 12 { y.checked_add(1).map_or((y, m), |next| (next, 1)) } else { (y, m + 1) };
                     }
                 });
-                // Weekday of the 1st (0 = Sunday), Zeller-style via days since 1970-01-01 (a Thursday).
-                use chrono::Datelike;
-                // The month the calendar shows: the weekday of its 1st (0 = Sunday) and its
-                // length, both from chrono. A year chrono can't represent falls back to a plain
-                // 31-day month starting on Sunday, which only the arrows can reach.
-                let first_of = |y: i32, m: u32| chrono::NaiveDate::from_ymd_opt(y, m, 1);
-                let first = first_of(y, m).map_or(0, |d| d.weekday().num_days_from_sunday() as usize);
-                // `y + 1` for December would overflow at `i32::MAX`; a year chrono can't represent
-                // (or that overflows here) falls back to the plain 31-day month.
-                let next_y = if m == 12 { y.checked_add(1) } else { Some(y) };
-                let len = match (first_of(y, m), next_y.and_then(|next| first_of(next, if m == 12 { 1 } else { m + 1 }))) {
-                    (Some(a), Some(b)) => (b - a).num_days() as usize,
-                    _ => 31,
-                };
+                // Gregorian leap years and weekdays repeat every 400 years, even for a month
+                // reached from an out-of-range date stored in the form.
+                let month = i8::try_from(m).ok().and_then(|m| jiff::civil::Date::new(y.rem_euclid(400) as i16, m, 1).ok());
+                let (first, len) = month.map_or((0, 31), |d| (d.weekday().to_sunday_zero_offset() as usize, d.days_in_month() as usize));
                 let grid = egui::Grid::new(("date-grid", view.view_key())).spacing([4.0, 2.0]).show(ui, |ui| {
                     for d in ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] {
                         ui.label(egui::RichText::new(tl_ctx!("calendar weekday", d)).small());

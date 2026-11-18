@@ -18,6 +18,7 @@ use std::time::Duration;
 
 use crate::dialog::{StartupPrompt, StartupPromptResponse};
 use crate::pins::{Choice, Pins};
+use crate::protocol::JobPhase;
 use crate::release::Release;
 use crate::self_update::{Outcome, Restart};
 use crate::translate::{Note, Translate, english};
@@ -137,6 +138,7 @@ pub struct Updater {
     started: bool,
     check: Option<Receiver<Checked>>,
     install: Option<(Receiver<Result<Restart, Failure>>, Release)>,
+    progress: Arc<Mutex<Option<JobPhase>>>,
     prompt: Option<StartupPrompt>,
     /// A finished installation waiting for the app to exit: what still has to start then, and
     /// the release it installs.
@@ -180,6 +182,7 @@ impl Updater {
             started: false,
             check: None,
             install: None,
+            progress: Arc::new(Mutex::new(None)),
             prompt: None,
             restart: None,
             installed: false,
@@ -192,6 +195,12 @@ impl Updater {
             translate: english,
             prereleases: false,
         }
+    }
+
+    /// The latest phase of this update, including real download bytes when available.
+    pub fn progress(&self) -> Option<JobPhase> {
+        self.install.as_ref()?;
+        *self.progress.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
     /// PSG patch: joins (`true`) or leaves the beta channel. The next check uses it; a check
@@ -558,8 +567,9 @@ impl Updater {
         if can_start && self.restart.is_some() && std::mem::take(&mut self.close_wanted) {
             return Action::Close;
         }
+        let progress = self.progress();
         let Some(prompt) = &mut self.prompt else { return Action::None };
-        match prompt.show(ctx) {
+        match prompt.show_with_progress(ctx, progress) {
             StartupPromptResponse::Pending => Action::None,
             StartupPromptResponse::UpdateAndRestart => {
                 self.request_install(ctx, can_start);
@@ -653,8 +663,16 @@ impl Updater {
         let (app, version, ctx, release) = (self.app, self.version.clone(), ctx.clone(), prompt.release.clone());
         let worker_release = release.clone();
         let exiting = handoff(&mut self.exiting);
+        // The UI polls the latest phase. Keep one snapshot rather than queuing every byte update.
+        self.progress = Arc::new(Mutex::new(None));
+        let progress = Arc::clone(&self.progress);
         let spawned = std::thread::Builder::new().name("self-update".into()).spawn(move || {
-            let run = || install(app, &installed, worker_release, &version).map_err(Failure::Installer);
+            let run = || {
+                install(app, &installed, worker_release, &version, &mut |phase| {
+                    *progress.lock().unwrap_or_else(PoisonError::into_inner) = Some(phase);
+                })
+                .map_err(Failure::Installer)
+            };
             let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(run)).unwrap_or_else(|_| Err(Failure::panicked()));
             deliver(app, &tx, &exiting, paths.as_ref(), outcome);
             ctx.request_repaint();
@@ -707,7 +725,13 @@ fn deliver(app: &App, tx: &Sender<Result<Restart, Failure>>, exiting: &Mutex<boo
     }
 }
 
-fn install(app: &'static App, installed: &self_update::Install, mut release: Release, version: &str) -> Result<Restart, String> {
+fn install(
+    app: &'static App,
+    installed: &self_update::Install,
+    mut release: Release,
+    version: &str,
+    phase: &mut dyn FnMut(JobPhase),
+) -> Result<Restart, String> {
     let http = Http::new(&format!("{}/Update", app.name)).map_err(|e| format!("could not initialize HTTP: {e}"))?;
     if release.assets.is_empty()
         && let Some(full) = check_for_update(app, &http, version).map_err(|e| format!("could not fetch release assets: {e}"))?
@@ -716,7 +740,7 @@ fn install(app: &'static App, installed: &self_update::Install, mut release: Rel
     }
     let paths = Paths::for_app(app).map_err(|e| format!("could not find paths: {e}"))?;
     let platform = Platform::current().ok_or("unsupported platform for self update")?;
-    self_update::prepare_update(app, installed, &release, platform, &http, &paths, &Stop::default(), &mut |_| {}, &|| Ok(()), Some(version))
+    self_update::prepare_update(app, installed, &release, platform, &http, &paths, &Stop::default(), phase, &|| Ok(()), Some(version))
 }
 
 /// Download in the prompt: the release page, when it is a safe web link (an app may build its

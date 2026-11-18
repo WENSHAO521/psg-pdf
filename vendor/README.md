@@ -1,5 +1,14 @@
 # Vendored crates
 
+## craft-print
+
+Copied from `storytold/craft-libs` at `60ede99985ef1e5df87a2aca66ed538eb23dec99`
+under the upstream MIT or Apache-2.0 license. The manifest pins `winprint` to
+`f084d353f53b5a890041725e86744bdff92447ef`, where PDFium's build dependencies
+are optional. PSG PDF uses Windows' PDF printing backend and leaves PDFium off,
+so it no longer builds the unused Sigstore packages that depended on Chrono.
+Switch back to the shared crate when its published pin includes this fix.
+
 ## craft-update
 
 The in-app updater, from [storytold/craft-libs](https://github.com/storytold/craft-libs) at
@@ -14,6 +23,8 @@ each marked `PSG patch` in the source:
   ([docs/update-signing.md](../docs/update-signing.md)).
 - `App::app_id`: the reverse-DNS id of PSG's packages instead of `ai.storyteller.<id>`.
 - `Updater::set_prereleases` and `check_for_update_on`: the beta channel.
+- `src/dialog.rs` and `src/updater.rs`: the update card reserves room for its close button and
+  shows byte progress and installation phases from the self-update worker.
 
 Tests: `CARGO_TARGET_DIR=target/vendor-tests cargo test --manifest-path vendor/craft-update/Cargo.toml --lib`
 (`process::tests::running_paths_are_matched_literally` fails in containers whose process table

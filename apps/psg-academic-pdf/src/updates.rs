@@ -156,6 +156,7 @@ impl Updates {
         if self.open {
             let response = CheckResultDialog::new(&UPDATE_APP, env!("CARGO_PKG_VERSION"))
                 .with_translator(crate::i18n::updater_text)
+                .with_progress(self.updater.progress())
                 .show(ctx, self.updater.status());
             match response {
                 CheckResultResponse::None => {}

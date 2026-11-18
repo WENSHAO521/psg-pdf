@@ -41,7 +41,7 @@ pub fn open_log(dir: &Path) -> std::io::Result<(PathBuf, File)> {
 
 /// One log line.
 pub fn format_line(level: log::Level, target: &str, message: &str) -> String {
-    let ts = chrono::Utc::now().format("%Y-%m-%dT%H:%M:%S%.3fZ");
+    let ts = psg_academic::managed::now_utc().strftime("%Y-%m-%dT%H:%M:%S%.3fZ");
     format!("{ts} {level:<5} {target}: {message}\n")
 }
 
