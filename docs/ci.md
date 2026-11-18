@@ -43,10 +43,9 @@ changes. Release tags and their rules are unchanged (`packaging/release-tag.sh`)
 `beta` or `main` of `WENSHAO521/psg-pdf` publishes. A beta number never goes below an earlier beta of
 the same version, because the run counter restarted with the new workflow file.
 
-**Release conditions.** The plan, the gate (Linux and Windows) and the builds must pass. A stable
-release needs both products on all three platforms, each having passed its install tests. A beta
-needs Linux and Windows and publishes without macOS when its runner never started; the notes say
-what is missing.
+**Release conditions.** The plan and the Linux and Windows gates must pass. Every beta and stable
+release requires both products to build and pass install tests on Windows, macOS and Linux.
+The release job checks that all expected installer files are present in the platform artifacts.
 
 **Concurrency.** A newer push to a pull request or feature branch cancels the older run. Runs on
 `beta` and `main` always finish.

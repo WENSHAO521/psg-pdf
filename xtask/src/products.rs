@@ -62,7 +62,7 @@ pub struct Product {
 }
 
 /// The release workflow's platforms: (name, runner).
-pub const PLATFORMS: &[(&str, &str)] = &[("linux-x86_64", "ubuntu-22.04"), ("macos-universal", "macos-15"), ("windows-x64", "windows-latest")];
+pub const PLATFORMS: &[(&str, &str)] = &[("linux-x86_64", "ubuntu-22.04"), ("macos-universal", "macos-latest"), ("windows-x64", "windows-latest")];
 
 pub fn load(root: &Path) -> anyhow::Result<Manifest> {
     let path = root.join(MANIFEST);
