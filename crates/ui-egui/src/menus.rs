@@ -195,6 +195,7 @@ const PAGES: &[&str] = &[
     "page.crop",
     "page.boxes",
     "page.number",
+    "page.transitions",
     "page.properties",
     SEP,
     "bookmark.add",
@@ -440,6 +441,11 @@ impl PdfCraftApp {
                     for tool in section.items.iter().filter(|t| t.availability == Availability::Ready) {
                         let actions: &[&'static str] = if tool.actions.is_empty() { std::slice::from_ref(&tool.command) } else { tool.actions };
                         for &id in actions {
+                            // The same stamp command is also available in the Comments panel.
+                            // Keep its single menu entry in the dedicated Stamp submenu.
+                            if id == "comment.stamp" && group.id == "comment" {
+                                continue;
+                            }
                             if commands::command(id).is_none() || used.contains(&id) || seen.contains(&id) {
                                 continue;
                             }
