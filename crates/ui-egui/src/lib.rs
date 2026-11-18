@@ -694,6 +694,7 @@ pub struct PdfCraftApp {
     pub space_audit: Vec<pdfcraft_engine::optimize::SpaceUse>,
     /// The document and edit generation `space_audit` was measured from.
     pub(crate) space_audit_of: Option<(DocId, u64)>,
+    pub(crate) print_readiness_report: String,
     /// Combine files: the files staged so far.
     pub combine_draft: Vec<combine_ui::CombineFile>,
     /// The combine list's field-name conflict preview (computed once per list, never saved).

@@ -328,3 +328,11 @@
 	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	공급자를 추가하기 전까지는 꺼져 있습니다. 어떤 AI 서비스든 내 API 키로 쓸 수 있고, 키는 PSG PDF 설정이 아니라 시스템 키체인에 보관됩니다. 질문한 문서만, 질문할 때만 전송됩니다.
 	Ask	묻기
 	OpenAI-compatible	OpenAI 호환
+
+# Outlined PDF export
+	Export PDF with outlined text…	텍스트를 윤곽선으로 변환한 PDF 내보내기…
+	Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology.	별도의 PDF를 저장합니다. 윤곽선으로 변환된 페이지 텍스트는 검색하거나 복사하거나 보조 기술로 읽을 수 없습니다.
+	Choose a different file so the original PDF is kept.	원본 PDF를 유지하려면 다른 파일을 선택하세요.
+
+# Print readiness
+	Print readiness	인쇄 준비 상태

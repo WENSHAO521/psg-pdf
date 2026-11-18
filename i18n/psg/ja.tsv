@@ -367,3 +367,11 @@
 	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	お好きな AI サービスをご自分の API キーで使えます: OpenAI、Anthropic Claude、Google Gemini、Azure OpenAI、DeepSeek、Qwen、Ollama で自分のコンピューターで動かすモデル、または OpenAI 互換のサービス。
 	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	プロバイダーを追加するまではオフです。どの AI サービスもご自分の API キーで使えます。キーは PSG PDF の設定ではなくシステムのキーチェーンに保存されます。送信されるのは質問した文書だけで、質問したときだけです。
 	OpenAI-compatible	OpenAI 互換
+
+# Outlined PDF export
+	Export PDF with outlined text…	テキストをアウトライン化した PDF を書き出す…
+	Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology.	別の PDF として保存します。アウトライン化したページの文字は検索、コピー、支援技術による読み上げができなくなります。
+	Choose a different file so the original PDF is kept.	元の PDF を保持するため、別のファイルを選んでください。
+
+# Print readiness
+	Print readiness	印刷適性チェック

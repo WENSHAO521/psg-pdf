@@ -43,6 +43,7 @@ pub mod ocr;
 mod open;
 pub mod open_parameters;
 pub mod optimizer;
+mod outline_export;
 mod page_filter;
 mod pictures;
 pub mod print_raster;
@@ -160,6 +161,7 @@ pub use fill_sign::{displayed_offset, text_box_at, typed_signature_graphic, type
 pub use history::Label;
 use layers::{apply_layer_state, print_layer_states, print_preview_layers, set_default_layer_state, use_layer_choices};
 pub use open::{OpenContext, PreparedDocument};
+pub use outline_export::OutlineExport;
 pub use page_filter::{PageOrientation, PageParity, filter_pages};
 pub use pictures::{MarkFile, image_dimensions};
 use pictures::{embed_image, fit_picture, mark_source, model_poster};

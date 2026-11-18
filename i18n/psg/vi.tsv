@@ -310,3 +310,11 @@
 	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	Tắt cho đến khi bạn thêm nhà cung cấp. Dùng khóa API của riêng bạn với bất kỳ dịch vụ AI nào; khóa được giữ trong chuỗi khóa hệ thống, không bao giờ trong cài đặt của PSG PDF. Chỉ tài liệu bạn hỏi mới được gửi, và chỉ khi bạn hỏi.
 	Ask	Hỏi
 	OpenAI-compatible	Tương thích OpenAI
+
+# Outlined PDF export
+	Export PDF with outlined text…	Xuất PDF với văn bản chuyển thành đường nét…
+	Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology.	Lưu một tệp PDF riêng. Văn bản đã chuyển thành đường nét không thể tìm kiếm, sao chép hoặc đọc bằng công nghệ hỗ trợ.
+	Choose a different file so the original PDF is kept.	Chọn tệp khác để giữ nguyên PDF gốc.
+
+# Print readiness
+	Print readiness	Kiểm tra sẵn sàng in

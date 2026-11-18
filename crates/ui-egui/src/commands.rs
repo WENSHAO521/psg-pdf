@@ -225,6 +225,13 @@ impl PdfCraftApp {
             }
             "prepress.convert_colors" => self.dialog = Some(Dialog::ConvertColours),
             "prepress.hairlines" => self.dialog = Some(Dialog::FixHairlines),
+            "prepress.readiness" => {
+                if let Some(doc) = self.active_ids().and_then(|(_, id)| self.session.get(id)) {
+                    self.print_readiness_report = doc.print_readiness().text();
+                    self.dialog = Some(Dialog::PrintReadiness);
+                }
+            }
+            "optimize.audit" => self.dialog = Some(Dialog::Properties(crate::PropsTab::SpaceAudit)),
             "protect.remove" => {
                 if self.apply_edit(Edit::RemoveProtection) {
                     self.notify_tr("Security will be removed when you save");
@@ -551,6 +558,7 @@ impl PdfCraftApp {
             }
             "export.image" => self.dialog = Some(Dialog::Export(crate::export_ui::ExportKind::Image)),
             "export.text" => self.dialog = Some(Dialog::Export(crate::export_ui::ExportKind::Text)),
+            "export.outline_pdf" => self.dialog = Some(Dialog::Export(crate::export_ui::ExportKind::OutlinedPdf)),
             "ocr.recognize" => self.dialog = Some(Dialog::RecognizeText),
             "ocr.enhance" => self.dialog = Some(Dialog::EnhanceScan),
             "ocr.recognize_batch" => self.ocr_files_dialog(),

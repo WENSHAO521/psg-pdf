@@ -1,6 +1,19 @@
 use super::{Args, Automation, Result, ToolError, Value, child, failed, json, with_warnings, write_atomic};
 
 impl Automation {
+    pub(crate) fn doc_export_outlined_pdf(&self, a: &Args) -> Result<Value> {
+        let path = self.resolve(a.str("path")?, true)?;
+        let doc = self.doc_to_copy(a)?;
+        if doc.path.as_ref().is_some_and(|src| {
+            std::path::Path::new(src) == path || std::fs::canonicalize(src).ok().zip(std::fs::canonicalize(&path).ok()).is_some_and(|(a, b)| a == b)
+        }) {
+            return Err(ToolError::InvalidArgs("choose a different file so the original PDF is kept".into()));
+        }
+        let bytes = self.session.prepare_outline_export(doc.id).and_then(|job| job.run(|_, _| {})).map_err(failed)?;
+        write_atomic(&path, &bytes)?;
+        Ok(json!({ "path": path.to_string_lossy(), "bytes": bytes.len() }))
+    }
+
     pub(crate) fn doc_export_office(&self, a: &Args) -> Result<Value> {
         let path = self.resolve(a.str("path")?, true)?;
         let ext = path.extension().map(|e| e.to_string_lossy().into_owned()).unwrap_or_default();

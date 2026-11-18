@@ -39,6 +39,8 @@ pub trait Device<'a> {
         // TODO: Move this into outline glyph.
         draw_mode: &GlyphDrawMode,
     );
+    /// Starts a PDF text-showing operator, including an empty text array or string.
+    fn begin_text_show(&mut self) {}
     /// Draw an image.
     fn draw_image(&mut self, image: Image<'a, '_>, transform: Affine);
     /// Pop the last clip path from the clip stack.

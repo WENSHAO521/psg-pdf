@@ -228,3 +228,11 @@
 	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	Use el servicio de IA que elija con su propia clave de API: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, un modelo en su propio equipo con Ollama o cualquier servicio compatible con OpenAI.
 	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	Desactivado hasta que añada un proveedor. Use su propia clave de API con cualquier servicio de IA; la clave se guarda en el llavero del sistema, nunca en los ajustes de PSG PDF. Solo se envía el documento sobre el que pregunta, y solo cuando pregunta.
 	OpenAI-compatible	Compatible con OpenAI
+
+# Outlined PDF export
+	Export PDF with outlined text…	Exportar PDF con texto trazado…
+	Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology.	Guarde un PDF independiente. Después de convertir el texto en trazados, no podrá buscarlo, copiarlo ni leerlo con tecnologías de asistencia.
+	Choose a different file so the original PDF is kept.	Elija otro archivo para conservar el PDF original.
+
+# Print readiness
+	Print readiness	Preparación para impresión

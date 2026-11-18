@@ -117,6 +117,9 @@ fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
     if app.dialog != Some(Dialog::FieldTable) {
         app.field_table_draft = None;
     }
+    if app.dialog != Some(Dialog::PrintReadiness) && !app.print_readiness_report.is_empty() {
+        app.print_readiness_report = String::new();
+    }
     if !matches!(app.dialog, Some(Dialog::Properties(_))) {
         app.discard_properties();
     }
@@ -290,6 +293,14 @@ fn dialog_body(ui: &mut egui::Ui, app: &mut PdfCraftApp, dialog: Dialog, req: &m
             if crate::optimize_ui::audit_body(ui, &app.space_audit, &t) {
                 req.next = Some(Dialog::Optimize);
             }
+            return false;
+        }
+        Dialog::PrintReadiness => {
+            ui.label(egui::RichText::new(tl!("Print readiness")).font(crate::theme::semibold(18.0)));
+            egui::ScrollArea::vertical().max_height(360.0).show(ui, |ui| {
+                ui.add(egui::Label::new(app.print_readiness_report.as_str()).wrap().selectable(true));
+            });
+            req.close = widgets::pill_button(ui, tl!("Close"), true).clicked();
             return false;
         }
         Dialog::Sign => {

@@ -229,3 +229,11 @@
 	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	Utilisez le service d’IA de votre choix avec votre propre clé d’API : OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, un modèle sur votre ordinateur via Ollama, ou tout service compatible OpenAI.
 	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	Désactivé tant qu’aucun fournisseur n’est ajouté. Utilisez votre propre clé d’API avec n’importe quel service d’IA ; la clé est conservée dans le trousseau de votre système, jamais dans les réglages de PSG PDF. Seul le document sur lequel vous posez une question est envoyé, et seulement à ce moment-là.
 	OpenAI-compatible	Compatible OpenAI
+
+# Outlined PDF export
+	Export PDF with outlined text…	Exporter un PDF avec du texte vectorisé…
+	Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology.	Enregistrez un autre PDF. Le texte vectorisé ne peut plus être recherché, copié ou lu par les aides techniques.
+	Choose a different file so the original PDF is kept.	Choisissez un autre fichier pour conserver le PDF original.
+
+# Print readiness
+	Print readiness	Vérification avant impression

@@ -852,6 +852,7 @@ impl Automation {
             "pdfa_verify" => self.pdfa_verify(&a)?,
             "print_readiness" => self.print_readiness(&a)?,
             "doc_export_office" => self.doc_export_office(&a)?,
+            "doc_export_outlined_pdf" => self.doc_export_outlined_pdf(&a)?,
             "pdfa_convert" => self.pdfa_convert(&a)?,
             "standards_remove_id" => {
                 let standard = match a.str("standard")? {

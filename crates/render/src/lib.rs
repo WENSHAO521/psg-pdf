@@ -16,6 +16,7 @@ mod reading;
 mod structure;
 mod system_font;
 pub mod text;
+pub mod text_outlines;
 pub mod transition;
 
 pub use inspect::{

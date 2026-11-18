@@ -369,3 +369,11 @@
 	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	使用您自己选择的 AI 服务和自己的 API 密钥：OpenAI、Anthropic Claude、Google Gemini、Azure OpenAI、DeepSeek、通义千问、通过 Ollama 在本机运行的模型，或任何兼容 OpenAI 的服务。
 	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	添加提供商之前保持关闭。可用自己的 API 密钥连接任何 AI 服务；密钥保存在系统钥匙串中，绝不写入 PSG PDF 的设置。只有在您提问时，才会发送您所询问的文档。
 	OpenAI-compatible	兼容 OpenAI
+
+# Outlined PDF export
+	Export PDF with outlined text…	导出文字转曲 PDF…
+	Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology.	另存为一份 PDF。转曲后的页面文字将无法搜索、复制或由辅助技术读取。
+	Choose a different file so the original PDF is kept.	请选择其他文件，以保留原始 PDF。
+
+# Print readiness
+	Print readiness	印前检查
