@@ -12,8 +12,7 @@ description = "System PDF print spooler for the Craft apps: CUPS and Windows"
 # Keep the public rgb re-export at main's GDI revision: a different Git rev gives
 # downstream GDI values a different Rust type identity even when the code is unchanged.
 # PDF loader updates below are independent of this public transport API.
-craft-winprint-gdi = { git = "https://github.com/storytold/winprint.rs", rev = "64e7afd4d1483512385012c340ecaaaf0f3beb7f" }
-
+craft-winprint-gdi = { version = "=0.1.0", git = "https://github.com/storytold/winprint.rs", rev = "64e7afd4d1483512385012c340ecaaaf0f3beb7f" }
 
 [target.'cfg(unix)'.dependencies]
 # Says why the printer list is empty when lpstat can't run (e.g. a Flatpak without CUPS tools).
@@ -33,7 +32,7 @@ log = "0.4"
 # ticket (winprint.rs#12, storytold/pdfcraft#3823), and reads whitespace-padded integers in
 # PrintCapabilities (winprint.rs#3, storytold/pdfcraft#2430). Pinned to an immutable revision;
 # review before bumping.
-winprint = { git = "https://github.com/storytold/winprint.rs", rev = "f084d353f53b5a890041725e86744bdff92447ef", default-features = false }
+winprint = { version = "=0.2.1", git = "https://github.com/storytold/winprint.rs", rev = "f084d353f53b5a890041725e86744bdff92447ef", default-features = false }
 # GetDefaultPrinter (MIT).
 winsafe = { version = "0.0.29", default-features = false, features = ["winspool"] }
 # The job file's private folder.
