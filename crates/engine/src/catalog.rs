@@ -91,6 +91,7 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
                 item("HTML web page", "file-symlink", "export.html", Ready),
                 item("Rich Text Format (.rtf)", "file-text", "export.rtf", Ready),
                 item("Text (plain)", "type", "export.text", Ready),
+                item("Export PDF with outlined text…", "type", "export.outline_pdf", Ready),
                 item("PostScript / EPS", "file-down", "export.ps", Planned("M10")),
             ],
         }],
@@ -124,7 +125,7 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
         icon: "file-pen-line",
         hue: PINK,
         badge: None,
-        availability: Planned("M7"),
+        availability: Ready,
         sections: &[
             ToolSection {
                 title: "Modify page",
@@ -208,7 +209,7 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
                     item("Duplicate pages", "copy-plus", "page.duplicate", Ready),
                     item("Reverse pages", "arrow-up-down", "page.reverse", Ready),
                     item("Page labels", "tag", "page.number", Ready),
-                    item("Page transitions", "presentation", "page.transitions", Planned("M4")),
+                    item("Page transitions", "presentation", "page.transitions", Ready),
                 ],
             },
         ],
@@ -240,8 +241,8 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
                     item("Oval", "circle", "comment.circle", Ready),
                     item("Line", "minus", "comment.line", Ready),
                     item("Arrow", "move-right", "comment.arrow", Ready),
-                    item("Cloud", "cloud", "comment.cloud", Planned("M5")),
-                    item("Stamp", "stamp", "comment.stamp", Planned("M5")),
+                    item("Cloud", "cloud", "comment.cloud", Ready),
+                    item("Stamp", "stamp", "comment.stamp", Ready),
                 ],
             },
             ToolSection {
@@ -277,7 +278,7 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
         icon: "shield-check",
         hue: BLUE,
         badge: None,
-        availability: Planned("M8"),
+        availability: Ready,
         sections: &[
             ToolSection {
                 title: "Protect",
@@ -326,7 +327,7 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
             items: &[
                 item("Reduce file size", "file-down", "optimize.reduce", Ready),
                 item("Advanced optimization", "settings-2", "optimize.advanced", Ready),
-                item("Audit space usage", "gauge", "optimize.audit", Planned("M11")),
+                item("Audit space usage", "gauge", "optimize.audit", Ready),
             ],
         }],
     },
@@ -403,10 +404,12 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
         icon: "printer",
         hue: PURPLE,
         badge: None,
-        availability: Planned("M11"),
+        availability: Ready,
         sections: &[ToolSection {
             title: "Print production",
             items: &[
+                item("Print readiness", "file-check", "prepress.readiness", Ready),
+                item("Export PDF with outlined text…", "type", "export.outline_pdf", Ready),
                 item("Output preview", "layers", "prepress.output_preview", Planned("M11")),
                 item("Preflight", "file-check", "preflight.run", Planned("M11")),
                 item("Convert colours", "palette", "prepress.convert_colors", Ready),
@@ -518,12 +521,12 @@ pub static TOOL_GROUPS: &[ToolGroup] = &[
         icon: "braces",
         hue: BLUE,
         badge: None,
-        availability: Planned("M6"),
+        availability: Ready,
         sections: &[ToolSection {
             title: "JavaScript",
             items: &[
-                item("Console", "braces", "js.console", Planned("M6")),
-                item("Document JavaScripts", "file-text", "js.document", Planned("M6")),
+                item("Console", "braces", "tools.js_console", Ready),
+                item("Document JavaScripts", "file-text", "tools.document_js", Ready),
                 item("Document actions", "list-checks", "js.actions", Planned("M6")),
             ],
         }],
@@ -599,6 +602,22 @@ mod tests {
             for s in g.sections {
                 for i in s.items {
                     assert!(i.command.contains('.'), "{} lacks a namespace", i.command);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn a_group_with_available_commands_is_ready_and_its_items_match_the_registry() {
+        for group in TOOL_GROUPS {
+            for item in group.sections.iter().flat_map(|section| section.items) {
+                match item.availability {
+                    Ready => {
+                        assert_eq!(group.availability, Ready, "{} already contains available tools", group.label);
+                        assert!(crate::commands::command(item.command).is_some(), "{} has no registered command", item.command);
+                    }
+                    Planned(_) => assert!(crate::commands::command(item.command).is_none(), "{} is already registered", item.command),
+                    Provider => {}
                 }
             }
         }

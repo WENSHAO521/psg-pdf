@@ -110,7 +110,7 @@ impl RenderConfig {
     /// tries bundled Japanese faces, then opt-in installed CJK faces, then standard substitutes.
     /// Passwords belong to parser construction; request-specific preview overrides are applied
     /// by `render_page`, which also preserves the caller's warning and cancellation hooks.
-    fn settings(&self) -> InterpreterSettings {
+    pub(crate) fn settings(&self) -> InterpreterSettings {
         let defaults = InterpreterSettings::default();
         let standard = defaults.font_resolver.clone();
         let system_fonts = self.system_fonts;

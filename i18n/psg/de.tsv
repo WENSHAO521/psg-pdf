@@ -217,3 +217,29 @@
 	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	Nutzen Sie den KI-Dienst Ihrer Wahl mit Ihrem eigenen API-Schlüssel: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, ein Modell auf Ihrem eigenen Computer über Ollama oder einen OpenAI-kompatiblen Dienst.
 	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	Aus, bis Sie einen Anbieter hinzufügen. Verwenden Sie Ihren eigenen API-Schlüssel mit einem beliebigen KI-Dienst; der Schlüssel liegt im Schlüsselbund Ihres Systems, nie in den Einstellungen von PSG PDF. Gesendet wird nur das Dokument, nach dem Sie fragen, und nur dann.
 	OpenAI-compatible	OpenAI-kompatibel
+
+# Outlined PDF export
+	Export PDF with outlined text…	PDF mit Text als Pfade exportieren…
+	Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology.	Speichern Sie eine separate PDF-Datei. In Pfade umgewandelter Seitentext kann nicht mehr durchsucht, kopiert oder von Hilfstechnologien gelesen werden.
+	Choose a different file so the original PDF is kept.	Wählen Sie eine andere Datei, damit das Original-PDF erhalten bleibt.
+
+# Print readiness
+	Print readiness	Druckbereitschaft prüfen
+
+# Page transitions
+	Blinds	Jalousie
+	Wipe	Wischen
+	Dissolve	Auflösen
+	Glitter	Glitzern
+	Fly	Fliegen
+	Push	Schieben
+	Cover	Überdecken
+	Uncover	Aufdecken
+	Fade	Überblenden
+	Transition duration	Übergangsdauer
+	Inward	Nach innen
+	Outward	Nach außen
+	Opaque background	Deckender Hintergrund
+	Advance automatically	Automatisch weiterblättern
+	The selected pages have different presentation settings. Applying sets the same values on all of them.	Die ausgewählten Seiten haben unterschiedliche Präsentationseinstellungen. Beim Anwenden erhalten alle dieselben Werte.
+	The document changed while the dialog was open, so nothing was changed.	Das Dokument wurde bei geöffnetem Dialog geändert. Es wurden keine Änderungen übernommen.

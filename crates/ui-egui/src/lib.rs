@@ -694,6 +694,7 @@ pub struct PdfCraftApp {
     pub space_audit: Vec<pdfcraft_engine::optimize::SpaceUse>,
     /// The document and edit generation `space_audit` was measured from.
     pub(crate) space_audit_of: Option<(DocId, u64)>,
+    pub(crate) print_readiness_report: String,
     /// Combine files: the files staged so far.
     pub combine_draft: Vec<combine_ui::CombineFile>,
     /// The combine list's field-name conflict preview (computed once per list, never saved).
@@ -763,6 +764,7 @@ pub struct PdfCraftApp {
     pub duplicate_draft: Option<DuplicateDraft>,
     /// Page Properties: which pages, and the tab order chosen for them.
     pub page_props_draft: Option<PagePropsDraft>,
+    pub(crate) page_transition_draft: Option<organize_panel::TransitionDraft>,
     /// Text field table: the table being set up, and the page it goes on.
     pub field_table_draft: Option<field_table_ui::FieldTableDraft>,
     /// Prepare a form ▸ Preview: fill the form instead of editing its fields.

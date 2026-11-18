@@ -372,3 +372,29 @@
 	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	使用您自己选择的 AI 服务和自己的 API 密钥：OpenAI、Anthropic Claude、Google Gemini、Azure OpenAI、DeepSeek、通义千问、通过 Ollama 在本机运行的模型，或任何兼容 OpenAI 的服务。
 	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	添加提供商之前保持关闭。可用自己的 API 密钥连接任何 AI 服务；密钥保存在系统钥匙串中，绝不写入 PSG PDF 的设置。只有在您提问时，才会发送您所询问的文档。
 	OpenAI-compatible	兼容 OpenAI
+
+# Outlined PDF export
+	Export PDF with outlined text…	导出文字转曲 PDF…
+	Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology.	另存为一份 PDF。转曲后的页面文字将无法搜索、复制或由辅助技术读取。
+	Choose a different file so the original PDF is kept.	请选择其他文件，以保留原始 PDF。
+
+# Print readiness
+	Print readiness	印前检查
+
+# Page transitions
+	Blinds	百叶窗
+	Wipe	擦除
+	Dissolve	溶解
+	Glitter	闪烁
+	Fly	飞入
+	Push	推移
+	Cover	覆盖
+	Uncover	揭开
+	Fade	淡入淡出
+	Transition duration	转场时长
+	Inward	向内
+	Outward	向外
+	Opaque background	不透明背景
+	Advance automatically	自动翻页
+	The selected pages have different presentation settings. Applying sets the same values on all of them.	所选页面的演示设置不同。应用后，所有选中的页面将使用相同设置。
+	The document changed while the dialog was open, so nothing was changed.	对话框打开期间文档已更改，因此未应用任何更改。

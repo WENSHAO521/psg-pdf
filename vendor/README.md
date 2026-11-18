@@ -157,6 +157,13 @@ D50/equal-energy neutral and chromatic oracles, D65 identity, and direct/Indexed
 consistency (including an asymmetric chromatic Range), and zero/overflowing
 cone-response fallback.
 
+## Page text outline export
+
+`hayro-interpret` calls `Device::begin_text_show` before each text-showing
+operator. The default hook is empty. The outline exporter uses it to replace
+each operator at its original position in the page stream with the glyph paths
+that the viewer draws. The `outlined_pdf_export` automation tests cover the copy.
+
 ## Clipping-only text reporting (#3109 / #3116)
 
 `hayro-interpret/src/interpret/text.rs` reports mode 7 glyphs after installing their

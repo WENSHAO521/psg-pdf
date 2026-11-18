@@ -895,6 +895,7 @@ fn interpret_window<'a>(
                 context.get_mut().text_state.font = font;
             }
             TypedInstruction::ShowText(s) => {
+                device.begin_text_show();
                 if context.get().text_state.font.is_none() {
                     // Even if no explicit font was set, we try to assume Helvetica. Acrobat
                     // seems to do the same.
@@ -908,6 +909,7 @@ fn interpret_window<'a>(
                 text::show_text_string(context, device, resources, s.0);
             }
             TypedInstruction::ShowTexts(s) => {
+                device.begin_text_show();
                 if context.get().text_state.font.is_none() {
                     // Even if no explicit font was set, we try to assume Helvetica. Acrobat
                     // seems to do the same.
@@ -950,6 +952,7 @@ fn interpret_window<'a>(
                 text::next_line(context, 0.0, -context.get().text_state.leading as f64);
             }
             TypedInstruction::NextLineAndShowText(n) => {
+                device.begin_text_show();
                 text::next_line(context, 0.0, -context.get().text_state.leading as f64);
                 text::show_text_string(context, device, resources, n.0);
             }
@@ -1092,6 +1095,7 @@ fn interpret_window<'a>(
             TypedInstruction::EndCompatibility(_) => {}
             TypedInstruction::ColorGlyph(_) => {}
             TypedInstruction::ShowTextWithParameters(t) => {
+                device.begin_text_show();
                 context.get_mut().text_state.word_space = t.0.as_f32();
                 context.get_mut().text_state.char_space = t.1.as_f32();
                 text::next_line(context, 0.0, -context.get().text_state.leading as f64);

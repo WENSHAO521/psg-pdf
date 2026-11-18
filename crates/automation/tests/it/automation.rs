@@ -902,6 +902,40 @@ fn open_inspect_render_and_find() {
 }
 
 #[test]
+fn outlined_pdf_export_keeps_the_source_and_page_appearance() {
+    let dir = workdir("outlines");
+    let mut a = auto(&dir);
+    let bytes = std::fs::read(dir.join("a.pdf")).unwrap();
+    let id = ok(&mut a, "doc_open", json!({ "path": "a.pdf" }))["doc"].as_u64().unwrap();
+    assert!(a.call("doc_export_outlined_pdf", &json!({ "doc": id, "path": "a.pdf" })).is_err());
+    ok(&mut a, "doc_export_outlined_pdf", json!({ "doc": id, "path": "outlined.pdf" }));
+    assert_eq!(std::fs::read(dir.join("a.pdf")).unwrap(), bytes);
+    let outlined = ok(&mut a, "doc_open", json!({ "path": "outlined.pdf" }))["doc"].as_u64().unwrap();
+    assert_eq!(page_text(&mut a, id), ["Page 1", "Page 2", "Page 3"]);
+    assert_eq!(page_text(&mut a, outlined), ["", "", ""]);
+    let (w, h, original) = a.render_pixels(id, 1, 2.0).unwrap();
+    let (out_w, out_h, converted) = a.render_pixels(outlined, 1, 2.0).unwrap();
+    assert_eq!((w, h), (out_w, out_h));
+    let has_ink = |p: &[u8; 4]| p[0] < 128;
+    let before = original.as_ref().as_chunks::<4>().0;
+    let after = converted.as_ref().as_chunks::<4>().0;
+    let ink = before.iter().filter(|p| has_ink(p)).count();
+    let different = before.iter().zip(after).filter(|(a, b)| has_ink(a) != has_ink(b)).count();
+    assert!(ink > 100 && different * 8 < ink, "{different} changed pixels out of {ink} ink pixels");
+}
+
+#[test]
+fn outlined_pdf_export_refuses_a_tagged_pdf_before_writing() {
+    let dir = workdir("outlines-tagged");
+    std::fs::write(dir.join("tagged.pdf"), fixture_with(1, "/StructTreeRoot << /Type /StructTreeRoot /K [] >>")).unwrap();
+    let mut a = auto(&dir);
+    let doc = ok(&mut a, "doc_open", json!({ "path": "tagged.pdf" }))["doc"].as_u64().unwrap();
+    let error = err(&mut a, "doc_export_outlined_pdf", json!({ "doc": doc, "path": "outlined.pdf" }));
+    assert!(error.to_string().contains("accessibility tags"));
+    assert!(!dir.join("outlined.pdf").exists());
+}
+
+#[test]
 fn word_count_reads_selected_pages_and_unsaved_edits_without_mutating() {
     let dir = workdir("word-count");
     let mut a = auto(&dir);

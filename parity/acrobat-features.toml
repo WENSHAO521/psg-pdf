@@ -3271,11 +3271,11 @@ title = "Page transitions"
 area = "D"
 tier = "P2"
 milestone = "M4"
-status = "partial"
-commands = []
+status = "shipped"
+commands = ["page.transitions"]
 tools = ["doc_info", "page_transition_set"]
-evidence = ["crates/render/src/inspect/tests.rs::page_transitions_and_display_times_are_read", "crates/automation/tests/it/automation.rs::doc_info_lists_page_transitions_and_display_times", "crates/organize/src/tests.rs::page_transitions_are_set_removed_and_checked", "crates/automation/tests/it/automation.rs::page_transitions_are_set_and_removed_through_the_tools"]
-notes = "Read, set and played: each page's /Trans (style, duration, dimension, motion, direction, Fly scale and backdrop) and /Dur display time are read with the spec's defaults and listed by doc_info (DocInfo::transitions); page_transition_set (Edit::SetTransition, one undo step) writes or removes them on chosen pages with the values checked first. Full screen plays them and advances on /Dur (view.full-screen-presentation). Not yet: the Page Transitions dialog"
+evidence = ["crates/render/src/inspect/tests.rs::page_transitions_and_display_times_are_read", "crates/automation/tests/it/automation.rs::doc_info_lists_page_transitions_and_display_times", "crates/organize/src/tests.rs::page_transitions_are_set_removed_and_checked", "crates/automation/tests/it/automation.rs::page_transitions_are_set_and_removed_through_the_tools", "crates/ui-egui/tests/it/commands.rs::page_transitions_set_display_time_on_the_selected_pages"]
+notes = "Organize pages ▸ Page transitions applies effects and automatic advance to the chosen pages as one undo step. doc_info reads /Trans and /Dur, and page_transition_set writes or removes them. Full screen plays transitions and advances on /Dur (view.full-screen-presentation)."
 
 [[feature]]
 id = "organize.page-tab-order"
@@ -7847,7 +7847,7 @@ area = "K"
 tier = "P1"
 milestone = "M11"
 status = "shipped"
-commands = ["optimize.advanced"]
+commands = ["optimize.audit", "optimize.advanced"]
 tools = ["doc_audit_space"]
 evidence = ["crates/optimize/tests/optimize.rs::space_audit_shares_the_file_out_by_kind", "crates/optimize/tests/optimize.rs::space_audit_counts_what_fields_and_comments_draw_with_by_kind", "crates/optimize/tests/optimize.rs::space_audit_survives_deeply_nested_forms", "crates/automation/tests/it/automation.rs::auditing_space_through_tools", "crates/ui-egui/tests/it/viewer.rs::optimizer_audits_space_usage", "crates/ui-egui/tests/it/viewer.rs::space_audit_numbers_line_up_under_their_headers"]
 notes = "PDF Optimizer ▸ Audit space usage, and Document Properties ▸ Space Audit: what the file's bytes are spent on now (not what optimizing would save), in 16 categories (images, content streams, fonts, X Object forms, structure, bookmarks, thumbnails, comments, forms, named destinations, colour spaces, shadings, patterns, graphics states, embedded files, overhead) with bytes and percentages. Resources are counted by kind wherever they are used, so the fonts and images form fields and comments draw with count as fonts and images. Still missing: sizes are each object as it would be written uncompressed, so objects packed in compressed object streams count larger than they take on disk (overhead, the rest of the file, shrinks to match)"
@@ -8430,6 +8430,30 @@ commands = ["print.dialog"]
 tools = ["doc_print"]
 evidence = ["crates/ui-egui/tests/it/print.rs::print_dialog_lays_out_sheets_and_saves_a_pdf", "crates/automation/tests/it/automation.rs::printing_through_tools", "crates/engine/src/tests.rs::printing_lays_out_sheets_that_render", "crates/engine/src/tests.rs::printing_keeps_hidden_layers_hidden", "crates/engine/src/tests.rs::printing_applies_the_print_auto_state", "crates/engine/src/tests.rs::a_layer_prints_only_if_every_recommendation_is_on"]
 notes = "Save as PDF from the dialog. Layers print as shown in the Layers panel, then as the default configuration's auto state for the Print event sets them (/AS, /PrintState; ISO 32000-2 §8.11.4.4), vector or as image; the print copy keeps those states in /D without /AS or the layers' /Usage, and the dialog's preview shows them. A Print entry's Print, View and Export categories are read; Zoom, User and Language give no recommendation when printing."
+
+[[feature]]
+id = "print.readiness"
+title = "Check print readiness"
+area = "L"
+tier = "P1"
+milestone = "M11"
+status = "shipped"
+commands = ["prepress.readiness"]
+tools = ["print_readiness"]
+evidence = ["crates/automation/tests/it/automation.rs::print_readiness_through_tools", "crates/ui-egui/tests/it/commands.rs::print_production_opens_the_readiness_report"]
+notes = "Print production ▸ Print readiness reports effective image resolution, page boxes and bleed, output intents, fonts that are not embedded, and PDF/A-2b structural findings. It is read-only and does not validate PDF/X, separations or overprint."
+
+[[feature]]
+id = "print.outline-page-text"
+title = "Export a PDF copy with outlined page text"
+area = "L"
+tier = "P1"
+milestone = "M10"
+status = "shipped"
+commands = ["export.outline_pdf"]
+tools = ["doc_export_outlined_pdf"]
+evidence = ["crates/automation/tests/it/automation.rs::outlined_pdf_export_keeps_the_source_and_page_appearance", "crates/automation/tests/it/automation.rs::outlined_pdf_export_refuses_a_tagged_pdf_before_writing", "crates/ui-egui/tests/it/commands.rs::outlined_pdf_export_dialog_writes_a_separate_copy"]
+notes = "File ▸ Export ▸ Export PDF with outlined text: converts ordinary page glyphs into vector paths in a separate PDF. It keeps images, annotations and the source PDF. Tagged, layered, signed and encrypted PDFs, nested forms, tiling patterns and unsupported text paint modes are refused before writing. Outlined page text cannot be searched, selected or read by assistive technology."
 
 [[feature]]
 id = "print.print-pages-from-thumbnails"

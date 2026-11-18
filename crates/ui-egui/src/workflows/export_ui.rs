@@ -8,6 +8,8 @@ use std::sync::{Arc, Mutex};
 use egui::{Align, Layout};
 use pdfcraft_engine::export::{ExportSource, Exporter, ImageFormat};
 
+#[cfg(not(target_arch = "wasm32"))]
+use crate::file_filter::AddFilterAnyCase as _;
 use crate::marks_ui::PageRange;
 use crate::theme::{self, Tokens};
 use crate::{PdfCraftApp, widgets};
@@ -18,6 +20,7 @@ pub enum ExportKind {
     Text,
     /// Export all images: the images pages use, as files.
     AllImages,
+    OutlinedPdf,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -46,6 +49,7 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens, kind: E
             ExportKind::Image => tl!("Export to Image"),
             ExportKind::Text => tl!("Export to Text"),
             ExportKind::AllImages => tl!("Export All Images"),
+            ExportKind::OutlinedPdf => tl!("Export PDF with outlined text…"),
         })
         .font(theme::semibold(18.0)),
     );
@@ -104,16 +108,20 @@ pub(crate) fn body(ui: &mut egui::Ui, app: &mut PdfCraftApp, t: &Tokens, kind: E
                 .small()
                 .color(t.text_faint),
         );
+    } else if kind == ExportKind::OutlinedPdf {
+        ui.label(tl!("Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology."));
     } else {
         ui.label(egui::RichText::new(tl!("Plain text in reading order; pages are separated by form feeds.")).small().color(t.text_faint));
     }
     ui.add_space(6.0);
-    ui.label(egui::RichText::new(tl!("Pages")).font(theme::semibold(12.5)));
-    d.range.ui(ui, count);
+    if kind != ExportKind::OutlinedPdf {
+        ui.label(egui::RichText::new(tl!("Pages")).font(theme::semibold(12.5)));
+        d.range.ui(ui, count);
+    }
     ui.add_space(12.0);
     let (mut apply, mut cancel) = (false, false);
     ui.with_layout(Layout::right_to_left(Align::Center), |ui| {
-        let ok = !d.range.pages(count).is_empty();
+        let ok = count > 0 && (kind == ExportKind::OutlinedPdf || !d.range.pages(count).is_empty());
         if ui.add_enabled_ui(ok, |ui| widgets::pill_button(ui, tl!("Export"), true)).inner.clicked() {
             apply = true;
         }
@@ -175,7 +183,7 @@ fn run(task: ExportTask<'_>, mut sink: impl FnMut(&str, Vec<u8>) -> Result<(), S
     let mut ex = Exporter::from_source(src);
     match kind {
         // Handled above.
-        ExportKind::AllImages => String::new(),
+        ExportKind::AllImages | ExportKind::OutlinedPdf => String::new(),
         ExportKind::Image => {
             set(0, None);
             // Pages are drawn several at once and handed over in order: the progress counts the
@@ -234,6 +242,10 @@ impl PdfCraftApp {
             return;
         }
         let Some(doc) = self.session.get(id) else { return };
+        if kind == ExportKind::OutlinedPdf {
+            self.start_outline_export(id);
+            return;
+        }
         let src = doc.export_source();
         let stem = doc.name.trim_end_matches(".pdf").trim_end_matches(".PDF").to_string();
         let pages = self.export_draft.range.pages(src.pages);
@@ -283,6 +295,72 @@ impl PdfCraftApp {
                 *s = Some((0, 0, Some(msg)));
             }
             self.export_status = Some(status);
+        }
+    }
+
+    fn start_outline_export(&mut self, id: pdfcraft_engine::DocId) {
+        let Some(doc) = self.session.get(id) else { return };
+        let stem = doc.name.trim_end_matches(".pdf").trim_end_matches(".PDF");
+        let filename = format!("{stem}-outlined.pdf");
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            let write = move |app: &mut Self, path: std::path::PathBuf| {
+                let path = path.to_string_lossy().into_owned();
+                if app.session.get(id).and_then(|doc| doc.path.as_deref()).is_some_and(|source| {
+                    crate::same_file(source, &path)
+                        || std::fs::canonicalize(source).ok().zip(std::fs::canonicalize(&path).ok()).is_some_and(|(source, target)| source == target)
+                }) {
+                    app.notify(tl!("Choose a different file so the original PDF is kept."));
+                    return;
+                }
+                let job = match app.session.prepare_outline_export(id) {
+                    Ok(job) => job,
+                    Err(e) => {
+                        app.notify_fmt("Export stopped: {e}", &[("e", &e)]);
+                        return;
+                    }
+                };
+                let status: ExportStatus = Arc::new(Mutex::new(None));
+                let worker_status = status.clone();
+                let lang = crate::i18n::current();
+                let work = move || {
+                    crate::i18n::set_current(lang);
+                    let result = job.run(|done, total| {
+                        if let Ok(mut s) = worker_status.lock() {
+                            *s = Some((done, total, None));
+                        }
+                    });
+                    let msg = match result.and_then(|bytes| crate::editing::write_atomically(&path, &bytes).map_err(|e| e.to_string())) {
+                        Ok(()) => crate::i18n::fmt(tl!("Exported to {path}"), &[("path", &path)]),
+                        Err(e) => crate::i18n::fmt(tl!("Export stopped: {e}"), &[("e", &e)]),
+                    };
+                    if let Ok(mut s) = worker_status.lock() {
+                        *s = Some((0, 0, Some(msg)));
+                    }
+                };
+                if app.save_override.is_some() {
+                    work();
+                } else if let Err(e) = std::thread::Builder::new().name("pdfcraft-export".into()).spawn(work) {
+                    app.notify_fmt("Export stopped: {e}", &[("e", &e.to_string())]);
+                    return;
+                }
+                app.export_status = Some(status);
+            };
+            match self.save_override.clone() {
+                Some(path) => write(self, path.into()),
+                None => {
+                    let dialog =
+                        rfd::AsyncFileDialog::new().set_title(tl!("Export").to_string()).add_filter_any_case("PDF", &["pdf"]).set_file_name(filename);
+                    let dialog = crate::editing::in_document_folder(dialog, doc.path.as_deref());
+                    self.ask_one(crate::pickers::Ask::Save(dialog), None, write);
+                }
+            }
+        }
+        #[cfg(target_arch = "wasm32")]
+        if let Err(e) =
+            self.session.prepare_outline_export(id).and_then(|job| job.run(|_, _| {})).and_then(|bytes| crate::editing::download(&filename, &bytes))
+        {
+            self.notify_fmt("Export stopped: {e}", &[("e", &e)]);
         }
     }
 
