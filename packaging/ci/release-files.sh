@@ -32,7 +32,12 @@ for product in "${products[@]}"; do
     read -r -a suffixes <<<"${formats[$platform]}"
     for suffix in "${suffixes[@]}"; do
       file="${stem[$product]}-$version-$platform$suffix"
-      if [[ ! -s "$folder/$file" ]] || ! awk -v file="$file" '$2 == file { found = 1 } END { exit !found }' "$list"; then
+      # Windows sha256sum uses the binary marker (*) before the filename.
+      if [[ ! -s "$folder/$file" ]] || ! awk -v file="$file" '
+        { sub(/\r$/, "", $2) }
+        $2 == file || $2 == "*" file { found = 1 }
+        END { exit !found }
+      ' "$list"; then
         echo "::error::$file is missing or absent from its platform checksum list"
         exit 1
       fi
