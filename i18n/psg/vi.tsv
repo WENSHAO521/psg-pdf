@@ -73,6 +73,9 @@
 	Dock navigation rail on Left	Gắn thanh điều hướng bên trái
 	Dock navigation rail on Right	Gắn thanh điều hướng bên phải
 	Downloading and installing update…	Đang tải về và cài đặt bản cập nhật…
+	Downloading update…	Đang tải bản cập nhật…
+	Reconnecting…	Đang kết nối lại…
+	Verifying update…	Đang xác minh bản cập nhật…
 	Downloading the text recognition models…	Đang tải các mô hình nhận dạng văn bản…
 	Drag hotbar	Kéo thanh nhanh
 	ENGINE · STRATEGY	CÔNG CỤ · CHIẾN LƯỢC
@@ -265,7 +268,7 @@
 	API key	Khóa API
 	API version	Phiên bản API
 	Add a provider	Thêm nhà cung cấp
-	Add an AI provider in Preferences ▸ AI assistant first.	Hãy thêm nhà cung cấp AI trong Tùy chọn ▸ Trợ lý AI trước.
+	Add an AI provider in Preferences > AI assistant first.	Hãy thêm nhà cung cấp AI trong Tùy chọn > Trợ lý AI trước.
 	Connected: the provider answered.	Đã kết nối: nhà cung cấp đã phản hồi.
 	Couldn't reach the provider: {detail}	Không kết nối được nhà cung cấp: {detail}
 	Custom (any address)	Tùy chỉnh (địa chỉ bất kỳ)
@@ -276,7 +279,7 @@
 	Longest answer	Câu trả lời dài nhất
 	Models this provider offers	Các mô hình nhà cung cấp này có
 	New provider	Nhà cung cấp mới
-	No API key is saved for this provider. Add one in Preferences ▸ AI assistant.	Chưa lưu khóa API cho nhà cung cấp này. Hãy thêm trong Tùy chọn ▸ Trợ lý AI.
+	No API key is saved for this provider. Add one in Preferences > AI assistant.	Chưa lưu khóa API cho nhà cung cấp này. Hãy thêm trong Tùy chọn > Trợ lý AI.
 	Open a document first.	Hãy mở tài liệu trước.
 	Open a document to use the assistant.	Mở một tài liệu để dùng trợ lý.
 	Paste your key	Dán khóa của bạn

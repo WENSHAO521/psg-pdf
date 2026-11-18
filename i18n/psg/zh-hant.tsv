@@ -67,6 +67,9 @@
 	Dock navigation rail on Left	將導覽列停靠在左側
 	Dock navigation rail on Right	將導覽列停靠在右側
 	Downloading and installing update…	正在下載並安裝更新…
+	Downloading update…	正在下載更新…
+	Reconnecting…	正在重新連線…
+	Verifying update…	正在驗證更新…
 	Drag hotbar	拖曳快捷工具列
 	Edge shadow removal	去除邊緣陰影
 	Edit attachment description	編輯附件說明
@@ -327,7 +330,7 @@
 	API key	API 金鑰
 	API version	API 版本
 	Add a provider	新增提供者
-	Add an AI provider in Preferences ▸ AI assistant first.	請先在「偏好設定 ▸ AI 助理」中新增 AI 提供者。
+	Add an AI provider in Preferences > AI assistant first.	請先在「偏好設定 > AI 助理」中新增 AI 提供者。
 	Connected: the provider answered.	已連線：提供者有回應。
 	Couldn't reach the provider: {detail}	無法連線到提供者：{detail}
 	Custom (any address)	自訂（任何位址）
@@ -338,7 +341,7 @@
 	Longest answer	最長回答
 	Models this provider offers	此提供者提供的模型
 	New provider	新提供者
-	No API key is saved for this provider. Add one in Preferences ▸ AI assistant.	此提供者尚未儲存 API 金鑰。請在「偏好設定 ▸ AI 助理」中新增。
+	No API key is saved for this provider. Add one in Preferences > AI assistant.	此提供者尚未儲存 API 金鑰。請在「偏好設定 > AI 助理」中新增。
 	Open a document first.	請先開啟文件。
 	Open a document to use the assistant.	開啟文件即可使用助理。
 	Paste your key	貼上您的金鑰

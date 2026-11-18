@@ -76,6 +76,9 @@
 	Dock navigation rail on Left	탐색 레일을 왼쪽에 고정
 	Dock navigation rail on Right	탐색 레일을 오른쪽에 고정
 	Downloading and installing update…	업데이트를 다운로드하고 설치하는 중…
+	Downloading update…	업데이트를 다운로드하는 중…
+	Reconnecting…	다시 연결하는 중…
+	Verifying update…	업데이트를 확인하는 중…
 	Downloading the text recognition models…	텍스트 인식 모델을 다운로드하는 중…
 	Drag hotbar	단축 도구 모음 끌기
 	ENGINE · STRATEGY	엔진 · 전략
@@ -283,7 +286,7 @@
 	API key	API 키
 	API version	API 버전
 	Add a provider	공급자 추가
-	Add an AI provider in Preferences ▸ AI assistant first.	먼저 환경설정 ▸ AI 어시스턴트에서 AI 공급자를 추가하세요.
+	Add an AI provider in Preferences > AI assistant first.	먼저 환경설정 > AI 어시스턴트에서 AI 공급자를 추가하세요.
 	Connected: the provider answered.	연결됨: 공급자가 응답했습니다.
 	Couldn't reach the provider: {detail}	공급자에 연결할 수 없습니다: {detail}
 	Custom (any address)	사용자 지정(모든 주소)
@@ -294,7 +297,7 @@
 	Longest answer	최대 답변 길이
 	Models this provider offers	이 공급자가 제공하는 모델
 	New provider	새 공급자
-	No API key is saved for this provider. Add one in Preferences ▸ AI assistant.	이 공급자에 저장된 API 키가 없습니다. 환경설정 ▸ AI 어시스턴트에서 추가하세요.
+	No API key is saved for this provider. Add one in Preferences > AI assistant.	이 공급자에 저장된 API 키가 없습니다. 환경설정 > AI 어시스턴트에서 추가하세요.
 	Open a document first.	먼저 문서를 여세요.
 	Open a document to use the assistant.	어시스턴트를 쓰려면 문서를 여세요.
 	Paste your key	키를 붙여 넣으세요

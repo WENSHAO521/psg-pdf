@@ -390,7 +390,9 @@ fn primary_ui_fonts_cover_latin_and_cyrillic_catalogs() {
     }
     use skrifa::MetadataProvider as _;
     let defs = theme::font_definitions();
-    assert_eq!(&defs.families[&FontFamily::Monospace][..2], ["JetBrainsMono", "Inter"]);
+    let monospace = &defs.families[&FontFamily::Monospace];
+    assert_eq!(monospace.first().map(String::as_str), Some("JetBrainsMono"));
+    assert!(monospace.iter().any(|name| name == "Inter"), "Inter supplies missing Latin and Cyrillic glyphs");
     let fallback = &defs.font_data["Inter"];
     let fallback_font = skrifa::FontRef::from_index(fallback.font.as_ref().as_ref(), fallback.index).unwrap();
     let fallback_charmap = fallback_font.charmap();

@@ -175,7 +175,7 @@ pub(crate) fn dialog(app: &mut PdfCraftApp, ctx: &egui::Context) {
         }
         if app.updates.open {
             let dialog = CheckResultDialog::new(&crate::UPDATE_APP, env!("CARGO_PKG_VERSION")).with_translator(crate::i18n::updater_text);
-            let response = dialog.show(ctx, app.updates.updater.status());
+            let response = dialog.with_progress(app.updates.updater.progress()).show(ctx, app.updates.updater.status());
             answer_result(app, ctx, response);
         }
     }

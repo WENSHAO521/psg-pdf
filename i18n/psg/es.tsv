@@ -51,6 +51,9 @@
 	Dock navigation rail on Left	Acoplar la barra de navegación a la izquierda
 	Dock navigation rail on Right	Acoplar la barra de navegación a la derecha
 	Downloading and installing update…	Descargando e instalando la actualización…
+	Downloading update…	Descargando la actualización…
+	Reconnecting…	Reconectando…
+	Verifying update…	Verificando la actualización…
 	Drag hotbar	Arrastrar la barra rápida
 	Edge shadow removal	Eliminación de sombras en los bordes
 	Edit attachment description	Editar la descripción del adjunto
@@ -184,7 +187,7 @@
 	API key	Clave de API
 	API version	Versión de la API
 	Add a provider	Añadir un proveedor
-	Add an AI provider in Preferences ▸ AI assistant first.	Añada primero un proveedor de IA en Preferencias ▸ Asistente de IA.
+	Add an AI provider in Preferences > AI assistant first.	Añada primero un proveedor de IA en Preferencias > Asistente de IA.
 	Connected: the provider answered.	Conectado: el proveedor respondió.
 	Couldn't reach the provider: {detail}	No se pudo contactar con el proveedor: {detail}
 	Custom (any address)	Personalizado (cualquier dirección)
@@ -195,7 +198,7 @@
 	Longest answer	Respuesta más larga
 	Models this provider offers	Modelos que ofrece este proveedor
 	New provider	Proveedor nuevo
-	No API key is saved for this provider. Add one in Preferences ▸ AI assistant.	No hay ninguna clave de API guardada para este proveedor. Añada una en Preferencias ▸ Asistente de IA.
+	No API key is saved for this provider. Add one in Preferences > AI assistant.	No hay ninguna clave de API guardada para este proveedor. Añada una en Preferencias > Asistente de IA.
 	Open a document first.	Abra primero un documento.
 	Open a document to use the assistant.	Abra un documento para usar el asistente.
 	Paste your key	Pegue su clave

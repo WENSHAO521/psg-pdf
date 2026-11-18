@@ -49,6 +49,9 @@
 	Dock navigation rail on Left	Navigationsleiste links andocken
 	Dock navigation rail on Right	Navigationsleiste rechts andocken
 	Downloading and installing update…	Update wird heruntergeladen und installiert…
+	Downloading update…	Update wird heruntergeladen…
+	Reconnecting…	Verbindung wird wiederhergestellt…
+	Verifying update…	Update wird überprüft…
 	Drag hotbar	Schnellleiste ziehen
 	Edit attachment description	Anhangsbeschreibung bearbeiten
 	Edit description	Beschreibung bearbeiten
@@ -170,7 +173,7 @@
 	API key	API-Schlüssel
 	API version	API-Version
 	Add a provider	Anbieter hinzufügen
-	Add an AI provider in Preferences ▸ AI assistant first.	Fügen Sie zuerst unter Einstellungen ▸ KI-Assistent einen KI-Anbieter hinzu.
+	Add an AI provider in Preferences > AI assistant first.	Fügen Sie zuerst unter Einstellungen > KI-Assistent einen KI-Anbieter hinzu.
 	Connected: the provider answered.	Verbunden: Der Anbieter hat geantwortet.
 	Couldn't reach the provider: {detail}	Der Anbieter ist nicht erreichbar: {detail}
 	Custom (any address)	Benutzerdefiniert (beliebige Adresse)
@@ -181,7 +184,7 @@
 	Longest answer	Längste Antwort
 	Models this provider offers	Modelle dieses Anbieters
 	New provider	Neuer Anbieter
-	No API key is saved for this provider. Add one in Preferences ▸ AI assistant.	Für diesen Anbieter ist kein API-Schlüssel gespeichert. Fügen Sie unter Einstellungen ▸ KI-Assistent einen hinzu.
+	No API key is saved for this provider. Add one in Preferences > AI assistant.	Für diesen Anbieter ist kein API-Schlüssel gespeichert. Fügen Sie unter Einstellungen > KI-Assistent einen hinzu.
 	Open a document first.	Öffnen Sie zuerst ein Dokument.
 	Open a document to use the assistant.	Öffnen Sie ein Dokument, um den Assistenten zu verwenden.
 	Paste your key	Schlüssel einfügen

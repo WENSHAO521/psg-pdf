@@ -67,6 +67,9 @@
 	Dock navigation rail on Left	ナビゲーションレールを左に固定
 	Dock navigation rail on Right	ナビゲーションレールを右に固定
 	Downloading and installing update…	アップデートをダウンロードしてインストールしています…
+	Downloading update…	アップデートをダウンロードしています…
+	Reconnecting…	再接続しています…
+	Verifying update…	アップデートを検証しています…
 	Drag hotbar	ホットバーをドラッグ
 	Edge shadow removal	端の影の除去
 	Edit attachment description	添付ファイルの説明を編集
@@ -323,7 +326,7 @@
 	API key	API キー
 	API version	API バージョン
 	Add a provider	プロバイダーを追加
-	Add an AI provider in Preferences ▸ AI assistant first.	先に［環境設定 ▸ AI アシスタント］で AI プロバイダーを追加してください。
+	Add an AI provider in Preferences > AI assistant first.	先に［環境設定 > AI アシスタント］で AI プロバイダーを追加してください。
 	Connected: the provider answered.	接続しました。プロバイダーが応答しました。
 	Couldn't reach the provider: {detail}	プロバイダーに接続できません: {detail}
 	Custom (any address)	カスタム（任意のアドレス）
@@ -334,7 +337,7 @@
 	Longest answer	回答の最大長
 	Models this provider offers	このプロバイダーのモデル
 	New provider	新しいプロバイダー
-	No API key is saved for this provider. Add one in Preferences ▸ AI assistant.	このプロバイダーの API キーが保存されていません。［環境設定 ▸ AI アシスタント］で追加してください。
+	No API key is saved for this provider. Add one in Preferences > AI assistant.	このプロバイダーの API キーが保存されていません。［環境設定 > AI アシスタント］で追加してください。
 	Open a document first.	先に文書を開いてください。
 	Open a document to use the assistant.	アシスタントを使うには文書を開いてください。
 	Paste your key	キーを貼り付け

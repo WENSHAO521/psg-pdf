@@ -14,6 +14,8 @@ each marked `PSG patch` in the source:
   ([docs/update-signing.md](../docs/update-signing.md)).
 - `App::app_id`: the reverse-DNS id of PSG's packages instead of `ai.storyteller.<id>`.
 - `Updater::set_prereleases` and `check_for_update_on`: the beta channel.
+- `src/dialog.rs` and `src/updater.rs`: the update card reserves room for its close button and
+  shows byte progress and installation phases from the self-update worker.
 
 Tests: `CARGO_TARGET_DIR=target/vendor-tests cargo test --manifest-path vendor/craft-update/Cargo.toml --lib`
 (`process::tests::running_paths_are_matched_literally` fails in containers whose process table
