@@ -22,7 +22,11 @@ make_inventory() {
       for suffix in "${suffixes[@]}"; do
         printf 'installer fixture\n' >"$folder/$product-${tag#v}-$platform$suffix"
       done
-      hashes="$(cd "$folder" && sha256sum -- ./* | sed 's|  \./|  |')"
+      if [[ "$platform" == windows-x64 ]]; then
+        hashes="$(cd "$folder" && sha256sum -b -- ./* | sed 's| \*\./| *|; s/$/\r/')"
+      else
+        hashes="$(cd "$folder" && sha256sum -- ./* | sed 's|  \./|  |')"
+      fi
       printf '%s\n' "$hashes" >"$folder/SHA256SUMS-$product-$platform.txt"
     done
   done
