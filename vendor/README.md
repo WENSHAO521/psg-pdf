@@ -1,5 +1,14 @@
 # Vendored crates
 
+## craft-print
+
+Copied from `storytold/craft-libs` at `60ede99985ef1e5df87a2aca66ed538eb23dec99`
+under the upstream MIT or Apache-2.0 license. The manifest pins `winprint` to
+`f084d353f53b5a890041725e86744bdff92447ef`, where PDFium's build dependencies
+are optional. PSG PDF uses Windows' PDF printing backend and leaves PDFium off,
+so it no longer builds the unused Sigstore packages that depended on Chrono.
+Switch back to the shared crate when its published pin includes this fix.
+
 ## craft-update
 
 The in-app updater, from [storytold/craft-libs](https://github.com/storytold/craft-libs) at

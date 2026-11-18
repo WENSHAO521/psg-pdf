@@ -1,48 +1,39 @@
 // ── built-in functions ──────────────────────────────────────────────────────────────────────
 
-/// `NaiveDate::num_days_from_ce` of 1900-01-01 minus one: a civil date's day count rebased so
-/// that 1900-01-01 is FormCalc day 1 (and 1970-01-01 is day 25_568).
-const FORMCALC_EPOCH_FROM_CE: i64 = 693_595;
+use jiff::{SignedDuration, civil::Date};
+
+/// FormCalc counts 1900-01-01 as day one.
+const FORMCALC_EPOCH: Date = Date::constant(1900, 1, 1);
 
 /// Days in one 400-year Gregorian cycle; the calendar repeats after it.
 const DAYS_PER_400_YEARS: i64 = 146_097;
 
 /// Days from 1900-01-01 (day 1, as FormCalc counts) to a civil date.
 ///
-/// chrono's `NaiveDate` stops near ±262143, but FormCalc accepts day numbers up to `MAX_DAYS`
-/// (years past 270000). The calendar repeats every 400 years, so chrono converts the date
+/// FormCalc accepts day numbers beyond Jiff's range. The calendar repeats every 400 years,
+/// so Jiff converts the date
 /// within its cycle and whole cycles are added back; the result matches the proleptic Gregorian
 /// count for every year. Callers pass dates `parse_date`/`civil_from_days` already validated;
 /// anything else reads as 0.
 pub(super) fn days_from_civil(y: i64, m: u32, d: u32) -> i64 {
-    use chrono::Datelike;
-    let (cycles, year) = (i128::from(y.div_euclid(400)), y.rem_euclid(400));
-    i32::try_from(year)
-        .ok()
-        .and_then(|year| chrono::NaiveDate::from_ymd_opt(year, m, d))
-        .and_then(|date| {
-            let days = i128::from(date.num_days_from_ce()) - i128::from(FORMCALC_EPOCH_FROM_CE) + cycles * i128::from(DAYS_PER_400_YEARS);
-            i64::try_from(days).ok()
-        })
-        .unwrap_or(0)
+    let (Ok(month), Ok(day)) = (i8::try_from(m), i8::try_from(d)) else { return 0 };
+    let Ok(date) = Date::new(y.rem_euclid(400) as i16, month, day) else { return 0 };
+    let local_days = date.duration_since(FORMCALC_EPOCH).as_secs() / 86_400 + 1;
+    let cycles = i128::from(y.div_euclid(400));
+    i64::try_from(i128::from(local_days) + cycles * i128::from(DAYS_PER_400_YEARS)).unwrap_or(0)
 }
 
 /// The civil date (year, month, day) at FormCalc day number `n` (day 1 is 1900-01-01), for any
-/// `n`: chrono converts the day within its 400-year cycle and the cycles are added back as years.
+/// `n`: the calendar library converts the day within one 400-year cycle.
 pub(super) fn civil_from_days(n: i64) -> (i64, u32, u32) {
-    use chrono::Datelike;
-    // Days since CE day 0 (0000-12-31), in i128 so no `n` overflows.
-    let from_ce = i128::from(n) + i128::from(FORMCALC_EPOCH_FROM_CE);
-    let (cycles, rest) = (from_ce.div_euclid(i128::from(DAYS_PER_400_YEARS)), from_ce.rem_euclid(i128::from(DAYS_PER_400_YEARS)));
-    // `rest` is 0..146_097, so CE day `rest` lies in years 0..=400 (day 0 is 0000-12-31).
-    let date = i32::try_from(rest).ok().and_then(chrono::NaiveDate::from_num_days_from_ce_opt);
-    match date {
-        Some(date) => {
+    let days = i128::from(n) - 1;
+    let (cycles, rest) = (days.div_euclid(i128::from(DAYS_PER_400_YEARS)), days.rem_euclid(i128::from(DAYS_PER_400_YEARS)));
+    match FORMCALC_EPOCH.checked_add(SignedDuration::from_hours(rest as i64 * 24)) {
+        Ok(date) => {
             let y = i128::from(date.year()) + cycles * 400;
-            (i64::try_from(y).unwrap_or(if y < 0 { i64::MIN } else { i64::MAX }), date.month(), date.day())
+            (i64::try_from(y).unwrap_or(if y < 0 { i64::MIN } else { i64::MAX }), date.month() as u32, date.day() as u32)
         }
-        // Unreachable: every `rest` in 0..146_097 is a valid CE day.
-        None => (1900, 1, 1),
+        Err(_) => (1900, 1, 1), // unreachable: the remainder is within 400 years of 1900
     }
 }
 
@@ -112,17 +103,8 @@ pub(super) fn parse_date(text: &str, picture: &str) -> Option<(i64, u32, u32)> {
 
 /// Number of days in month `m` (1-12) of year `y`, leap years included.
 pub(crate) fn days_in(y: i64, m: u32) -> u32 {
-    // The length of the month from chrono (the first of the next month, less the first of this
-    // one). An invalid month keeps the old 31-day default.
-    // Month lengths repeat every 400 years, so the year within its cycle is enough (and always
-    // in chrono's range, whatever `y` is).
-    let y = y.rem_euclid(400);
-    let first = |y: i64, m: u32| i32::try_from(y).ok().and_then(|y| chrono::NaiveDate::from_ymd_opt(y, m, 1));
-    let next = if m == 12 { first(y + 1, 1) } else { first(y, m + 1) };
-    match (first(y, m), next) {
-        (Some(a), Some(b)) => (b - a).num_days() as u32,
-        _ => 31,
-    }
+    // Month lengths repeat every 400 years. An invalid month keeps the old 31-day default.
+    i8::try_from(m).ok().and_then(|m| Date::new(y.rem_euclid(400) as i16, m, 1).ok()).map_or(31, |d| d.days_in_month() as u32)
 }
 
 const WEEKDAYS: [&str; 7] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];

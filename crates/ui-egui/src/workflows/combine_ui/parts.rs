@@ -264,8 +264,8 @@ pub(crate) fn ago(time: SystemTime) -> String {
     }
 }
 
-/// `time` as "2026-10-08 14:05 UTC". A clock before 1970 reads as the epoch; past chrono's year
-/// 262143 range the proleptic Gregorian date is kept via the 400-year cycle, not the epoch.
+/// `time` as "2026-10-08 14:05 UTC". A clock before 1970 reads as the epoch. Dates beyond
+/// Jiff's range use the 400-year Gregorian cycle.
 pub(super) fn utc_stamp(time: SystemTime) -> String {
     let secs = time.duration_since(SystemTime::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
     let (days, rem) = (secs / 86_400, secs % 86_400);
@@ -275,7 +275,7 @@ pub(super) fn utc_stamp(time: SystemTime) -> String {
 }
 
 /// Days since 1970-01-01 → proleptic Gregorian (year, month, day): `pdfcraft_cos::civil_from_days`,
-/// which keeps the date past chrono's range by whole 400-year cycles. `days` is a `u64` second
+/// which extends Jiff's range by whole 400-year cycles. `days` is a `u64` second
 /// count over 86_400, at most about 2.1e14, so it always fits an `i64`.
 fn civil_from_days(days: u64) -> (i64, u32, u32) {
     // The fallback is unreachable: `days` is at most `u64::MAX / 86_400`, far below `i64::MAX`.

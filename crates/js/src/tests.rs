@@ -1504,10 +1504,9 @@ mod formcalc {
         assert_eq!(calc(r#"Num2Date(45350, "YYYY-MM-DD x")"#), "2024-02-29 x");
     }
 
-    /// Accepted day numbers past chrono's own date range (about year 262143) keep the dates the
-    /// pre-chrono algorithm gave, on both sides of the epoch, through Num2Date and Format.
+    /// Num2Date and Format keep dates beyond Jiff's range on both sides of the epoch.
     #[test]
-    fn date_numbers_beyond_chronos_range_keep_their_dates() {
+    fn date_numbers_beyond_jiffs_range_keep_their_dates() {
         assert_eq!(calc(r#"Num2Date(99000000, "YYYY-MM-DD")"#), "272952-10-16");
         assert_eq!(calc(r#"Format("YYYY-MM-DD", 99000000)"#), "272952-10-16");
         assert_eq!(calc(r#"Num2Date(99999999, "YYYY-MM-DD")"#), "275690-09-11");

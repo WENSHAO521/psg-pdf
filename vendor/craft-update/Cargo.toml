@@ -37,7 +37,7 @@ sha2 = "0.10"
 # PSG patch: Ed25519 signature of a release's SHA256SUMS.txt (`signature.rs`).
 ring = "0.17"
 ureq = { version = "3.4", default-features = false, features = ["rustls-no-provider", "_ring", "gzip", "platform-verifier"] }
-chrono = { version = "0.4.45", default-features = false, features = ["std"] }
+jiff = { version = "1.0.1", default-features = false, features = ["std"] }
 semver = { version = "1", features = ["serde"] }
 
 [dev-dependencies]

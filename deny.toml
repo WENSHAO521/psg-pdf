@@ -61,10 +61,6 @@ ignore = [
     { id = "RUSTSEC-2026-0370", reason = "zvariant unmaintained; Linux a11y stack via accesskit_unix" },
     { id = "RUSTSEC-2026-0371", reason = "zbus_names unmaintained; Linux a11y stack via accesskit_unix" },
     { id = "RUSTSEC-2026-0372", reason = "zvariant_derive unmaintained; Linux a11y stack via accesskit_unix" },
-    # Chrono is required by the shared time standard and by dependencies including lopdf and
-    # craft-update. The advisory reports maintenance status and has no fixed version. Revisit
-    # when the workspace and those dependencies can migrate to a maintained date/time library.
-    { id = "RUSTSEC-2026-0543", reason = "unmaintained advisory only; replacement needs migration of the shared time standard and its consumers" },
 ]
 
 # egui's default UI fonts (Ubuntu-Light, Hack, emoji-icon-font): font licences on the AGENTS.md

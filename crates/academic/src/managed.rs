@@ -37,7 +37,7 @@ const STATE: &str = "psg-tex.toml";
 /// Set to a folder to keep PSG's TeX there instead (tests, CI, a person who wants it elsewhere).
 pub const DIR_VARIABLE: &str = "PSG_ACADEMIC_TEX_DIR";
 /// How often the installed TeX is updated.
-pub const UPDATE_EVERY: chrono::TimeDelta = chrono::TimeDelta::days(7);
+pub const UPDATE_EVERY: jiff::SignedDuration = jiff::SignedDuration::from_hours(7 * 24);
 
 /// TeX Live packages every PSG template needs beyond TinyTeX-1, installed right after it. Names
 /// are TeX Live package names (`tlmgr info <name>`); most are already in the bundle, and `tlmgr
@@ -200,14 +200,14 @@ impl ManagedTex {
     }
 
     /// An update is due: installed, and never updated or last updated [`UPDATE_EVERY`] ago.
-    pub fn update_due(&self, now: chrono::DateTime<chrono::Utc>) -> bool {
+    pub fn update_due(&self, now: jiff::Timestamp) -> bool {
         if !self.installed() {
             return false;
         }
         let state = self.state();
         let last = if state.updated_at.is_empty() { &state.installed_at } else { &state.updated_at };
-        match chrono::DateTime::parse_from_rfc3339(last) {
-            Ok(at) => now.signed_duration_since(at.with_timezone(&chrono::Utc)) >= UPDATE_EVERY,
+        match last.parse::<jiff::Timestamp>() {
+            Ok(at) => now.duration_since(at) >= UPDATE_EVERY,
             Err(_) => true,
         }
     }
@@ -265,7 +265,7 @@ impl ManagedTex {
         match self.run_tlmgr(&["update", "--self", "--all"]) {
             Ok(_) => {
                 let mut state = self.state();
-                state.updated_at = now_utc().to_rfc3339();
+                state.updated_at = now_utc().to_string();
                 self.save_state(&state)?;
                 Ok(true)
             }
@@ -355,7 +355,7 @@ impl ManagedTex {
         result?;
         let mut state = self.state();
         state.release = release.to_owned();
-        state.installed_at = now_utc().to_rfc3339();
+        state.installed_at = now_utc().to_string();
         state.updated_at.clear();
         self.save_state(&state)?;
         progress(Step::Packages);
@@ -374,7 +374,7 @@ impl ManagedTex {
             }
         }
         let mut state = self.state();
-        state.updated_at = now_utc().to_rfc3339();
+        state.updated_at = now_utc().to_string();
         self.save_state(&state)?;
         Ok(())
     }
@@ -532,9 +532,9 @@ pub fn parse_search(output: &str, file: &str) -> Vec<String> {
     packages
 }
 
-/// Now, in UTC (chrono's clock feature is off in this workspace).
-pub fn now_utc() -> chrono::DateTime<chrono::Utc> {
-    chrono::DateTime::<chrono::Utc>::from(std::time::SystemTime::now())
+/// Now, as a UTC timestamp.
+pub fn now_utc() -> jiff::Timestamp {
+    jiff::Timestamp::now()
 }
 
 /// The last `n` non-empty lines of `text`, joined, for an error message.
@@ -643,10 +643,12 @@ mod tests {
         let bin = tex.tree().join("bin").join("x");
         std::fs::create_dir_all(&bin).unwrap();
         std::fs::write(bin.join(if cfg!(windows) { "pdflatex.exe" } else { "pdflatex" }), "").unwrap();
-        let state = State { installed_at: (now - chrono::TimeDelta::days(1)).to_rfc3339(), ..State::default() };
+        // Read the +00:00 offset written by older versions.
+        let installed_at = (now - jiff::SignedDuration::from_hours(24)).strftime("%Y-%m-%dT%H:%M:%S%.9f+00:00").to_string();
+        let state = State { installed_at, ..State::default() };
         tex.save_state(&state).unwrap();
         assert!(!tex.update_due(now));
-        assert!(tex.update_due(now + chrono::TimeDelta::days(7)));
+        assert!(tex.update_due(now + UPDATE_EVERY));
         assert_eq!(tex.state(), state);
     }
 

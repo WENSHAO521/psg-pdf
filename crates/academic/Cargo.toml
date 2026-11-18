@@ -13,8 +13,8 @@ workspace = true
 serde = { workspace = true }
 thiserror = { workspace = true }
 log = { workspace = true }
-# Publication dates are validated as calendar dates through chrono (no hand-rolled calendar code).
-chrono = { workspace = true }
+# Publication dates are validated as calendar dates through Jiff (no hand-rolled calendar code).
+jiff = { workspace = true }
 # Template manifests and saved projects are TOML; the same major version xtask and ui-egui use.
 toml = "1"
 

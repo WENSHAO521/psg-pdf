@@ -217,8 +217,7 @@ fn check(changelog: &str) -> Vec<String> {
             problems.push(format!("line {line}: `v{v}` is not a stable version (vX.Y.Z)"));
             continue;
         }
-        let ok_date =
-            date.strip_prefix('(').and_then(|d| d.strip_suffix(')')).is_some_and(|d| chrono::NaiveDate::parse_from_str(d, "%Y-%m-%d").is_ok());
+        let ok_date = date.strip_prefix('(').and_then(|d| d.strip_suffix(')')).is_some_and(|d| jiff::civil::Date::strptime("%Y-%m-%d", d).is_ok());
         if !ok_date {
             problems.push(format!("line {line}: v{v} needs a date, as `## v{v} (YYYY-MM-DD)`"));
         }
@@ -303,7 +302,7 @@ fn release(root: &Path, version: Option<&str>) -> Result<(), String> {
     }
     let changelog = read(root)?;
     let body = render(&unreleased(root, &changelog)?);
-    let date = chrono::Utc::now().date_naive().format("%Y-%m-%d").to_string();
+    let date = jiff::Timestamp::now().strftime("%Y-%m-%d").to_string();
     std::fs::write(root.join(FILE), insert(&changelog, &version, &date, &body)?).map_err(|e| format!("{FILE}: {e}"))?;
     println!("{FILE}: wrote v{version} ({date}). Review it, then commit:\n  git commit -am \"chore(release): v{version}\"");
     Ok(())

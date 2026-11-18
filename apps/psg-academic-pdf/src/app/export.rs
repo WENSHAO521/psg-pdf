@@ -59,9 +59,9 @@ impl AcademicApp {
                                 ui.label(self.preview.total_pages.to_string());
                                 ui.end_row();
                             }
-                            if let Ok(modified) = meta.modified() {
+                            if let Some(date) = meta.modified().ok().and_then(|t| jiff::ZonedDateTime::try_from(t).ok()) {
                                 widgets::form_label(ui, t("Typeset"));
-                                ui.label(chrono::DateTime::<chrono::Local>::from(modified).format("%Y-%m-%d %H:%M").to_string());
+                                ui.label(date.strftime("%Y-%m-%d %H:%M").to_string());
                                 ui.end_row();
                             }
                             widgets::form_label(ui, t("Suggested name"));
