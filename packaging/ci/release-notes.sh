@@ -1,21 +1,20 @@
 #!/usr/bin/env bash
 # The notes of release <tag> (.github/workflows/build.yaml, job "Release"), in Markdown on stdout:
-# a header naming both products, a warning when the build lacks a platform, then each product in
-# its own section with its downloads, the changes from CHANGELOG.md, and how to check the files.
+# Each product has its own section with its downloads, followed by the changes and download checks.
 #
 #   packaging/ci/release-notes.sh <tag> <folder with the release files>
 #   packaging/ci/release-notes.sh --title <tag> <folder>   the release's title, one line
 #
 # Titles read "PSG PDF & PSG Academic PDF 0.19.0" for a stable release and
-# "PSG PDF & PSG Academic PDF 0.19.0 Beta 3" for a beta. A beta that published without a
-# platform (release-files.sh allows only macOS to be missing, and only for a beta) says so in its
-# title and at the top of its notes, so it can't pass for a complete cross-platform release.
+# "PSG PDF & PSG Academic PDF 0.19.0 Beta 3" for a beta. release-files.sh has already validated
+# the downloads for all three platforms in both channels.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 title_only=false
 if [[ "${1:-}" == --title ]]; then title_only=true; shift; fi
 TAG="${1:?usage: release-notes.sh [--title] <tag> <folder>}"
 FILES="${2:?}"
+[[ -d "$FILES" ]] || { echo "release folder is missing: $FILES" >&2; exit 1; }
 REPO="${GITHUB_REPOSITORY:-WENSHAO521/psg-pdf}"
 
 version="${TAG#v}"
@@ -35,19 +34,7 @@ for product in "${products[@]}"; do
   tagline[$product]="$(cargo xtask products get "$product" tagline 2>/dev/null)"
 done
 
-# <os label>|<file glob after the stem>: the platforms every release is meant to have.
-platforms=("macOS|-[0-9]*-macos-universal.dmg" "Windows|-[0-9]*-windows-x64.msi" "Linux|-[0-9]*-linux-x86_64.deb")
-has() { compgen -G "$FILES/$1" >/dev/null; }
-missing=()
-for entry in "${platforms[@]}"; do
-  label="${entry%%|*}" glob="${entry#*|}"
-  for product in "${products[@]}"; do
-    if ! has "${stem[$product]}$glob"; then missing+=("$label"); break; fi
-  done
-done
-
 title="PSG PDF & PSG Academic PDF $shown"
-if [[ ${#missing[@]} -gt 0 ]]; then title+=" (no ${missing[*]})"; fi
 if $title_only; then
   echo "$title"
   exit 0
@@ -70,12 +57,6 @@ if $beta; then
   echo "> work that matters."
   echo
 fi
-if [[ ${#missing[@]} -gt 0 ]]; then
-  echo "> [!WARNING]"
-  echo "> **Incomplete build:** this beta has no ${missing[*]} installers (that platform did not"
-  echo "> finish building or testing). It is not a complete cross-platform release."
-  echo
-fi
 echo "Two independent desktop applications from Panorama Scholarly Group. Install either or both:"
 echo "each has its own installer, updates and uninstaller, and neither needs the other."
 echo
@@ -87,21 +68,9 @@ for product in "${products[@]}"; do
   echo
   echo "| Platform | Download |"
   echo "|---|---|"
-  if has "$s-[0-9]*-windows-x64.msi"; then
-    echo "| Windows 10 and 11 (x64) | \`$s-$version-windows-x64.msi\` (installer) · \`$s-$version-windows-x64-portable.zip\` (portable) |"
-  else
-    echo "| Windows 10 and 11 (x64) | not in this build |"
-  fi
-  if has "$s-[0-9]*-macos-universal.dmg"; then
-    echo "| macOS 11 or later (Apple silicon and Intel) | \`$s-$version-macos-universal.dmg\` |"
-  else
-    echo "| macOS 11 or later (Apple silicon and Intel) | not in this build |"
-  fi
-  if has "$s-[0-9]*-linux-x86_64.deb"; then
-    echo "| Linux (x86_64) | \`.deb\` (Debian, Ubuntu) · \`.rpm\` (Fedora, openSUSE) · \`.AppImage\` · \`.tar.gz\` |"
-  else
-    echo "| Linux (x86_64) | not in this build |"
-  fi
+  echo "| Windows 10 and 11 (x64) | \`$s-$version-windows-x64.msi\` (installer) · \`$s-$version-windows-x64-portable.zip\` (portable) |"
+  echo "| macOS 11 or later (Apple silicon and Intel) | \`$s-$version-macos-universal.dmg\` |"
+  echo "| Linux (x86_64) | \`.deb\` (Debian, Ubuntu) · \`.rpm\` (Fedora, openSUSE) · \`.AppImage\` · \`.tar.gz\` |"
   echo
   echo "SHA-256 checksums: \`SHA256SUMS-$s.txt\`"
   echo

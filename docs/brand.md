@@ -97,9 +97,8 @@ local build label says **Development build**. The kind of build comes from the v
 it (`X.Y.Z-beta.N` for a beta), so a local build of `0.19.0` shows no badge. Windows MSI versions
 are numeric, so the MSI itself carries `0.19.0`; its file name carries the beta number.
 
-A beta that published without a platform says which one in its release title and at the top of
-its notes ("(no macOS)"), so it never passes for a complete cross-platform release. A stable
-release needs every platform of both products ([releasing.md](releasing.md)).
+Both beta and stable releases include Windows, macOS and Linux installers for both products
+([releasing.md](releasing.md)).
 
 ## Where it is applied
 

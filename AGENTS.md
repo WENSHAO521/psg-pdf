@@ -206,8 +206,8 @@ PdfCraft opens files from strangers, and people trust it with their work. A malf
 ## PSG release flow
 
 - Pull requests go into `beta`, not `main`. `main` changes only when `beta` is merged into it for a
-  release. Every push to `beta` publishes a pre-release; a release commit merged into `main`
-  publishes the stable release (`docs/releasing.md`). `.github/workflows/build.yaml` is the
+  release. Pushes to `beta` and release commits merged into `main` can publish after both products
+  pass the Windows, macOS and Linux install tests (`docs/releasing.md`). `.github/workflows/build.yaml` is the
   repository's only workflow: it checks, builds, install-tests and publishes both products, and
   runs only the quick checks on pull requests unless they carry the `full-ci` label (`docs/ci.md`).
 - Commit subjects are Conventional Commits (`fix(academic): …`), worded as the user-facing change;

@@ -7,22 +7,36 @@
 #   packaging/ci/release-files.sh <tag> <folder>
 #
 # The folder holds the build artifacts, one sub-folder per <product>-<platform>. Each was uploaded
-# only after that platform's install tests passed. A stable release needs every platform of every
-# product; a beta needs Linux and Windows and publishes without macOS when its runner didn't
-# finish (the notes say so). The files end up directly in <folder>.
+# only after that platform's install tests passed. Both release channels need every platform
+# of every product. The files end up directly in <folder>.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 TAG="${1:?usage: release-files.sh <tag> <folder>}"
+version="${TAG#v}"
 DIR="${2:?}"
 read -r -a products <<<"$(cargo xtask products ids 2>/dev/null)"
 declare -A stem
 for product in "${products[@]}"; do stem[$product]="$(cargo xtask products get "$product" asset_stem 2>/dev/null)"; done
 platforms=(linux-x86_64 windows-x64 macos-universal)
-[[ "$TAG" == *-beta.* ]] && platforms=(linux-x86_64 windows-x64)
+declare -A formats=(
+  [linux-x86_64]=".deb .rpm .AppImage .tar.gz"
+  [windows-x64]=".msi -portable.zip"
+  [macos-universal]=".dmg"
+)
 for product in "${products[@]}"; do
   for platform in "${platforms[@]}"; do
-    [[ -f "$DIR/$product-$platform/SHA256SUMS-$product-$platform.txt" ]] ||
+    folder="$DIR/$product-$platform"
+    list="$folder/SHA256SUMS-$product-$platform.txt"
+    [[ -s "$list" ]] ||
       { echo "::error::$product for $platform is missing (it did not build, or its install tests failed)"; exit 1; }
+    read -r -a suffixes <<<"${formats[$platform]}"
+    for suffix in "${suffixes[@]}"; do
+      file="${stem[$product]}-$version-$platform$suffix"
+      if [[ ! -s "$folder/$file" ]] || ! awk -v file="$file" '$2 == file { found = 1 } END { exit !found }' "$list"; then
+        echo "::error::$file is missing or absent from its platform checksum list"
+        exit 1
+      fi
+    done
   done
 done
 shopt -s nullglob
