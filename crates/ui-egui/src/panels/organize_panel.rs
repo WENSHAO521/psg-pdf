@@ -270,14 +270,14 @@ pub(crate) fn transition_body(ui: &mut egui::Ui, draft: &mut TransitionDraft) ->
         });
         if matches!(transition.style.as_str(), "Split" | "Blinds") {
             ui.horizontal(|ui| {
-                ui.radio_value(&mut transition.horizontal, true, tl!("Horizontal"));
-                ui.radio_value(&mut transition.horizontal, false, tl!("Vertical"));
+                widgets::radio_value(ui, &mut transition.horizontal, true, tl!("Horizontal"));
+                widgets::radio_value(ui, &mut transition.horizontal, false, tl!("Vertical"));
             });
         }
         if matches!(transition.style.as_str(), "Split" | "Box" | "Fly") {
             ui.horizontal(|ui| {
-                ui.radio_value(&mut transition.inward, true, tl!("Inward"));
-                ui.radio_value(&mut transition.inward, false, tl!("Outward"));
+                widgets::radio_value(ui, &mut transition.inward, true, tl!("Inward"));
+                widgets::radio_value(ui, &mut transition.inward, false, tl!("Outward"));
             });
         }
         if matches!(transition.style.as_str(), "Wipe" | "Glitter" | "Fly" | "Cover" | "Uncover" | "Push") {
@@ -296,13 +296,13 @@ pub(crate) fn transition_body(ui: &mut egui::Ui, draft: &mut TransitionDraft) ->
                 let label = ui.label(tl!("Scale"));
                 ui.add(egui::DragValue::new(&mut transition.scale).range(0.01..=10.0).clamp_existing_to_range(false).speed(0.01))
                     .labelled_by(label.id);
-                ui.checkbox(&mut transition.opaque, tl!("Opaque background"));
+                ui.add(widgets::checkbox(&mut transition.opaque, tl!("Opaque background")));
             });
         }
     }
     ui.horizontal(|ui| {
         let mut timed = draft.spec.display.is_some();
-        let toggle = ui.checkbox(&mut timed, tl!("Advance automatically"));
+        let toggle = ui.add(widgets::checkbox(&mut timed, tl!("Advance automatically")));
         if toggle.changed() {
             draft.spec.display = timed.then_some(5.0);
         }
