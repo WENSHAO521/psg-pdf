@@ -297,12 +297,13 @@ fn release(root: &Path, version: Option<&str>) -> Result<(), String> {
     if !git(root, &["tag", "--list", &format!("v{version}")])?.trim().is_empty() {
         return Err(format!("v{version} is already tagged; pass --version with the next one"));
     }
+    let clock = jiff::Timestamp::try_from(std::time::SystemTime::now()).map_err(|e| format!("could not read the release date: {e}"))?;
+    let date = clock.strftime("%Y-%m-%d").to_string();
     if version != current {
         version::run(root, &["set", &version])?;
     }
     let changelog = read(root)?;
     let body = render(&unreleased(root, &changelog)?);
-    let date = jiff::Timestamp::now().strftime("%Y-%m-%d").to_string();
     std::fs::write(root.join(FILE), insert(&changelog, &version, &date, &body)?).map_err(|e| format!("{FILE}: {e}"))?;
     println!("{FILE}: wrote v{version} ({date}). Review it, then commit:\n  git commit -am \"chore(release): v{version}\"");
     Ok(())
