@@ -532,9 +532,9 @@ pub fn parse_search(output: &str, file: &str) -> Vec<String> {
     packages
 }
 
-/// Now, as a UTC timestamp.
+/// The current UTC timestamp. An out-of-range system clock falls back to the Unix epoch.
 pub fn now_utc() -> jiff::Timestamp {
-    jiff::Timestamp::now()
+    jiff::Timestamp::try_from(std::time::SystemTime::now()).unwrap_or(jiff::Timestamp::UNIX_EPOCH)
 }
 
 /// The last `n` non-empty lines of `text`, joined, for an error message.
