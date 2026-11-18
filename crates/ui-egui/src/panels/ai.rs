@@ -198,7 +198,7 @@ pub(crate) fn error_text(e: &psg_ai::Error) -> String {
     use psg_ai::Error as E;
     let with = |template: &str, detail: &str| crate::i18n::fmt(template, &[("detail", detail)]);
     match e {
-        E::MissingKey => tl!("No API key is saved for this provider. Add one in Preferences ▸ AI assistant.").to_string(),
+        E::MissingKey => tl!("No API key is saved for this provider. Add one in Preferences > AI assistant.").to_string(),
         E::Provider { status: 401 | 403, message } => {
             with(tl!("The provider refused the API key: {detail}"), &format!("{message} ({})", status_of(e)))
         }
@@ -278,7 +278,7 @@ impl PdfCraftApp {
             return;
         };
         let Some(profile) = self.ai.settings.active_profile().cloned() else {
-            self.ai.errors.insert(id, tl!("Add an AI provider in Preferences ▸ AI assistant first.").to_string());
+            self.ai.errors.insert(id, tl!("Add an AI provider in Preferences > AI assistant first.").to_string());
             return;
         };
         let Some(doc) = self.session.get(id) else { return };

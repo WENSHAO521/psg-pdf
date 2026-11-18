@@ -8,9 +8,12 @@
 
 /// Every string the update prompt and dialogs ask to translate. Buttons are looked up as written
 /// here (title case) and drawn in capitals.
-pub const TEXT: [&str; 31] = [
+pub const TEXT: [&str; 34] = [
     mark("{app} {version} is available with the latest features and bug fixes."),
     mark("Downloading and installing update…"),
+    mark("Downloading update…"),
+    mark("Reconnecting…"),
+    mark("Verifying update…"),
     mark("What's new"),
     mark("Dismiss"),
     mark("Restart to Update"),
