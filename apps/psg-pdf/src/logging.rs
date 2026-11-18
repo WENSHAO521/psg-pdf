@@ -91,7 +91,7 @@ fn matches(name: &str, target: &str) -> bool {
 }
 
 /// `2026-10-08T07:59:17.728Z` (UTC, milliseconds). A clock before 1970 reads as the epoch (the
-/// `duration_since` clamp); past the last date chrono can represent (year 262143) the proleptic
+/// `duration_since` clamp); past the date library’s year range the proleptic
 /// Gregorian date is kept via the 400-year cycle rather than falling back to the epoch, so the
 /// output never changes for a value the old formatter accepted and logging never panics.
 pub fn timestamp(t: SystemTime) -> String {
@@ -103,7 +103,7 @@ pub fn timestamp(t: SystemTime) -> String {
 }
 
 /// Days since 1970-01-01 → proleptic Gregorian (year, month, day): `pdfcraft_engine::civil_from_days`,
-/// which keeps the date past chrono's range by whole 400-year cycles. `days` is a `u64` second
+/// which keeps the date past the date library’s range by whole 400-year cycles. `days` is a `u64` second
 /// count over 86_400, at most about 2.1e14, so it always fits an `i64`.
 fn civil_from_days(days: u64) -> (i64, u32, u32) {
     // The fallback is unreachable: `days` is at most `u64::MAX / 86_400`, far below `i64::MAX`.
@@ -333,7 +333,7 @@ mod tests {
         assert_eq!(timestamp(UNIX_EPOCH + Duration::from_secs(1_767_225_599)), "2025-12-31T23:59:59.000Z");
         // Before the epoch (a clock set wrong) clamps instead of panicking.
         assert_eq!(timestamp(UNIX_EPOCH - Duration::from_secs(5)), "1970-01-01T00:00:00.000Z");
-        // Past chrono's range (a clock set absurdly far ahead) keeps the proleptic Gregorian date
+        // Past the date library’s range (a clock set absurdly far ahead) keeps the proleptic Gregorian date
         // the old formatter gave, rather than falling back to the epoch.
         // Windows' SystemTime holds only up to about year 30828, so this is checked where it fits.
         if let Some(far) = UNIX_EPOCH.checked_add(Duration::from_secs(10_000_000_000_000)) {

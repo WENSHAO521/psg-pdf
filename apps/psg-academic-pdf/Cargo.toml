@@ -27,8 +27,8 @@ psg-i18n = { workspace = true }
 # Native open/save dialogs, as in PSG PDF.
 rfd = { workspace = true }
 log = { workspace = true }
-# Timestamped project folder names go through chrono.
-chrono = { workspace = true }
+# Timestamped project folder names use the system time zone.
+jiff = { workspace = true, features = ["tz-system", "tzdb-bundle-platform", "tzdb-zoneinfo", "tzdb-concatenated", "tz-fat"] }
 # Check for updates on this product's own channel (`psg-academic-pdf-*` release assets).
 craft-update = { workspace = true }
 

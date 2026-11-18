@@ -217,8 +217,7 @@ mod tests {
         assert_eq!(days_from_civil(1900, 1, 1), 1);
         assert_eq!(days_from_civil(1970, 1, 1), 25_568);
         assert_eq!(civil_from_days(days_from_civil(2024, 2, 29)), (2024, 2, 29));
-        // Past chrono's ±262143 the 400-year cycles carry the year; values from the pre-chrono
-        // formula, both directions, both sides of the epoch.
+        // Whole 400-year cycles preserve extended dates on both sides of the epoch.
         for (n, date) in [
             (99_000_000, (272_952, 10, 16)),
             (99_999_999, (275_690, 9, 11)),

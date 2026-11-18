@@ -460,7 +460,7 @@ impl AcademicApp {
             self.fail(t("No template is available."));
             return;
         };
-        let name = launch::project_name(manuscript, &chrono::Local::now().format("%Y%m%d-%H%M%S").to_string());
+        let name = launch::project_name(manuscript, &jiff::ZonedDateTime::now().strftime("%Y%m%d-%H%M%S").to_string());
         let project = match Project::create(&self.workspace.join(name), &tpl, PublicationMetadata::sample()) {
             Ok(p) => p,
             Err(e) => return self.fail(tf("Could not create the project: {error}", &[("error", &e.to_string())])),
@@ -477,7 +477,7 @@ impl AcademicApp {
     fn note(&mut self, text: impl Into<String>) {
         let text = text.into();
         log::info!("{text}");
-        let stamp = chrono::Local::now().format("%H:%M:%S");
+        let stamp = jiff::ZonedDateTime::now().strftime("%H:%M:%S");
         self.activity.push(format!("[{stamp}] {text}"));
         if self.activity.len() > 2000 {
             self.activity.drain(..500);
@@ -637,7 +637,11 @@ impl AcademicApp {
 
     fn finished(&mut self, report: CompileReport, ctx: &egui::Context) {
         let summary = summary(&report);
-        self.history.push(RunRecord { at: chrono::Local::now().format("%H:%M:%S").to_string(), outcome: report.outcome, summary: summary.clone() });
+        self.history.push(RunRecord {
+            at: jiff::ZonedDateTime::now().strftime("%H:%M:%S").to_string(),
+            outcome: report.outcome,
+            summary: summary.clone(),
+        });
         if self.history.len() > 50 {
             self.history.remove(0);
         }
@@ -770,7 +774,7 @@ impl AcademicApp {
             self.fail(t("No template is available."));
             return;
         };
-        let name = format!("{}-{}", tpl.manifest.id, chrono::Local::now().format("%Y%m%d-%H%M%S"));
+        let name = format!("{}-{}", tpl.manifest.id, jiff::ZonedDateTime::now().strftime("%Y%m%d-%H%M%S"));
         let dir = self.workspace.join(name);
         match Project::create(&dir, &tpl, PublicationMetadata::sample()) {
             Ok(p) => {

@@ -301,7 +301,7 @@ fn contents_len(input: &[u8], form: Form, depth: usize) -> Result<usize, SignErr
 }
 
 /// `NaiveDate::num_days_from_ce` of 1970-01-01, so the count can be rebased onto the Unix epoch.
-const UNIX_EPOCH_DAYS_FROM_CE: i64 = 719_163;
+const UNIX_EPOCH: jiff::civil::Date = jiff::civil::Date::constant(1970, 1, 1);
 
 /// A UTC time.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -345,22 +345,21 @@ impl Time {
 
     /// Seconds since 1970-01-01 (proleptic Gregorian).
     pub fn unix(&self) -> i64 {
-        use chrono::Datelike;
-        // The calendar date goes through chrono; the time of day is a plain second count, as
-        // before. A date chrono cannot represent (an out-of-range field) reads as the epoch day,
-        // which no well-formed UTCTime/GeneralizedTime produces.
-        let days = i32::try_from(self.year)
-            .ok()
-            .and_then(|y| chrono::NaiveDate::from_ymd_opt(y, self.month, self.day))
-            .map_or(0, |d| i64::from(d.num_days_from_ce()) - UNIX_EPOCH_DAYS_FROM_CE);
+        // A malformed date reads as the epoch day. For well-formed dates, use one Gregorian
+        // cycle so every four-digit signing year can be converted without a timestamp limit.
+        let day = || {
+            let year = (self.year % 400) as i16;
+            let date = jiff::civil::Date::new(year, self.month.try_into().ok()?, self.day.try_into().ok()?).ok()?;
+            Some(date.duration_since(UNIX_EPOCH).as_secs() / 86_400 + i64::from(self.year / 400) * 146_097)
+        };
+        let days = day().unwrap_or(0);
         days * 86_400 + self.hour as i64 * 3600 + self.minute as i64 * 60 + self.second as i64
     }
 
     /// The UTC time at `t` seconds since 1970-01-01.
     ///
-    /// The calendar date goes through chrono's 400-year Gregorian cycle (146_097 days) so a `t`
-    /// past `NaiveDate`'s ±262143-year range keeps the proleptic Gregorian date the old hand-rolled
-    /// converter produced instead of falling back to the epoch. The `year` field is a `u32`, so the
+    /// The calendar date uses the 400-year Gregorian cycle (146_097 days) to extend Jiff's date
+    /// range. The `year` field is a `u32`, so the
     /// year is cast exactly as the old code did (`as u32`, wrapping) — no well-formed signing time
     /// is anywhere near that range, and this preserves byte-for-byte the old output everywhere.
     pub fn from_unix(t: i64) -> Time {
@@ -636,7 +635,7 @@ mod tests {
         assert_eq!(Tlv::parse_all(&far.encode()).unwrap().tag, tag::GENERALIZED_TIME);
         assert_eq!(Time::from_pdf("D:20261002113005+02'00'"), Some(Time { year: 2026, month: 10, day: 2, hour: 9, minute: 30, second: 5 }));
         assert_eq!(Time::from_unix(0), Time { year: 1970, month: 1, day: 1, hour: 0, minute: 0, second: 0 });
-        // Past chrono's ±262143-year range `from_unix` keeps the proleptic Gregorian date the old
+        // Past the date library’s year range `from_unix` keeps the proleptic Gregorian date the old
         // hand-rolled converter gave, not the epoch. No real signing time is near this; the `year`
         // field is a `u32`, so the year wraps exactly as the old `as u32` cast did (values pinned
         // from the old formula). This also covers both i64 extremes so neither div_euclid panics.
