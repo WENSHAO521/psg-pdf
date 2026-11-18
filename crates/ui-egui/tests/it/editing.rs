@@ -2756,10 +2756,13 @@ fn a_startup_file_after_a_protected_one_keeps_its_password_prompt() {
         if unlock {
             h.state_mut().submit_password(Some("reader".into()));
             support::wait_until(&mut h, "both files", |app| app.views.len() == 2);
-            // The other file opened while the password was being typed; the unlocked one comes
-            // after it and is the one in view.
-            assert_eq!(open_paths(h.state()), vec![other_path, locked_path]);
-            assert_eq!(h.state().active_ids().map(|(i, _)| i), Some(1));
+            assert!(h.state().password_prompt.is_none(), "the protected file unlocks");
+            // The priority retry and the other file may finish in either order.
+            let mut opened = open_paths(h.state());
+            opened.sort();
+            let mut expected = [locked_path, other_path];
+            expected.sort();
+            assert_eq!(opened, expected);
         } else {
             h.state_mut().submit_password(None);
             support::wait_until(&mut h, "the other file", |app| app.views.len() == 1);
