@@ -16,7 +16,7 @@ panorama-secure-access uses: small pull requests into `beta`, a pre-release for 
 
 Beta and stable releases require the identity and changelog checks, the gate (`cargo xtask ci` on
 Linux and Windows, with the academic TeX tests), and both products' install tests on Windows,
-macOS and Linux. SonarCloud, FreeBSD, Nix, house rules, packaging lint, fuzzing and the
+macOS and Linux. SonarCloud, Nix, house rules, packaging lint, fuzzing and the
 macOS tests are jobs of the same workflow ([ci.md](ci.md#triggers) says when each runs).
 
 ## Branches
@@ -288,10 +288,9 @@ Locally (on Linux, with nfpm): `packaging/linux/package.sh` or `--formats "deb t
 
 ### FreeBSD
 
-GitHub has no FreeBSD runners, so the `freebsd` job runs `packaging/freebsd/package.sh` in a FreeBSD
-VM with the packages from `.github/workflows/freebsd.yml`. The tarball is a `/usr/local`-style tree
-with the same desktop entry, metainfo and icons as Linux. FreeBSD has no code signing for loose
-binaries; check the tarball against `SHA256SUMS.txt`.
+To build a local FreeBSD package for PSG PDF, run `packaging/freebsd/package.sh` on FreeBSD.
+The script produces a `/usr/local`-style tarball with the same desktop entry, metainfo and icons
+as Linux.
 
 ### Web
 
@@ -323,9 +322,9 @@ pipeline; `build.yaml` signs Windows with the `.pfx` secrets only.
 
 The packaging-lint job of `build.yaml` runs on changes to `packaging/`, the workflow and the app
 icons, and in every full run: actionlint, shellcheck, a PowerShell parse, xmllint (WiX, plist, MIME),
-`desktop-file-validate`, `appstreamcli validate`, and the MSI icon-id check. The FreeBSD job also
-exercises its packaging. A pull request that changes the packaging builds and install-tests both
-products' installers without publishing them; add the `full-ci` label to do that for any other.
+`desktop-file-validate`, `appstreamcli validate`, and the MSI icon-id check. A pull request that
+changes packaging builds and install-tests both products' installers without publishing them.
+Add the `full-ci` label to request the same checks on other pull requests.
 
 ## Scanner detections
 
