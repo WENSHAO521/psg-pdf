@@ -9,7 +9,7 @@ History before the line below belongs to PdfCraft, the project both products are
 
 <!-- changelog-base: d2916decb3d948b7e404ee839d7542692bf18d92 -->
 
-## v0.20.1 (2026-11-18)
+## v0.20.1 (2026-11-19)
 
 **Features**
 
@@ -23,6 +23,7 @@ History before the line below belongs to PdfCraft, the project both products are
 - **pdf** Let people add their own AI provider and API key for the AI assistant (1239cc73)
 - **pdf** Export a PDF copy with text converted to outlines, and find available editing, protection and print tools more easily (7f6dd0a7)
 - **pdf** Set presentation page transitions from Organize pages (44e2562e)
+- **pdf** Preserve rotated text and overlapping artwork more reliably when exporting to Word, recognize small print on large scans, and search long printer lists (ffaf8c11)
 
 **Bug Fixes**
 
@@ -35,7 +36,8 @@ History before the line below belongs to PdfCraft, the project both products are
 - **ui** Link PSG's own websites instead of the upstream project (52748850)
 - **ui** Align menu titles with the tool tabs, restore keyboard access letters, and show update download progress in both apps (85013b41, 4e106a8f)
 - **ui** Align font controls and order the Simplified Chinese fonts correctly (9a273da8)
-- **deps** Replace the unmaintained Chrono dependency with Jiff (d787ff9a)
+- **deps** Use Jiff for the apps' date and time handling (d787ff9a)
+- **academic** Download the latest TinyTeX bundle directly from the official release for your platform and report when an installed TeX tool fails its check (a823c7c7)
 
 **Other Changes**
 
