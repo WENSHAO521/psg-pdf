@@ -560,7 +560,7 @@ impl AcademicApp {
         self.preview.poll(ctx);
     }
 
-    /// Install PSG's TeX if it isn't, or update it if a week has passed: once per run, by itself.
+    /// Install, repair or update PSG's TeX automatically, once per app run.
     fn start_tex_maintenance(&mut self, ctx: &egui::Context) {
         if self.tex_auto_started || self.tex_job.is_some() {
             return;
