@@ -3,6 +3,7 @@
 use egui::{Align, Align2, Color32, Layout, RichText, Vec2};
 
 use crate::app::App;
+use crate::protocol::JobPhase;
 use crate::release::Release;
 use crate::translate::{Note, Translate, button, english};
 use crate::updater::Status;
@@ -93,6 +94,10 @@ impl StartupPrompt {
 
     /// Renders the modal window on the given egui context.
     pub fn show(&mut self, ctx: &egui::Context) -> StartupPromptResponse {
+        self.show_with_progress(ctx, None)
+    }
+
+    pub(crate) fn show_with_progress(&mut self, ctx: &egui::Context, progress: Option<JobPhase>) -> StartupPromptResponse {
         if !self.open {
             return StartupPromptResponse::Later;
         }
@@ -145,10 +150,7 @@ impl StartupPrompt {
                         }
 
                         if self.is_installing {
-                            ui.horizontal(|ui| {
-                                ui.spinner();
-                                ui.label(RichText::new(t("Downloading and installing update…", &[])).size(12.0).color(text_primary));
-                            });
+                            update_progress(ui, &pal, t, progress, "Downloading and installing update…");
                         } else {
                             let desc = t(
                                 "{app} {version} is available with the latest features and bug fixes.",
@@ -320,24 +322,7 @@ fn card_header(ui: &mut egui::Ui, app: &App, pal: &Palette, t: Translate, update
 
         ui.add_space(4.0);
 
-        ui.vertical(|ui| {
-            ui.spacing_mut().item_spacing.y = 2.0;
-            ui.horizontal(|ui| {
-                ui.label(RichText::new(app.name).size(15.0).strong().color(text_primary));
-                ui.label(RichText::new(t("by {developer}", &[("developer", app.developer)])).size(11.5).color(text_muted));
-                if update_pill {
-                    // A chip, not accent-coloured text: small accent text misses WCAG's 4.5:1 for
-                    // several apps (PdfCraft's red on the dark card, amber on the light one).
-                    egui::Frame::new().fill(fill).inner_margin(egui::Margin::symmetric(4, 1)).show(ui, |ui| {
-                        ui.label(RichText::new(button(t, "Update")).size(10.0).monospace().color(on_fill));
-                    });
-                }
-            });
-            // ASCII only, like the rest of the card: an app whose fonts lack a glyph may panic
-            // instead of drawing a box, and the startup prompt shows up unasked.
-            ui.label(RichText::new(second_line).size(11.0).monospace().color(text_muted));
-        });
-
+        // Allocate trailing controls before letting the publisher and version wrap within the remaining width.
         ui.with_layout(Layout::right_to_left(Align::Min), |ui| {
             // Two strokes, not a "✕" glyph: none of the bundled faces has U+2715.
             let (rect, close) = ui.allocate_exact_size(Vec2::splat(18.0), egui::Sense::click());
@@ -350,9 +335,45 @@ fn card_header(ui: &mut egui::Ui, app: &App, pal: &Palette, t: Translate, update
             if close.on_hover_cursor(egui::CursorIcon::PointingHand).clicked() {
                 closed = true;
             }
+            if update_pill {
+                egui::Frame::new().fill(fill).inner_margin(egui::Margin::symmetric(4, 1)).show(ui, |ui| {
+                    ui.label(RichText::new(button(t, "Update")).size(10.0).monospace().color(on_fill));
+                });
+            }
+            ui.vertical(|ui| {
+                ui.spacing_mut().item_spacing.y = 2.0;
+                ui.add(egui::Label::new(RichText::new(app.name).size(15.0).strong().color(text_primary)).wrap());
+                ui.add(egui::Label::new(RichText::new(t("by {developer}", &[("developer", app.developer)])).size(11.5).color(text_muted)).wrap());
+                ui.add(egui::Label::new(RichText::new(second_line).size(11.0).monospace().color(text_muted)).wrap());
+            });
         });
     });
     closed
+}
+
+fn update_progress(ui: &mut egui::Ui, pal: &Palette, t: Translate, phase: Option<JobPhase>, fallback: &str) {
+    let (label, transfer) = match phase {
+        Some(JobPhase::Downloading { done, total }) => ("Downloading update…", Some((done, total))),
+        Some(JobPhase::Reconnecting { done, total }) => ("Reconnecting…", Some((done, total))),
+        Some(JobPhase::Verifying) => ("Verifying update…", None),
+        Some(JobPhase::Waiting | JobPhase::Installing | JobPhase::Removing) => ("Installing update…", None),
+        None => (fallback, None),
+    };
+    ui.horizontal_wrapped(|ui| {
+        if !matches!(transfer, Some((_, 1..))) {
+            ui.spinner();
+        }
+        ui.label(RichText::new(t(label, &[])).size(12.0).color(pal.text_primary));
+        if let Some((done, total)) = transfer {
+            let mib = done as f64 / 1_048_576.0;
+            let bytes = if total > 0 { format!("{mib:.1} / {:.1} MiB", total as f64 / 1_048_576.0) } else { format!("{mib:.1} MiB") };
+            ui.label(RichText::new(bytes).size(11.0).color(pal.text_muted));
+        }
+    });
+    if let Some((done, total @ 1..)) = transfer {
+        let fraction = (done.min(total) as f64 / total as f64) as f32;
+        ui.add(egui::ProgressBar::new(fraction).show_percentage().fill(pal.fill));
+    }
 }
 
 /// What the user chose in the result dialog of a manual update check.
@@ -385,18 +406,26 @@ pub struct CheckResultDialog {
     app: &'static App,
     running_version: &'static str,
     translate: Translate,
+    progress: Option<JobPhase>,
 }
 
 impl CheckResultDialog {
     /// A dialog for `app`, which is running `running_version`.
     pub fn new(app: &'static App, running_version: &'static str) -> Self {
-        Self { app, running_version, translate: english }
+        Self { app, running_version, translate: english, progress: None }
     }
 
     /// The dialog with its words in the interface language ([`crate::translate`]).
     #[must_use]
     pub fn with_translator(mut self, translate: Translate) -> Self {
         self.translate = translate;
+        self
+    }
+
+    /// Shows the active update's phase when this dialog is reopened during installation.
+    #[must_use]
+    pub fn with_progress(mut self, progress: Option<JobPhase>) -> Self {
+        self.progress = progress;
         self
     }
 
@@ -442,10 +471,7 @@ impl CheckResultDialog {
                                 });
                             }
                             Status::Installing => {
-                                ui.horizontal(|ui| {
-                                    ui.spinner();
-                                    ui.label(RichText::new(t("Installing update…", &[])).size(12.5).color(text_primary));
-                                });
+                                update_progress(ui, &pal, t, self.progress, "Installing update…");
                             }
                             Status::Ready => {
                                 let text = t(crate::updater::READY_TEXT, &[("app", self.app.name)]);
@@ -643,9 +669,18 @@ mod tests {
     }
 
     fn frame(ctx: &Context, prompt: &mut StartupPrompt, events: Vec<Event>) -> (StartupPromptResponse, FullOutput) {
+        frame_with_progress(ctx, prompt, events, None)
+    }
+
+    fn frame_with_progress(
+        ctx: &Context,
+        prompt: &mut StartupPrompt,
+        events: Vec<Event>,
+        progress: Option<JobPhase>,
+    ) -> (StartupPromptResponse, FullOutput) {
         let mut response = StartupPromptResponse::Pending;
         let mut output = ctx.run_ui(RawInput { screen_rect: Some(screen()), events, ..RawInput::default() }, |ui| {
-            response = prompt.show(ui.ctx());
+            response = prompt.show_with_progress(ui.ctx(), progress);
         });
         output.textures_delta.clear(); // Headless test: no renderer consumes the font atlas.
         (response, output)
@@ -1002,6 +1037,51 @@ mod tests {
         let (_, output) = frame(&ctx, &mut prompt, Vec::new());
         let painted = painted_text(&output);
         assert!(painted.lines().any(|l| l == "by Someone Else") && !painted.contains("by ArtCraft"), "{painted}");
+    }
+
+    #[test]
+    fn a_long_product_and_publisher_leave_space_between_the_update_badge_and_close_button() {
+        static APP: App = App { name: "PSG Academic PDF", developer: "Panorama Scholarly Group with a longer localized name", ..PHOTOCRAFT };
+        let ctx = dark_context();
+        let mut prompt = StartupPrompt { app: &APP, ..prompt_for(true) };
+        frame(&ctx, &mut prompt, Vec::new());
+        let (_, output) = frame(&ctx, &mut prompt, Vec::new());
+        let chip_text = text_pos(&output, "UPDATE").expect("the update badge is shown");
+        let chip = rect_fills(&output).into_iter().find(|(rect, fill)| *fill == Palette::new(&ctx, &APP).fill && rect.contains(chip_text)).unwrap().0;
+        fn cross_left(shape: &egui::Shape) -> Option<f32> {
+            match shape {
+                egui::Shape::Vec(shapes) => shapes.iter().find_map(cross_left),
+                egui::Shape::LineSegment { points, stroke } if stroke.width == 1.5 => Some(points[0].x.min(points[1].x)),
+                _ => None,
+            }
+        }
+        let close_left = output.shapes.iter().find_map(|shape| cross_left(&shape.shape)).expect("the close button is painted");
+        assert!(chip.right() < close_left, "the badge at {chip:?} overlaps the close button at {close_left}");
+    }
+
+    #[test]
+    fn an_update_reports_download_bytes_then_verification_and_installation() {
+        let ctx = dark_context();
+        let mut prompt = prompt_for(true);
+        prompt.is_installing = true;
+        frame(&ctx, &mut prompt, Vec::new());
+
+        for (phase, expected, percentage) in [
+            (JobPhase::Downloading { done: 1_048_576, total: 4_194_304 }, "1.0 / 4.0 MiB", Some("25%")),
+            (JobPhase::Downloading { done: 2_097_152, total: 0 }, "2.0 MiB", None),
+            (JobPhase::Reconnecting { done: 2_097_152, total: 4_194_304 }, "Reconnecting…", Some("50%")),
+            (JobPhase::Verifying, "Verifying update…", None),
+            (JobPhase::Installing, "Installing update…", None),
+        ] {
+            let (_, output) = frame_with_progress(&ctx, &mut prompt, Vec::new(), Some(phase));
+            let text = painted_text(&output);
+            assert!(text.contains(expected), "{phase:?}: {text}");
+            if let Some(percent) = percentage {
+                assert!(text.contains(percent), "{phase:?}: {text}");
+            } else {
+                assert!(!text.contains('%'), "{phase:?}: {text}");
+            }
+        }
     }
 
     /// An error written straight to `status_message` shows even when a note was set before.

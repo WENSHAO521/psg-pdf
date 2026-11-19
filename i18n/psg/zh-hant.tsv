@@ -2,3 +2,403 @@
 # (crates/ui-egui/build.rs). Same format: context <TAB> English source <TAB> translation.
 # Written from the plain meaning of the English; no other product's translations were consulted.
 	No signature font can draw “{char}”. Use other letters, or draw or import your signature.	沒有簽名字型能繪製「{char}」。請改用其他文字，或手寫簽名、匯入簽名圖片。
+	1 line	1 行
+	A CMap maps a character code to a CID above 65535	某個 CMap 把字元碼對應到大於 65535 的 CID
+	A font isn't embedded	有字型未內嵌
+	A graphics state has a halftone phase (HTP)	某個圖形狀態帶有半色調相位（HTP）
+	A graphics state has a rendering intent that isn't a name	某個圖形狀態的演算意圖不是名稱
+	A graphics state has a transfer function (TR)	某個圖形狀態帶有轉換函數（TR）
+	A graphics state has a transfer function (TR2) other than Default	某個圖形狀態帶有非 Default 的轉換函數（TR2）
+	A graphics state has the rendering intent {}, which isn't a standard one	某個圖形狀態的演算意圖 {} 不是標準值
+	A graphics state uses the blend mode {}, which ISO 32000-1 doesn't define	某個圖形狀態使用了 ISO 32000-1 未定義的混合模式 {}
+	A halftone has a HalftoneName	某個半色調帶有 HalftoneName
+	A halftone has a transfer function, which only a non-primary colorant's halftone may have	某個半色調帶有轉換函數，而只有非原色色料的半色調才可以有
+	A halftone has type {}: only types 1 and 5 are allowed	某個半色調的類型為 {}：只允許類型 1 和 5
+	A halftone's HalftoneType is missing or isn't an integer	某個半色調的 HalftoneType 缺漏或不是整數
+	A name is longer than 127 bytes	某個名稱超過 127 位元組
+	A real number is outside ±3.403 × 10³⁸, or nonzero but within ±1.175 × 10⁻³⁸	某個實數超出 ±3.403 × 10³⁸，或不為零但在 ±1.175 × 10⁻³⁸ 以內
+	A script edited here can be at most 256 KiB long; that change wasn't made.	在此編輯的指令碼最長 256 KiB；該變更未生效。
+	A string is longer than 32767 bytes	某個字串超過 32767 位元組
+	A {} action isn't allowed	不允許 {} 動作
+	A {} annotation has additional actions	某個 {} 註解帶有附加動作
+	A {} annotation has no appearance stream	某個 {} 註解沒有外觀串流
+	A {} annotation isn't set to print, or is hidden	某個 {} 註解未設為列印，或被隱藏
+	Accept or reject the OCR review of the other document before running OCR here	請先接受或拒絕另一份文件的 OCR 複核，再在此執行 OCR
+	Accessibility Report	無障礙報告
+	Add 3D model	新增 3D 模型
+	Add Tools to Hotbar	將工具加入快捷工具列
+	All releases are listed at {url}	所有版本都列在 {url}
+	An integer is outside the 32-bit range	某個整數超出 32 位元範圍
+	Background removal	去除背景
+	Beta	測試版
+	Betas update to the newest release, beta or stable, and get new features first. Off, only stable releases are installed.	開啟後會更新到最新版本（測試版或穩定版），搶先獲得新功能。關閉時只安裝穩定版。
+	Black and white (binarize)	黑白（二值化）
+	Built-in	內建
+	Cancel re-read	取消重新辨識
+	Cannot auto-update this installation type. Please download manually.	此安裝類型無法自動更新。請手動下載。
+	Change Author	變更作者
+	Change Keywords	變更關鍵詞
+	Change Subject	變更主旨
+	Change Title	變更標題
+	Check for updates when PSG PDF starts	PSG PDF 啟動時檢查更新
+	Checking for updates…	正在檢查更新…
+	Cleans up the scanned pictures in place: recognized text, comments and links on the pages stay as they are.	直接清理掃描影像：頁面上已辨識的文字、註解和連結保持不變。
+	Close menu	關閉選單
+	Close {app}	關閉 {app}
+	Close {app} to finish	關閉 {app} 以完成
+	Columns and rows must each be 1 to 99.	欄數和列數都必須在 1 到 99 之間。
+	Combine engines	組合引擎
+	Could not check for updates.	無法檢查更新。
+	Couldn't start the update ({error})	無法開始更新（{error}）
+	Create links	建立連結
+	Creep:	爬移：
+	Crop image	裁切影像
+	Custom calculation script:	自訂計算指令碼：
+	Custom scale	自訂比例
+	Despeckle	去斑點
+	Detailed Report	詳細報告
+	Detecting paper…	正在偵測紙張…
+	Detecting…	正在偵測…
+	Development build	開發版本
+	DeviceCMYK is used, but the PDF/A output intent isn't a CMYK profile	使用了 DeviceCMYK，但 PDF/A 輸出意圖不是 CMYK 描述檔
+	DeviceRGB is used, but the PDF/A output intent isn't an RGB profile	使用了 DeviceRGB，但 PDF/A 輸出意圖不是 RGB 描述檔
+	Discard embedded search index	捨棄內嵌的搜尋索引
+	Discard external cross-references	捨棄外部交互參照
+	Dock navigation rail on Left	將導覽列停靠在左側
+	Dock navigation rail on Right	將導覽列停靠在右側
+	Downloading and installing update…	正在下載並安裝更新…
+	Downloading update…	正在下載更新…
+	Reconnecting…	正在重新連線…
+	Verifying update…	正在驗證更新…
+	Drag hotbar	拖曳快捷工具列
+	Edge shadow removal	去除邊緣陰影
+	Edit attachment description	編輯附件說明
+	Edit description	編輯說明
+	Engine	引擎
+	Enhance	增強
+	Enhance Scanned File	增強掃描檔案
+	Enhance scanned file…	增強掃描檔案…
+	Enhancing scans… image {d} of {t}	正在增強掃描件… 第 {d} 張，共 {t} 張
+	Evens out the paper so a grey or yellowed background turns white, and darkens faint strokes. 0 is off.	均勻紙張底色，讓發灰或發黃的背景變白，並加深淺淡的筆畫。0 表示關閉。
+	Every line set in the style chosen for a level becomes a bookmark of that level, under a new first bookmark.	以某一層級所選樣式排版的每一行都會成為該層級的書籤，放在一個新的第一個書籤之下。
+	Extend the docked toolbar along the entire side. Choose a side above to enable.	讓停靠的工具列延伸到整條邊。先在上方選擇一側即可啟用。
+	Field "{}" on page {p} has no description (tooltip)	第 {p} 頁的欄位「{}」沒有說明（工具提示）
+	Filename	檔名
+	Flatten Fill & Sign	平面化填寫和簽署內容
+	Float	浮動
+	Font (unnamed) on page {p} doesn't map its characters to Unicode	第 {p} 頁的字型（未命名）沒有把字元對應到 Unicode
+	Font {} on page {p} doesn't map its characters to Unicode	第 {p} 頁的字型 {} 沒有把字元對應到 Unicode
+	Form field on page {p} isn't tagged	第 {p} 頁的表單欄位未加標籤
+	Freehand-Highlight	手繪醒目提示
+	Full-side strip	整邊長條
+	General & Interface	一般與介面
+	Get beta updates	取得測試版更新
+	Hotbar settings	快捷工具列設定
+	Hotbar settings / add tools	快捷工具列設定 / 加入工具
+	Hotbar tools	快捷工具列工具
+	H{n} follows an H{d}; headings should not skip levels	H{n} 緊接在 H{d} 之後；標題不應跳級
+	Import bookmarks	匯入書籤
+	Inherit Zoom	沿用縮放
+	Installing update…	正在安裝更新…
+	Invert middle-button drag	反轉中鍵拖曳
+	Join beta	加入測試版
+	Join the beta channel? Betas can have unfinished features and bugs. PSG PDF then updates to every new beta, and to each stable release as soon as it is newer.	加入測試版通道？測試版可能有未完成的功能和錯誤。之後 PSG PDF 會更新到每個新測試版，以及較新的正式版。
+	Layout & Sizing	版面與尺寸
+	Leave beta	退出測試版
+	Leave the beta channel? PSG PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	退出測試版通道？PSG PDF 保留目前版本，直到出現比它更新的正式版才會再更新。它不會退回舊版本。
+	Level {n}	第 {n} 層
+	Lightens shadows along the edges of the scan, such as a book's gutter or a copier's dark border	減淡掃描件邊緣的陰影，例如書籍的裝訂縫或影印機留下的黑邊
+	Mark differences	標記差異
+	Metadata stream {object} writes the namespace {namespace} with the prefix {written}, not {prefix}	中繼資料串流 {object} 為命名空間 {namespace} 寫入的前置詞是 {written}，而不是 {prefix}
+	Metadata stream {object} writes the namespace {namespace} without a prefix, not with {prefix}	中繼資料串流 {object} 寫入命名空間 {namespace} 時沒有前置詞，而應使用 {prefix}
+	Moves each sheet's pages toward the fold by this much more than the sheet outside it, so the margins match once the booklet is folded and trimmed.	每張紙上的頁面比其外側那張多向摺縫移動這麼多，讓小冊子摺疊裁切後邊距一致。
+	Navigation rail side	導覽列位置
+	New bookmarks from text styles	依文字樣式新增書籤
+	New bookmarks from text styles…	依文字樣式新增書籤…
+	No document language is set	未設定文件語言
+	No page has text: the document appears to be images of pages	沒有頁面含文字：文件似乎是頁面影像
+	No printers match.	沒有符合的印表機。
+	No scanned pages were cleaned up.	沒有清理任何掃描頁面。
+	Only web (http, https) and email addresses open, and PSG PDF asks first, as for other links.	只會開啟網頁（http、https）和電子郵件地址，而且 PSG PDF 會像處理其他連結一樣先詢問。
+	Open web and email addresses written in the page text	開啟頁面文字中寫出的網址和電子郵件地址
+	Optimizing… reading page {d} of {t}	正在最佳化…正在讀取第 {d} 頁，共 {t} 頁
+	Optimizing… reading the pages	正在最佳化…正在讀取頁面
+	PSG PDF can't check this signature yet: {}.	PSG PDF 暫時無法檢查此簽章：{}。
+	PSG PDF's checks found no problems for {level}. This is not a validator result.	PSG PDF 的檢查未發現 {level} 方面的問題。這不是驗證工具的結論。
+	PSG PDF's checks now find no problems for {level}. This is not a validator result. Save to keep the changes.	PSG PDF 的檢查現在未發現 {level} 方面的問題。這不是驗證工具的結論。請儲存以保留變更。
+	Page Properties	頁面內容
+	Page Setup…	版面設定…
+	Page properties…	頁面內容…
+	Page setup dialog is not available on this system.	此系統不提供版面設定對話框。
+	Page {p} doesn't tab in structure order	第 {p} 頁的 Tab 鍵順序不是結構順序
+	Page {p}: {n} untagged content item	第 {p} 頁：{n} 個未加標籤的內容項目
+	Page {p}: {n} untagged content items	第 {p} 頁：{n} 個未加標籤的內容項目
+	Page {} has a boundary smaller than 3 or larger than 14400 units	第 {} 頁的某個頁面框小於 3 或大於 14400 單位
+	Page {} has additional actions	第 {} 頁帶有附加動作
+	Page {} has transparency but no device-independent blending colour space or PDF/A output intent	第 {} 頁含透明效果，但沒有與裝置無關的混合色彩空間，也沒有 PDF/A 輸出意圖
+	Panning or auto-scrolling with the middle (wheel) button moves the page the other way.	用中鍵（滾輪）平移或自動捲動時，頁面朝相反方向移動。
+	Paste bookmarks	貼上書籤
+	PSG PDF website	PSG PDF 網站
+	Panorama Scholarly Group website	Panorama Scholarly Group 官網
+	Prepare grouped text	準備分組文字
+	Re-reading the page…	正在重新辨識頁面…
+	Re-reading the region…	正在重新辨識區域…
+	Reading the drawing for snapping…	正在讀取圖形以便貼齊…
+	Remove from hotbar	從快捷工具列移除
+	Remove scan speckle	去除掃描雜點
+	Remove this leaf tag from reading order and mark its direct content as an artifact	從閱讀順序中移除此葉標籤，並將其直接內容標記為裝飾物件
+	Remove {standard} identification	移除 {standard} 識別
+	Removes isolated dark specks such as dust and scanner noise. The only filter black and white scans take.	去除灰塵、掃描雜訊等孤立的暗點。這是黑白掃描件唯一可用的濾鏡。
+	Report created	報告建立時間
+	Reset side panels	重設側邊面板
+	Resize panes	調整窗格大小
+	Restart to Update	重新啟動以更新
+	Rule Name	規則名稱
+	Run form script	執行表單指令碼
+	Save as {level}	另存為 {level}
+	Save or close your open work first; the update restarts the app.	請先儲存或關閉進行中的工作；更新會重新啟動應用程式。
+	Search all tools…	搜尋所有工具…
+	Search printers	搜尋印表機
+	Search settings…	搜尋設定…
+	Selects paper size and orientation from the printer driver. For paper tray, print quality or other driver defaults, use Properties…	透過印表機驅動程式選擇紙張大小和方向。紙匣、列印品質或其他驅動程式預設值，請使用內容…
+	Separation colour spaces named {} differ in their alternate space or tint transform	名為 {} 的分色色彩空間在替代空間或色調轉換上不一致
+	Show or hide the Tools panel	顯示或隱藏工具面板
+	Show or hide the side panel	顯示或隱藏側邊面板
+	Show tab numbers	顯示分頁編號
+	Signature is invalid	簽章無效
+	Signature is valid	簽章有效
+	Signature validity is unknown	簽章有效性不明
+	Signing time is from the clock on the signer's computer.	簽署時間來自簽署者電腦上的時鐘。
+	Stick to a side:	停靠到一側：
+	Straighten pages scanned sideways or upside down	擺正橫向或倒置掃描的頁面
+	Straighten skewed text lines	校正傾斜的文字行
+	Tab Order	Tab 鍵順序
+	Tesseract	Tesseract 引擎
+	The ECDSA signature is not in canonical DER (trailing bytes, padding or a missing sign byte); it was read anyway.	ECDSA 簽章不是標準的 DER 編碼（有尾隨位元組、填補或缺少符號位元組）；仍已讀取。
+	The ECDSA signature is the raw r and s values instead of a DER sequence; it was read anyway.	ECDSA 簽章是原始的 r 和 s 值，而不是 DER 序列；仍已讀取。
+	The RSA signature value does not have the length of the key's modulus (leading zero bytes dropped or added); it was read anyway.	RSA 簽章值的長度與金鑰模數不同（前導零位元組被刪去或加入）；仍已讀取。
+	The RSA signature's DigestInfo has no NULL parameter (older signers write it so); it was read anyway.	RSA 簽章的 DigestInfo 沒有 NULL 參數（較舊的簽署程式會這樣寫）；仍已讀取。
+	The XMP extension schema container in metadata stream {object} holds no rdf:Bag	中繼資料串流 {object} 中的 XMP 擴充結構描述容器不含 rdf:Bag
+	The XMP extension schema container in metadata stream {object} holds {found}, not one rdf:Bag	中繼資料串流 {object} 中的 XMP 擴充結構描述容器包含 {found}，而不是一個 rdf:Bag
+	The XMP extension schema {schema} in metadata stream {object} describes {item} with an empty {entry} entry	中繼資料串流 {object} 中的 XMP 擴充結構描述 {schema} 描述 {item} 時 {entry} 項目為空
+	The XMP extension schema {schema} in metadata stream {object} describes {item} without a {entry} entry	中繼資料串流 {object} 中的 XMP 擴充結構描述 {schema} 描述 {item} 時缺少 {entry} 項目
+	The XMP extension schema {schema} in metadata stream {object} has an empty {entry} entry	中繼資料串流 {object} 中的 XMP 擴充結構描述 {schema} 的 {entry} 項目為空
+	The XMP extension schema {schema} in metadata stream {object} has no {entry} entry	中繼資料串流 {object} 中的 XMP 擴充結構描述 {schema} 沒有 {entry} 項目
+	The XMP property {property} in metadata stream {object} should have the value type {type}	中繼資料串流 {object} 中的 XMP 屬性 {property} 應為值類型 {type}
+	The XMP property {property} in metadata stream {object}, written {written}, should have the value type {type}	中繼資料串流 {object} 中的 XMP 屬性 {property}（寫作 {written}）應為值類型 {type}
+	The certificate of {} does not allow this many CA certificates below it (path length), so it is not used to vouch for {}.	{} 的憑證不允許其下有這麼多 CA 憑證（路徑長度），因此不用於擔保 {}。
+	The certificate of {} has critical extensions PSG PDF does not recognize, so it is not used to vouch for {}.	{} 的憑證帶有 PSG PDF 無法辨識的關鍵延伸，因此不會用它來擔保 {}。
+	The certificate of {} is not a CA certificate that may issue certificates, so it is not used to vouch for {}.	{} 的憑證不是可簽發憑證的 CA 憑證，因此不用於擔保 {}。
+	The certificate of {} was not valid at the time of signing, so it is not used to vouch for {}.	{} 的憑證在簽署時無效，因此不用於擔保 {}。
+	The checker found problems which may prevent the document from being fully accessible.	檢查發現了一些問題，可能使文件無法做到完全無障礙。
+	The creep moves the innermost sheet's pages too far for this many pages. Reduce Creep.	對於這麼多頁，爬移使最內層紙張的頁面移動過多。請減小爬移值。
+	The document changed. Reopen Document Properties to edit the current version.	文件已變更。請重新開啟「文件內容」以編輯目前版本。
+	The document has been altered or corrupted since the signature was applied.	自套用簽章以來，文件已被變更或損毀。
+	The document has been altered or corrupted since the timestamp was applied.	自套用時間戳記以來，文件已被變更或損毀。
+	The document has been altered since this signature was applied in ways it does not permit ({}).	自套用此簽章以來，文件發生了簽章不允許的變更（{}）。
+	The document has been altered since this timestamp was applied in ways it does not permit ({}).	自套用此時間戳記以來，文件發生了時間戳記不允許的變更（{}）。
+	The document has been modified since this signature was applied, but the changes are permitted ({}).	自套用此簽章以來，文件已被修改，但這些變更是允許的（{}）。
+	The document has been modified since this timestamp was applied, but the changes are permitted ({}).	自套用此時間戳記以來，文件已被修改，但這些變更是允許的（{}）。
+	The document has no tags (structure tree)	文件沒有標籤（結構樹）
+	The document has no title	文件沒有標題
+	The document isn't marked as tagged (MarkInfo Marked)	文件未標示為已加標籤（MarkInfo Marked）
+	The document isn't tagged, so none of its content is	文件沒有標籤，因此其內容都沒有標籤
+	The document's embedded revocation information shows that the signer's certificate has not been revoked.	文件中內嵌的撤銷資訊顯示簽署者的憑證未被撤銷。
+	The embedded timestamp token is valid and its authority is trusted; trusted time is {}.	內嵌的時間戳記權杖有效，且其頒發機構受信任；可信時間為 {}。
+	The file doesn't start with a %PDF-1.0 to %PDF-1.7 header line	檔案開頭不是 %PDF-1.0 到 %PDF-1.7 的檔頭行
+	The file header isn't followed by a comment of four bytes above 127	檔頭之後沒有由四個大於 127 的位元組組成的註解
+	The file identifier (ID) in the trailer isn't two non-empty strings	結尾字典中的檔案識別碼（ID）不是兩個非空字串
+	The font {} isn't embedded	字型 {} 未內嵌
+	The halftone for the colorant {} has no transfer function	色料 {} 的半色調沒有轉換函數
+	The metadata doesn't identify the file as {}	中繼資料沒有把檔案標示為 {}
+	The re-read was cancelled; the words are unchanged	已取消重新辨識；文字未變更
+	The security settings don't allow screen readers to read the text	安全性設定不允許螢幕閱讀器讀取文字
+	The signature algorithm and the SignerInfo's digest algorithm name different hashes; the signature was made with the SignerInfo's.	簽章演算法與 SignerInfo 的摘要演算法指定了不同的雜湊；簽章使用的是 SignerInfo 的雜湊。
+	The signature carries an unverified timestamp ({}): the timestamp authority is not in your list of trusted certificates, so the signing time claimed by the signer is used instead.	簽章帶有未驗證的時間戳記（{}）：時間戳記頒發機構不在您的受信任憑證清單中，因此改用簽署者宣稱的簽署時間。
+	The signature contents are not hexadecimal.	簽章內容不是十六進位。
+	The signature could not be checked ({}).	無法檢查簽章（{}）。
+	The signature could not be read ({}).	無法讀取簽章（{}）。
+	The signature could not be verified ({}).	無法驗證簽章（{}）。
+	The signature has no valid byte range.	簽章沒有有效的位元組範圍。
+	The signature includes an embedded timestamp.	簽章包含內嵌的時間戳記。
+	The signature is BER-encoded (indefinite lengths) rather than DER; it was read leniently.	簽章採用 BER 編碼（不定長度）而不是 DER；已寬鬆讀取。
+	The signature uses the legacy adbe.x509.rsa_sha1 format.	簽章使用舊式 adbe.x509.rsa_sha1 格式。
+	The signature value does not match the signer's certificate: the signature is corrupt.	簽章值與簽署者的憑證不符：簽章已損毀。
+	The signature's byte range does not exclude exactly its contents.	簽章的位元組範圍沒有恰好排除其內容。
+	The signature's byte range does not match the file.	簽章的位元組範圍與檔案不符。
+	The signature's signed attributes have no content type, which CMS requires; it was read anyway.	簽章的已簽署屬性中缺少 CMS 要求的內容類型；仍已讀取該簽章。
+	The signature's signed attributes have no message digest, so the signature does not cover the document.	簽章的已簽署屬性中沒有訊息摘要，因此該簽章並未涵蓋文件。
+	The signature's signed attributes name a content type other than data, so it is not a signature of the document.	簽章的已簽署屬性指定的內容類型不是 data，因此它不是對該文件的簽章。
+	The signature's timestamp token could not be verified ({}).	無法驗證簽章的時間戳記權杖（{}）。
+	The signature's timestamp token does not cover the signature value.	簽章的時間戳記權杖沒有涵蓋簽章值。
+	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	已簽署內容是 BER 允許的建構型（分段）OCTET STRING；仍已讀取。
+	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	簽署者的憑證不允許數位簽章（其金鑰使用方式既沒有數位簽章也沒有不可否認性）。
+	The signer's certificate has been revoked ({}).	簽署者的憑證已被撤銷（{}）。
+	The signer's certificate has critical extensions PSG PDF does not recognize ({}).	簽署者的憑證含有 PSG PDF 無法辨識的重要延伸（{}）。
+	The signer's certificate is not in the signature.	簽章中沒有簽署者的憑證。
+	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	簽署者的憑證不是為簽署文件而簽發的（其延伸金鑰使用方式沒有文件簽署用途）。
+	The signer's certificate was not valid at the time of signing.	簽署者的憑證在簽署時無效。
+	The signer's identity is unknown because it has not been included in your list of trusted certificates and none of its parent certificates are trusted certificates.	簽署者身分不明，因為它不在您的受信任憑證清單中，其上層憑證也都不是受信任憑證。
+	The signer's identity is valid.	簽署者身分有效。
+	The spot colour {} of a DeviceN colour space isn't in its Colorants dictionary	DeviceN 色彩空間的特別色 {} 不在其 Colorants 字典中
+	The timestamp authority's certificate is not issued for time stamping.	時間戳記機構的憑證並非為時間戳記用途簽發。
+	The timestamp authority's certificate was not valid at the time of timestamping.	時間戳記頒發機構的憑證在加蓋時間戳記時無效。
+	The timestamp contents are not hexadecimal.	時間戳記內容不是十六進位。
+	The timestamp has no valid byte range.	時間戳記沒有有效的位元組範圍。
+	The timestamp token could not be read ({}).	無法讀取時間戳記權杖（{}）。
+	The timestamp token is valid and its authority is trusted.	時間戳記權杖有效，且其頒發機構受信任。
+	The timestamp token is valid, but the timestamp authority is not in your list of trusted certificates.	時間戳記權杖有效，但時間戳記頒發機構不在您的受信任憑證清單中。
+	The timestamp's byte range does not exclude exactly its contents.	時間戳記的位元組範圍沒有恰好排除其內容。
+	The timestamp's byte range does not match the file.	時間戳記的位元組範圍與檔案不符。
+	The trailer has no file identifier (ID)	結尾字典沒有檔案識別碼（ID）
+	The update could not be installed: {reason}	無法安裝更新：{reason}
+	The update failed unexpectedly.	更新意外失敗。
+	The update is installed. Close {app} to finish; it restarts by itself.	更新已安裝。關閉 {app} 即可完成，它會自動重新啟動。
+	The update stopped unexpectedly.	更新意外中止。
+	The window shows the file name, not the title (Initial View > Show)	視窗顯示的是檔名而非標題（初始檢視 > 顯示）
+	This document has no text to make bookmarks from.	此文件中沒有可用來產生書籤的文字。
+	This document has not been modified since this signature was applied.	自套用此簽章以來，文件未被修改。
+	This document has not been modified since this timestamp was applied.	自套用此時間戳記以來，文件未被修改。
+	This form has too many fields, or a field name too long, for PSG PDF to read them all. Any signature among the rest is not listed, so the document is treated as signed.	此表單的欄位太多或某個欄位名稱太長，PSG PDF 無法全部讀取。其餘欄位中的簽章不會列出，因此文件被視為已簽署。
+	This script is too long to edit here ({kib} KiB); its start is shown. It is kept as it is.	此指令碼太長（{kib} KiB），無法在此編輯；只顯示開頭部分。指令碼保持不變。
+	This signature carries certification permissions, but the document does not name it as its certification, so it is checked as an approval signature.	此簽章帶有認證權限，但文件並未將其指定為認證簽章，因此按核准簽章進行檢查。
+	This signature uses RIPEMD-160, a legacy 160-bit hash algorithm that is no longer recommended for signatures. It still validates, but it should not be relied on.	此簽章使用 RIPEMD-160，這是一種已不再建議用於簽章的舊式 160 位元雜湊演算法。簽章仍可通過驗證，但不應依賴。
+	This signature uses SHA-1, a weak hash algorithm: collisions in it have been demonstrated. It still validates because many documents signed years ago use it, but it should not be relied on.	此簽章使用 SHA-1，這是一種弱雜湊演算法：其碰撞已被證實。由於許多多年前簽署的文件使用它，簽章仍可通過驗證，但不應依賴。
+	This signature uses an RSA key shorter than 2048 bits, which is no longer considered strong enough for signatures. It still validates, but it should not be relied on.	此簽章使用的 RSA 金鑰短於 2048 位元，已不再被視為足以保障簽章安全。它仍能通過驗證，但不應依賴它。
+	Toolbar size	工具列大小
+	Unsigned signature field	未簽署的簽章欄位
+	Unspecified	未指定
+	Update and Restart	更新並重新啟動
+	Update ready. Close {app} to install it.	更新已就緒。關閉 {app} 即可安裝。
+	Use Column Order	依欄順序
+	Use Document Structure	依文件結構
+	Use Row Order	依列順序
+	Vertical layout	直向版面
+	What's new	新功能
+	You are viewing revision {rev} of “{from}”. It is a snapshot: changes here won't affect the original.	您正在檢視「{from}」的修訂版 {rev}。這是一份快照：在此所做的變更不會影響原始文件。
+	You are viewing the signed version of “{from}” (revision {rev}). It is a snapshot: changes here won't affect the original.	您正在檢視「{from}」的已簽署版本（修訂版 {rev}）。這是一份快照：在此所做的變更不會影響原始文件。
+	a table has 1 to {max} columns	表格的欄數為 1 到 {max}
+	a table has 1 to {max} rows	表格的列數為 1 到 {max}
+	alternate text hides an annotation inside it	替代文字遮蔽了其中的註解
+	alternate text on an element with no page content	替代文字位於沒有頁面內容的元素上
+	bold	粗體
+	by	×
+	by {developer}	來自 {developer}
+	comments	註解
+	document security store	文件安全性儲存區
+	document structure	文件結構
+	form fill	表單填寫
+	italic	斜體
+	its alternate text is inside another element's and will never be read	其替代文字位於另一元素的替代文字之內，永遠不會被讀出
+	links	連結
+	metadata	中繼資料
+	no alternate text	沒有替代文字
+	no header cells (TH)	沒有標題儲存格（TH）
+	no summary	沒有摘要
+	not in a TR	不在 TR 中
+	not in a Table, THead, TBody or TFoot	不在 Table、THead、TBody 或 TFoot 中
+	not in an L (list)	不在 L（清單）中
+	not in an LI (list item)	不在 LI（清單項目）中
+	other changes	其他變更
+	page content	頁面內容
+	page {n} is out of range (1–{count})	第 {n} 頁超出範圍（1–{count}）
+	pages added or removed	頁面增刪
+	rows have between {min} and {max} columns	各列的欄數在 {min} 到 {max} 之間
+	the area, the spacing and the column widths must be numbers, the spacing 0 or more and each width more than 0	區域、間距和欄寬都必須是數字，間距不小於 0，每個欄寬大於 0
+	the first heading is an H{n}; headings should not skip levels	第一個標題是 H{n}；標題不應跳級
+	the first row number can be at most {max}	起始列號最大為 {max}
+	the range selects more than {limit} pages	該範圍選取了超過 {limit} 頁
+	the signed version could not be read	無法讀取已簽署的版本
+	v{from} to {to}	從 v{from} 到 {to}
+	{app} updated to {version}.	{app} 已更新到 {version}。
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} 使用啟動器中選擇的版本，因此不會自行更新。
+	{app} {version} is available with the latest features and bug fixes.	{app} {version} 已推出，包含最新功能與錯誤修正。
+	{app} {version} is the newest version available.	{app} {version} 已是最新版本。
+	{font}, {size} pt	{font}，{size} pt
+	{n} lines	{n} 行
+	{n} pages and no bookmarks	{n} 頁但沒有書籤
+	{page} is not a page number or label	{page} 不是頁碼或頁面標籤
+	{ty} element on page {p}: {what}	第 {p} 頁的 {ty} 元素：{what}
+	{ty} element: {what}	{ty} 元素：{what}
+	{} annotation on page {p} isn't tagged	第 {p} 頁的 {} 註解未加標籤
+	{} annotations aren't allowed	不允許 {} 註解
+	… and {n} more	…另有 {n} 項
+	Some content could not be read for device colour	部分內容無法讀取，無法判斷是否使用裝置色彩
+	(Only the first {n} of {total} pages fit in the request.)	（請求只能容納 {total} 頁中的前 {n} 頁。）
+	AI assistant settings	AI 助理設定
+	AI providers aren't available in this version.	此版本無法使用 AI 提供者。
+	API address	API 位址
+	API format	API 格式
+	API key	API 金鑰
+	API version	API 版本
+	Add a provider	新增提供者
+	Add an AI provider in Preferences > AI assistant first.	請先在「偏好設定 > AI 助理」中新增 AI 提供者。
+	Connected: the provider answered.	已連線：提供者有回應。
+	Couldn't reach the provider: {detail}	無法連線到提供者：{detail}
+	Custom (any address)	自訂（任何位址）
+	Deployment	部署
+	Edit provider	編輯提供者
+	Fetch models	取得模型清單
+	Found {n} models.	找到 {n} 個模型。
+	Longest answer	最長回答
+	Models this provider offers	此提供者提供的模型
+	New provider	新提供者
+	No API key is saved for this provider. Add one in Preferences > AI assistant.	此提供者尚未儲存 API 金鑰。請在「偏好設定 > AI 助理」中新增。
+	Open a document first.	請先開啟文件。
+	Open a document to use the assistant.	開啟文件即可使用助理。
+	Paste your key	貼上您的金鑰
+	Saved — type to replace	已儲存——輸入即可取代
+	Show or hide the key	顯示或隱藏金鑰
+	Test connection	測試連線
+	The answer stopped at the length limit.	回答在長度上限處被截斷。
+	The provider answered with an error: {detail}	提供者回傳錯誤：{detail}
+	The provider doesn't know this model or address: {detail}	提供者不認得這個模型或位址：{detail}
+	The provider refused the API key: {detail}	提供者拒絕了 API 金鑰：{detail}
+	The provider's answer couldn't be read: {detail}	無法讀取提供者的回應：{detail}
+	The provider's rate limit or quota was reached: {detail}	已達提供者的速率限制或配額：{detail}
+	The request stopped unexpectedly.	請求意外中止。
+	The system keychain isn't available, so the key is kept only until PSG PDF quits.	系統鑰匙圈無法使用，因此金鑰只保留到 PSG PDF 結束為止。
+	The system keychain refused: {detail}	系統鑰匙圈拒絕了操作：{detail}
+	The text of this document is sent to {provider}.	此文件的文字會傳送給 {provider}。
+	This address isn't encrypted (http://): the key and the document cross the network as plain text.	此位址未加密（http://）：金鑰和文件會以明文在網路上傳輸。
+	This document has no text to send. Scanned pages need Scan & OCR first.	此文件沒有可傳送的文字。掃描頁面需要先執行掃描與 OCR。
+	This provider runs on your computer: the document stays here.	此提供者在您的電腦上執行：文件不會離開本機。
+	This provider's settings need attention: {detail}	此提供者的設定需要修改：{detail}
+	Translate into	翻譯成
+	Translate into {language}	翻譯成{language}
+	Type a question	輸入問題
+	Use this provider	使用此提供者
+	Waiting for {provider}…	正在等待 {provider}…
+	Whole document	整份文件
+	You	您
+	no key	無金鑰
+	tokens (0: the provider's default)	個 token（0：提供者預設值）
+	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	使用您自己選擇的 AI 服務和自己的 API 金鑰：OpenAI、Anthropic Claude、Google Gemini、Azure OpenAI、DeepSeek、通義千問、透過 Ollama 在本機執行的模型，或任何相容 OpenAI 的服務。
+	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	新增提供者之前保持關閉。可用自己的 API 金鑰連接任何 AI 服務；金鑰存放在系統鑰匙圈中，絕不寫入 PSG PDF 的設定。只有在您提問時，才會傳送您詢問的文件。
+	OpenAI-compatible	相容 OpenAI
+
+# Outlined PDF export
+	Export PDF with outlined text…	匯出文字轉曲 PDF…
+	Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology.	另存一份 PDF。轉曲後的頁面文字將無法搜尋、複製或由輔助技術讀取。
+	Choose a different file so the original PDF is kept.	請選擇其他檔案，以保留原始 PDF。
+
+# Print readiness
+	Print readiness	印前檢查
+
+# Page transitions
+	Blinds	百葉窗
+	Wipe	擦去
+	Dissolve	溶解
+	Glitter	閃爍
+	Fly	飛入
+	Push	推移
+	Cover	覆蓋
+	Uncover	揭開
+	Fade	淡入淡出
+	Transition duration	轉場時間
+	Inward	向內
+	Outward	向外
+	Opaque background	不透明背景
+	Advance automatically	自動翻頁
+	The selected pages have different presentation settings. Applying sets the same values on all of them.	所選頁面的簡報設定不同。套用後，所有選取的頁面將使用相同設定。
+	The document changed while the dialog was open, so nothing was changed.	對話框開啟期間文件已變更，因此未套用任何設定。

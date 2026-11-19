@@ -1,0 +1,260 @@
+# PSG PDF's own interface strings in pt-br, appended to the craft-i18n catalog at build time
+# (crates/ui-egui/build.rs). Same format: context <TAB> English source <TAB> translation.
+# Written from the plain meaning of the English; no other product's translations were consulted.
+	1 line	1 linha
+	A CMap maps a character code to a CID above 65535	Um CMap associa um código de caractere a um CID acima de 65535
+	A graphics state has a halftone phase (HTP)	Um estado gráfico tem uma fase de meio-tom (HTP)
+	A graphics state has a rendering intent that isn't a name	Um estado gráfico tem uma intenção de renderização que não é um nome
+	A graphics state has a transfer function (TR)	Um estado gráfico tem uma função de transferência (TR)
+	A graphics state has a transfer function (TR2) other than Default	Um estado gráfico tem uma função de transferência (TR2) diferente de Default
+	A graphics state has the rendering intent {}, which isn't a standard one	Um estado gráfico tem a intenção de renderização {}, que não é padrão
+	A graphics state uses the blend mode {}, which ISO 32000-1 doesn't define	Um estado gráfico usa o modo de mesclagem {}, que a ISO 32000-1 não define
+	A halftone has a HalftoneName	Um meio-tom tem um HalftoneName
+	A halftone has a transfer function, which only a non-primary colorant's halftone may have	Um meio-tom tem uma função de transferência, que só o meio-tom de um colorante não primário pode ter
+	A halftone has type {}: only types 1 and 5 are allowed	Um meio-tom é do tipo {}: só os tipos 1 e 5 são permitidos
+	A halftone's HalftoneType is missing or isn't an integer	O HalftoneType de um meio-tom está ausente ou não é um inteiro
+	A name is longer than 127 bytes	Um nome tem mais de 127 bytes
+	A real number is outside ±3.403 × 10³⁸, or nonzero but within ±1.175 × 10⁻³⁸	Um número real está fora de ±3,403 × 10³⁸, ou não é zero mas está dentro de ±1,175 × 10⁻³⁸
+	A script edited here can be at most 256 KiB long; that change wasn't made.	Um script editado aqui pode ter no máximo 256 KiB; essa alteração não foi feita.
+	A string is longer than 32767 bytes	Uma string tem mais de 32767 bytes
+	Accept or reject the OCR review of the other document before running OCR here	Aceite ou rejeite a revisão de OCR do outro documento antes de executar o OCR aqui
+	Add 3D model	Adicionar modelo 3D
+	Add Tools to Hotbar	Adicionar ferramentas à barra rápida
+	All releases are listed at {url}	Todas as versões estão listadas em {url}
+	An integer is outside the 32-bit range	Um inteiro está fora do intervalo de 32 bits
+	Background removal	Remoção do fundo
+	Beta	Beta
+	Betas update to the newest release, beta or stable, and get new features first. Off, only stable releases are installed.	As betas atualizam para a versão mais nova, beta ou estável, e recebem os novos recursos primeiro. Desligado, só versões estáveis são instaladas.
+	Black and white (binarize)	Preto e branco (binarizar)
+	Built-in	Integrado
+	Cancel re-read	Cancelar a releitura
+	Cannot auto-update this installation type. Please download manually.	Este tipo de instalação não pode ser atualizado automaticamente. Baixe a atualização manualmente.
+	Check for updates when PSG PDF starts	Procurar atualizações ao iniciar o PSG PDF
+	Checking for updates…	Procurando atualizações…
+	Cleans up the scanned pictures in place: recognized text, comments and links on the pages stay as they are.	Limpa as imagens digitalizadas no próprio lugar: o texto reconhecido, os comentários e os links das páginas ficam como estão.
+	Close menu	Fechar o menu
+	Close {app}	Fechar o {app}
+	Close {app} to finish	Feche o {app} para concluir
+	Columns and rows must each be 1 to 99.	Colunas e linhas devem estar entre 1 e 99.
+	Combine engines	Combinar motores
+	Could not check for updates.	Não foi possível procurar atualizações.
+	Couldn't start the update ({error})	Não foi possível iniciar a atualização ({error})
+	Creep:	Deslocamento:
+	Custom calculation script:	Script de cálculo personalizado:
+	Custom scale	Escala personalizada
+	Despeckle	Remover pontos
+	Detecting paper…	Detectando o papel…
+	Detecting…	Detectando…
+	Development build	Versão de desenvolvimento
+	Discard embedded search index	Descartar o índice de pesquisa incorporado
+	Discard external cross-references	Descartar as referências cruzadas externas
+	Dock navigation rail on Left	Fixar a barra de navegação à esquerda
+	Dock navigation rail on Right	Fixar a barra de navegação à direita
+	Downloading and installing update…	Baixando e instalando a atualização…
+	Downloading update…	Baixando a atualização…
+	No printers match.	Nenhuma impressora corresponde à pesquisa.
+	Reconnecting…	Reconectando…
+	Verifying update…	Verificando a atualização…
+	Drag hotbar	Arrastar a barra rápida
+	Edge shadow removal	Remoção de sombras nas bordas
+	Edit attachment description	Editar a descrição do anexo
+	Edit description	Editar a descrição
+	Engine	Motor
+	Enhance	Melhorar
+	Enhance Scanned File	Melhorar arquivo digitalizado
+	Enhance scanned file…	Melhorar arquivo digitalizado…
+	Enhancing scans… image {d} of {t}	Melhorando digitalizações… imagem {d} de {t}
+	Evens out the paper so a grey or yellowed background turns white, and darkens faint strokes. 0 is off.	Uniformiza o papel para que um fundo cinza ou amarelado fique branco e escurece traços fracos. 0 desativa.
+	Every line set in the style chosen for a level becomes a bookmark of that level, under a new first bookmark.	Cada linha no estilo escolhido para um nível vira um marcador desse nível, sob um novo primeiro marcador.
+	Extend the docked toolbar along the entire side. Choose a side above to enable.	Estende a barra de ferramentas fixada por todo o lado. Escolha um lado acima para ativar.
+	Float	Flutuante
+	Freehand-Highlight	Realce à mão livre
+	Full-side strip	Faixa no lado inteiro
+	General & Interface	Geral e interface
+	Get beta updates	Receber versões beta
+	Hotbar settings	Configurações da barra rápida
+	Hotbar settings / add tools	Configurações da barra rápida / adicionar ferramentas
+	Hotbar tools	Ferramentas da barra rápida
+	Import bookmarks	Importar marcadores
+	Inherit Zoom	Herdar o zoom
+	Installing update…	Instalando a atualização…
+	Invert middle-button drag	Inverter o arraste com o botão do meio
+	Join beta	Entrar na beta
+	Join the beta channel? Betas can have unfinished features and bugs. PSG PDF then updates to every new beta, and to each stable release as soon as it is newer.	Entrar no canal beta? Versões beta podem ter recursos inacabados e bugs. O PSG PDF passa então a atualizar para cada nova beta e para cada versão estável assim que ela for mais nova.
+	Layout & Sizing	Layout e tamanho
+	Leave beta	Sair da beta
+	Leave the beta channel? PSG PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	Sair do canal beta? O PSG PDF mantém a versão atual e volta a atualizar com a primeira versão estável mais nova. Ele nunca volta para uma versão mais antiga.
+	Level {n}	Nível {n}
+	Lightens shadows along the edges of the scan, such as a book's gutter or a copier's dark border	Clareia as sombras nas bordas da digitalização, como a dobra de um livro ou a borda escura de uma copiadora
+	Metadata stream {object} writes the namespace {namespace} with the prefix {written}, not {prefix}	O fluxo de metadados {object} grava o namespace {namespace} com o prefixo {written}, e não {prefix}
+	Metadata stream {object} writes the namespace {namespace} without a prefix, not with {prefix}	O fluxo de metadados {object} grava o namespace {namespace} sem prefixo, e não com {prefix}
+	Moves each sheet's pages toward the fold by this much more than the sheet outside it, so the margins match once the booklet is folded and trimmed.	Desloca as páginas de cada folha em direção à dobra este tanto a mais que a folha de fora, para que as margens coincidam depois que o livreto for dobrado e refilado.
+	Navigation rail side	Lado da barra de navegação
+	New bookmarks from text styles	Novos marcadores a partir de estilos de texto
+	New bookmarks from text styles…	Novos marcadores a partir de estilos de texto…
+	No scanned pages were cleaned up.	Nenhuma página digitalizada foi limpa.
+	No signature font can draw “{char}”. Use other letters, or draw or import your signature.	Nenhuma fonte de assinatura consegue desenhar “{char}”. Use outras letras, ou desenhe ou importe sua assinatura.
+	Only web (http, https) and email addresses open, and PSG PDF asks first, as for other links.	Só endereços web (http, https) e de e-mail são abertos, e o PSG PDF pergunta antes, como nos outros links.
+	Open web and email addresses written in the page text	Abrir endereços web e de e-mail escritos no texto da página
+	Optimizing… reading page {d} of {t}	Otimizando… lendo a página {d} de {t}
+	Optimizing… reading the pages	Otimizando… lendo as páginas
+	PSG PDF's checks found no problems for {level}. This is not a validator result.	As verificações do PSG PDF não encontraram problemas para {level}. Isto não é o resultado de um validador.
+	PSG PDF's checks now find no problems for {level}. This is not a validator result. Save to keep the changes.	As verificações do PSG PDF agora não encontram problemas para {level}. Isto não é o resultado de um validador. Salve para manter as alterações.
+	Page Properties	Propriedades da página
+	Page Setup…	Configurar página…
+	Page properties…	Propriedades da página…
+	Page setup dialog is not available on this system.	A caixa de diálogo de configuração de página não está disponível neste sistema.
+	Page {} has a boundary smaller than 3 or larger than 14400 units	A página {} tem uma caixa menor que 3 ou maior que 14400 unidades
+	Page {} has transparency but no device-independent blending colour space or PDF/A output intent	A página {} tem transparência, mas nem espaço de cor de mesclagem independente de dispositivo nem intenção de saída PDF/A
+	Panning or auto-scrolling with the middle (wheel) button moves the page the other way.	Ao arrastar ou rolar automaticamente com o botão do meio (roda), a página se move no sentido oposto.
+	Paste bookmarks	Colar marcadores
+	PSG PDF website	Site do PSG PDF
+	Panorama Scholarly Group website	Site do Panorama Scholarly Group
+	Prepare grouped text	Preparar o texto agrupado
+	Re-reading the page…	Relendo a página…
+	Re-reading the region…	Relendo a região…
+	Reading the drawing for snapping…	Lendo o desenho para o encaixe…
+	Remove from hotbar	Remover da barra rápida
+	Remove scan speckle	Remover manchas da digitalização
+	Removes isolated dark specks such as dust and scanner noise. The only filter black and white scans take.	Remove pontos escuros isolados, como poeira e ruído do scanner. É o único filtro que digitalizações em preto e branco aceitam.
+	Reset side panels	Redefinir painéis laterais
+	Resize panes	Redimensionar painéis
+	Restart to Update	Reiniciar para atualizar
+	Save or close your open work first; the update restarts the app.	Primeiro salve ou feche o trabalho aberto; a atualização reinicia o aplicativo.
+	Search all tools…	Pesquisar todas as ferramentas…
+	Search printers	Pesquisar impressoras
+	Search settings…	Pesquisar configurações…
+	Selects paper size and orientation from the printer driver. For paper tray, print quality or other driver defaults, use Properties…	Escolhe o tamanho e a orientação do papel pelo driver da impressora. Para bandeja, qualidade de impressão ou outros padrões do driver, use Propriedades…
+	Separation colour spaces named {} differ in their alternate space or tint transform	Espaços de cor de separação chamados {} diferem no espaço alternativo ou na transformação de tonalidade
+	Show or hide the Tools panel	Mostrar ou ocultar o painel Ferramentas
+	Show or hide the side panel	Mostrar ou ocultar o painel lateral
+	Show tab numbers	Mostrar números das abas
+	Stick to a side:	Fixar em um lado:
+	Straighten pages scanned sideways or upside down	Endireitar páginas digitalizadas de lado ou de cabeça para baixo
+	Straighten skewed text lines	Endireitar linhas de texto inclinadas
+	Tab Order	Ordem de tabulação
+	Tesseract	Tesseract
+	The XMP extension schema container in metadata stream {object} holds no rdf:Bag	O contêiner de esquemas de extensão XMP no fluxo de metadados {object} não contém rdf:Bag
+	The XMP extension schema container in metadata stream {object} holds {found}, not one rdf:Bag	O contêiner de esquemas de extensão XMP no fluxo de metadados {object} contém {found}, e não um rdf:Bag
+	The XMP extension schema {schema} in metadata stream {object} describes {item} with an empty {entry} entry	O esquema de extensão XMP {schema} no fluxo de metadados {object} descreve {item} com uma entrada {entry} vazia
+	The XMP extension schema {schema} in metadata stream {object} describes {item} without a {entry} entry	O esquema de extensão XMP {schema} no fluxo de metadados {object} descreve {item} sem a entrada {entry}
+	The XMP extension schema {schema} in metadata stream {object} has an empty {entry} entry	O esquema de extensão XMP {schema} no fluxo de metadados {object} tem uma entrada {entry} vazia
+	The XMP extension schema {schema} in metadata stream {object} has no {entry} entry	O esquema de extensão XMP {schema} no fluxo de metadados {object} não tem a entrada {entry}
+	The XMP property {property} in metadata stream {object} should have the value type {type}	A propriedade XMP {property} no fluxo de metadados {object} deveria ter o tipo de valor {type}
+	The XMP property {property} in metadata stream {object}, written {written}, should have the value type {type}	A propriedade XMP {property} no fluxo de metadados {object}, gravada como {written}, deveria ter o tipo de valor {type}
+	The creep moves the innermost sheet's pages too far for this many pages. Reduce Creep.	Com tantas páginas, o deslocamento move demais as páginas da folha mais interna. Reduza o deslocamento.
+	The document changed. Reopen Document Properties to edit the current version.	O documento mudou. Reabra Propriedades do documento para editar a versão atual.
+	The file doesn't start with a %PDF-1.0 to %PDF-1.7 header line	O arquivo não começa com uma linha de cabeçalho de %PDF-1.0 a %PDF-1.7
+	The file header isn't followed by a comment of four bytes above 127	O cabeçalho do arquivo não é seguido de um comentário de quatro bytes acima de 127
+	The file identifier (ID) in the trailer isn't two non-empty strings	O identificador de arquivo (ID) no trailer não são duas strings não vazias
+	The halftone for the colorant {} has no transfer function	O meio-tom do colorante {} não tem função de transferência
+	The re-read was cancelled; the words are unchanged	A releitura foi cancelada; as palavras não mudaram
+	The spot colour {} of a DeviceN colour space isn't in its Colorants dictionary	A cor especial {} de um espaço de cor DeviceN não está no seu dicionário Colorants
+	The trailer has no file identifier (ID)	O trailer não tem identificador de arquivo (ID)
+	The update could not be installed: {reason}	Não foi possível instalar a atualização: {reason}
+	The update failed unexpectedly.	A atualização falhou inesperadamente.
+	The update is installed. Close {app} to finish; it restarts by itself.	A atualização foi instalada. Feche o {app} para concluir; ele reinicia sozinho.
+	The update stopped unexpectedly.	A atualização parou inesperadamente.
+	This document has no text to make bookmarks from.	Este documento não tem texto para criar marcadores.
+	This script is too long to edit here ({kib} KiB); its start is shown. It is kept as it is.	Este script é longo demais para ser editado aqui ({kib} KiB); o começo é mostrado. Ele é mantido como está.
+	This signature carries certification permissions, but the document does not name it as its certification, so it is checked as an approval signature.	Esta assinatura traz permissões de certificação, mas o documento não a indica como sua certificação, por isso ela é verificada como assinatura de aprovação.
+	Toolbar size	Tamanho da barra de ferramentas
+	Unspecified	Não especificado
+	Update and Restart	Atualizar e reiniciar
+	Update ready. Close {app} to install it.	Atualização pronta. Feche o {app} para instalá-la.
+	Use Column Order	Usar a ordem das colunas
+	Use Document Structure	Usar a estrutura do documento
+	Use Row Order	Usar a ordem das linhas
+	Vertical layout	Layout vertical
+	What's new	Novidades
+	bold	negrito
+	by	×
+	by {developer}	por {developer}
+	italic	itálico
+	the range selects more than {limit} pages	o intervalo seleciona mais de {limit} páginas
+	v{from} to {to}	de v{from} para {to}
+	{app} updated to {version}.	{app} atualizado para {version}.
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} segue a versão escolhida no inicializador, por isso não se atualiza sozinho.
+	{app} {version} is available with the latest features and bug fixes.	{app} {version} está disponível, com os recursos e correções mais recentes.
+	{app} {version} is the newest version available.	{app} {version} é a versão mais recente.
+	{font}, {size} pt	{font}, {size} pt
+	{n} lines	{n} linhas
+	Some content could not be read for device colour	Não foi possível ler parte do conteúdo para verificar a cor do dispositivo
+	(Only the first {n} of {total} pages fit in the request.)	(Só as primeiras {n} de {total} páginas couberam na solicitação.)
+	AI assistant settings	Configurações do assistente de IA
+	AI providers aren't available in this version.	Provedores de IA não estão disponíveis nesta versão.
+	API address	Endereço da API
+	API format	Formato da API
+	API key	Chave de API
+	API version	Versão da API
+	Add a provider	Adicionar provedor
+	Add an AI provider in Preferences > AI assistant first.	Adicione primeiro um provedor de IA em Preferências > Assistente de IA.
+	Connected: the provider answered.	Conectado: o provedor respondeu.
+	Couldn't reach the provider: {detail}	Não foi possível acessar o provedor: {detail}
+	Custom (any address)	Personalizado (qualquer endereço)
+	Deployment	Implantação
+	Edit provider	Editar provedor
+	Fetch models	Buscar modelos
+	Found {n} models.	{n} modelos encontrados.
+	Longest answer	Resposta mais longa
+	Models this provider offers	Modelos oferecidos por este provedor
+	New provider	Novo provedor
+	No API key is saved for this provider. Add one in Preferences > AI assistant.	Não há chave de API salva para este provedor. Adicione uma em Preferências > Assistente de IA.
+	Open a document first.	Abra um documento primeiro.
+	Open a document to use the assistant.	Abra um documento para usar o assistente.
+	Paste your key	Cole sua chave
+	Saved — type to replace	Salva — digite para substituir
+	Show or hide the key	Mostrar ou ocultar a chave
+	Test connection	Testar conexão
+	The answer stopped at the length limit.	A resposta parou no limite de tamanho.
+	The provider answered with an error: {detail}	O provedor respondeu com um erro: {detail}
+	The provider doesn't know this model or address: {detail}	O provedor não reconhece este modelo ou endereço: {detail}
+	The provider refused the API key: {detail}	O provedor recusou a chave de API: {detail}
+	The provider's answer couldn't be read: {detail}	Não foi possível ler a resposta do provedor: {detail}
+	The provider's rate limit or quota was reached: {detail}	O limite de uso ou a cota do provedor foi atingido: {detail}
+	The request stopped unexpectedly.	A solicitação parou inesperadamente.
+	The system keychain isn't available, so the key is kept only until PSG PDF quits.	O chaveiro do sistema não está disponível; a chave fica guardada só até o PSG PDF ser fechado.
+	The system keychain refused: {detail}	O chaveiro do sistema recusou: {detail}
+	The text of this document is sent to {provider}.	O texto deste documento é enviado para {provider}.
+	This address isn't encrypted (http://): the key and the document cross the network as plain text.	Este endereço não é criptografado (http://): a chave e o documento passam pela rede como texto simples.
+	This document has no text to send. Scanned pages need Scan & OCR first.	Este documento não tem texto para enviar. Páginas digitalizadas precisam de Digitalizar e OCR primeiro.
+	This provider runs on your computer: the document stays here.	Este provedor roda no seu computador: o documento fica aqui.
+	This provider's settings need attention: {detail}	As configurações deste provedor precisam de ajuste: {detail}
+	Translate into	Traduzir para
+	Translate into {language}	Traduzir para {language}
+	Type a question	Digite uma pergunta
+	Use this provider	Usar este provedor
+	Waiting for {provider}…	Aguardando {provider}…
+	Whole document	Documento inteiro
+	You	Você
+	no key	sem chave
+	tokens (0: the provider's default)	tokens (0: o padrão do provedor)
+	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	Use o serviço de IA que preferir com sua própria chave de API: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, um modelo no seu computador pelo Ollama ou qualquer serviço compatível com a OpenAI.
+	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	Desativado até você adicionar um provedor. Use sua própria chave de API com qualquer serviço de IA; a chave fica no chaveiro do sistema, nunca nas configurações do PSG PDF. Só o documento sobre o qual você pergunta é enviado, e só quando você pergunta.
+	OpenAI-compatible	Compatível com OpenAI
+
+# Outlined PDF export
+	Export PDF with outlined text…	Exportar PDF com texto convertido em curvas…
+	Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology.	Salve um PDF separado. O texto convertido em curvas não pode mais ser pesquisado, copiado ou lido por tecnologias assistivas.
+	Choose a different file so the original PDF is kept.	Escolha outro arquivo para preservar o PDF original.
+
+# Print readiness
+	Print readiness	Preparação para impressão
+
+# Page transitions
+	Blinds	Persianas
+	Wipe	Varredura
+	Dissolve	Dissolver
+	Glitter	Brilho
+	Fly	Voar
+	Push	Empurrar
+	Cover	Cobrir
+	Uncover	Descobrir
+	Fade	Esmaecer
+	Transition duration	Duração da transição
+	Inward	Para dentro
+	Outward	Para fora
+	Opaque background	Fundo opaco
+	Advance automatically	Avançar automaticamente
+	The selected pages have different presentation settings. Applying sets the same values on all of them.	As páginas selecionadas têm configurações de apresentação diferentes. Ao aplicar, todas recebem os mesmos valores.
+	The document changed while the dialog was open, so nothing was changed.	O documento mudou com a caixa de diálogo aberta. Nenhuma alteração foi aplicada.

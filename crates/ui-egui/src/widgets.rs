@@ -85,6 +85,65 @@ pub fn line(text: &mut dyn egui::TextBuffer) -> egui::TextEdit<'_> {
     egui::TextEdit::singleline(text).margin(FIELD_MARGIN).min_size(vec2(0.0, FIELD_MIN_HEIGHT))
 }
 
+/// Give the field `r` the keyboard with all of `text` selected when `request` is set, so typing
+/// replaces it, and clear `request`. Call it on every pass, right after adding the field.
+///
+/// A field in the middle of an IME composition keeps its selection: the composition's next
+/// update replaces the selected range, and egui ends a composition only from inside the field.
+/// egui keeps that state private (`Memory::owns_ime_events` is only `has_focus`), so
+/// `ime_composing` follows it from the field's events. Any other request, including a repeated
+/// one while the field already has the keyboard, selects all of `text`.
+pub fn focus_selecting_all(ui: &egui::Ui, r: &egui::Response, text: &str, request: &mut bool) {
+    let composing = ime_composing(ui, r);
+    if !std::mem::take(request) {
+        return;
+    }
+    r.request_focus();
+    if composing {
+        return;
+    }
+    let mut state = egui::TextEdit::load_state(ui.ctx(), r.id).unwrap_or_default();
+    state.cursor.set_char_range(Some(egui::text::CCursorRange::select_all_str(text)));
+    state.store(ui.ctx(), r.id);
+}
+
+/// Whether the field `r` holds an IME composition after this pass's events.
+///
+/// A non-empty pre-edit starts one, and a commit or an empty pre-edit ends it. Anything else that
+/// ends it inside the `TextEdit` (typing, a mutating key, a paste, a click) also moves its cursor
+/// off the range the last IME event left, and losing the keyboard ends it too.
+fn ime_composing(ui: &egui::Ui, r: &egui::Response) -> bool {
+    type Composition = Option<egui::text::CCursorRange>;
+    let key = r.id.with("ime_composition");
+    let cursor = egui::TextEdit::load_state(ui.ctx(), r.id).and_then(|s| s.cursor.char_range());
+    let mut composition: Composition = if r.has_focus() { ui.data(|d| d.get_temp::<Composition>(key)).flatten() } else { None };
+    let mut saw_ime = false;
+    if r.has_focus() {
+        ui.input(|i| {
+            for event in &i.events {
+                if let egui::Event::Ime(ime) = event {
+                    saw_ime = true;
+                    match ime {
+                        egui::ImeEvent::Preedit { text, .. } if text.is_empty() => composition = None,
+                        egui::ImeEvent::Preedit { text, .. } if text != "\n" && text != "\r" => composition = cursor,
+                        egui::ImeEvent::Commit(_) => composition = None,
+                        _ => {}
+                    }
+                }
+            }
+        });
+    }
+    if let Some(range) = composition {
+        if saw_ime {
+            composition = cursor.or(Some(range));
+        } else if cursor != Some(range) {
+            composition = None;
+        }
+    }
+    ui.data_mut(|d| d.insert_temp(key, composition));
+    composition.is_some()
+}
+
 /// A multiline field with the same horizontal inset as [`line()`].
 pub fn block(text: &mut dyn egui::TextBuffer) -> egui::TextEdit<'_> {
     egui::TextEdit::multiline(text).margin(egui::Margin::symmetric(10, 6))
@@ -124,12 +183,17 @@ pub(crate) fn paint_left(ui: &egui::Ui, pos: egui::Pos2, text: &str, font: egui:
 }
 
 /// A mode-bar tab: text with an underline when active.
+/// The text size of [`mode_tab`], which the menu titles beside the tabs share.
+pub const MODE_TAB_SIZE: f32 = 13.5;
+/// The height of [`mode_tab`], whose label is centred in it.
+pub const MODE_TAB_HEIGHT: f32 = 48.0;
+
 pub fn mode_tab(ui: &mut egui::Ui, label: &str, active: bool) -> Response {
     let t = Tokens::get(ui.ctx());
-    let font = if active { theme::semibold(13.5) } else { theme::medium(13.5) };
+    let font = if active { theme::semibold(MODE_TAB_SIZE) } else { theme::medium(MODE_TAB_SIZE) };
     let w = ui.fonts_mut(|f| f.layout_no_wrap(label.to_owned(), font.clone(), t.text).size().x);
     // Keep in step with `mode_tab_width`.
-    let (rect, resp) = ui.allocate_exact_size(vec2(w + 22.0, 48.0), Sense::click());
+    let (rect, resp) = ui.allocate_exact_size(vec2(w + 22.0, MODE_TAB_HEIGHT), Sense::click());
     resp.widget_info(|| egui::WidgetInfo::selected(egui::Role::Button, ui.is_enabled(), active, label));
     let press = theme::Press::track(ui, &resp);
     let well = rect.shrink2(vec2(2.0, 9.0));
@@ -152,7 +216,7 @@ pub fn mode_tab(ui: &mut egui::Ui, label: &str, active: bool) -> Response {
 /// Width [`mode_tab`] takes for `label` (the semibold, active, form is the widest).
 pub fn mode_tab_width(ui: &egui::Ui, label: &str) -> f32 {
     let t = Tokens::get(ui.ctx());
-    ui.fonts_mut(|f| f.layout_no_wrap(label.to_owned(), theme::semibold(13.5), t.text).size().x) + 22.0
+    ui.fonts_mut(|f| f.layout_no_wrap(label.to_owned(), theme::semibold(MODE_TAB_SIZE), t.text).size().x) + 22.0
 }
 
 /// Rounded pill button; `primary` fills with the accent.
@@ -507,17 +571,21 @@ pub fn toast(app: &mut PdfCraftApp, ctx: &egui::Context) {
         .pivot(Align2::CENTER_BOTTOM)
         .fixed_pos(screen.center_bottom() - vec2(0.0, lift))
         .show(ctx, |ui| {
-            egui::Frame::NONE
-                .fill(if t.dark() { Color32::from_rgb(0xEC, 0xEC, 0xEF) } else { Color32::from_rgb(0x2A, 0x2A, 0x2F) })
-                .corner_radius(CornerRadius::same(8))
-                .inner_margin(egui::Margin::symmetric(16, 10))
+            // The PSG Desktop Design System's notification: a raised card with an accent edge, the
+            // same as PSG Academic PDF's notifications.
+            let shown = egui::Frame::NONE
+                .fill(t.card)
+                .stroke(egui::Stroke::new(1.0, t.border))
+                .corner_radius(CornerRadius::same(psg_brand::radius::CARD))
+                .shadow(egui::Shadow { offset: [0, 4], blur: 16, spread: 0, color: t.page_shadow })
+                .inner_margin(egui::Margin { left: 20, right: 16, top: 10, bottom: 10 })
                 .show(ui, |ui| {
                     // An Area remembers its previous content width. A short notice
                     // must not force the next validation message into a narrow column.
                     // Allow natural short labels; wrap longer ones within the viewport,
                     // including the frame's 32 points and 16-point outside margins.
                     ui.set_max_width((screen.width() - 64.0).clamp(1.0, 560.0));
-                    let ink = if t.dark() { Color32::from_rgb(0x22, 0x22, 0x26) } else { Color32::WHITE };
+                    let ink = t.text;
                     let text = |ui: &mut egui::Ui| {
                         ui.horizontal_wrapped(|ui| {
                             ui.add(egui::Label::new(egui::RichText::new(msg).color(ink)).wrap());
@@ -543,6 +611,9 @@ pub fn toast(app: &mut PdfCraftApp, ctx: &egui::Context) {
                         None => text(ui),
                     }
                 });
+            let r = shown.response.rect;
+            let edge = egui::Rect::from_min_size(r.min + vec2(8.0, 10.0), vec2(3.0, (r.height() - 20.0).max(4.0)));
+            ui.painter().rect_filled(edge, CornerRadius::same(2), t.accent);
         });
     ctx.request_repaint_after(std::time::Duration::from_millis(100));
 }

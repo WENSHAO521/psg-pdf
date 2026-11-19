@@ -269,6 +269,31 @@ pub fn tools() -> Vec<ToolDef> {
                 }),
                 &["doc"],
             )),
+        t("ai_ask", "Ask an AI provider about a document", "Summarize a document, answer a question about it, or translate it, with an AI provider the call names: format \"openai\" (OpenAI and every OpenAI-compatible service: DeepSeek, Mistral, Groq, OpenRouter, Ollama, LM Studio, vLLM…), \"anthropic\", \"gemini\" or \"azure\" (model = the deployment name), its base_url (for openai, the address that ends before /chat/completions, e.g. https://api.openai.com/v1 or http://localhost:11434/v1) and model. The API key is read from the PSG_AI_API_KEY environment variable, never from the arguments; a local server needs none. The text of the pages (default all) is sent to that provider, each page under a [Page N] line, at most 120000 characters (text_truncated and pages_sent say when fewer pages fit), and answers cite pages as (p. N). Copy permission is required. Scanned pages without text need ocr first. Nothing in the document changes. The automation tools open no sockets themselves: the request goes through the HTTP transport of the host that runs them, and a host without one (pdfcraft-cli) refuses.")
+            .ro()
+            .with(schema(
+                json!({
+                    "doc": doc(),
+                    "task": { "type": "string", "enum": ["summarize", "ask", "translate"] },
+                    "question": { "type": "string", "maxLength": 8000, "description": "The question, for task ask." },
+                    "language": { "type": "string", "maxLength": 64, "description": "For translate: the language to translate into, by its English name (default English)." },
+                    "answer_language": { "type": "string", "maxLength": 64, "description": "The language to answer in, by its English name (default English)." },
+                    "pages": pages("to send (default: all)"),
+                    "provider": {
+                        "type": "object",
+                        "properties": {
+                            "format": { "type": "string", "enum": ["openai", "anthropic", "gemini", "azure"] },
+                            "base_url": { "type": "string", "description": "https://…, or http:// for a server on this computer or network." },
+                            "model": { "type": "string" },
+                            "api_version": { "type": "string", "description": "Azure only (default 2024-10-21)." },
+                            "max_tokens": { "type": "integer", "minimum": 0, "maximum": 200000, "description": "The longest answer, in tokens (0: the provider's default; Anthropic gets 4096)." }
+                        },
+                        "required": ["format", "base_url", "model"],
+                        "additionalProperties": false
+                    }
+                }),
+                &["doc", "task", "provider"],
+            )),
         t("text_find", "Find text", "Find a phrase (case-insensitive, whitespace-normalised) and return matches in page order with page and line rectangles in points (origin top-left). Reads growing batches, looking one match past the limit for a continuation. Failed pages do not discard readable matches: warnings contains up to 100 {page, error, error_truncated} entries (errors capped at 1024 UTF-8 bytes), warning_count counts failed pages, and warnings_truncated reports a capped list. complete is false after a page failure or when more matches exist; next is present only for a match-limit continuation. With stop_at_limit the search ends at the limit-th match instead of looking for one more, so a lone early match doesn't read the rest of the document.")
             .ro()
             .cmd("edit.find")
@@ -726,7 +751,7 @@ pub fn tools() -> Vec<ToolDef> {
         t(
             "doc_hidden_info",
             "Find hidden information",
-            "What Remove Hidden Information would remove, by category (metadata, attachments, comments, form-fields, hidden-text, hidden-layers, bookmarks, links-actions-scripts, private-data) with counts.",
+            "What Remove Hidden Information would remove, by category (metadata, attachments, comments, form-fields, hidden-text, hidden-layers, bookmarks, links-actions-scripts, private-data) with counts. A page that can't be read in full (its content streams don't decode, or they or a form they draw hold bytes the parser can't read or an inline image whose end is a guess) counts as one item of hidden-text and of hidden-layers: removing either category then fails on that page. With form-fields removed too, a field's appearance becomes page content and is read the same way, though it isn't counted here.",
         )
         .ro()
         .with(schema(json!({ "doc": doc() }), &["doc"])),
@@ -1179,6 +1204,7 @@ pub fn tools() -> Vec<ToolDef> {
             "Set page transitions",
             "Set or remove the transition and display time pages play in a full-screen presentation (ISO 32000-2 §12.4.4; Acrobat's Organize ▸ Page Transitions). style: Split, Blinds, Box, Wipe, Dissolve, Glitter, R (replace, no effect), Fly, Push, Cover, Uncover or Fade, or none to remove the transition; duration in seconds (default 1); dimension horizontal/vertical (Split, Blinds); motion inward/outward (Split, Box, Fly); direction 0, 90, 180, 270, 315 or none (Wipe, Glitter, Fly, Cover, Uncover, Push); scale and opaque for Fly. display: seconds the page stays before advancing; left out, the page waits for the presenter. doc_info lists the result under transitions.",
         )
+        .cmd("page.transitions")
         .with(schema(
             json!({
                 "doc": doc(),
@@ -1437,12 +1463,16 @@ pub fn tools() -> Vec<ToolDef> {
         t("doc_export_office", "Export to Word, PowerPoint, HTML, RTF or Markdown", "Export a PDF ▸ Word (.docx), PowerPoint (.pptx, one slide per page), HTML (.html, one file with images inline), RTF (.rtf) or Markdown (.md or .markdown: pipe tables, images left out), chosen by path's extension: text, headings, bold and italic. HTML uses rich styling by default; set html_mode to simple for CSS-free headings, paragraphs, emphasis and tables. Simple HTML keeps text and inline images but omits colour and layout styling. Word uses inferred tables, bordered only along the grid lines the page draws, and positioned editable shapes on pages with artwork, rotated or large text; each source page retains its size. Font matching and vector graphics remain limited. Export reads forms 50 deep and up to 50 000 a page, counting forms the page draws itself. Pages that go past either limit, or that have pictures past what one export may hold or decode, are listed in truncated_pages, with a warning; what was left out is missing.")
             .cmd("export.docx")
             .with(schema(json!({ "doc": doc(), "path": { "type": "string" }, "html_mode": { "type": "string", "enum": ["rich", "simple"], "default": "rich" } }), &["doc", "path"])),
+        t("doc_export_outlined_pdf", "Export PDF with outlined text", "Export a separate PDF with ordinary page text converted to vector paths. Page text in the copy is not searchable or selectable. Rejects unsupported page content, signed and encrypted files without writing an output. The source is kept.")
+            .cmd("export.outline_pdf")
+            .with(schema(json!({ "doc": doc(), "path": { "type": "string" } }), &["doc", "path"])),
         t("pdfa_verify", "Verify PDF/A", "Standards ▸ Verify PDF/A compliance: the PDF/A-2b or 3b rules the document breaks (ISO 19005 clause, message, page, whether Save as PDF/A can fix it), plus what it declares.")
             .ro()
             .cmd("standards.pdfa")
             .with(schema(json!({ "doc": doc(), "level": { "type": "string", "enum": ["2b", "3b"], "description": "Default 2b." } }), &["doc"])),
         t("print_readiness", "Print readiness", "Verification only. Reports effective image resolution where each image is drawn (not against the page size), page boxes and bleed past the trim, output intents, fonts that are not embedded, and the PDF/A-2b structural result. Does not modify the document, embed fonts, invent a press profile, or check PDF/X.")
             .ro()
+            .cmd("prepress.readiness")
             .with(schema(json!({ "doc": doc() }), &["doc"])),
         t("pdfa_convert", "Save as PDF/A", "Standards ▸ Save as PDF/A: fix what can be fixed for PDF/A-2b or 3b (XMP identification and metadata, an sRGB output intent, forbidden actions and JavaScript, annotation print flags, image interpolation, encryption, the file header, the file identifier). Returns what was fixed and what remains (e.g. fonts that aren't embedded). Undoable; save the document to keep it.")
             .cmd("standards.pdfa")
@@ -1655,7 +1685,7 @@ pub fn tools() -> Vec<ToolDef> {
         )),
         t("doc_audit_space", "Audit space usage", "How many bytes each kind of content takes and its share of the file (PDF Optimizer ▸ Audit space usage): images, content streams, fonts, forms, comments, structure, bookmarks, … and document overhead.")
             .ro()
-            .cmd("optimize.advanced")
+            .cmd("optimize.audit")
             .with(schema(json!({ "doc": doc() }), &["doc"])),
         t("text_lines", "List text lines", "The lines of existing text on a page (Edit a PDF ▸ Edit text): number, text, box (top-left-origin points), font and size. Use the number with text_edit.")
             .ro()

@@ -130,7 +130,8 @@ const FILE: &[&str] = &[
     "print.dialog",
 ];
 const CREATE: &[&str] = &["create.file", "create.multiple", "create.multiple_separate", "create.images", "create.clipboard"];
-const EXPORT: &[&str] = &["export.docx", "export.pptx", "export.rtf", "export.html", "export.text", SEP, "export.image", "export.all_images"];
+const EXPORT: &[&str] =
+    &["export.outline_pdf", SEP, "export.docx", "export.pptx", "export.rtf", "export.html", "export.text", SEP, "export.image", "export.all_images"];
 const PROTECT: &[&str] = &["protect.password", "protect.remove", "protect.unlock", SEP, "protect.properties"];
 const EDIT: &[&str] = &[
     "edit.undo",
@@ -194,6 +195,7 @@ const PAGES: &[&str] = &[
     "page.crop",
     "page.boxes",
     "page.number",
+    "page.transitions",
     "page.properties",
     SEP,
     "bookmark.add",
@@ -227,7 +229,7 @@ const SIGN: &[&str] = &[
     "sign.panel",
 ];
 const WINDOW: &[&str] = &["view.next_tab", "view.previous_tab"];
-const HELP: &[&str] = &["help.shortcuts", SEP, "help.github", "help.app_page", SEP, "help.check_updates", SEP, "help.about"];
+const HELP: &[&str] = &["help.shortcuts", SEP, "help.app_page", "help.publisher_page", "help.github", SEP, "help.check_updates", SEP, "help.about"];
 
 /// A registry shortcut as a craft-keymap chord: `command` is ⌘ (Ctrl elsewhere) and `mac_ctrl`
 /// the Control key on macOS. `None` for a key craft-keymap doesn't name.
@@ -251,6 +253,8 @@ fn english_label(command: &CommandRef) -> Option<String> {
     FILL.iter().find(|(id, _)| *id == command.id).map(|(_, label)| (*label).to_owned())
 }
 
+/// The English label of a row or title, for its mnemonic in a language whose labels have no ASCII
+/// letter. Top-level titles and items use the same menu keyboard handling.
 fn english(labeled: Labeled<'_>) -> Option<String> {
     match labeled {
         Labeled::Command(command) => english_label(command),
@@ -437,6 +441,11 @@ impl PdfCraftApp {
                     for tool in section.items.iter().filter(|t| t.availability == Availability::Ready) {
                         let actions: &[&'static str] = if tool.actions.is_empty() { std::slice::from_ref(&tool.command) } else { tool.actions };
                         for &id in actions {
+                            // The same stamp command is also available in the Comments panel.
+                            // Keep its single menu entry in the dedicated Stamp submenu.
+                            if id == "comment.stamp" && group.id == "comment" {
+                                continue;
+                            }
                             if commands::command(id).is_none() || used.contains(&id) || seen.contains(&id) {
                                 continue;
                             }
@@ -692,6 +701,18 @@ mod tests {
         for label in ["Menu", "Scroll menu up", "Scroll menu down"] {
             assert_eq!(translate(label), label, "plain ASCII reserved labels need no substitution");
         }
+    }
+
+    #[test]
+    fn menu_titles_and_commands_keep_their_english_mnemonic_fallback() {
+        crate::i18n::set_current(crate::i18n::Lang::EN);
+        for title in ["File", "Edit", "View", "Sign", "Window", "Help"] {
+            assert_eq!(english(Labeled::Title(title)).as_deref(), Some(title));
+        }
+        assert_eq!(english(Labeled::Title("Pages")).as_deref(), Some("Pages"), "a submenu of Edit");
+        assert_eq!(english(Labeled::Title("Export")).as_deref(), Some("Export"));
+        assert_eq!(english(Labeled::Title("Open Recent")).as_deref(), Some("Open Recent"));
+        assert_eq!(english(Labeled::Command(&CommandRef::new("file.open"))).as_deref(), Some("Open…"));
     }
 
     #[test]

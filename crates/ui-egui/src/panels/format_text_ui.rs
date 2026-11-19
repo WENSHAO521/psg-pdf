@@ -104,6 +104,8 @@ const ROW: f32 = 30.0;
 const GAP: f32 = 6.0;
 /// The icon naming a list or field ([`labelled_icon`]).
 const LABEL_ICON: f32 = 22.0;
+/// The font list and size editor share a height across interface fonts.
+const FONT_FIELD_HEIGHT: f32 = 26.0;
 /// The button beside a number field that opens its list of common values: just an arrow, so the
 /// field keeps the room its value needs.
 const PRESET_LIST: f32 = 22.0;
@@ -150,6 +152,7 @@ pub(crate) fn panel(
     ui.spacing_mut().combo_height = 360.0;
     let width = ui.available_width();
     let font_resp = outlined(ui, |ui| {
+        ui.spacing_mut().interact_size.y = ui.spacing().interact_size.y.max(FONT_FIELD_HEIGHT);
         craft_ui::ComboBox::from_id_salt("format-font")
             .selected_text(fonts.shown.as_str())
             .width(width)
@@ -570,7 +573,7 @@ fn font_size_input(ui: &mut egui::Ui, size: &mut f64, mixed: bool) -> bool {
             .desired_width(width)
             .frame(egui::Frame::NONE)
             .align(egui::Align2::CENTER_CENTER);
-        let mut response = ui.add_sized([width, 26.0], field).accessible_name(tl!("Font size:"));
+        let mut response = ui.add_sized([width, FONT_FIELD_HEIGHT], field).accessible_name(tl!("Font size:"));
         // A long translation of "Mixed" scrolls in the field: the tooltip has it whole.
         if mixed {
             response = response.on_hover_text(tl!("Mixed"));

@@ -10,9 +10,12 @@ metadata. Submission, peer review and editorial management are out of scope.
 apps/psg-academic-pdf      egui/eframe window + headless commands (cli.rs)
   ├── app.rs               project, template, metadata, settings, compile, preview, logs, export
   ├── preview.rs           renders the PDF with pdfcraft-render on a worker thread
-  └── cli.rs               check-tex · templates · new · compile
+  ├── tex_setup.rs         downloads and installs/updates PSG's own TeX in the background
+  └── cli.rs               check-tex · install-tex · update-tex · templates · new · compile
 crates/academic            (psg-academic, no UI, layer 4 in xtask/src/layers.rs)
-  ├── tex.rs               finds pdflatex, latexmk, biber, pandoc on the PATH
+  ├── managed.rs           PSG's own TeX (TinyTeX): layout, unpacking, tlmgr updates,
+  │                        installing the packages a document is missing (academic-tex.md)
+  ├── tex.rs               finds pdflatex, latexmk, biber (PSG's TeX first, then the PATH), pandoc
   ├── process.rs           runs a program with a time limit, cancel flag, bounded capture,
   │                        and kills the whole process tree
   ├── compile.rs           the sandboxed latexmk command and CompileReport
@@ -68,7 +71,42 @@ templates are read from:
 2. `templates/academic/` beside the executable;
 3. `../share/psg-academic-pdf/templates/` relative to the executable (Linux packages).
 
-A broken template is skipped and listed in the Activity tab or on standard error.
+A broken template is skipped and listed in the Template Library and the activity log, or on standard error.
+
+## The data folder
+
+Projects made with New project, the recent projects list and the app's settings (language,
+theme, update channel, window layout) live in the data folder: eframe's per-user folder for PSG
+Academic PDF by default, or `PSGAcademicPDFData` beside the exe in the portable zip. Settings ▸
+Data folder shows it and can move it:
+
+- **Change…** picks a folder. An empty folder is used as it is; a folder that already holds
+  files gets a `PSG Academic PDF` folder inside it. A folder inside the current one is refused.
+- The move copies everything and checks each file's size before changing anything. A failure
+  (a full disk, a drive pulled out) removes what was copied and leaves the old folder as it was.
+  A project that already exists at the new place stops the move before anything is copied; only
+  the app's own settings files there are replaced.
+- Then the new place is written to `data-location.txt` in the default folder and the old copies
+  are removed (folders only when empty). The open project is saved first and opened again from
+  the new place; the recent projects list follows the projects that moved.
+- **Use the default folder** moves everything back and removes `data-location.txt`.
+- `data-location.txt` lives in the default folder, which installers and updates never touch, so
+  the choice survives updates. If the chosen folder can't be used at start-up (a disconnected
+  drive), that run uses the default folder and the activity log says why; the choice is kept.
+- The log stays in the old folder for the rest of that run; the next run logs in the new one.
+  Projects made with "New project in folder…" or opened from elsewhere are not moved.
+
+## Start-up and the log file
+
+Each run writes `logs/psg-academic-pdf.log` in the data folder (eframe's per-user folder for
+PSG Academic PDF, or `PSGAcademicPDFData` beside the exe in the portable zip); the previous run's
+log is kept as `psg-academic-pdf.1.log`. Panics are written there too, with a backtrace.
+
+The window starts with the GPU renderer (wgpu) under the same safeguards as PSG PDF: on Windows
+only Direct3D 12 and OpenGL are tried, never Vulkan, and the device gets the adapter's real
+texture limit. If wgpu can't start, the window opens again with OpenGL. If no renderer starts, a
+message box says why and where the log is. `PSG_RENDERER=gl` starts with OpenGL directly
+(`wgpu` uses wgpu only, without the fallback).
 
 ## Status
 
@@ -87,7 +125,8 @@ Implemented and tested:
 
 Phase two:
 
-- **Source and PDF** tab: the manuscript body and the project's `.bib` files in an editor with
+- **Manuscript ▸ Source** (phase four: Editor, Split or PDF, with a draggable, remembered split and
+  an outline of the `\section` headings): the manuscript body and the project's `.bib` files in an editor with
   line numbers, next to the PDF. Lines with a problem are marked; Ctrl+S / ⌘S saves, and the
   file is saved before every compilation.
 - **Problems** lists the checks made before compiling and the compiler's diagnostics; "Go to
@@ -101,8 +140,8 @@ Phase two:
   keys, missing required fields, malformed DOIs and years, citations without an entry and
   entries nothing cites.
 - **Interface languages**: English, Simplified and Traditional Chinese, Japanese, Korean and
-  German (`i18n/psg-academic/<code>.tsv`), following the system language or the choice in the
-  side panel. Chinese, Japanese and Korean interface text uses the craft-fonts faces, so a build
+  German (`i18n/psg-academic/<code>.tsv`), following the system language or the choice in
+  Settings. Chinese, Japanese and Korean interface text uses the craft-fonts faces, so a build
   without `CRAFT_FONTS_DIR` shows boxes for them (release builds set it). Messages produced by
   TeX, and the generated details of the checks, stay in English; their hints are translated.
 

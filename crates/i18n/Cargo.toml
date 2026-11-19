@@ -1,0 +1,15 @@
+[package]
+name = "psg-i18n"
+description = "Interface languages shared by PSG PDF and PSG Academic PDF: the language list, system-locale matching, catalogs, placeholders, plural rules, fallback and the translation checks"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+# The system's preferred languages (environment on Unix, the preferred-languages list on macOS,
+# GetUserPreferredUILanguages on Windows).
+sys-locale = "0.3"

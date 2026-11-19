@@ -117,6 +117,12 @@ fn dialogs(app: &mut PdfCraftApp, ctx: &egui::Context) {
     if app.dialog != Some(Dialog::FieldTable) {
         app.field_table_draft = None;
     }
+    if app.dialog != Some(Dialog::PageTransitions) {
+        app.page_transition_draft = None;
+    }
+    if app.dialog != Some(Dialog::PrintReadiness) && !app.print_readiness_report.is_empty() {
+        app.print_readiness_report = String::new();
+    }
     if !matches!(app.dialog, Some(Dialog::Properties(_))) {
         app.discard_properties();
     }
@@ -263,6 +269,18 @@ fn dialog_body(ui: &mut egui::Ui, app: &mut PdfCraftApp, dialog: Dialog, req: &m
             req.close = ok || cancel;
             return false;
         }
+        Dialog::PageTransitions => {
+            let Some(d) = app.page_transition_draft.as_mut() else {
+                req.close = true;
+                return false;
+            };
+            let (apply, cancel) = crate::organize_panel::transition_body(ui, d);
+            if apply {
+                req.page_props_now = Some((d.doc, d.generation, Edit::SetTransition { pages: d.pages.clone(), spec: d.spec.clone() }));
+            }
+            req.close = apply || cancel;
+            return false;
+        }
         Dialog::DuplicateField => {
             if !dialog_duplicate_field(ui, app, req) {
                 return false;
@@ -290,6 +308,14 @@ fn dialog_body(ui: &mut egui::Ui, app: &mut PdfCraftApp, dialog: Dialog, req: &m
             if crate::optimize_ui::audit_body(ui, &app.space_audit, &t) {
                 req.next = Some(Dialog::Optimize);
             }
+            return false;
+        }
+        Dialog::PrintReadiness => {
+            ui.label(egui::RichText::new(tl!("Print readiness")).font(crate::theme::semibold(18.0)));
+            egui::ScrollArea::vertical().max_height(360.0).show(ui, |ui| {
+                ui.add(egui::Label::new(app.print_readiness_report.as_str()).wrap().selectable(true));
+            });
+            req.close = widgets::pill_button(ui, tl!("Close"), true).clicked();
             return false;
         }
         Dialog::Sign => {
@@ -1952,7 +1978,13 @@ fn finish_actions(app: &mut PdfCraftApp, req: &mut Pending) {
         if app.active_ids().is_some_and(|(_, id)| id == doc) && app.session.get(doc).is_some_and(|d| d.edit_generation() == generation) {
             app.apply_edit(e);
         } else {
-            app.notify_tr("The document changed while the dialog was open, so nothing was changed. Open Page properties again to set the tab order.");
+            if matches!(e, Edit::SetTransition { .. }) {
+                app.notify_tr("The document changed while the dialog was open, so nothing was changed.");
+            } else {
+                app.notify_tr(
+                    "The document changed while the dialog was open, so nothing was changed. Open Page properties again to set the tab order.",
+                );
+            }
         }
     }
     if req.extract_now {

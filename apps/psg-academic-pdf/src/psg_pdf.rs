@@ -80,6 +80,20 @@ fn reg_default_value(text: &str) -> Option<PathBuf> {
     })
 }
 
+/// Show `dir` in the file manager (Explorer, Finder, the desktop's default).
+pub fn open_folder(dir: &Path) -> Result<(), String> {
+    let program = if cfg!(windows) {
+        "explorer"
+    } else if cfg!(target_os = "macos") {
+        "open"
+    } else {
+        "xdg-open"
+    };
+    let mut cmd = Command::new(program);
+    cmd.arg(dir);
+    hidden(&mut cmd).spawn().map(|_| ()).map_err(|e| format!("{}: {e}", dir.display()))
+}
+
 fn open_with_default_viewer(pdf: &Path) -> Result<(), String> {
     let mut cmd = if cfg!(windows) {
         let mut c = Command::new("explorer");

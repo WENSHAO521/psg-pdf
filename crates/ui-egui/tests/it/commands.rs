@@ -202,6 +202,52 @@ fn disabled_commands_explain_themselves() {
 }
 
 #[test]
+fn outlined_pdf_export_dialog_writes_a_separate_copy() {
+    let out = std::env::temp_dir().join(format!("pdfcraft-ui-outlined-{}.pdf", std::process::id()));
+    let _ = std::fs::remove_file(&out);
+    let mut h = harness();
+    h.state_mut().save_override = Some(out.to_string_lossy().into_owned());
+    h.state_mut().run_command("export.outline_pdf");
+    h.run_steps(2);
+    h.get_by_label_contains("Outlined page text can no longer be searched");
+    h.get_by_label("Export").click();
+    h.run_steps(4);
+    let copy = std::sync::Arc::new(std::fs::read(&out).unwrap());
+    std::fs::remove_file(&out).unwrap();
+    assert_eq!(pdfcraft_render::inspect(copy, None).unwrap().pages.len(), 3);
+    assert_eq!(h.state().views.len(), 1);
+    assert!(h.state().toast.as_ref().is_some_and(|(message, _)| message.starts_with("Exported to ")));
+}
+
+#[test]
+fn print_production_opens_the_readiness_report() {
+    let mut h = harness();
+    h.state_mut().run_command("prepress.readiness");
+    h.run_steps(2);
+    assert_eq!(h.state().dialog, Some(Dialog::PrintReadiness));
+    h.get_by_label_contains("Fonts not embedded: Helvetica");
+    assert!(!h.state().session.get(h.state().active_ids().unwrap().1).unwrap().dirty);
+}
+
+#[test]
+fn page_transitions_set_display_time_on_the_selected_pages() {
+    let mut h = harness();
+    h.state_mut().views[0].select_pages(&[0, 2]);
+    h.state_mut().run_command("page.transitions");
+    h.run_steps(2);
+    assert_eq!(h.state().dialog, Some(Dialog::PageTransitions));
+    h.get_by_label("Advance automatically").click();
+    h.run_steps(2);
+    h.get_by_label("Apply").click();
+    h.run_steps(3);
+    let (_, id) = h.state().active_ids().unwrap();
+    let doc = h.state().session.get(id).unwrap();
+    assert_eq!(doc.info.transitions.iter().map(|t| (t.page, t.display)).collect::<Vec<_>>(), [(0, Some(5.0)), (2, Some(5.0))]);
+    assert!(h.state_mut().execute("edit.undo"));
+    assert!(h.state().session.get(id).unwrap().info.transitions.is_empty());
+}
+
+#[test]
 fn a_tool_chosen_with_no_document_asks_for_one_and_runs_on_it() {
     let dir = std::env::temp_dir().join(format!("pdfcraft-tool-open-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();

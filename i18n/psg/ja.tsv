@@ -2,3 +2,399 @@
 # (crates/ui-egui/build.rs). Same format: context <TAB> English source <TAB> translation.
 # Written from the plain meaning of the English; no other product's translations were consulted.
 	No signature font can draw “{char}”. Use other letters, or draw or import your signature.	「{char}」を描ける署名フォントがありません。別の文字を使うか、手書きまたは画像の署名を使ってください。
+	1 line	1 行
+	A CMap maps a character code to a CID above 65535	CMap が文字コードを 65535 を超える CID に対応付けています
+	A font isn't embedded	埋め込まれていないフォントがあります
+	A graphics state has a halftone phase (HTP)	グラフィックス状態にハーフトーン位相（HTP）があります
+	A graphics state has a rendering intent that isn't a name	グラフィックス状態のレンダリングインテントが名前ではありません
+	A graphics state has a transfer function (TR)	グラフィックス状態に転送関数（TR）があります
+	A graphics state has a transfer function (TR2) other than Default	グラフィックス状態に Default 以外の転送関数（TR2）があります
+	A graphics state has the rendering intent {}, which isn't a standard one	グラフィックス状態のレンダリングインテント {} は標準のものではありません
+	A graphics state uses the blend mode {}, which ISO 32000-1 doesn't define	グラフィックス状態が ISO 32000-1 で定義されていない描画モード {} を使っています
+	A halftone has a HalftoneName	ハーフトーンに HalftoneName があります
+	A halftone has a transfer function, which only a non-primary colorant's halftone may have	ハーフトーンに転送関数があります。転送関数を持てるのは原色以外の色材のハーフトーンだけです
+	A halftone has type {}: only types 1 and 5 are allowed	ハーフトーンのタイプが {} です。使えるのはタイプ 1 と 5 だけです
+	A halftone's HalftoneType is missing or isn't an integer	ハーフトーンの HalftoneType がないか、整数ではありません
+	A name is longer than 127 bytes	名前が 127 バイトを超えています
+	A real number is outside ±3.403 × 10³⁸, or nonzero but within ±1.175 × 10⁻³⁸	実数が ±3.403 × 10³⁸ の範囲外か、0 でないのに ±1.175 × 10⁻³⁸ 以内です
+	A script edited here can be at most 256 KiB long; that change wasn't made.	ここで編集できるスクリプトは 256 KiB までです。その変更は行われませんでした。
+	A string is longer than 32767 bytes	文字列が 32767 バイトを超えています
+	A {} action isn't allowed	{} アクションは使えません
+	A {} annotation has additional actions	{} 注釈に追加アクションがあります
+	A {} annotation has no appearance stream	{} 注釈に外観ストリームがありません
+	A {} annotation isn't set to print, or is hidden	{} 注釈が印刷する設定になっていないか、非表示です
+	Accept or reject the OCR review of the other document before running OCR here	ここで OCR を実行する前に、別の文書の OCR 確認を承認するか却下してください
+	Accessibility Report	アクセシビリティレポート
+	Add 3D model	3D モデルを追加
+	Add Tools to Hotbar	ホットバーにツールを追加
+	All releases are listed at {url}	すべてのリリースは {url} にあります
+	An integer is outside the 32-bit range	整数が 32 ビットの範囲外です
+	Background removal	背景の除去
+	Beta	ベータ
+	Betas update to the newest release, beta or stable, and get new features first. Off, only stable releases are installed.	オンにするとベータ版・安定版を問わず最新のリリースにアップデートし、新機能をいち早く使えます。オフでは安定版だけをインストールします。
+	Black and white (binarize)	白黒（二値化）
+	Built-in	内蔵
+	Cancel re-read	再読み取りをキャンセル
+	Cannot auto-update this installation type. Please download manually.	この種類のインストールは自動でアップデートできません。手動でダウンロードしてください。
+	Change Author	作成者を変更
+	Change Keywords	キーワードを変更
+	Change Subject	サブタイトルを変更
+	Change Title	タイトルを変更
+	Check for updates when PSG PDF starts	PSG PDF の起動時にアップデートを確認
+	Checking for updates…	アップデートを確認しています…
+	Cleans up the scanned pictures in place: recognized text, comments and links on the pages stay as they are.	スキャン画像をその場で補正します。ページ上の認識済みテキスト、注釈、リンクはそのまま残ります。
+	Close menu	メニューを閉じる
+	Close {app}	{app} を閉じる
+	Close {app} to finish	{app} を閉じて完了
+	Columns and rows must each be 1 to 99.	列数と行数はそれぞれ 1〜99 にしてください。
+	Combine engines	エンジンを組み合わせる
+	Could not check for updates.	アップデートを確認できませんでした。
+	Couldn't start the update ({error})	アップデートを開始できませんでした（{error}）
+	Create links	リンクを作成
+	Creep:	クリープ:
+	Crop image	画像をトリミング
+	Custom calculation script:	カスタム計算スクリプト:
+	Custom scale	カスタム倍率
+	Despeckle	斑点除去
+	Detailed Report	詳細レポート
+	Detecting paper…	用紙を検出しています…
+	Detecting…	検出しています…
+	Development build	開発ビルド
+	DeviceCMYK is used, but the PDF/A output intent isn't a CMYK profile	DeviceCMYK が使われていますが、PDF/A 出力インテントが CMYK プロファイルではありません
+	DeviceRGB is used, but the PDF/A output intent isn't an RGB profile	DeviceRGB が使われていますが、PDF/A 出力インテントが RGB プロファイルではありません
+	Discard embedded search index	埋め込まれた検索インデックスを破棄
+	Discard external cross-references	外部相互参照を破棄
+	Dock navigation rail on Left	ナビゲーションレールを左に固定
+	Dock navigation rail on Right	ナビゲーションレールを右に固定
+	Downloading and installing update…	アップデートをダウンロードしてインストールしています…
+	Downloading update…	アップデートをダウンロードしています…
+	No printers match.	一致するプリンターがありません。
+	Reconnecting…	再接続しています…
+	Verifying update…	アップデートを検証しています…
+	Drag hotbar	ホットバーをドラッグ
+	Edge shadow removal	端の影の除去
+	Edit attachment description	添付ファイルの説明を編集
+	Edit description	説明を編集
+	Engine	エンジン
+	Enhance	補正
+	Enhance Scanned File	スキャンファイルの補正
+	Enhance scanned file…	スキャンファイルの補正…
+	Enhancing scans… image {d} of {t}	スキャンを補正中… 画像 {d}/{t}
+	Evens out the paper so a grey or yellowed background turns white, and darkens faint strokes. 0 is off.	紙の色むらをならして灰色や黄ばんだ背景を白くし、薄い線を濃くします。0 でオフです。
+	Every line set in the style chosen for a level becomes a bookmark of that level, under a new first bookmark.	レベルごとに選んだスタイルの行はすべてそのレベルのしおりになり、新しく作る最初のしおりの下に置かれます。
+	Extend the docked toolbar along the entire side. Choose a side above to enable.	固定したツールバーを辺の端から端まで伸ばします。有効にするには上で辺を選んでください。
+	Field "{}" on page {p} has no description (tooltip)	{p} ページのフィールド「{}」に説明（ツールヒント）がありません
+	Filename	ファイル名
+	Flatten Fill & Sign	入力と署名の内容を平坦化
+	Float	フローティング
+	Font (unnamed) on page {p} doesn't map its characters to Unicode	{p} ページのフォント（名前なし）が文字を Unicode に対応付けていません
+	Font {} on page {p} doesn't map its characters to Unicode	{p} ページのフォント {} が文字を Unicode に対応付けていません
+	Form field on page {p} isn't tagged	{p} ページのフォームフィールドにタグが付いていません
+	Freehand-Highlight	フリーハンドハイライト
+	Full-side strip	辺全体のストリップ
+	General & Interface	一般とインターフェース
+	Get beta updates	ベータ版の更新を受け取る
+	Hotbar settings	ホットバーの設定
+	Hotbar settings / add tools	ホットバーの設定 / ツールを追加
+	Hotbar tools	ホットバーのツール
+	H{n} follows an H{d}; headings should not skip levels	H{d} の次が H{n} です。見出しのレベルを飛ばさないでください
+	Import bookmarks	しおりを読み込む
+	Inherit Zoom	ズームを継承
+	Installing update…	アップデートをインストールしています…
+	Invert middle-button drag	中ボタンのドラッグ方向を反転
+	Join beta	ベータに参加
+	Join the beta channel? Betas can have unfinished features and bugs. PSG PDF then updates to every new beta, and to each stable release as soon as it is newer.	ベータチャンネルに参加しますか？ベータ版には未完成の機能や不具合があることがあります。PSG PDF は新しいベータ版ごとに、また新しい安定版が出ればそれに更新されます。
+	Layout & Sizing	レイアウトとサイズ
+	Leave beta	ベータをやめる
+	Leave the beta channel? PSG PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	ベータチャンネルをやめますか？PSG PDF は今のバージョンのままで、それより新しい安定版が出たときに更新されます。古いバージョンには戻りません。
+	Level {n}	レベル {n}
+	Lightens shadows along the edges of the scan, such as a book's gutter or a copier's dark border	本ののど部分やコピー機の黒い縁など、スキャンの端に沿った影を明るくします
+	Metadata stream {object} writes the namespace {namespace} with the prefix {written}, not {prefix}	メタデータストリーム {object} は名前空間 {namespace} の接頭辞を {prefix} ではなく {written} と書いています
+	Metadata stream {object} writes the namespace {namespace} without a prefix, not with {prefix}	メタデータストリーム {object} は名前空間 {namespace} を接頭辞 {prefix} なしで書いています
+	Moves each sheet's pages toward the fold by this much more than the sheet outside it, so the margins match once the booklet is folded and trimmed.	各シートのページを外側のシートよりこの量だけ多く折り目側へ寄せ、冊子を折って断裁したときに余白がそろうようにします。
+	Navigation rail side	ナビゲーションレールの位置
+	New bookmarks from text styles	テキストスタイルから新しいしおりを作成
+	New bookmarks from text styles…	テキストスタイルから新しいしおりを作成…
+	No document language is set	文書の言語が設定されていません
+	No page has text: the document appears to be images of pages	テキストのあるページがありません。文書はページの画像のようです
+	No scanned pages were cleaned up.	補正されたスキャンページはありません。
+	Only web (http, https) and email addresses open, and PSG PDF asks first, as for other links.	開けるのは Web（http、https）とメールのアドレスだけで、ほかのリンクと同じく PSG PDF が先に確認します。
+	Open web and email addresses written in the page text	ページの本文に書かれた Web アドレスとメールアドレスを開く
+	Optimizing… reading page {d} of {t}	最適化しています… {t} ページ中 {d} ページ目を読み込み中
+	Optimizing… reading the pages	最適化しています… ページを読み込み中
+	PSG PDF can't check this signature yet: {}.	PSG PDF はこの署名をまだ検証できません: {}。
+	PSG PDF's checks found no problems for {level}. This is not a validator result.	PSG PDF のチェックでは {level} について問題は見つかりませんでした。これは検証ツールの結果ではありません。
+	PSG PDF's checks now find no problems for {level}. This is not a validator result. Save to keep the changes.	PSG PDF のチェックで {level} の問題はなくなりました。これは検証ツールの結果ではありません。変更を残すには保存してください。
+	Page Properties	ページのプロパティ
+	Page Setup…	ページ設定…
+	Page properties…	ページのプロパティ…
+	Page setup dialog is not available on this system.	このシステムではページ設定ダイアログを使えません。
+	Page {p} doesn't tab in structure order	{p} ページのタブ順が構造の順序になっていません
+	Page {p}: {n} untagged content item	{p} ページ: タグのない内容 {n} 件
+	Page {p}: {n} untagged content items	{p} ページ: タグのない内容 {n} 件
+	Page {} has a boundary smaller than 3 or larger than 14400 units	{} ページの境界ボックスが 3 未満か 14400 単位を超えています
+	Page {} has additional actions	{} ページに追加アクションがあります
+	Page {} has transparency but no device-independent blending colour space or PDF/A output intent	{} ページに透明効果がありますが、デバイス非依存の合成カラースペースも PDF/A 出力インテントもありません
+	Panning or auto-scrolling with the middle (wheel) button moves the page the other way.	中ボタン（ホイール）でパンや自動スクロールをすると、ページが逆方向に動きます。
+	Paste bookmarks	しおりを貼り付け
+	PSG PDF website	PSG PDF のウェブサイト
+	Panorama Scholarly Group website	Panorama Scholarly Group のウェブサイト
+	Prepare grouped text	グループ化したテキストを準備
+	Re-reading the page…	ページを読み取り直しています…
+	Re-reading the region…	範囲を読み取り直しています…
+	Reading the drawing for snapping…	スナップ用に図形を読み込んでいます…
+	Remove from hotbar	ホットバーから削除
+	Remove scan speckle	スキャンのごみを除去
+	Remove this leaf tag from reading order and mark its direct content as an artifact	このリーフタグを読み上げ順序から外し、直接の内容をアーティファクトとしてマーク
+	Remove {standard} identification	{standard} の識別情報を削除
+	Removes isolated dark specks such as dust and scanner noise. The only filter black and white scans take.	ほこりやスキャナーのノイズなど、孤立した黒い点を取り除きます。白黒スキャンに使える唯一のフィルターです。
+	Report created	レポート作成日時
+	Reset side panels	サイドパネルをリセット
+	Resize panes	ペインのサイズを変更
+	Restart to Update	再起動してアップデート
+	Rule Name	ルール名
+	Save as {level}	{level} として保存
+	Save or close your open work first; the update restarts the app.	先に開いている作業を保存するか閉じてください。アップデートするとアプリが再起動します。
+	Search all tools…	すべてのツールを検索…
+	Search printers	プリンターを検索
+	Search settings…	設定を検索…
+	Selects paper size and orientation from the printer driver. For paper tray, print quality or other driver defaults, use Properties…	プリンタードライバーで用紙サイズと向きを選びます。給紙トレイや印刷品質などドライバーの既定値の設定は、プロパティ…
+	Separation colour spaces named {} differ in their alternate space or tint transform	{} という名前の分版カラースペースどうしで、代替カラースペースか色合い変換が異なります
+	Show or hide the Tools panel	ツールパネルの表示/非表示
+	Show or hide the side panel	サイドパネルの表示/非表示
+	Show tab numbers	タブ番号を表示
+	Signature is invalid	署名は無効です
+	Signature is valid	署名は有効です
+	Signature validity is unknown	署名の有効性は不明です
+	Signing time is from the clock on the signer's computer.	署名時刻は署名者のコンピューターの時計によるものです。
+	Stick to a side:	辺に固定:
+	Straighten pages scanned sideways or upside down	横向きや上下逆にスキャンしたページを正しい向きにする
+	Straighten skewed text lines	傾いたテキスト行を補正
+	Tab Order	タブ順序
+	Tesseract	Tesseract エンジン
+	The ECDSA signature is not in canonical DER (trailing bytes, padding or a missing sign byte); it was read anyway.	ECDSA 署名が正規の DER ではありません（末尾のバイト、パディング、または符号バイトの欠落）。それでも読み取りました。
+	The ECDSA signature is the raw r and s values instead of a DER sequence; it was read anyway.	ECDSA 署名が DER シーケンスではなく r と s の生の値です。それでも読み取りました。
+	The RSA signature value does not have the length of the key's modulus (leading zero bytes dropped or added); it was read anyway.	RSA 署名値の長さが鍵の法と一致しません（先頭のゼロバイトの削除または追加）。それでも読み取りました。
+	The RSA signature's DigestInfo has no NULL parameter (older signers write it so); it was read anyway.	RSA 署名の DigestInfo に NULL パラメーターがありません（古い署名ソフトはこう書きます）。それでも読み取りました。
+	The XMP extension schema container in metadata stream {object} holds no rdf:Bag	メタデータストリーム {object} の XMP 拡張スキーマのコンテナーに rdf:Bag がありません
+	The XMP extension schema container in metadata stream {object} holds {found}, not one rdf:Bag	メタデータストリーム {object} の XMP 拡張スキーマのコンテナーには rdf:Bag 1 つではなく {found} があります
+	The XMP extension schema {schema} in metadata stream {object} describes {item} with an empty {entry} entry	メタデータストリーム {object} の XMP 拡張スキーマ {schema} は {item} を空の {entry} 項目で記述しています
+	The XMP extension schema {schema} in metadata stream {object} describes {item} without a {entry} entry	メタデータストリーム {object} の XMP 拡張スキーマ {schema} は {item} を {entry} 項目なしで記述しています
+	The XMP extension schema {schema} in metadata stream {object} has an empty {entry} entry	メタデータストリーム {object} の XMP 拡張スキーマ {schema} の {entry} 項目が空です
+	The XMP extension schema {schema} in metadata stream {object} has no {entry} entry	メタデータストリーム {object} の XMP 拡張スキーマ {schema} に {entry} 項目がありません
+	The XMP property {property} in metadata stream {object} should have the value type {type}	メタデータストリーム {object} の XMP プロパティ {property} は値の型が {type} である必要があります
+	The XMP property {property} in metadata stream {object}, written {written}, should have the value type {type}	メタデータストリーム {object} の XMP プロパティ {property}（{written} と記述）は値の型が {type} である必要があります
+	The certificate of {} does not allow this many CA certificates below it (path length), so it is not used to vouch for {}.	{} の証明書は配下にこれほど多くの CA 証明書を許可していない（パス長）ため、{} の保証には使いません。
+	The certificate of {} has critical extensions PSG PDF does not recognize, so it is not used to vouch for {}.	{} の証明書には PSG PDF が認識できない重要な拡張があるため、{} の保証には使われません。
+	The certificate of {} is not a CA certificate that may issue certificates, so it is not used to vouch for {}.	{} の証明書は証明書を発行できる CA 証明書ではないため、{} の保証には使いません。
+	The certificate of {} was not valid at the time of signing, so it is not used to vouch for {}.	{} の証明書は署名時点で有効ではなかったため、{} の保証には使いません。
+	The checker found problems which may prevent the document from being fully accessible.	チェックで、文書が完全にはアクセシブルにならないおそれのある問題が見つかりました。
+	The creep moves the innermost sheet's pages too far for this many pages. Reduce Creep.	このページ数では、クリープによって一番内側のシートのページが動きすぎます。クリープを小さくしてください。
+	The document changed. Reopen Document Properties to edit the current version.	文書が変更されました。現在の版を編集するには「文書のプロパティ」を開き直してください。
+	The document has been altered or corrupted since the signature was applied.	署名後に文書が改変されたか、破損しています。
+	The document has been altered or corrupted since the timestamp was applied.	タイムスタンプの付与後に文書が改変されたか、破損しています。
+	The document has been altered since this signature was applied in ways it does not permit ({}).	この署名の後、署名が許可していない形で文書が変更されています（{}）。
+	The document has been altered since this timestamp was applied in ways it does not permit ({}).	このタイムスタンプの付与後、許可されていない形で文書が変更されています（{}）。
+	The document has been modified since this signature was applied, but the changes are permitted ({}).	この署名の後に文書は変更されていますが、許可された変更です（{}）。
+	The document has been modified since this timestamp was applied, but the changes are permitted ({}).	このタイムスタンプの付与後に文書は変更されていますが、許可された変更です（{}）。
+	The document has no tags (structure tree)	文書にタグ（構造ツリー）がありません
+	The document has no title	文書にタイトルがありません
+	The document isn't marked as tagged (MarkInfo Marked)	文書がタグ付きとして指定されていません（MarkInfo Marked）
+	The document isn't tagged, so none of its content is	文書にタグがないため、内容にもタグがありません
+	The document's embedded revocation information shows that the signer's certificate has not been revoked.	文書に埋め込まれた失効情報によると、署名者の証明書は失効していません。
+	The embedded timestamp token is valid and its authority is trusted; trusted time is {}.	埋め込まれたタイムスタンプトークンは有効で、その発行局は信頼されています。信頼できる時刻は {} です。
+	The file doesn't start with a %PDF-1.0 to %PDF-1.7 header line	ファイルが %PDF-1.0〜%PDF-1.7 のヘッダー行で始まっていません
+	The file header isn't followed by a comment of four bytes above 127	ファイルヘッダーの後に 127 を超える 4 バイトのコメントがありません
+	The file identifier (ID) in the trailer isn't two non-empty strings	トレーラーのファイル識別子（ID）が空でない 2 つの文字列ではありません
+	The font {} isn't embedded	フォント {} が埋め込まれていません
+	The halftone for the colorant {} has no transfer function	色材 {} のハーフトーンに転送関数がありません
+	The metadata doesn't identify the file as {}	メタデータがファイルを {} と識別していません
+	The re-read was cancelled; the words are unchanged	再読み取りをキャンセルしました。単語は変わっていません
+	The security settings don't allow screen readers to read the text	セキュリティ設定により、スクリーンリーダーがテキストを読み取れません
+	The signature algorithm and the SignerInfo's digest algorithm name different hashes; the signature was made with the SignerInfo's.	署名アルゴリズムと SignerInfo のダイジェストアルゴリズムが異なるハッシュを指定しています。署名には SignerInfo のものが使われました。
+	The signature carries an unverified timestamp ({}): the timestamp authority is not in your list of trusted certificates, so the signing time claimed by the signer is used instead.	署名に未検証のタイムスタンプ（{}）があります。タイムスタンプ局が信頼済み証明書の一覧にないため、署名者が主張する署名時刻を代わりに使います。
+	The signature contents are not hexadecimal.	署名の内容が 16 進数ではありません。
+	The signature could not be checked ({}).	署名を検証できませんでした（{}）。
+	The signature could not be read ({}).	署名を読み取れませんでした（{}）。
+	The signature could not be verified ({}).	署名を確認できませんでした（{}）。
+	The signature has no valid byte range.	署名に有効なバイト範囲がありません。
+	The signature includes an embedded timestamp.	署名には埋め込まれたタイムスタンプがあります。
+	The signature is BER-encoded (indefinite lengths) rather than DER; it was read leniently.	署名が DER ではなく BER（不定長）でエンコードされています。寛容に読み取りました。
+	The signature uses the legacy adbe.x509.rsa_sha1 format.	署名は旧式の adbe.x509.rsa_sha1 形式です。
+	The signature value does not match the signer's certificate: the signature is corrupt.	署名値が署名者の証明書と一致しません。署名は壊れています。
+	The signature's byte range does not exclude exactly its contents.	署名のバイト範囲が署名内容だけを正確に除外していません。
+	The signature's byte range does not match the file.	署名のバイト範囲がファイルと一致しません。
+	The signature's signed attributes have no content type, which CMS requires; it was read anyway.	署名の署名済み属性に CMS が必須とするコンテンツタイプがありません。それでも読み込みました。
+	The signature's signed attributes have no message digest, so the signature does not cover the document.	署名の署名済み属性にメッセージダイジェストがないため、署名は文書を対象としていません。
+	The signature's signed attributes name a content type other than data, so it is not a signature of the document.	署名の署名済み属性が data 以外のコンテンツタイプを指定しているため、この文書の署名ではありません。
+	The signature's timestamp token could not be verified ({}).	署名のタイムスタンプトークンを確認できませんでした（{}）。
+	The signature's timestamp token does not cover the signature value.	署名のタイムスタンプトークンが署名値を対象にしていません。
+	The signed content is a constructed (segmented) OCTET STRING, as BER allows; it was read anyway.	署名された内容は BER が許す構造化（分割）OCTET STRING です。それでも読み取りました。
+	The signer's certificate does not allow digital signatures (its key usage has neither digital signature nor non-repudiation).	署名者の証明書はデジタル署名を許可していません（鍵用途にデジタル署名も否認防止もありません）。
+	The signer's certificate has been revoked ({}).	署名者の証明書は失効しています（{}）。
+	The signer's certificate has critical extensions PSG PDF does not recognize ({}).	署名者の証明書に PSG PDF が認識できない重要な拡張があります（{}）。
+	The signer's certificate is not in the signature.	署名に署名者の証明書が含まれていません。
+	The signer's certificate is not issued for signing documents (its extended key usage has no document-signing purpose).	署名者の証明書は文書署名用に発行されていません（拡張鍵用途に文書署名の目的がありません）。
+	The signer's certificate was not valid at the time of signing.	署名者の証明書は署名時点で有効ではありませんでした。
+	The signer's identity is unknown because it has not been included in your list of trusted certificates and none of its parent certificates are trusted certificates.	署名者の ID は不明です。信頼済み証明書の一覧になく、上位の証明書にも信頼済みのものがないためです。
+	The signer's identity is valid.	署名者の ID は有効です。
+	The spot colour {} of a DeviceN colour space isn't in its Colorants dictionary	DeviceN カラースペースの特色 {} が Colorants 辞書にありません
+	The timestamp authority's certificate is not issued for time stamping.	タイムスタンプ局の証明書はタイムスタンプ用に発行されたものではありません。
+	The timestamp authority's certificate was not valid at the time of timestamping.	タイムスタンプ局の証明書はタイムスタンプ付与時点で有効ではありませんでした。
+	The timestamp contents are not hexadecimal.	タイムスタンプの内容が 16 進数ではありません。
+	The timestamp has no valid byte range.	タイムスタンプに有効なバイト範囲がありません。
+	The timestamp token could not be read ({}).	タイムスタンプトークンを読み取れませんでした（{}）。
+	The timestamp token is valid and its authority is trusted.	タイムスタンプトークンは有効で、その発行局は信頼されています。
+	The timestamp token is valid, but the timestamp authority is not in your list of trusted certificates.	タイムスタンプトークンは有効ですが、タイムスタンプ局が信頼済み証明書の一覧にありません。
+	The timestamp's byte range does not exclude exactly its contents.	タイムスタンプのバイト範囲がその内容だけを正確に除外していません。
+	The timestamp's byte range does not match the file.	タイムスタンプのバイト範囲がファイルと一致しません。
+	The trailer has no file identifier (ID)	トレーラーにファイル識別子（ID）がありません
+	The update could not be installed: {reason}	アップデートをインストールできませんでした: {reason}
+	The update failed unexpectedly.	アップデートが予期せず失敗しました。
+	The update is installed. Close {app} to finish; it restarts by itself.	アップデートをインストールしました。{app} を閉じると完了し、自動で再起動します。
+	The update stopped unexpectedly.	アップデートが予期せず停止しました。
+	The window shows the file name, not the title (Initial View > Show)	ウィンドウにタイトルではなくファイル名が表示されます（開き方 > 表示）
+	This document has no text to make bookmarks from.	この文書にはしおりを作れるテキストがありません。
+	This document has not been modified since this signature was applied.	この署名の後、文書は変更されていません。
+	This document has not been modified since this timestamp was applied.	このタイムスタンプの付与後、文書は変更されていません。
+	This form has too many fields, or a field name too long, for PSG PDF to read them all. Any signature among the rest is not listed, so the document is treated as signed.	このフォームはフィールドが多すぎるか、フィールド名が長すぎるため、PSG PDF ではすべてを読み込めません。残りに含まれる署名は一覧に出ないため、文書は署名済みとして扱われます。
+	This script is too long to edit here ({kib} KiB); its start is shown. It is kept as it is.	このスクリプトは長すぎて（{kib} KiB）ここでは編集できません。先頭だけを表示しています。スクリプトはそのまま残ります。
+	This signature carries certification permissions, but the document does not name it as its certification, so it is checked as an approval signature.	この署名には認証の権限がありますが、文書がこれを認証署名として指定していないため、承認署名として検証します。
+	This signature uses RIPEMD-160, a legacy 160-bit hash algorithm that is no longer recommended for signatures. It still validates, but it should not be relied on.	この署名は RIPEMD-160 を使っています。これは署名にはもう推奨されない旧式の 160 ビットハッシュアルゴリズムです。検証は通りますが、信頼すべきではありません。
+	This signature uses SHA-1, a weak hash algorithm: collisions in it have been demonstrated. It still validates because many documents signed years ago use it, but it should not be relied on.	この署名は弱いハッシュアルゴリズムである SHA-1 を使っています。衝突が実証されています。何年も前に署名された多くの文書が使っているため検証は通りますが、信頼すべきではありません。
+	This signature uses an RSA key shorter than 2048 bits, which is no longer considered strong enough for signatures. It still validates, but it should not be relied on.	この署名は 2048 ビット未満の RSA 鍵を使っており、署名には十分な強度がないとみなされています。検証は通りますが、信頼すべきではありません。
+	Toolbar size	ツールバーのサイズ
+	Unsigned signature field	未署名の署名フィールド
+	Unspecified	指定なし
+	Update and Restart	アップデートして再起動
+	Update ready. Close {app} to install it.	アップデートの準備ができました。{app} を閉じるとインストールされます。
+	Use Column Order	列の順序を使用
+	Use Document Structure	文書の構造を使用
+	Use Row Order	行の順序を使用
+	Vertical layout	縦向きのレイアウト
+	What's new	新機能
+	a table has 1 to {max} columns	表の列数は 1〜{max} です
+	a table has 1 to {max} rows	表の行数は 1〜{max} です
+	alternate text hides an annotation inside it	代替テキストがその中の注釈を隠しています
+	alternate text on an element with no page content	ページ内容のない要素に代替テキストがあります
+	bold	太字
+	by	×
+	by {developer}	開発元: {developer}
+	comments	注釈
+	document security store	文書セキュリティストア
+	document structure	文書構造
+	form fill	フォーム入力
+	italic	斜体
+	its alternate text is inside another element's and will never be read	代替テキストが別の要素の代替テキストの内側にあるため、読み上げられることはありません
+	links	リンク
+	metadata	メタデータ
+	no alternate text	代替テキストなし
+	no header cells (TH)	見出しセル（TH）なし
+	no summary	要約なし
+	not in a TR	TR の中にありません
+	not in a Table, THead, TBody or TFoot	Table、THead、TBody、TFoot のいずれの中にもありません
+	not in an L (list)	L（リスト）の中にありません
+	not in an LI (list item)	LI（リスト項目）の中にありません
+	other changes	その他の変更
+	page content	ページ内容
+	page {n} is out of range (1–{count})	{n} ページは範囲外です（1–{count}）
+	pages added or removed	ページの追加または削除
+	rows have between {min} and {max} columns	行ごとの列数が {min}〜{max} とばらばらです
+	the area, the spacing and the column widths must be numbers, the spacing 0 or more and each width more than 0	範囲、間隔、列幅は数値で、間隔は 0 以上、各列幅は 0 より大きくしてください
+	the first heading is an H{n}; headings should not skip levels	最初の見出しが H{n} です。見出しのレベルを飛ばさないでください
+	the first row number can be at most {max}	最初の行番号は {max} 以下にしてください
+	the range selects more than {limit} pages	範囲が {limit} ページを超えて選択しています
+	the signed version could not be read	署名された版を読み取れませんでした
+	v{from} to {to}	v{from} から {to} へ
+	{app} updated to {version}.	{app} を {version} にアップデートしました。
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} はランチャーで選んだバージョンに従うため、自分ではアップデートしません。
+	{app} {version} is available with the latest features and bug fixes.	{app} {version} が公開されました。最新の機能と不具合の修正が含まれています。
+	{app} {version} is the newest version available.	{app} {version} は最新バージョンです。
+	{font}, {size} pt	{font}、{size} pt
+	{n} lines	{n} 行
+	{n} pages and no bookmarks	{n} ページあるのにしおりがありません
+	{page} is not a page number or label	{page} はページ番号でもページラベルでもありません
+	{ty} element on page {p}: {what}	{p} ページの {ty} 要素: {what}
+	{ty} element: {what}	{ty} 要素: {what}
+	{} annotation on page {p} isn't tagged	{p} ページの {} 注釈にタグが付いていません
+	{} annotations aren't allowed	{} 注釈は使えません
+	… and {n} more	…ほか {n} 件
+	Some content could not be read for device colour	一部のコンテンツを読み取れず、デバイスカラーの使用を確認できませんでした
+	(Only the first {n} of {total} pages fit in the request.)	（リクエストに収まったのは {total} ページ中の最初の {n} ページだけです。）
+	AI assistant settings	AI アシスタントの設定
+	AI providers aren't available in this version.	このバージョンでは AI プロバイダーを使えません。
+	API address	API のアドレス
+	API format	API の形式
+	API key	API キー
+	API version	API バージョン
+	Add a provider	プロバイダーを追加
+	Add an AI provider in Preferences > AI assistant first.	先に［環境設定 > AI アシスタント］で AI プロバイダーを追加してください。
+	Connected: the provider answered.	接続しました。プロバイダーが応答しました。
+	Couldn't reach the provider: {detail}	プロバイダーに接続できません: {detail}
+	Custom (any address)	カスタム（任意のアドレス）
+	Deployment	デプロイ
+	Edit provider	プロバイダーを編集
+	Fetch models	モデル一覧を取得
+	Found {n} models.	{n} 個のモデルが見つかりました。
+	Longest answer	回答の最大長
+	Models this provider offers	このプロバイダーのモデル
+	New provider	新しいプロバイダー
+	No API key is saved for this provider. Add one in Preferences > AI assistant.	このプロバイダーの API キーが保存されていません。［環境設定 > AI アシスタント］で追加してください。
+	Open a document first.	先に文書を開いてください。
+	Open a document to use the assistant.	アシスタントを使うには文書を開いてください。
+	Paste your key	キーを貼り付け
+	Saved — type to replace	保存済み — 入力すると置き換え
+	Show or hide the key	キーの表示／非表示
+	Test connection	接続をテスト
+	The answer stopped at the length limit.	回答は長さの上限で途切れました。
+	The provider answered with an error: {detail}	プロバイダーがエラーを返しました: {detail}
+	The provider doesn't know this model or address: {detail}	プロバイダーはこのモデルまたはアドレスを認識しません: {detail}
+	The provider refused the API key: {detail}	プロバイダーが API キーを拒否しました: {detail}
+	The provider's answer couldn't be read: {detail}	プロバイダーの応答を読み取れません: {detail}
+	The provider's rate limit or quota was reached: {detail}	プロバイダーのレート制限またはクォータに達しました: {detail}
+	The request stopped unexpectedly.	リクエストが予期せず停止しました。
+	The system keychain isn't available, so the key is kept only until PSG PDF quits.	システムのキーチェーンが使えないため、キーは PSG PDF を終了するまでしか保持されません。
+	The system keychain refused: {detail}	システムのキーチェーンが拒否しました: {detail}
+	The text of this document is sent to {provider}.	この文書のテキストは {provider} に送信されます。
+	This address isn't encrypted (http://): the key and the document cross the network as plain text.	このアドレスは暗号化されていません（http://）。キーと文書は平文でネットワークを通ります。
+	This document has no text to send. Scanned pages need Scan & OCR first.	この文書には送信できるテキストがありません。スキャンしたページは先に［スキャンと OCR］が必要です。
+	This provider runs on your computer: the document stays here.	このプロバイダーはお使いのコンピューターで動作します。文書は外に出ません。
+	This provider's settings need attention: {detail}	このプロバイダーの設定を確認してください: {detail}
+	Translate into	翻訳先
+	Translate into {language}	{language}に翻訳
+	Type a question	質問を入力
+	Use this provider	このプロバイダーを使う
+	Waiting for {provider}…	{provider} を待っています…
+	Whole document	文書全体
+	You	あなた
+	no key	キーなし
+	tokens (0: the provider's default)	トークン（0: プロバイダーの既定値）
+	Use the AI service you choose, with your own API key: OpenAI, Anthropic Claude, Google Gemini, Azure OpenAI, DeepSeek, Qwen, a model on your own computer through Ollama, or any OpenAI-compatible service.	お好きな AI サービスをご自分の API キーで使えます: OpenAI、Anthropic Claude、Google Gemini、Azure OpenAI、DeepSeek、Qwen、Ollama で自分のコンピューターで動かすモデル、または OpenAI 互換のサービス。
+	Off until you add a provider. Use your own API key with any AI service; the key is kept in your system's keychain, never in PSG PDF's settings. Only the document you ask about is sent, and only when you ask.	プロバイダーを追加するまではオフです。どの AI サービスもご自分の API キーで使えます。キーは PSG PDF の設定ではなくシステムのキーチェーンに保存されます。送信されるのは質問した文書だけで、質問したときだけです。
+	OpenAI-compatible	OpenAI 互換
+
+# Outlined PDF export
+	Export PDF with outlined text…	テキストをアウトライン化した PDF を書き出す…
+	Save a separate PDF. Outlined page text can no longer be searched, copied, or read by assistive technology.	別の PDF として保存します。アウトライン化したページの文字は検索、コピー、支援技術による読み上げができなくなります。
+	Choose a different file so the original PDF is kept.	元の PDF を保持するため、別のファイルを選んでください。
+
+# Print readiness
+	Print readiness	印刷適性チェック
+
+# Page transitions
+	Blinds	ブラインド
+	Wipe	ワイプ
+	Dissolve	ディゾルブ
+	Glitter	きらめき
+	Fly	フライ
+	Push	プッシュ
+	Cover	カバー
+	Uncover	アンカバー
+	Fade	フェード
+	Transition duration	切り替え時間
+	Inward	内向き
+	Outward	外向き
+	Opaque background	不透明な背景
+	Advance automatically	自動で次に進む
+	The selected pages have different presentation settings. Applying sets the same values on all of them.	選択したページのプレゼンテーション設定は異なります。適用すると、すべてのページに同じ値が設定されます。
+	The document changed while the dialog was open, so nothing was changed.	ダイアログを開いている間に文書が変更されたため、設定を適用しませんでした。

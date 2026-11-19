@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PSG PDF &amp; PSG Academic PDF</title>
 <meta name="description" content="Two open-source desktop applications from Panorama Scholarly Group: PSG PDF for professional PDF work, and PSG Academic PDF for typesetting accepted articles with pdfLaTeX.">
-<meta name="theme-color" content="#0d0d10">
+<meta name="theme-color" content="#181713">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pdf.panorama-sg.com/">
 <link rel="canonical" href="https://pdf.panorama-sg.com/">
@@ -16,236 +16,184 @@
 <link rel="icon" href="images/psg/psg-pdf.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Source+Serif+4:opsz,wght@8..60,600&amp;display=swap" rel="stylesheet">
 <style>
-/* Dark is the house look; light is one click away. */
-:root, :root[data-theme="dark"] {
-  --bg: #0d0d10; --bg-2: #131317; --surface: #18181d; --surface-2: #1f1f26;
-  --ink: #ecebef; --ink-2: #b4b3bd; --ink-3: #85848f;
-  --line: #26262e; --line-strong: #383842;
-  --blue: #1e4384; --blue-ink: #a9c1ec; --blue-wash: rgba(68,114,196,.16);
-  --plum: #5b2a78; --plum-ink: #cdb0e2; --plum-wash: rgba(154,85,192,.16);
-  --gold: #d8ae5c; --gold-ink: #e3c27f;
-  --primary-bg: #d8ae5c; --primary-ink: #1b1408;
-  --code-bg: #0a0a0c;
-  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 24px 60px -24px rgba(0,0,0,.8);
+:root {
+  --paper: #181713;
+  --panel: #22201b;
+  --ink: #f4eee4;
+  --muted: #beb5a6;
+  --rule: #3f3b32;
+  --edge: #70675a;
+  --accent: #e4be80;
+  --action: #efd19d;
+  --action-ink: #21180d;
+  --serif: "Source Serif 4", "Noto Serif CJK TC", Georgia, serif;
+  --sans: Inter, system-ui, -apple-system, sans-serif;
+  --mono: ui-monospace, Menlo, Consolas, monospace;
   color-scheme: dark;
 }
 :root[data-theme="light"] {
-  --bg: #fbf9f4; --bg-2: #f3efe6; --surface: #ffffff; --surface-2: #f6f2ea;
-  --ink: #1b1b22; --ink-2: #4a4a55; --ink-3: #6e6e78;
-  --line: #e4ddcf; --line-strong: #cfc6b4;
-  --blue-ink: #1e4384; --blue-wash: #dce5f3;
-  --plum-ink: #5b2a78; --plum-wash: #e6daee;
-  --gold-ink: #8a6420;
-  --primary-bg: #1b1b22; --primary-ink: #fbf9f4;
-  --code-bg: #16161b;
-  --shadow: 0 1px 2px rgba(20,20,30,.06), 0 20px 48px -20px rgba(20,20,30,.25);
+  --paper: #f9f7f1;
+  --panel: #fffdf8;
+  --ink: #27231d;
+  --muted: #5f574b;
+  --rule: #ddd5c7;
+  --edge: #8b7b68;
+  --accent: #795023;
+  --action: #382819;
+  --action-ink: #fff8ed;
   color-scheme: light;
 }
-:root {
-  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
-  --sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-}
-
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--sans); }
+html { scroll-padding-top: 84px; -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.6 var(--sans); }
 img { max-width: 100%; height: auto; display: block; }
-a { color: inherit; }
-:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
-.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-.skip { position: absolute; left: -999px; top: 8px; background: var(--surface); padding: 8px 12px; border-radius: 6px; z-index: 10; }
-.skip:focus { left: 16px; }
-h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -.01em; margin: 0; }
-h2 { font-size: clamp(28px, 4vw, 42px); line-height: 1.12; }
-h3 { font-size: 19px; line-height: 1.3; }
+a { color: inherit; text-underline-offset: .22em; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.wrap { width: min(100%, 1280px); margin-inline: auto; padding-inline: clamp(16px, 4vw, 56px); }
+.skip { position: fixed; z-index: 10; top: 8px; left: 8px; transform: translateY(-150%); background: var(--panel); padding: 8px 12px; }
+.skip:focus { transform: none; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -.025em; margin: 0; }
+h2 { font-size: clamp(32px, 4vw, 48px); line-height: 1.12; }
+h3 { font-size: 23px; line-height: 1.25; }
 p { margin: 0; }
-code { font-family: var(--mono); font-size: .88em; }
-section { padding: 104px 0; border-top: 1px solid var(--line); }
-.lede { font-size: 18px; color: var(--ink-2); max-width: 64ch; }
+code { font-family: var(--mono); font-size: .9em; }
+section { border-top: 1px solid var(--rule); padding-block: clamp(56px, 8vw, 112px); }
+.lede { font-size: 17px; color: var(--muted); max-width: 64ch; }
+.sec-head { margin-bottom: clamp(24px, 4vw, 48px); }
+.sec-head h2 + p { margin-top: 12px; }
 
-/* Numbered section labels: 01 / Highlights */
-.label { display: flex; align-items: center; gap: 12px; font: 500 13px/1 var(--mono); color: var(--ink-3); letter-spacing: .02em; }
-.label b { color: var(--gold-ink); font-weight: 500; }
-.label::after { content: ""; flex: 0 0 48px; height: 1px; background: var(--line-strong); }
-.sec-head { margin-bottom: 48px; }
-.sec-head h2 { margin: 18px 0 14px; max-width: 24ch; }
+.btn, .chip {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 14px;
+  border: 1px solid var(--edge); border-radius: 4px; background: transparent; color: var(--ink);
+  font: 600 14px/1.25 var(--sans); text-align: center; text-decoration: none; cursor: pointer;
+}
+.btn:hover, .chip:hover { background: var(--panel); border-color: var(--muted); }
+.btn.primary { background: var(--action); color: var(--action-ink); border-color: var(--action); }
+.btn.primary:hover { text-decoration: underline; }
+.btn svg, .chip svg, .text-link svg { width: 16px; height: 16px; flex: none; }
+.chip { min-width: 44px; }
+.text-link { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-weight: 600; }
+.text-link:hover { color: var(--ink); }
+.cta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
 
-/* Buttons */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 6px; font: 600 14px/1 var(--sans); text-decoration: none; border: 1px solid var(--line-strong); color: var(--ink); background: var(--surface); white-space: nowrap; }
-.btn:hover { border-color: var(--ink-3); }
-.btn.primary { background: var(--primary-bg); color: var(--primary-ink); border-color: transparent; }
-.btn.primary:hover { filter: brightness(1.08); }
-.btn svg { width: 16px; height: 16px; flex: none; }
-.btn.sm { height: 36px; padding: 0 14px; font-size: 13px; }
-
-/* Header */
-.top { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 84%, transparent); backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px); border-bottom: 1px solid var(--line); }
-.top .wrap { display: flex; align-items: center; gap: 28px; height: 64px; }
-.mark { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 600; white-space: nowrap; font-size: 15px; }
-.mark .pair { display: flex; }
-.mark .pair img { width: 28px; height: 28px; }
-.mark .pair img + img { margin-left: -7px; }
-.nav { display: flex; gap: 22px; font-size: 14px; }
-.nav a { text-decoration: none; color: var(--ink-2); }
-.nav a:hover { color: var(--ink); }
+.top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; align-items: center; gap: clamp(12px, 2.6vw, 32px); min-height: 72px; }
+.mark { display: flex; align-items: center; gap: 12px; text-decoration: none; white-space: nowrap; font: 600 17px/1.2 var(--serif); }
+.mark img { width: 32px; height: 32px; }
+.nav { display: flex; gap: clamp(12px, 2vw, 24px); font-size: 14px; }
+.nav a { text-decoration: none; color: var(--muted); }
+.nav a:hover { color: var(--ink); text-decoration: underline; }
 .tools { display: flex; gap: 8px; margin-left: auto; align-items: center; }
-.chip { appearance: none; border: 1px solid var(--line-strong); background: transparent; color: var(--ink); font: 500 13px/1 var(--sans); height: 36px; min-width: 36px; padding: 0 10px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
-.chip:hover { border-color: var(--ink-3); }
-.chip svg { width: 16px; height: 16px; }
+.mobile-nav { display: none; }
+.mobile-nav summary { list-style: none; padding-inline: 0; }
+.mobile-nav summary::-webkit-details-marker { display: none; }
 
-/* Hero */
-.hero { padding: 80px 0 96px; border-top: 0; position: relative; overflow: hidden; }
-.hero::before { content: ""; position: absolute; inset: -20% -10% auto; height: 640px; background: radial-gradient(40% 60% at 28% 30%, rgba(30,67,132,.38), transparent 70%), radial-gradient(40% 60% at 74% 30%, rgba(91,42,120,.34), transparent 70%); pointer-events: none; }
-:root[data-theme="light"] .hero::before { opacity: .35; }
-.hero .wrap { position: relative; }
-.status { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font: 500 13px/1 var(--mono); color: var(--ink-3); }
-.status .tag { font: 600 11px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--gold-ink); border: 1px solid color-mix(in srgb, var(--gold) 50%, transparent); padding: 5px 8px; border-radius: 4px; }
-.hero h1 { font-size: clamp(40px, 6.4vw, 76px); line-height: 1.02; margin: 26px 0 22px; max-width: 16ch; }
-.hero h1 em { font-style: italic; font-weight: 400; color: var(--gold-ink); }
-.hero .lede { font-size: 19px; }
-.hero .cta { display: flex; flex-wrap: wrap; gap: 10px; margin: 34px 0 18px; }
-.platline { font-size: 14px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 6px 18px; }
-.platline span { display: inline-flex; align-items: center; gap: 7px; }
-.platline svg { width: 15px; height: 15px; color: var(--gold-ink); }
-.hero-shots { margin-top: 64px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.shot-card { margin: 0; }
-.shot-card .img { border-radius: 10px; overflow: hidden; border: 1px solid var(--line-strong); box-shadow: var(--shadow); position: relative; background: var(--surface); }
-.shot-card .img::before { content: ""; position: absolute; inset: 0 0 auto; height: 3px; background: var(--acc); }
-.shot-card figcaption { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; font-size: 13px; color: var(--ink-3); }
-.shot-card figcaption b { color: var(--ink-2); font-weight: 600; }
-.shot-card figcaption a { color: var(--ink-2); white-space: nowrap; }
-.pdf-c { --acc: #4472c4; --acc-ink: var(--blue-ink); --wash: var(--blue-wash); }
-.ac-c { --acc: #9a55c0; --acc-ink: var(--plum-ink); --wash: var(--plum-wash); }
+.hero { border: 0; padding-block: clamp(44px, 7vw, 96px); }
+.hero .wrap, .screen-layout { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.3fr); align-items: center; gap: clamp(28px, 5vw, 76px); }
+.hero h1 { font-size: clamp(42px, 5vw, 76px); line-height: 1.02; letter-spacing: -.045em; }
+:lang(zh) .hero h1 { font-size: clamp(36px, 4.1vw, 60px); line-height: 1.18; letter-spacing: -.025em; }
+.hero .lede { margin-top: 20px; max-width: 42ch; }
+.hero .cta { margin-top: 24px; }
+.platline { color: var(--muted); font-size: 13px; margin-top: 16px; }
+.shot-card { min-width: 0; margin: 0; }
+.shot-card img { width: 100%; border: 1px solid var(--edge); border-radius: 6px; background: var(--panel); }
+.shot-card figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--muted); }
+.shot-card figcaption strong { color: var(--ink); }
+.shot-card figcaption a { color: var(--accent); }
 
-/* Highlights */
-.prod-row { display: grid; grid-template-columns: 280px 1fr; gap: 40px; padding: 40px 0; }
-.prod-row + .prod-row { border-top: 1px dashed var(--line-strong); }
-.prod-id img { width: 56px; height: 56px; }
-.prod-id h3 { font-size: 24px; margin: 16px 0 6px; }
-.prod-id p { color: var(--ink-3); font-size: 14px; }
-.prod-id .note { margin-top: 18px; font-size: 13px; color: var(--ink-3); border-left: 2px solid var(--gold); padding-left: 12px; }
-.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
-.card { background: var(--bg-2); padding: 24px 24px 26px; }
-.card .n { font: 500 12px/1 var(--mono); color: var(--acc-ink); }
-.card h4 { margin: 14px 0 8px; font: 600 16px/1.3 var(--sans); }
-.card p { font-size: 14px; color: var(--ink-2); line-height: 1.55; }
+.prod-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: clamp(20px, 4vw, 52px); border-top: 1px solid var(--rule); padding-block: 32px; }
+.prod-row:last-child { padding-bottom: 0; }
+.prod-id img { width: 44px; height: 44px; margin-bottom: 12px; }
+.prod-id p { color: var(--muted); font-size: 14px; margin-top: 8px; }
+.prod-id .note { border-left: 1px solid var(--edge); margin-top: 16px; padding-left: 12px; }
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.card h4 { margin: 0 0 6px; font: 600 16px/1.3 var(--sans); }
+.card p { font-size: 14px; color: var(--muted); }
 
-/* Screens */
-.screens { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-.check { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; padding: 22px; box-shadow: var(--shadow); height: 100%; display: flex; flex-direction: column; }
-.check-wrap { display: flex; flex-direction: column; }
-.check-wrap .check { flex: 1; }
-.check h4 { margin: 0; font: 600 12px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
-.check dl { margin: 18px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; font-size: 14px; }
-.check dt { color: var(--ink-3); }
-.check dd { margin: 0; display: flex; flex-direction: column; gap: 4px; }
-.check dd code { font-size: 12.5px; overflow-wrap: anywhere; color: var(--ink); }
-.ok, .warn { align-self: flex-start; font: 600 11px/1 var(--sans); padding: 4px 7px; border-radius: 4px; }
-.ok { background: var(--plum-wash); color: var(--plum-ink); }
-.warn { background: color-mix(in srgb, var(--gold) 20%, transparent); color: var(--gold-ink); }
+#screens { background: var(--panel); }
+.screen-layout { grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr); }
+.screen-copy .lede { margin: 16px 0; }
+.screen-copy ul { margin: 0; padding-left: 20px; color: var(--muted); font-size: 15px; }
+.screen-copy li + li { margin-top: 8px; }
 
-/* Download */
-.dl-top { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-.opt { border: 1px solid var(--line-strong); border-radius: 10px; padding: 28px; background: var(--surface); position: relative; }
-.opt.rec { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
-.opt .rib { position: absolute; top: -11px; left: 24px; background: var(--gold); color: #1b1408; font: 700 11px/1 var(--sans); letter-spacing: .08em; text-transform: uppercase; padding: 6px 8px; border-radius: 4px; }
-.opt h3 { font-size: 22px; }
-.opt p { margin: 10px 0 18px; color: var(--ink-2); font-size: 15px; }
-.opt ul { margin: 0 0 22px; padding-left: 18px; color: var(--ink-2); font-size: 14px; display: grid; gap: 6px; }
-.platforms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.plat { border: 1px solid var(--line); border-radius: 10px; padding: 24px; background: var(--bg-2); display: flex; flex-direction: column; }
-.plat.mine { border-color: var(--gold); }
-.plat .os { display: flex; align-items: center; gap: 10px; }
-.plat .os svg { width: 22px; height: 22px; }
-.plat .os b { font: 600 18px/1 var(--serif); }
-.plat .here { margin-left: auto; font: 600 10px/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--gold-ink); display: none; }
+.channel-line { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 16px; }
+.channel-line h3 { font-size: 24px; }
+.channel-line a { color: var(--accent); }
+#dl-version { margin-left: 6px; font: 400 14px var(--mono); color: var(--muted); }
+.platforms { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.plat { background: var(--panel); border: 1px solid var(--rule); padding: clamp(16px, 2.5vw, 24px); min-width: 0; }
+.plat.mine { border-color: var(--edge); }
+.plat .os { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
+.plat .os svg { width: 20px; height: 20px; flex: none; }
+.plat .os h4 { font: 600 23px/1.2 var(--serif); margin: 0; }
+.plat .here { margin-left: auto; font-size: 12px; color: var(--accent); display: none; }
 .plat.mine .here { display: inline; }
-.plat .req { font-size: 13px; color: var(--ink-3); margin: 8px 0 18px; }
+.plat .req { color: var(--muted); font-size: 13px; margin: 8px 0 16px; }
 .plat .btn { width: 100%; }
 .plat .btn + .btn { margin-top: 8px; }
-.alts { list-style: none; padding: 0; margin: 18px 0 0; border-top: 1px solid var(--line); }
-.alts li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink-3); }
-.alts code { color: var(--ink-2); font-size: 12px; text-align: right; overflow-wrap: anywhere; }
-.alts .fmt { text-align: right; }
-.alts a { color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; }
-.alts a:hover { color: var(--ink); }
-#dl-version { font-size: 12px; font-weight: 500; color: var(--ink-3); margin-left: 6px; }
-.dl-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 20px; padding: 18px 22px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; color: var(--ink-2); }
-.dl-foot .btns { display: flex; gap: 8px; flex-wrap: wrap; }
-.build { margin-top: 56px; }
-.build h3 { margin-bottom: 14px; }
-.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line-strong); overflow-x: auto; }
-.tabs button { appearance: none; background: none; border: 0; border-bottom: 2px solid transparent; color: var(--ink-3); font: 500 14px/1 var(--sans); padding: 12px 14px; cursor: pointer; white-space: nowrap; margin-bottom: -1px; }
-.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--gold); }
-pre { margin: 0; background: var(--code-bg); color: #d8d7de; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 10px 10px; padding: 20px 22px; overflow-x: auto; font: 13px/1.7 var(--mono); }
-pre .c { color: #7c7b86; }
-pre .p { color: var(--gold); user-select: none; }
+.alts { margin-top: 16px; }
+.alts summary { cursor: pointer; font-size: 14px; color: var(--muted); padding: 8px 0; }
+.alts ul { list-style: none; padding: 0; margin: 0; }
+.alts li { display: flex; flex-wrap: wrap; gap: 4px 12px; justify-content: space-between; border-top: 1px solid var(--rule); padding: 8px 0; font-size: 13px; color: var(--muted); }
+.alts a { color: var(--ink); }
+.dl-foot { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-top: 24px; font-size: 14px; color: var(--muted); }
+.dl-foot a { color: var(--accent); }
+.build { margin-top: 48px; border-top: 1px solid var(--rule); }
+.build summary { cursor: pointer; padding: 16px 0; font-weight: 600; }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px 8px; border-bottom: 1px solid var(--edge); }
+.tabs button { background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted); font: 500 14px/1.3 var(--sans); min-height: 44px; padding: 8px; cursor: pointer; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+pre { margin: 0; background: var(--panel); color: var(--ink); padding: 16px; overflow-x: auto; font: 13px/1.7 var(--mono); }
+pre .c { color: var(--muted); }
+pre .p { color: var(--accent); user-select: none; }
 
-/* Family */
-.family { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.fam { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg-2); display: flex; flex-direction: column; text-decoration: none; }
-.fam .thumb { aspect-ratio: 16 / 7; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--wash); }
-.fam .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
-.fam .body { padding: 24px; display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; align-items: start; }
-.fam .body img { width: 44px; height: 44px; grid-row: span 3; }
-.fam .cat { font: 500 12px/1.2 var(--mono); color: var(--acc-ink); }
-.fam h3 { font-size: 22px; }
-.fam p { color: var(--ink-2); font-size: 15px; }
-.fam .go { grid-column: 2; margin-top: 10px; font-size: 14px; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; color: var(--acc-ink); }
-.fam .go svg { width: 15px; height: 15px; }
-.fam:hover { border-color: var(--line-strong); }
-.table-scroll { margin-top: 20px; overflow-x: auto; border-radius: 10px; border: 1px solid var(--line); }
-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 640px; }
-th, td { text-align: left; padding: 14px 20px; vertical-align: top; border-top: 1px solid var(--line); }
-thead th { border-top: 0; font: 600 13px/1.3 var(--sans); color: var(--ink); background: var(--surface); }
-thead th .dot { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 8px; vertical-align: 0; }
-tbody th { font-weight: 500; color: var(--ink-3); width: 18%; }
-td { color: var(--ink-2); }
+.family { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(24px, 5vw, 64px); }
+.fam { border-top: 1px solid var(--edge); padding-top: 16px; }
+.fam h3 a { text-decoration-color: var(--edge); }
+.fam h3 a:hover { text-decoration-color: currentColor; }
+.fam dl { margin: 16px 0 0; font-size: 14px; }
+.fam dl div { display: grid; grid-template-columns: 6.5rem 1fr; gap: 8px; padding-block: 8px; border-bottom: 1px solid var(--rule); }
+.fam dt { font-weight: 600; }
+.fam dd { margin: 0; color: var(--muted); }
+.together { margin-top: 24px; color: var(--muted); font-size: 15px; max-width: 76ch; }
+.band { background: var(--panel); }
+.band .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; }
+.band .lede { margin-top: 8px; }
 
-/* CTA band */
-.band { text-align: center; padding: 96px 0; background: radial-gradient(60% 120% at 50% 100%, rgba(216,174,92,.12), transparent 70%); }
-.band h2 { margin: 18px auto 14px; max-width: 22ch; }
-.band .lede { margin: 0 auto 30px; }
-.band .label { justify-content: center; }
-.band .label::after { display: none; }
-.band .cta { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
-
-/* Footer */
-footer { border-top: 1px solid var(--line); padding: 64px 0 36px; font-size: 14px; color: var(--ink-3); }
-footer .cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
-footer .brandline { display: flex; align-items: center; gap: 10px; color: var(--ink); font: 600 18px/1.2 var(--serif); }
+footer { border-top: 1px solid var(--rule); padding-block: 48px 24px; font-size: 14px; color: var(--muted); }
+footer .cols { display: grid; grid-template-columns: 2fr repeat(3, 1fr); gap: 28px; }
+footer .brandline { display: flex; align-items: center; gap: 8px; color: var(--ink); font: 600 18px/1.2 var(--serif); }
 footer .brandline img { width: 30px; height: 30px; }
-footer p { margin-top: 14px; max-width: 44ch; line-height: 1.65; }
-footer h4 { margin: 0 0 14px; font: 500 12px/1 var(--mono); color: var(--gold-ink); }
-footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; }
-footer a { color: var(--ink-2); text-decoration: none; }
-footer a:hover { color: var(--ink); text-decoration: underline; }
-footer .fine { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-top: 48px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 13px; }
+footer p { margin-top: 12px; max-width: 44ch; }
+footer h4 { margin: 0 0 8px; color: var(--ink); }
+footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+footer a:hover { color: var(--ink); }
+footer .fine { display: flex; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--rule); font-size: 13px; }
 
-@media (max-width: 1000px) {
-  .nav { display: none; }
-  .prod-row { grid-template-columns: 1fr; gap: 24px; }
-  .cards { grid-template-columns: 1fr 1fr; }
-  .screens { grid-template-columns: 1fr 1fr; }
-  .platforms { grid-template-columns: 1fr; }
-  footer .cols { grid-template-columns: 1fr 1fr; }
+@media (max-width: 1020px) {
+  .top .nav { display: none; }
+  .mobile-nav { display: block; }
+  .mobile-nav nav { position: absolute; top: 100%; inset-inline-end: 0; width: min(100%, 320px); background: var(--paper); border: 1px solid var(--rule); padding: 8px 16px; }
+  .mobile-nav a { display: flex; align-items: center; min-height: 44px; padding: 8px; }
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 720px) {
-  .wrap { padding: 0 16px; }
-  section { padding: 72px 0; }
-  .hero { padding: 48px 0 64px; }
-  .hero-shots, .dl-top, .family, .screens, .cards { grid-template-columns: 1fr; }
-  .mark .full { display: none; }
-  .top .btn { display: none; }
-  .fam .body { grid-template-columns: 1fr; }
-  .fam .body img { grid-row: auto; }
-  .fam .go { grid-column: 1; }
-  footer .cols { grid-template-columns: 1fr; gap: 28px; }
+@media (max-width: 750px) {
+  .hero .wrap, .screen-layout, .prod-row { grid-template-columns: minmax(0, 1fr); }
+  .hero h1 { max-width: 16ch; }
+  .platforms { grid-template-columns: minmax(0, 1fr); }
+  footer .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (max-width: 520px) {
+  .top .wrap, .tools { gap: 4px; }
+  .tools .btn, .tools .chip { padding-inline: 8px; }
+  .mark { gap: 4px; }
+  .family { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 350px) {
+  .top .mark span { display: none; }
+}
 </style>
 </head>
 <body>
@@ -253,83 +201,72 @@ footer .fine { display: flex; justify-content: space-between; gap: 16px; flex-wr
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <!-- Lucide icons (ISC) -->
+  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
   <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></symbol>
   <symbol id="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
-  <symbol id="i-offline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/></symbol>
-  <symbol id="i-code" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></symbol>
-  <symbol id="i-cpu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
   <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
-  <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
-  <symbol id="i-help" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/></symbol>
-  <symbol id="i-git" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></symbol>
-  <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></symbol>
-  <symbol id="i-win" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.1 10.4 4v7.2H3zm8.4-1.2L21 2.5v8.7h-9.6zM3 12.8h7.4V20L3 18.9zm8.4 0H21v8.7l-9.6-1.4z"/></symbol>
+  <symbol id="i-win" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M3 5.1 10.4 4v7.2H3zm8.4-1.2L21 2.5v8.7h-9.6zM3 12.8h7.4V20L3 18.9zm8.4 0H21v8.7l-9.6-1.4z"/></symbol>
   <symbol id="i-mac" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></symbol>
   <symbol id="i-linux" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></symbol>
 </svg>
 
 <header class="top">
   <div class="wrap">
-    <a class="mark" href="#top" aria-label="Panorama Scholarly Group, home">
-      <span class="pair"><img src="images/psg/psg-pdf.svg" alt=""><img src="images/psg/psg-academic-pdf.svg" alt=""></span>
-      <span>PSG<span class="full"> · Panorama Scholarly Group</span></span>
+    <a class="mark" href="#top" aria-label="PSG PDF, home" data-zh-label="PSG PDF 首頁">
+      <img src="images/psg/psg-pdf.svg" alt="" width="32" height="32">
+      <span>PSG PDF</span>
     </a>
-    <nav class="nav" aria-label="Sections">
-      <a href="#highlights" data-zh="特色">Highlights</a>
+    <nav class="nav" aria-label="Page sections" data-zh-label="頁面導覽">
+      <a href="#highlights" data-zh="功能">Features</a>
       <a href="#screens" data-zh="截圖">Screenshots</a>
-      <a href="#download" data-zh="下載">Download</a>
-      <a href="#family" data-zh="產品">Products</a>
+      <a href="#family" data-zh="產品比較">Compare</a>
       <a href="https://github.com/WENSHAO521/psg-pdf/blob/main/docs/README.md" data-zh="文件">Docs</a>
     </nav>
     <div class="tools">
-      <button class="chip" id="lang" type="button" aria-label="切換為中文">中文</button>
-      <button class="chip" id="theme" type="button" aria-label="Switch to the light theme"><svg><use href="#i-sun"/></svg></button>
-      <a class="btn primary sm" href="#download"><span data-zh="下載">Download</span></a>
+      <button class="chip" id="lang" type="button" aria-label="切換為繁體中文" lang="zh-Hant">中文</button>
+      <button class="chip" id="theme" type="button" aria-label="Switch to the light theme"><svg aria-hidden="true"><use href="#i-sun"/></svg></button>
+      <a class="btn" href="#download" data-zh="下載">Download</a>
+      <details class="mobile-nav">
+        <summary class="chip" aria-label="Menu" data-zh-label="選單"><svg aria-hidden="true"><use href="#i-menu"/></svg></summary>
+        <nav aria-label="Page sections" data-zh-label="頁面導覽">
+          <a href="#highlights" data-zh="功能">Features</a>
+          <a href="#screens" data-zh="截圖">Screenshots</a>
+          <a href="#family" data-zh="產品比較">Compare</a>
+          <a href="https://github.com/WENSHAO521/psg-pdf/blob/main/docs/README.md" data-zh="文件">Docs</a>
+        </nav>
+      </details>
     </div>
   </div>
 </header>
 
 <main id="main">
-<section class="hero" id="top">
+<section class="hero" id="top" aria-labelledby="hero-title">
   <div class="wrap">
-    <div class="status"><span><b style="color:var(--gold-ink);font-weight:500">01</b> / PSG PDF · PSG Academic PDF</span><span class="tag" data-zh="開源">Open source</span></div>
-    <h1 data-zh="專業 PDF 工作與<em>學術排版</em>，在你自己的電腦上。">Professional PDF work and <em>scholarly typesetting</em>, on your own computer.</h1>
-    <p class="lede" data-zh="Panorama Scholarly Group 的兩款原生桌面應用程式：日常 PDF 工作台 PSG PDF，以及把已接受稿件排成期刊 PDF 的 PSG Academic PDF。離線、免帳號、開源。">Two native desktop applications from Panorama Scholarly Group: PSG PDF, the everyday PDF workbench, and PSG Academic PDF, which turns accepted manuscripts into journal-ready PDFs. Offline, no account, open source.</p>
-    <div class="cta">
-      <a class="btn primary" href="#download"><svg><use href="#i-download"/></svg><span data-zh="下載">Download</span></a>
-      <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/blob/main/docs/README.md"><svg><use href="#i-book"/></svg><span data-zh="文件">Documentation</span></a>
-      <a class="btn" href="https://github.com/WENSHAO521/psg-pdf"><svg><use href="#i-code"/></svg><span data-zh="在 GitHub 查看">View on GitHub</span></a>
-      <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/issues/new/choose"><svg><use href="#i-help"/></svg><span data-zh="回報問題">Report a problem</span></a>
+    <div>
+      <h1 id="hero-title" data-zh="編輯 PDF，<br>排版期刊文章">Edit PDFs.<br>Typeset articles.</h1>
+      <p class="lede" data-zh="用 PSG PDF 審閱與整理文件。用 PSG Academic PDF 把已接受的稿件排成期刊 PDF。兩款都是在電腦上運作的開源應用程式。">Review and organize documents with PSG PDF. Typeset accepted manuscripts with PSG Academic PDF. Both are open-source desktop apps.</p>
+      <div class="cta">
+        <a class="btn primary" href="#download"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-zh="下載桌面版">Download the apps</span></a>
+        <a class="text-link" href="#family"><span data-zh="比較兩款工具">Compare the apps</span><svg aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+      <p class="platline">Windows · macOS · Linux</p>
     </div>
-    <div class="platline">
-      <span><svg><use href="#i-cpu"/></svg>Windows · macOS · Linux</span>
-      <span><svg><use href="#i-offline"/></svg><span data-zh="完全離線運作">Works fully offline</span></span>
-      <span><svg><use href="#i-code"/></svg>MIT OR Apache-2.0</span>
-    </div>
-
-    <div class="hero-shots">
-      <figure class="shot-card pdf-c">
-        <div class="img"><img src="images/psg/psg-pdf.png" alt="PSG PDF with a sample article open, the All tools panel on the left and bookmarks on the right" width="1440" height="920"></div>
-        <figcaption><span><b>PSG PDF</b> · <span data-zh="閱讀、整理與保護 PDF">Reading, organizing and protecting PDFs</span></span></figcaption>
-      </figure>
-      <figure class="shot-card ac-c">
-        <div class="img"><img src="images/psg/psg-academic-pdf.png" alt="PSG Academic PDF with publication metadata on the left, LaTeX source in the middle and the typeset PDF on the right" width="1440" height="920"></div>
-        <figcaption><span><b>PSG Academic PDF</b> · <span data-zh="以 pdfLaTeX 排版已接受的文章">Typesetting accepted articles with pdfLaTeX</span></span></figcaption>
-      </figure>
-    </div>
+    <figure class="shot-card">
+      <img src="images/psg/psg-pdf.png" alt="A journal article open in PSG PDF, with document tools on the left and bookmarks on the right" data-zh-alt="PSG PDF 開啟期刊文章，左側顯示文件工具，右側顯示書籤" width="1440" height="920" fetchpriority="high">
+      <figcaption><span><strong>PSG PDF</strong> · <span data-zh="文件工具、文章頁面與書籤">Document tools, article and bookmarks</span></span><a href="images/psg/psg-pdf.png" data-zh="查看原尺寸">View full size</a></figcaption>
+    </figure>
   </div>
 </section>
 
 <section id="highlights">
   <div class="wrap">
     <div class="sec-head">
-      <div class="label"><span><b>02</b> / <span data-zh="特色">Highlights</span></span></div>
-      <h2 data-zh="兩款工具，各做好一件事">Two tools, each built for one job</h2>
+      <h2 data-zh="PDF 編輯與學術排版工具">PDF editing and scholarly typesetting</h2>
       <p class="lede" data-zh="兩款是獨立產品，各有安裝程式、更新、設定與解除安裝，彼此不依賴；兩者都安裝時可以互相交接。">They are separate products, each with its own installer, updates, settings and uninstaller. Either works without the other, and they hand work to each other when both are installed.</p>
     </div>
 
-    <div class="prod-row pdf-c" id="psg-pdf">
+    <div class="prod-row" id="psg-pdf">
       <div class="prod-id">
         <img src="images/psg/psg-pdf.svg" alt="">
         <h3>PSG PDF</h3>
@@ -337,16 +274,16 @@ footer .fine { display: flex; justify-content: space-between; gap: 16px; flex-wr
         <p class="note" data-zh="仍在成熟中：編輯既有文字以拉丁文字效果最好；OCR 讀拉丁文字；Word 匯出尚未保留版面。">Still maturing: editing existing text works best on Latin script, OCR reads Latin script, and Word export does not keep the layout yet.</p>
       </div>
       <div class="cards">
-        <div class="card"><span class="n">01</span><h4 data-zh="清晰閱讀">Sharp reading</h4><p data-zh="任何縮放都清晰；連續、單頁與雙頁版面，搜尋、書籤、縮圖與圖層。">Crisp at any zoom; continuous, single and two-up layouts, search, bookmarks, thumbnails and layers.</p></div>
-        <div class="card"><span class="n">02</span><h4 data-zh="批註與討論">Comments in threads</h4><p data-zh="螢光筆、便利貼、圖形、手繪與圖章，每則批註都能回覆。">Highlights, sticky notes, shapes, drawings and stamps, each with its own replies.</p></div>
-        <div class="card"><span class="n">03</span><h4 data-zh="多語言簽名">Signatures in many scripts</h4><p data-zh="拉丁、中文、日文、韓文、阿拉伯文與希伯來文的手寫風格簽名，或憑證簽章。">Typed signatures in Latin, Chinese, Japanese, Korean, Arabic and Hebrew, or a certificate signature.</p></div>
-        <div class="card"><span class="n">04</span><h4 data-zh="頁面整理">Pages like cards</h4><p data-zh="重排、旋轉、插入、刪除與裁切；合併與分割文件。">Reorder, rotate, insert, delete and crop; combine and split documents.</p></div>
-        <div class="card"><span class="n">05</span><h4 data-zh="保護與塗銷">Protect and redact</h4><p data-zh="密碼與權限、塗銷，以及移除隱藏資訊。">Passwords and permissions, redaction, and removal of hidden information.</p></div>
-        <div class="card"><span class="n">06</span><h4 data-zh="轉換與自動化">Convert and automate</h4><p data-zh="匯出圖片、Word、HTML、Markdown；OCR；隨附 <code>pdfcraft-cli</code> 批次處理。">Export to images, Word, HTML and Markdown; OCR; batch work with the bundled <code>pdfcraft-cli</code>.</p></div>
+        <div class="card"><h4 data-zh="閱讀與導覽">Reading and navigation</h4><p data-zh="任何縮放都清晰；連續、單頁與雙頁版面，搜尋、書籤、縮圖與圖層。">Crisp at any zoom; continuous, single and two-up layouts, search, bookmarks, thumbnails and layers.</p></div>
+        <div class="card"><h4 data-zh="批註與討論">Comments in threads</h4><p data-zh="螢光筆、便利貼、圖形、手繪與圖章，每則批註都能回覆。">Highlights, sticky notes, shapes, drawings and stamps, each with its own replies.</p></div>
+        <div class="card"><h4 data-zh="多語言簽名">Signatures in many scripts</h4><p data-zh="拉丁、中文、日文、韓文、阿拉伯文與希伯來文的手寫風格簽名，或憑證簽章。">Typed signatures in Latin, Chinese, Japanese, Korean, Arabic and Hebrew, or a certificate signature.</p></div>
+        <div class="card"><h4 data-zh="頁面整理">Page organization</h4><p data-zh="重排、旋轉、插入、刪除與裁切；合併與分割文件。">Reorder, rotate, insert, delete and crop; combine and split documents.</p></div>
+        <div class="card"><h4 data-zh="保護與塗銷">Protect and redact</h4><p data-zh="密碼與權限、塗銷，以及移除隱藏資訊。">Passwords and permissions, redaction, and removal of hidden information.</p></div>
+        <div class="card"><h4 data-zh="轉換與自動化">Convert and automate</h4><p data-zh="匯出圖片、Word、HTML、Markdown；OCR；隨附 <code>pdfcraft-cli</code> 批次處理。">Export to images, Word, HTML and Markdown; OCR; batch work with the bundled <code>pdfcraft-cli</code>.</p></div>
       </div>
     </div>
 
-    <div class="prod-row ac-c" id="psg-academic-pdf">
+    <div class="prod-row" id="psg-academic-pdf">
       <div class="prod-id">
         <img src="images/psg/psg-academic-pdf.svg" alt="">
         <h3>PSG Academic PDF</h3>
@@ -354,194 +291,146 @@ footer .fine { display: flex; justify-content: space-between; gap: 16px; flex-wr
         <p class="note" data-zh="需要本機 TeX（TeX Live 或 MacTeX）。尚不支援 XeLaTeX、LuaLaTeX 與中日韓稿件。">Needs a local TeX (TeX Live or MacTeX). XeLaTeX, LuaLaTeX and Chinese, Japanese and Korean manuscripts are not supported yet.</p>
       </div>
       <div class="cards">
-        <div class="card"><span class="n">01</span><h4 data-zh="期刊模板">Journal templates</h4><p data-zh="PSG 研究論文（編號引用），或人文社會科學論文（作者-年份與腳註）。">PSG Research Article (numbered) or Humanities and Social Sciences Article (author-year, footnotes).</p></div>
-        <div class="card"><span class="n">02</span><h4 data-zh="匯入稿件">Bring the manuscript</h4><p data-zh="LaTeX 稿件，或 Word 稿件（實驗性，經 Pandoc），連同文獻與圖片。">A LaTeX manuscript, or Word (experimental, through Pandoc), with its bibliography and figures.</p></div>
-        <div class="card"><span class="n">03</span><h4 data-zh="出版資訊檢查">Checked metadata</h4><p data-zh="DOI、ISSN、ORCID 檢查碼與日期，邊打邊檢查。">DOI, ISSN and ORCID check digits and dates, checked as you type.</p></div>
-        <div class="card"><span class="n">04</span><h4 data-zh="參考文獻檢查">Clean references</h4><p data-zh="BibLaTeX 與 Biber；找出重複鍵、缺欄位、無條目的引用與未被引用的條目。">BibLaTeX with Biber; finds duplicate keys, missing fields, citations without entries and unused entries.</p></div>
-        <div class="card"><span class="n">05</span><h4 data-zh="安全排版">Safe typesetting</h4><p data-zh="以 latexmk 執行 pdfLaTeX，沙箱中、關閉 shell escape、可取消。">pdfLaTeX through latexmk, sandboxed, shell escape off, cancellable.</p></div>
-        <div class="card"><span class="n">06</span><h4 data-zh="六種介面語言">Six interface languages</h4><p data-zh="英文、簡體中文、繁體中文、日文、韓文與德文。">English, Simplified Chinese, Traditional Chinese, Japanese, Korean and German.</p></div>
+        <div class="card"><h4 data-zh="期刊模板">Journal templates</h4><p data-zh="PSG 研究論文（編號引用），或人文社會科學論文（作者-年份與腳註）。">PSG Research Article (numbered) or Humanities and Social Sciences Article (author-year, footnotes).</p></div>
+        <div class="card"><h4 data-zh="匯入稿件">Bring the manuscript</h4><p data-zh="LaTeX 稿件，或 Word 稿件（實驗性，經 Pandoc），連同文獻與圖片。">A LaTeX manuscript, or Word (experimental, through Pandoc), with its bibliography and figures.</p></div>
+        <div class="card"><h4 data-zh="出版資訊檢查">Checked metadata</h4><p data-zh="輸入時檢查 DOI 格式、ISSN 與 ORCID 檢查碼，以及出版日期。">Validate DOI format, ISSN and ORCID check digits, and publication dates as you type.</p></div>
+        <div class="card"><h4 data-zh="參考文獻檢查">Clean references</h4><p data-zh="BibLaTeX 與 Biber；找出重複鍵、缺欄位、無條目的引用與未被引用的條目。">BibLaTeX with Biber; finds duplicate keys, missing fields, citations without entries and unused entries.</p></div>
+        <div class="card"><h4 data-zh="安全排版">Safe typesetting</h4><p data-zh="以 latexmk 執行 pdfLaTeX，沙箱中、關閉 shell escape、可取消。">pdfLaTeX through latexmk, sandboxed, shell escape off, cancellable.</p></div>
+        <div class="card"><h4 data-zh="多語介面">Multilingual interface</h4><p data-zh="英文、簡體中文、繁體中文、日文、韓文與德文。">English, Simplified Chinese, Traditional Chinese, Japanese, Korean and German.</p></div>
       </div>
     </div>
   </div>
 </section>
 
 <section id="screens">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="label"><span><b>03</b> / <span data-zh="截圖">Screenshots</span></span></div>
-      <h2 data-zh="實際的樣子">What they look like</h2>
+  <div class="wrap screen-layout">
+    <div class="screen-copy">
+      <h2 data-zh="從稿件到期刊校樣">From manuscript to journal proof</h2>
+      <p class="lede" data-zh="在 PSG Academic PDF 裡，出版資訊、LaTeX 原始碼與排版結果可以並排查看。">PSG Academic PDF puts publication metadata, LaTeX source and the typeset PDF side by side.</p>
+      <ul>
+        <li data-zh="輸入時檢查 DOI 和出版日期，驗證 ISSN 與 ORCID 檢查碼。">Check DOI format, publication dates and ISSN and ORCID check digits as you type.</li>
+        <li data-zh="用 pdfLaTeX 編譯校樣，再把完成的 PDF 交給 PSG PDF 審閱。">Compile a proof with pdfLaTeX, then open the finished PDF in PSG PDF for review.</li>
+      </ul>
     </div>
-    <div class="screens">
-      <figure class="shot-card pdf-c">
-        <div class="img"><img src="images/psg/psg-pdf.png" alt="PSG PDF showing a sample article" loading="lazy" width="1440" height="920"></div>
-        <figcaption><span><b>01</b> · <span data-zh="PSG PDF：所有工具與書籤">PSG PDF: All tools and bookmarks</span></span><a href="images/psg/psg-pdf.png" data-zh="原尺寸">Full size</a></figcaption>
-      </figure>
-      <figure class="shot-card ac-c">
-        <div class="img"><img src="images/psg/psg-academic-pdf.png" alt="PSG Academic PDF showing source and PDF side by side" loading="lazy" width="1440" height="920"></div>
-        <figcaption><span><b>02</b> · <span data-zh="Academic：原始碼與 PDF 並排">Academic: source and PDF side by side</span></span><a href="images/psg/psg-academic-pdf.png" data-zh="原尺寸">Full size</a></figcaption>
-      </figure>
-      <figure class="shot-card ac-c check-wrap">
-        <div class="check" role="img" aria-label="Illustration of PSG Academic PDF's metadata checks">
-          <h4 data-zh="出版資訊檢查（示意）">Metadata checks (illustration)</h4>
-          <dl>
-            <dt>DOI</dt><dd><code>10.0000/psg.example.0001</code><span class="ok" data-zh="格式正確">Well formed</span></dd>
-            <dt>ISSN</dt><dd><code>0000-0000</code><span class="ok" data-zh="檢查碼正確">Check digit OK</span></dd>
-            <dt>ORCID</dt><dd><code>0000-0002-1825-0098</code><span class="ok" data-zh="檢查碼正確">Check digit OK</span></dd>
-            <dt data-zh="接受">Accepted</dt><dd><code>2026-02-30</code><span class="warn" data-zh="不是有效日期">Not a real date</span></dd>
-          </dl>
-        </div>
-        <figcaption><span><b>03</b> · <span data-zh="Academic：邊打邊檢查">Academic: checked as you type</span></span></figcaption>
-      </figure>
-    </div>
+    <figure class="shot-card">
+      <img src="images/psg/psg-academic-pdf.png" alt="PSG Academic PDF showing a journal article's metadata, LaTeX source and typeset preview" data-zh-alt="PSG Academic PDF 並排顯示期刊文章的出版資訊、LaTeX 原始碼與排版預覽" loading="lazy" width="1440" height="920">
+      <figcaption><span><strong>PSG Academic PDF</strong> · <span data-zh="期刊文章的工作區">Journal article workspace</span></span><a href="images/psg/psg-academic-pdf.png" data-zh="查看原尺寸">View full size</a></figcaption>
+    </figure>
   </div>
 </section>
 
 <section id="download">
   <div class="wrap">
     <div class="sec-head">
-      <div class="label"><span><b>04</b> / <span data-zh="下載">Download</span></span></div>
-      <h2 data-zh="下載 PSG PDF 與 PSG Academic PDF">Get PSG PDF and PSG Academic PDF</h2>
-      <p class="lede" data-zh="每個版本同時包含兩款產品，各自一節，附 SHA-256 校驗碼。正式版標為 Latest；測試版標為 Pre-release，應用程式名稱旁也會顯示 Beta。">Every release has both products, each in its own section, with SHA-256 checksums. Stable releases are marked Latest; betas are marked Pre-release, and the apps show Beta beside their name.</p>
+      <h2 data-zh="下載桌面版">Download the apps</h2>
+      <p class="lede" data-zh="依作業系統選擇安裝檔。兩款工具可各自安裝，GitHub 發布頁提供 SHA-256 校驗碼。">Choose an installer for your operating system. The apps install separately, with SHA-256 checksums on the GitHub release page.</p>
     </div>
-
-    <div class="dl-top">
-      <div class="opt rec">
-        <span class="rib" data-zh="建議">Recommended</span>
-        <h3><span data-zh="正式版">Stable release</span> <code id="dl-version" hidden></code></h3>
-        <p data-zh="適合日常工作。三個平台的兩款產品都建置並測試成功才會發布。">For everyday work. Published only when both products built and passed their install tests on every platform.</p>
-        <ul>
-          <li data-zh="Windows 安裝程式（MSI）與免安裝 .zip">Windows installers (MSI) and portable .zip</li>
-          <li data-zh="macOS 通用版 DMG（Apple 晶片與 Intel）">macOS universal DMG (Apple silicon and Intel)</li>
-          <li data-zh="Linux .deb、.rpm、.AppImage 與 .tar.gz">Linux .deb, .rpm, .AppImage and .tar.gz</li>
-        </ul>
-        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest"><svg><use href="#i-download"/></svg><span data-zh="前往最新正式版">Get the latest release</span></a>
-      </div>
-      <div class="opt">
-        <h3 data-zh="測試版">Beta</h3>
-        <p data-zh="搶先試用下一版。每次合併到 beta 分支都會發布，可能缺少某個平台，缺少時會在標題寫明。">Try the next version early. A beta is published from every change to the beta branch; if a platform is missing, its title says so.</p>
-        <ul>
-          <li data-zh="產品相同，檔名帶 <code>-beta.N</code>">Same products, same file names with <code>-beta.N</code></li>
-          <li data-zh="歡迎回報問題">Problem reports are very welcome</li>
-        </ul>
-        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases"><svg><use href="#i-list"/></svg><span data-zh="所有版本與測試版">All releases and betas</span></a>
-      </div>
+    <div class="channel-line">
+      <h3><span data-zh="正式版">Stable release</span> <code id="dl-version" hidden></code></h3>
+      <a href="https://github.com/WENSHAO521/psg-pdf/releases" data-zh="查看所有版本（含 Beta）">View all releases, including betas</a>
     </div>
 
     <div class="platforms">
       <div class="plat" data-os="windows">
-        <div class="os"><svg><use href="#i-win"/></svg><b>Windows</b><span class="here" data-zh="你的系統">Your system</span></div>
+        <div class="os"><svg aria-hidden="true"><use href="#i-win"/></svg><h4>Windows</h4><span class="here" data-zh="你的系統">Your system</span></div>
         <p class="req" data-zh="Windows 10 與 11，x64">Windows 10 and 11, x64</p>
-        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-windows-x64.msi"><svg><use href="#i-download"/></svg>PSG PDF · MSI</a>
-        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-windows-x64.msi"><svg><use href="#i-download"/></svg>PSG Academic PDF · MSI</a>
-        <ul class="alts">
-          <li><span data-zh="安裝程式">Installer</span><span class="fmt"><code>.msi</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-windows-x64.msi">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-windows-x64.msi">Academic</a></span></li>
-          <li><span data-zh="免安裝">Portable</span><span class="fmt"><code>.zip</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-windows-x64-portable.zip">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-windows-x64-portable.zip">Academic</a></span></li>
-        </ul>
+        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-windows-x64.msi"><svg aria-hidden="true"><use href="#i-download"/></svg>PSG PDF · MSI</a>
+        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-windows-x64.msi"><svg aria-hidden="true"><use href="#i-download"/></svg>PSG Academic PDF · MSI</a>
+        <details class="alts">
+          <summary data-zh="其他安裝格式">Other package formats</summary>
+          <ul>
+            <li><span data-zh="免安裝">Portable</span><span class="fmt"><code>.zip</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-windows-x64-portable.zip" aria-label="PSG PDF · Windows portable ZIP" data-zh-label="PSG PDF · Windows 免安裝 ZIP">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-windows-x64-portable.zip" aria-label="PSG Academic PDF · Windows portable ZIP" data-zh-label="PSG Academic PDF · Windows 免安裝 ZIP">Academic</a></span></li>
+          </ul>
+        </details>
       </div>
       <div class="plat" data-os="mac">
-        <div class="os"><svg><use href="#i-mac"/></svg><b>macOS</b><span class="here" data-zh="你的系統">Your system</span></div>
+        <div class="os"><svg aria-hidden="true"><use href="#i-mac"/></svg><h4>macOS</h4><span class="here" data-zh="你的系統">Your system</span></div>
         <p class="req" data-zh="macOS 11 或更新，Apple 晶片與 Intel">macOS 11 or later, Apple silicon and Intel</p>
-        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-macos-universal.dmg"><svg><use href="#i-download"/></svg>PSG PDF · DMG</a>
-        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-macos-universal.dmg"><svg><use href="#i-download"/></svg>PSG Academic PDF · DMG</a>
-        <ul class="alts">
-          <li><span data-zh="通用版">Universal</span><span class="fmt"><code>.dmg</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-macos-universal.dmg">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-macos-universal.dmg">Academic</a></span></li>
-        </ul>
+        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-macos-universal.dmg"><svg aria-hidden="true"><use href="#i-download"/></svg>PSG PDF · DMG</a>
+        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-macos-universal.dmg"><svg aria-hidden="true"><use href="#i-download"/></svg>PSG Academic PDF · DMG</a>
       </div>
       <div class="plat" data-os="linux">
-        <div class="os"><svg><use href="#i-linux"/></svg><b>Linux</b><span class="here" data-zh="你的系統">Your system</span></div>
+        <div class="os"><svg aria-hidden="true"><use href="#i-linux"/></svg><h4>Linux</h4><span class="here" data-zh="你的系統">Your system</span></div>
         <p class="req">x86_64</p>
-        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.AppImage"><svg><use href="#i-download"/></svg>PSG PDF · AppImage</a>
-        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.AppImage"><svg><use href="#i-download"/></svg>PSG Academic PDF · AppImage</a>
-        <ul class="alts">
-          <li><span>Debian, Ubuntu</span><span class="fmt"><code>.deb</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.deb">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.deb">Academic</a></span></li>
-          <li><span>Fedora, openSUSE</span><span class="fmt"><code>.rpm</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.rpm">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.rpm">Academic</a></span></li>
-          <li><span data-zh="任何發行版">Any distribution</span><span class="fmt"><code>.tar.gz</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.tar.gz">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.tar.gz">Academic</a></span></li>
-        </ul>
+        <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.AppImage"><svg aria-hidden="true"><use href="#i-download"/></svg>PSG PDF · AppImage</a>
+        <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.AppImage"><svg aria-hidden="true"><use href="#i-download"/></svg>PSG Academic PDF · AppImage</a>
+        <details class="alts">
+          <summary data-zh="其他安裝格式">Other package formats</summary>
+          <ul>
+            <li><span>Debian, Ubuntu</span><span class="fmt"><code>.deb</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.deb" aria-label="PSG PDF · Debian and Ubuntu DEB" data-zh-label="PSG PDF · Debian 與 Ubuntu DEB">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.deb" aria-label="PSG Academic PDF · Debian and Ubuntu DEB" data-zh-label="PSG Academic PDF · Debian 與 Ubuntu DEB">Academic</a></span></li>
+            <li><span>Fedora, openSUSE</span><span class="fmt"><code>.rpm</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.rpm" aria-label="PSG PDF · Fedora and openSUSE RPM" data-zh-label="PSG PDF · Fedora 與 openSUSE RPM">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.rpm" aria-label="PSG Academic PDF · Fedora and openSUSE RPM" data-zh-label="PSG Academic PDF · Fedora 與 openSUSE RPM">Academic</a></span></li>
+            <li><span data-zh="任何發行版">Any distribution</span><span class="fmt"><code>.tar.gz</code> <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-pdf|-linux-x86_64.tar.gz" aria-label="PSG PDF · Linux compressed archive" data-zh-label="PSG PDF · Linux 壓縮檔">PSG PDF</a> · <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-asset="psg-academic-pdf|-linux-x86_64.tar.gz" aria-label="PSG Academic PDF · Linux compressed archive" data-zh-label="PSG Academic PDF · Linux 壓縮檔">Academic</a></span></li>
+          </ul>
+        </details>
       </div>
     </div>
 
     <div class="dl-foot">
-      <span data-zh="從舊的 PSG PDF Suite（0.18）升級？新的 PSG PDF 會取代它並保留你的設定。">Upgrading from the old PSG PDF Suite (0.18)? The new PSG PDF replaces it and keeps your settings.</span>
-      <span class="btns">
-        <a class="btn sm" href="https://github.com/WENSHAO521/psg-pdf/blob/main/CHANGELOG.md" data-zh="更新紀錄">Changelog</a>
-        <a class="btn sm" href="https://github.com/WENSHAO521/psg-pdf/blob/main/docs/products.md" data-zh="安裝與遷移">Installing and migrating</a>
-      </span>
+      <span data-zh="從舊版 PSG PDF Suite 升級？">Upgrading from PSG PDF Suite?</span>
+      <a href="https://github.com/WENSHAO521/psg-pdf/blob/main/docs/products.md" data-zh="安裝與遷移">Installing and migrating</a>
+      <a href="https://github.com/WENSHAO521/psg-pdf/releases/latest" data-zh="正式版說明與校驗碼">Stable release notes and checksums</a>
     </div>
 
-    <div class="build">
-      <h3 data-zh="從原始碼建置">Build from source</h3>
-      <div class="tabs" role="tablist" aria-label="Build instructions">
+    <details class="build">
+      <summary data-zh="從原始碼建置">Build from source</summary>
+      <div class="tabs" role="tablist" aria-label="Build instructions" data-zh-label="建置說明">
         <button role="tab" aria-selected="true" aria-controls="b-pdf" id="t-pdf">PSG PDF</button>
-        <button role="tab" aria-selected="false" aria-controls="b-ac" id="t-ac">PSG Academic PDF</button>
-        <button role="tab" aria-selected="false" aria-controls="b-test" id="t-test" data-zh="測試">Tests</button>
+        <button role="tab" aria-selected="false" tabindex="-1" aria-controls="b-ac" id="t-ac">PSG Academic PDF</button>
+        <button role="tab" aria-selected="false" tabindex="-1" aria-controls="b-test" id="t-test" data-zh="測試">Tests</button>
       </div>
-      <pre role="tabpanel" id="b-pdf" aria-labelledby="t-pdf"><span class="c"># Rust 1.95 or newer</span>
+      <pre role="tabpanel" tabindex="0" id="b-pdf" aria-labelledby="t-pdf"><span class="c"># Rust 1.95 or newer</span>
 <span class="p">$ </span>git clone https://github.com/WENSHAO521/psg-pdf.git
 <span class="p">$ </span>cd psg-pdf
 <span class="p">$ </span>cargo build --release -p psg-pdf
 <span class="p">$ </span>./target/release/psg-pdf sample.pdf</pre>
-      <pre role="tabpanel" id="b-ac" aria-labelledby="t-ac" hidden><span class="c"># Needs TeX Live or MacTeX with latexmk and Biber to typeset</span>
+      <pre role="tabpanel" tabindex="0" id="b-ac" aria-labelledby="t-ac" hidden><span class="c"># Needs TeX Live or MacTeX with latexmk and Biber to typeset</span>
 <span class="p">$ </span>git clone https://github.com/WENSHAO521/psg-pdf.git
 <span class="p">$ </span>cd psg-pdf
 <span class="p">$ </span>cargo build --release -p psg-academic-pdf
 <span class="p">$ </span>./target/release/psg-academic-pdf</pre>
-      <pre role="tabpanel" id="b-test" aria-labelledby="t-test" hidden><span class="p">$ </span>cargo test -p psg-academic-pdf
+      <pre role="tabpanel" tabindex="0" id="b-test" aria-labelledby="t-test" hidden><span class="p">$ </span>cargo test -p psg-academic-pdf
 <span class="p">$ </span>cargo test -p psg-pdf
 <span class="p">$ </span>cargo xtask products check   <span class="c"># both products' identities agree</span></pre>
-    </div>
+    </details>
   </div>
 </section>
 
 <section id="family">
   <div class="wrap">
     <div class="sec-head">
-      <div class="label"><span><b>05</b> / <span data-zh="產品家族">The family</span></span></div>
-      <h2 data-zh="我需要哪一款？">Which one do I need?</h2>
+      <h2 data-zh="我需要哪一款？">Which app do I need?</h2>
     </div>
     <div class="family">
-      <a class="fam pdf-c" href="#psg-pdf">
-        <div class="thumb"><img src="images/psg/psg-pdf.png" alt="" loading="lazy"></div>
-        <div class="body">
-          <img src="images/psg/psg-pdf.svg" alt="">
-          <span class="cat" data-zh="PDF 工作台">PDF workbench</span>
-          <h3>PSG PDF</h3>
-          <p data-zh="從既有 PDF 開始：批註、填寫、簽署、重整或保護後，仍是同一份 PDF。">Starts from an existing PDF and leaves it commented, filled, signed, reorganized or protected.</p>
-          <span class="go"><span data-zh="了解">Explore</span><svg><use href="#i-arrow"/></svg></span>
-        </div>
-      </a>
-      <a class="fam ac-c" href="#psg-academic-pdf">
-        <div class="thumb"><img src="images/psg/psg-academic-pdf.png" alt="" loading="lazy"></div>
-        <div class="body">
-          <img src="images/psg/psg-academic-pdf.svg" alt="">
-          <span class="cat" data-zh="學術排版">Scholarly typesetting</span>
-          <h3>PSG Academic PDF</h3>
-          <p data-zh="從稿件與期刊模板開始，產出一份全新排版、含出版資訊的文章 PDF。">Starts from a manuscript and a journal template and makes a new, typeset article PDF with its metadata.</p>
-          <span class="go"><span data-zh="了解">Explore</span><svg><use href="#i-arrow"/></svg></span>
-        </div>
-      </a>
+      <article class="fam">
+        <h3><a href="#psg-pdf">PSG PDF</a></h3>
+        <dl>
+          <div><dt data-zh="適用工作">Use it to</dt><dd data-zh="審閱、簽署或整理既有 PDF。">Review, sign or reorganize an existing PDF.</dd></div>
+          <div><dt data-zh="開啟">Opens</dt><dd><code>.pdf</code></dd></div>
+          <div><dt data-zh="主要工具">Tools</dt><dd data-zh="批註、表單、簽名、頁面整理、塗銷、OCR 與匯出。">Comments, forms, signatures, page organizer, redaction, OCR and export.</dd></div>
+        </dl>
+      </article>
+      <article class="fam">
+        <h3><a href="#psg-academic-pdf">PSG Academic PDF</a></h3>
+        <dl>
+          <div><dt data-zh="適用工作">Use it to</dt><dd data-zh="用稿件與期刊模板製作新的文章 PDF。">Typeset a new article PDF from a manuscript and a journal template.</dd></div>
+          <div><dt data-zh="開啟">Opens</dt><dd data-zh="<code>.tex</code>、<code>.docx</code> 稿件與專案"><code>.tex</code> and <code>.docx</code> manuscripts, and saved projects</dd></div>
+          <div><dt data-zh="主要工具">Tools</dt><dd data-zh="模板、出版資訊、文獻檢查、原始碼編輯器與 pdfLaTeX 預覽。">Templates, metadata, bibliography checks, source editor and pdfLaTeX preview.</dd></div>
+        </dl>
+      </article>
     </div>
-    <div class="table-scroll">
-      <table>
-        <thead><tr><th scope="col"></th><th scope="col"><span class="dot" style="background:#4472c4"></span>PSG PDF</th><th scope="col"><span class="dot" style="background:#9a55c0"></span>PSG Academic PDF</th></tr></thead>
-        <tbody>
-          <tr><th scope="row" data-zh="開啟">Opens</th><td><code>.pdf</code></td><td data-zh="<code>.tex</code>、<code>.docx</code> 稿件與專案"><code>.tex</code> and <code>.docx</code> manuscripts, projects</td></tr>
-          <tr><th scope="row" data-zh="主要工具">Main tools</th><td data-zh="檢視器、批註、表單、簽名、頁面整理、塗銷、OCR、匯出">Viewer, comments, forms, signatures, page organizer, redaction, OCR, export</td><td data-zh="模板、出版資訊表單、文獻檢查、原始碼編輯器、pdfLaTeX 預覽">Templates, metadata form, bibliography checks, source editor, pdfLaTeX preview</td></tr>
-          <tr><th scope="row" data-zh="需要">Needs</th><td data-zh="不需要其他軟體">Nothing else</td><td data-zh="本機 TeX（pdfLaTeX、latexmk、Biber）">A local TeX installation (pdfLaTeX, latexmk, Biber)</td></tr>
-          <tr><th scope="row" data-zh="一起使用">Together</th><td colspan="2" data-zh="兩者都安裝時，PSG Academic PDF 的「在 PSG PDF 中開啟」會把完成的文章交給 PSG PDF 審閱。">When both are installed, PSG Academic PDF's Open in PSG PDF hands the finished article to PSG PDF for review.</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <p class="together" data-zh="同時安裝兩款工具時，在 PSG Academic PDF 選擇「在 PSG PDF 中開啟」，即可交接完成的文章。">With both apps installed, choose Open in PSG PDF from PSG Academic PDF to hand off a finished article for review.</p>
   </div>
 </section>
 
 <section class="band">
   <div class="wrap">
-    <div class="label"><span><b>06</b> / <span data-zh="參與">Get involved</span></span></div>
-    <h2 data-zh="你的文件留在你的電腦上，原始碼留在公開的地方。">Your documents stay on your computer. The source stays in the open.</h2>
-    <p class="lede" data-zh="不需帳號、不追蹤、只在你要求時檢查更新。發現問題或有想法，歡迎告訴我們。">No account, no tracking, and no update checks unless you ask. Found a problem or have an idea? Tell us.</p>
+    <div>
+      <h2 data-zh="參與 PSG PDF">Contribute to PSG PDF</h2>
+      <p class="lede" data-zh="歡迎在 GitHub 回報問題、提出改進建議或參與開發。">Report an issue, suggest an improvement or contribute on GitHub.</p>
+    </div>
     <div class="cta">
-      <a class="btn primary" href="https://github.com/WENSHAO521/psg-pdf/issues/new/choose"><svg><use href="#i-help"/></svg><span data-zh="回報問題或建議">Report a problem or idea</span></a>
-      <a class="btn" href="https://github.com/WENSHAO521/psg-pdf"><svg><use href="#i-git"/></svg><span data-zh="參與開發">Contribute on GitHub</span></a>
+      <a class="btn" href="https://github.com/WENSHAO521/psg-pdf/issues/new/choose" data-zh="回報問題">Report an issue</a>
+      <a class="text-link" href="https://github.com/WENSHAO521/psg-pdf" data-zh="查看原始碼">Browse the source</a>
     </div>
   </div>
 </section>
@@ -556,87 +445,142 @@ footer .fine { display: flex; justify-content: space-between; gap: 16px; flex-wr
       </div>
       <div><h4 data-zh="產品">Products</h4><ul><li><a href="#psg-pdf">PSG PDF</a></li><li><a href="#psg-academic-pdf">PSG Academic PDF</a></li><li><a href="https://github.com/WENSHAO521/psg-pdf/releases" data-zh="所有版本">Releases</a></li><li><a href="https://github.com/WENSHAO521/psg-pdf/blob/main/CHANGELOG.md" data-zh="更新紀錄">Changelog</a></li></ul></div>
       <div><h4 data-zh="資源">Resources</h4><ul><li><a href="https://github.com/WENSHAO521/psg-pdf/blob/main/docs/README.md" data-zh="文件中心">Documentation</a></li><li><a href="https://github.com/WENSHAO521/psg-pdf/blob/main/docs/academic-guide.md" data-zh="Academic 指南">Academic guide</a></li><li><a href="https://github.com/WENSHAO521/psg-pdf/blob/main/docs/building.md" data-zh="從原始碼建置">Building</a></li><li><a href="https://github.com/WENSHAO521/psg-pdf/blob/main/docs/brand.md" data-zh="品牌規範">Brand guide</a></li></ul></div>
-      <div><h4 data-zh="社群">Community</h4><ul><li><a href="https://github.com/WENSHAO521/psg-pdf">GitHub</a></li><li><a href="https://github.com/WENSHAO521/psg-pdf/issues" data-zh="問題回報">Issues</a></li><li><a href="https://github.com/WENSHAO521/psg-pdf/blob/main/ATTRIBUTION.md" data-zh="資產授權">Asset licences</a></li><li><a href="https://github.com/storytold/pdfcraft">PdfCraft</a></li></ul></div>
+      <div><h4 data-zh="社群">Community</h4><ul><li><a href="https://github.com/WENSHAO521/psg-pdf">GitHub</a></li><li><a href="https://github.com/WENSHAO521/psg-pdf/issues" data-zh="問題回報">Issues</a></li><li><a href="https://github.com/WENSHAO521/psg-pdf/blob/main/ATTRIBUTION.md" data-zh="資產授權">Asset licences</a></li><li><a href="https://panorama-sg.com/" data-zh="PSG 官網">Panorama Scholarly Group</a></li></ul></div>
     </div>
     <div class="fine"><span>© Panorama Scholarly Group · MIT OR Apache-2.0</span><span data-zh="本網站不使用 Cookie、不追蹤訪客；字體由 Google Fonts 提供。">This site sets no cookies and does no tracking. Fonts are served by Google Fonts.</span></div>
   </div>
 </footer>
 
 <script>
-(function () {
-  var root = document.documentElement;
-  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
-  function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+(() => {
+  const root = document.documentElement;
+  const load = key => {
+    try { return localStorage.getItem(key); } catch { return null; }
+  };
+  const save = (key, value) => {
+    try { localStorage.setItem(key, value); } catch { /* Storage is optional. */ }
+  };
 
-  // Theme: dark by default.
-  var themeBtn = document.getElementById('theme');
+  const themeButton = document.getElementById('theme');
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  const themeIcon = themeButton.querySelector('use');
   function paintTheme() {
-    var dark = root.getAttribute('data-theme') !== 'light';
-    themeBtn.innerHTML = '<svg><use href="#i-' + (dark ? 'sun' : 'moon') + '"/></svg>';
-    themeBtn.setAttribute('aria-label', dark ? 'Switch to the light theme' : 'Switch to the dark theme');
+    const dark = root.dataset.theme !== 'light';
+    const chinese = root.lang === 'zh-Hant';
+    themeIcon.setAttribute('href', dark ? '#i-sun' : '#i-moon');
+    themeButton.setAttribute('aria-label', chinese
+      ? (dark ? '切換為淺色主題' : '切換為深色主題')
+      : (dark ? 'Switch to the light theme' : 'Switch to the dark theme'));
+    themeColor.content = getComputedStyle(root).getPropertyValue('--paper').trim();
   }
-  var savedTheme = load('psg-theme');
-  if (savedTheme === 'light' || savedTheme === 'dark') root.setAttribute('data-theme', savedTheme);
-  paintTheme();
-  themeBtn.addEventListener('click', function () {
-    var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    root.setAttribute('data-theme', next); save('psg-theme', next); paintTheme();
+  const savedTheme = load('psg-theme');
+  if (savedTheme === 'light' || savedTheme === 'dark') root.dataset.theme = savedTheme;
+  themeButton.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+    save('psg-theme', root.dataset.theme);
+    paintTheme();
   });
 
-  // Language: English is in the markup, Traditional Chinese in data-zh.
-  var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-zh]'));
-  nodes.forEach(function (n) { n.setAttribute('data-en', n.innerHTML); });
-  var langBtn = document.getElementById('lang');
-  function setLang(l) {
-    nodes.forEach(function (n) { n.innerHTML = n.getAttribute(l === 'zh' ? 'data-zh' : 'data-en'); });
-    root.lang = l === 'zh' ? 'zh-Hant' : 'en';
-    langBtn.textContent = l === 'zh' ? 'EN' : '中文';
-    langBtn.setAttribute('aria-label', l === 'zh' ? 'Switch to English' : '切換為中文');
-    save('psg-lang', l);
+  // Translations come from the page markup, including trusted inline tags.
+  const copy = Array.from(document.querySelectorAll('[data-zh]'), el => [el, el.innerHTML, el.dataset.zh]);
+  const attributes = ['aria-label', 'alt'].flatMap((name) => {
+    const suffix = name === 'aria-label' ? 'label' : name;
+    return Array.from(document.querySelectorAll('[data-zh-' + suffix + ']'), el =>
+      [el, name, el.getAttribute(name), el.getAttribute('data-zh-' + suffix)]);
+  });
+  const languageButton = document.getElementById('lang');
+  function setLanguage(chinese) {
+    root.lang = chinese ? 'zh-Hant' : 'en';
+    for (const [el, en, zh] of copy) el.innerHTML = chinese ? zh : en;
+    for (const [el, name, en, zh] of attributes) el.setAttribute(name, chinese ? zh : en);
+    languageButton.textContent = chinese ? 'EN' : '中文';
+    languageButton.lang = chinese ? 'en' : 'zh-Hant';
+    languageButton.setAttribute('aria-label', chinese ? 'Switch to English' : '切換為繁體中文');
+    paintTheme();
   }
-  var savedLang = load('psg-lang');
-  if (savedLang === 'zh' || (!savedLang && /^zh/i.test(navigator.language || ''))) setLang('zh');
-  langBtn.addEventListener('click', function () { setLang(root.lang === 'en' ? 'zh' : 'en'); });
+  const savedLanguage = load('psg-lang');
+  setLanguage(savedLanguage === 'zh' || (!savedLanguage && /^zh/i.test(navigator.language)));
+  languageButton.addEventListener('click', () => {
+    setLanguage(root.lang === 'en');
+    save('psg-lang', root.lang === 'en' ? 'en' : 'zh');
+  });
 
-  // Build tabs.
-  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
-  tabs.forEach(function (t) {
-    t.addEventListener('click', function () {
-      tabs.forEach(function (o) {
-        var on = o === t;
-        o.setAttribute('aria-selected', on ? 'true' : 'false');
-        document.getElementById(o.getAttribute('aria-controls')).hidden = !on;
-      });
+  const mobileMenu = document.querySelector('.mobile-nav');
+  mobileMenu.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileMenu.open = false;
+      const section = document.querySelector(link.hash);
+      section.tabIndex = -1;
+      section.focus({ preventScroll: true });
+    });
+  });
+  mobileMenu.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && mobileMenu.open) {
+      mobileMenu.open = false;
+      mobileMenu.querySelector('summary').focus();
+    }
+  });
+
+  const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+  function selectTab(tab) {
+    for (const other of tabs) {
+      const selected = other === tab;
+      other.setAttribute('aria-selected', String(selected));
+      other.tabIndex = selected ? 0 : -1;
+      document.getElementById(other.getAttribute('aria-controls')).hidden = !selected;
+    }
+  }
+  tabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => selectTab(tab));
+    tab.addEventListener('keydown', event => {
+      let next;
+      switch (event.key) {
+        case 'ArrowLeft': next = (index + tabs.length - 1) % tabs.length; break;
+        case 'ArrowRight': next = (index + 1) % tabs.length; break;
+        case 'Home': next = 0; break;
+        case 'End': next = tabs.length - 1; break;
+        default: return;
+      }
+      event.preventDefault();
+      selectTab(tabs[next]);
+      tabs[next].focus();
     });
   });
 
-  // Download buttons go straight to the file of the latest stable release. The names carry the
-  // version (psg-pdf-0.19.0-windows-x64.msi), so ask GitHub which files the latest release has;
-  // if it can't answer (offline, rate limit), each link keeps the release page it already has.
-  var assetLinks = Array.prototype.slice.call(document.querySelectorAll('a[data-asset]'));
-  function esc(t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-  if (assetLinks.length && window.fetch) {
+  // Keep the release page as a fallback when GitHub's API or an asset is unavailable.
+  if (window.fetch) {
     fetch('https://api.github.com/repos/WENSHAO521/psg-pdf/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
-      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(function (rel) {
-        var assets = (rel && rel.assets) || [];
-        var prefix = 'https://github.com/WENSHAO521/psg-pdf/releases/download/';
-        assetLinks.forEach(function (a) {
-          var parts = a.getAttribute('data-asset').split('|');
-          var want = new RegExp('^' + esc(parts[0]) + '-[0-9][^/]*' + esc(parts[1]) + '$');
-          var hit = assets.filter(function (x) { return want.test(x.name) && String(x.browser_download_url).indexOf(prefix) === 0; })[0];
-          if (hit) { a.href = hit.browser_download_url; a.setAttribute('download', ''); a.title = hit.name; }
+      .then(response => response.ok ? response.json() : null)
+      .then(release => {
+        if (!release || release.draft || release.prerelease || !Array.isArray(release.assets)) return;
+        const tag = release.tag_name;
+        if (!/^v\d+\.\d+\.\d+$/.test(tag)) return;
+        const version = tag.slice(1);
+        const assets = new Map(release.assets.map(asset => [asset.name, asset.browser_download_url]));
+        const prefix = 'https://github.com/WENSHAO521/psg-pdf/releases/download/' + tag + '/';
+        document.querySelectorAll('a[data-asset]').forEach(link => {
+          const [product, suffix] = link.dataset.asset.split('|');
+          const filename = product + '-' + version + suffix;
+          if (assets.get(filename) === prefix + filename) link.href = prefix + filename;
         });
-        var tag = document.getElementById('dl-version');
-        if (tag && rel.tag_name) { tag.textContent = rel.tag_name; tag.hidden = false; }
+        const versionLabel = document.getElementById('dl-version');
+        versionLabel.textContent = tag;
+        versionLabel.hidden = false;
       })
-      .catch(function () {});
+      .catch(() => { /* Existing release links are still usable. */ });
   }
 
-  // Mark the visitor's platform.
-  var ua = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '';
-  var os = /win/i.test(ua) ? 'windows' : /mac/i.test(ua) ? 'mac' : (/linux|x11/i.test(ua) && !/android/i.test(navigator.userAgent)) ? 'linux' : '';
-  if (os) { var card = document.querySelector('.plat[data-os="' + os + '"]'); if (card) card.classList.add('mine'); }
+  // Put the visitor's desktop platform first in both reading and visual order.
+  const platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform;
+  let os;
+  if (/win/i.test(platform)) os = 'windows';
+  else if (/mac/i.test(platform) && navigator.maxTouchPoints < 2) os = 'mac';
+  else if (/linux|x11/i.test(platform) && !/Android|CrOS/i.test(navigator.userAgent)) os = 'linux';
+  if (os) {
+    const card = document.querySelector('.plat[data-os="' + os + '"]');
+    card.classList.add('mine');
+    card.parentElement.prepend(card);
+  }
 })();
 </script>
 </body>

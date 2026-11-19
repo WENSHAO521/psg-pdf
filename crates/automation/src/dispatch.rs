@@ -72,6 +72,7 @@ impl Automation {
             "model_render" => return self.model_render(&a),
             "comment_image_preview" => return self.comment_image_preview(&a),
             "text_extract" => self.text_extract(&a)?,
+            "ai_ask" => self.ai_ask(&a)?,
             "text_word_count" => self.text_word_count(&a)?,
             "text_find" => self.text_find(&a)?,
             "text_replace" => self.text_replace(&a)?,
@@ -851,6 +852,7 @@ impl Automation {
             "pdfa_verify" => self.pdfa_verify(&a)?,
             "print_readiness" => self.print_readiness(&a)?,
             "doc_export_office" => self.doc_export_office(&a)?,
+            "doc_export_outlined_pdf" => self.doc_export_outlined_pdf(&a)?,
             "pdfa_convert" => self.pdfa_convert(&a)?,
             "standards_remove_id" => {
                 let standard = match a.str("standard")? {

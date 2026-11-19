@@ -85,12 +85,12 @@ help/docs polish: their script work is done, and each catalog lacks 46 strings o
 | Slovenian | `sl` | 2,618 (90.4%) | partial | no |
 | Greek | `el` | 2,615 (90.3%) | partial | no |
 | Turkish | `tr` | 2,895 (99.9%) | partial; AI-assisted, judgement calls reviewed by a native speaker, full proofreading pending | yes |
-| Lithuanian | `lt` | 2,851 (98.4%) | partial; community native-speaker review ([#1401](https://github.com/storytold/pdfcraft/pull/1401)) | no |
+| Lithuanian | `lt` | 2,851 (98.4%) | partial; community native-speaker review (#1401) | no |
 | Finnish | `fi` | 2,849 (98.3%) | partial; AI-assisted, native proofreading pending | yes |
 | Albanian | `sq` | 2,604 (89.9%) | partial; not yet reviewed by a native speaker | no |
 | Catalan | `ca` | 2,849 (98.3%) | partial: no translated help, engine error details in English; native-speaker review by the contributor | no |
 | Romanian | `ro` | 2,849 (98.3%) | partial; AI-assisted, not yet reviewed line by line by a native speaker | no |
-| Norwegian Bokmål | `nb` | 2,758 (95.2%) | partial; native-speaker terminology review by the contributor ([#1836](https://github.com/storytold/pdfcraft/pull/1836)), not yet line by line | yes |
+| Norwegian Bokmål | `nb` | 2,758 (95.2%) | partial; native-speaker terminology review by the contributor (#1836), not yet line by line | yes |
 | Persian | `fa` | 2,801 (96.7%) | partial; AI-assisted, not yet reviewed line by line by a native speaker | no |
 | Central Kurdish (Sorani) | `ckb` | 2,754 (95.1%) | partial; right-to-left like Arabic | no |
 | Thai | `th` | 2,751 (95.0%) | partial | no |

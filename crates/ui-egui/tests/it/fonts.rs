@@ -81,8 +81,11 @@ fn chinese_ui_text_prefers_the_chinese_face() {
         let stack = &defs.families[&family];
         let first_zh = stack.iter().position(|n| hans.iter().any(|h| h == n)).expect("a Hans face is a fallback");
         let first_ja = stack.iter().position(|n| n.starts_with("BIZ UDPGothic")).expect("BIZ UDPGothic is a fallback");
-        let own = stack.iter().position(|n| n == "Inter" || n == "JetBrainsMono").expect("the app's own font");
-        assert!(own < first_zh && first_zh < first_ja, "{family:?}: {stack:?}");
+        assert!(first_zh < first_ja, "{family:?}: {stack:?}");
+        if let Some(faces) = psg_desktop_ui::fonts::interface_faces("zh-hans") {
+            let start = usize::from(family == FontFamily::Monospace);
+            assert_eq!(stack.get(start), Some(&faces.regular.name()), "{family:?}: {stack:?}");
+        }
     }
     let mut fonts = Fonts::new(TextOptions::default(), defs);
     for id in families() {
@@ -390,7 +393,9 @@ fn primary_ui_fonts_cover_latin_and_cyrillic_catalogs() {
     }
     use skrifa::MetadataProvider as _;
     let defs = theme::font_definitions();
-    assert_eq!(&defs.families[&FontFamily::Monospace][..2], ["JetBrainsMono", "Inter"]);
+    let monospace = &defs.families[&FontFamily::Monospace];
+    assert_eq!(monospace.first().map(String::as_str), Some("JetBrainsMono"));
+    assert!(monospace.iter().any(|name| name == "Inter"), "Inter supplies missing Latin and Cyrillic glyphs");
     let fallback = &defs.font_data["Inter"];
     let fallback_font = skrifa::FontRef::from_index(fallback.font.as_ref().as_ref(), fallback.index).unwrap();
     let fallback_charmap = fallback_font.charmap();

@@ -16,7 +16,19 @@ sha256 = "cd7032ea33b71427f188e34ffb4aee9d6868a57fd196037c5c8b2be03a2a0352"
 [[document]]
 source = "NOTICE"
 destination = "NOTICE"
-sha256 = "8ad431c4205d6bbbdb5ddf8db3c806a620a0a87b4aa025c814f04ed64450a237"
+sha256 = "cac61418fbe24cb2971a0921e82d1174d2549bff43e144fe7a513661f3936d78"
+
+[[document]]
+source = "vendor/craft-docx/LICENSE-MIT"
+licences = ["MIT"]
+destination = "vendor/craft-docx/LICENSE-MIT"
+sha256 = "2f42c0cafc8ad394d91373fe1f342aee5453850b151a51405c68cae9ada86d26"
+
+[[document]]
+source = "vendor/craft-docx/LICENSE-APACHE"
+licences = ["Apache-2.0"]
+destination = "vendor/craft-docx/LICENSE-APACHE"
+sha256 = "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
 
 [[document]]
 source = "vendor/edit-session/LICENSE-MIT"

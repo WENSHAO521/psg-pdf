@@ -24,6 +24,11 @@ build input. `build.rs` embeds them as `CRAFT_FONTS` when the build sets
 `CRAFT_FONTS_DIR=<checkout>` (and fails if it can't while `CRAFT_FONTS_REQUIRED=1`, as releases
 set). Without that variable `CRAFT_FONTS` is empty and everything below copes:
 
+- `psg_ui_font(family, style)`: one of PSG's interface faces (LXGW WenKai TC, LXGW WenKai Lite
+  Medium, Gowun Batang: `PSG_UI_FONTS`), read from the input's `fonts/psg-ui-manifest.txt`, which
+  `packaging/fetch-psg-fonts.sh` adds, or a craft-fonts face of that family (LXGW WenKai Lite
+  Regular). The PSG faces are never on wasm and never in `CRAFT_FONTS`, so no PDF writer or
+  script fallback picks them.
 - `ui_japanese_fonts`: the `Jpan` faces for the interface, BIZ UDPGothic first.
 - `ui_chinese_fonts`: the `Hans` faces for the interface, in manifest order (without one,
   Chinese characters the Japanese faces lack show the replacement glyph).

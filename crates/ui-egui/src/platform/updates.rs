@@ -10,7 +10,7 @@ use craft_update::{CheckResultDialog, CheckResultResponse};
 use crate::PdfCraftApp;
 
 /// Where every PdfCraft release is listed.
-pub const RELEASES_PAGE: &str = "https://github.com/storytold/pdfcraft/releases";
+pub const RELEASES_PAGE: &str = psg_brand::RELEASES;
 
 /// Stands in for the network in tests.
 #[cfg(not(target_arch = "wasm32"))]
@@ -55,7 +55,7 @@ impl Default for Updates {
     fn default() -> Self {
         Self {
             #[cfg(not(target_arch = "wasm32"))]
-            updater: Updater::new(&crate::UPDATE_APP, env!("CARGO_PKG_VERSION")),
+            updater: Updater::new(&crate::UPDATE_APP, env!("CARGO_PKG_VERSION")).with_translator(crate::i18n::updater_text),
             open: false,
             #[cfg(not(target_arch = "wasm32"))]
             startup_check: false,
@@ -119,7 +119,8 @@ impl PdfCraftApp {
     /// Replaces the network with `source` (tests).
     #[cfg(not(target_arch = "wasm32"))]
     pub fn set_update_source(&mut self, source: UpdateSource) {
-        self.updates.updater = Updater::new(&crate::UPDATE_APP, env!("CARGO_PKG_VERSION")).with_source(source);
+        self.updates.updater =
+            Updater::new(&crate::UPDATE_APP, env!("CARGO_PKG_VERSION")).with_translator(crate::i18n::updater_text).with_source(source);
     }
 
     /// Help ▸ Check for updates: ask for the latest release and show the outcome.
@@ -173,8 +174,8 @@ pub(crate) fn dialog(app: &mut PdfCraftApp, ctx: &egui::Context) {
             app.updates.open = false;
         }
         if app.updates.open {
-            let dialog = CheckResultDialog::new(&crate::UPDATE_APP, env!("CARGO_PKG_VERSION"));
-            let response = dialog.show(ctx, app.updates.updater.status());
+            let dialog = CheckResultDialog::new(&crate::UPDATE_APP, env!("CARGO_PKG_VERSION")).with_translator(crate::i18n::updater_text);
+            let response = dialog.with_progress(app.updates.updater.progress()).show(ctx, app.updates.updater.status());
             answer_result(app, ctx, response);
         }
     }
@@ -224,6 +225,21 @@ mod tests {
     use std::path::PathBuf;
     use std::sync::Arc;
 
+    #[test]
+    fn the_updater_knows_the_msis_own_uninstall_record() {
+        // An MSI copy updates only by finding exactly one uninstall record with this name and
+        // publisher, so both must be what packaging/windows/psg-pdf.wxs registers; the 0.18.x
+        // suite MSI it upgrades from registered the former name.
+        let app = &crate::UPDATE_APP;
+        let wxs = include_str!("../../../../packaging/windows/psg-pdf.wxs");
+        assert!(
+            wxs.contains(&format!(r#"<Package Name="{}" Manufacturer="{}""#, app.name, app.publisher)),
+            "the MSI registers another name or publisher"
+        );
+        assert!(wxs.contains(&format!(r"App Paths\{}.exe", app.id)));
+        assert_eq!(app.former_names, ["PSG PDF Suite"]);
+    }
+
     /// An app with one open document holding a form, and with `dirty` an unsaved change to it.
     fn app(dirty: bool) -> PdfCraftApp {
         let mut app = PdfCraftApp::new();
@@ -257,7 +273,8 @@ mod tests {
     fn the_beta_preference_sets_the_channel_of_the_next_check() {
         let mut app = PdfCraftApp::new();
         app.poll_updates();
-        assert!(!app.updates.updater.prereleases(), "stable by default");
+        let own = psg_brand::Release::of(pdfcraft_engine::build_info::VERSION).follows_betas_by_default();
+        assert_eq!(app.updates.updater.prereleases(), own, "the build's own channel by default");
         app.beta_updates = true;
         app.poll_updates();
         assert!(app.updates.updater.prereleases());
@@ -340,7 +357,7 @@ mod tests {
             tag: "v99.0.0".into(),
             version: craft_update::parse_version("99.0.0"),
             name: "PSG PDF 99.0.0".into(),
-            html_url: "https://github.com/storytold/pdfcraft/releases/tag/v99.0.0".into(),
+            html_url: "https://github.com/WENSHAO521/psg-pdf/releases/tag/v99.0.0".into(),
             ..Default::default()
         });
         assert!(app.updates.updater.prompt_open());

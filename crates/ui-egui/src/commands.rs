@@ -156,7 +156,9 @@ impl PdfCraftApp {
                 }
             }
             commands::Needs::Unlock if self.active.is_some() => tl!("This document has no restrictions to lift").to_string(),
-            commands::Needs::Assembly | commands::Needs::Modification | commands::Needs::Annotate if self.active.is_some() => {
+            commands::Needs::Assembly | commands::Needs::PageExtraction | commands::Needs::Modification | commands::Needs::Annotate
+                if self.active.is_some() =>
+            {
                 tl!("The document's security settings don't allow this change").to_string()
             }
             commands::Needs::Copying if self.active.is_some() => crate::copy_refused().to_string(),
@@ -223,6 +225,13 @@ impl PdfCraftApp {
             }
             "prepress.convert_colors" => self.dialog = Some(Dialog::ConvertColours),
             "prepress.hairlines" => self.dialog = Some(Dialog::FixHairlines),
+            "prepress.readiness" => {
+                if let Some(doc) = self.active_ids().and_then(|(_, id)| self.session.get(id)) {
+                    self.print_readiness_report = doc.print_readiness().text();
+                    self.dialog = Some(Dialog::PrintReadiness);
+                }
+            }
+            "optimize.audit" => self.dialog = Some(Dialog::Properties(crate::PropsTab::SpaceAudit)),
             "protect.remove" => {
                 if self.apply_edit(Edit::RemoveProtection) {
                     self.notify_tr("Security will be removed when you save");
@@ -401,6 +410,14 @@ impl PdfCraftApp {
                     self.dialog = Some(Dialog::PageProps);
                 }
             }
+            "page.transitions" => {
+                if let Some((_, id)) = self.active_ids()
+                    && let Some(doc) = self.session.get(id)
+                {
+                    self.page_transition_draft = Some(crate::organize_panel::TransitionDraft::new(doc, targets));
+                    self.dialog = Some(Dialog::PageTransitions);
+                }
+            }
             "bookmark.add" => self.bookmark_action(crate::panels::BmAction::New),
             "bookmark.from_structure" => self.bookmark_action(crate::panels::BmAction::FromStructure),
             "bookmark.from_text_styles" => self.bookmark_action(crate::panels::BmAction::FromTextStyles),
@@ -549,6 +566,7 @@ impl PdfCraftApp {
             }
             "export.image" => self.dialog = Some(Dialog::Export(crate::export_ui::ExportKind::Image)),
             "export.text" => self.dialog = Some(Dialog::Export(crate::export_ui::ExportKind::Text)),
+            "export.outline_pdf" => self.dialog = Some(Dialog::Export(crate::export_ui::ExportKind::OutlinedPdf)),
             "ocr.recognize" => self.dialog = Some(Dialog::RecognizeText),
             "ocr.enhance" => self.dialog = Some(Dialog::EnhanceScan),
             "ocr.recognize_batch" => self.ocr_files_dialog(),

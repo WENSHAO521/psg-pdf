@@ -24,6 +24,12 @@ pdfcraft-fonts = { workspace = true }
 pdfcraft-engine = { workspace = true }
 # The PSG design system: product names, brand colours and the release badge (docs/brand.md).
 psg-brand = { workspace = true }
+# The PSG Desktop Design System: shared neutrals, tones, fonts and components (docs/design-system.md).
+psg-desktop-ui = { workspace = true }
+# The ten PSG interface languages and the hook the shared widgets translate through.
+psg-i18n = { workspace = true }
+# The bring-your-own AI provider behind All tools ▸ AI assistant.
+psg-ai = { workspace = true }
 pdfcraft-cos = { workspace = true }
 pdfcraft-content = { workspace = true }
 pdfcraft-ocr = { workspace = true }
@@ -38,9 +44,8 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 log = { workspace = true }
 zeroize = { workspace = true }
-# UTC/calendar display (combine modified-time stamp, the form date picker) goes through chrono
-# (no hand-rolled calendar code); std-only, so it stays wasm-safe.
-chrono = { workspace = true }
+# Calendar arithmetic for the form date picker, with the same features on desktop and web.
+jiff = { workspace = true }
 # Monotonic deadlines for work that runs in `logic` with no UI pass (native and web).
 web-time = { workspace = true }
 # Hands rendered rasters to egui as its pixels, without copying; already in the tree through egui and wgpu.
@@ -58,6 +63,12 @@ skrifa = "0.44"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 craft-update = { workspace = true }
+# The AI assistant's requests: the same ureq and TLS set-up craft-update already builds (rustls
+# with ring, the OS certificate verifier), so they add no second HTTP stack.
+ureq = { version = "3.4", default-features = false, features = ["rustls-no-provider", "_ring", "gzip", "platform-verifier"] }
+# The AI assistant's API keys live in the OS credential store: macOS Keychain, Windows Credential
+# Manager, the Secret Service on Linux. Never in the settings file.
+keyring = "4"
 # Control-channel tokens.
 getrandom = "0.4"
 # Create ▸ Clipboard (images; already in the tree through egui-winit).
@@ -115,4 +126,4 @@ toml = "1"
 
 [target.'cfg(target_os = "macos")'.dev-dependencies]
 # Only synthetic attribute fixtures use xattr; product reads/writes use rustix.
-xattr = "1.6"
+xattr = "1.7"

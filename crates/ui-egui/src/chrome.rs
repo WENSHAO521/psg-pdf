@@ -591,7 +591,21 @@ pub fn mode_bar(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                 ui.spacing_mut().item_spacing.x = 2.0;
                 // The menus, unless the native macOS menu bar has them or the document hides them.
                 if app.native_menu.is_none() && !hidden.menubar {
-                    app.menu_bar_ui(ui);
+                    // The titles in the mode tabs' size, centred on the row like them. Left to
+                    // itself egui's menu bar lays out a row `interact_size.y` tall and lets the
+                    // taller titles grow downwards, below the tabs' line: give it a strip exactly
+                    // the titles' height, centred where the tabs centre their labels.
+                    let font = theme::regular(widgets::MODE_TAB_SIZE);
+                    let title = (ui.fonts_mut(|f| f.row_height(&font)) + 2.0 * ui.spacing().button_padding.y).ceil();
+                    let strip = Rect::from_min_size(
+                        egui::pos2(ui.cursor().left(), ui.max_rect().top() + (widgets::MODE_TAB_HEIGHT - title) / 2.0),
+                        vec2(ui.available_width(), title),
+                    );
+                    ui.scope_builder(egui::UiBuilder::new().max_rect(strip).layout(Layout::left_to_right(Align::Center)), |ui| {
+                        ui.style_mut().text_styles.insert(egui::TextStyle::Button, font);
+                        ui.spacing_mut().interact_size.y = title;
+                        app.menu_bar_ui(ui);
+                    });
                     ui.add_space(6.0);
                     ui.painter().vline(ui.cursor().left(), ui.max_rect().y_range().shrink(12.0), Stroke::new(1.0, t.divider));
                     ui.add_space(10.0);
@@ -1044,5 +1058,30 @@ mod tab_widths {
         assert_eq!(MAC_CONTENT_LEFT - lights_end, margin);
         // `egui::Margin` is in `i8`.
         assert!(MAC_CONTENT_LEFT <= f32::from(i8::MAX));
+    }
+}
+
+#[cfg(test)]
+mod mode_bar_tests {
+    use egui_kittest::Harness;
+    use egui_kittest::kittest::Queryable;
+
+    use crate::PdfCraftApp;
+
+    /// The menu titles and the mode tabs share the top bar's line: their text is one size and
+    /// centred on the same height, so "File" doesn't sit lower than "All tools" (it sat about
+    /// a point lower, in a smaller size).
+    #[test]
+    fn menu_titles_and_mode_tabs_sit_on_one_line() {
+        let mut h = Harness::builder().with_size(egui::vec2(1600.0, 800.0)).build_eframe(|_cc| {
+            let mut app = PdfCraftApp::new();
+            app.set_option("language", "en").unwrap();
+            app
+        });
+        h.run_steps(4);
+        let file = h.get_by_label("File").rect();
+        // The tab, not the tools pane's heading of the same name below it.
+        let tab = h.query_all_by_label("All tools").map(|n| n.rect()).min_by(|a, b| a.top().total_cmp(&b.top())).expect("the All tools tab");
+        assert!((file.center().y - tab.center().y).abs() <= 0.5, "File centred at {}, All tools at {}", file.center().y, tab.center().y);
     }
 }

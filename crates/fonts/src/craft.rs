@@ -27,6 +27,14 @@ impl CraftFont {
     }
 }
 
+/// One of PSG's interface faces, by family and style (`"LXGW WenKai TC"`, `"Medium"`): the faces
+/// `packaging/fetch-psg-fonts.sh` adds (`PSG_UI_FONTS`), then craft-fonts' own (LXGW WenKai Lite
+/// Regular is already one of them). `None` when the build has no such face (no `CRAFT_FONTS_DIR`,
+/// an input without the PSG faces, the web build).
+pub fn psg_ui_font(family: &str, style: &str) -> Option<&'static CraftFont> {
+    PSG_UI_FONTS.iter().chain(CRAFT_FONTS.iter()).find(|f| f.family == family && f.style == style)
+}
+
 /// The `Jpan` craft-fonts faces in the order the interface prefers them: BIZ UDPGothic (a UI
 /// face) first, then the rest in manifest order. Empty without craft-fonts.
 pub fn ui_japanese_fonts() -> Vec<&'static CraftFont> {

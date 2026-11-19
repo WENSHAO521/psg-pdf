@@ -1,0 +1,17 @@
+[package]
+name = "psg-ai"
+description = "PSG's bring-your-own AI provider: provider presets, saved profiles, OpenAI-compatible, Anthropic, Gemini and Azure OpenAI requests, where API keys are kept; no network or OS access of its own"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+log = { workspace = true }
+

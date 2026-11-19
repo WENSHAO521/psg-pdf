@@ -1,7 +1,8 @@
 //! Finding the local TeX installation: pdflatex, latexmk, biber and (optionally) pandoc.
 //!
-//! Nothing is downloaded or installed: PSG Academic PDF uses what TeX Live (or MiKTeX) put on
-//! the `PATH`, and says plainly what is missing.
+//! PSG's own TeX ([`crate::managed`]), which the app installs itself, comes first; until it is
+//! installed, a TeX Live (or MiKTeX) already on the `PATH` is used. Pandoc is only ever looked
+//! for on the `PATH`.
 
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
@@ -17,17 +18,26 @@ pub struct Tool {
     pub path: Option<PathBuf>,
     /// The first line of its `--version` output.
     pub version: Option<String>,
+    /// Why a located program failed its version check.
+    pub probe_error: Option<String>,
 }
 
 impl Tool {
+    /// Whether the program was located and passed its version check, if requested.
     pub fn found(&self) -> bool {
-        self.path.is_some()
+        self.path.is_some() && self.probe_error.is_none()
     }
 
     fn locate(name: &'static str, search_path: Option<&OsStr>, with_version: bool) -> Self {
         let path = find_program(name, search_path);
-        let version = if with_version { path.as_deref().and_then(process::version_line) } else { None };
-        Self { name, path, version }
+        let (version, probe_error) = match path.as_deref().filter(|_| with_version) {
+            Some(program) => match process::probe_version(program, if name == "latexmk" { "-v" } else { "--version" }) {
+                Ok(version) => (version, None),
+                Err(error) => (None, Some(error)),
+            },
+            None => (None, None),
+        };
+        Self { name, path, version, probe_error }
     }
 }
 
@@ -39,12 +49,30 @@ pub struct TexEnvironment {
     pub biber: Tool,
     /// Optional: converts DOCX manuscripts (see [`crate::pandoc`]).
     pub pandoc: Tool,
+    /// pdflatex is PSG's own TeX ([`crate::managed`]), not one found on the `PATH`.
+    pub managed: bool,
 }
 
 impl TexEnvironment {
     /// Look for the programs on the process's `PATH` and ask each for its version.
     pub fn detect() -> Self {
-        Self::detect_in(std::env::var_os("PATH").as_deref(), true)
+        Self::detect_with(None)
+    }
+
+    /// Look in PSG's own TeX programs folder `managed_bin` first, then on the `PATH`.
+    pub fn detect_with(managed_bin: Option<&Path>) -> Self {
+        let path = std::env::var_os("PATH");
+        let Some(bin) = managed_bin.filter(|b| b.is_dir()) else { return Self::detect_in(path.as_deref(), true) };
+        let mut dirs = vec![bin.to_path_buf()];
+        if let Some(path) = &path {
+            dirs.extend(std::env::split_paths(path));
+        }
+        let joined = std::env::join_paths(dirs).ok();
+        let mut env = Self::detect_in(joined.as_deref().or(path.as_deref()), true);
+        // Pandoc is never part of PSG's TeX.
+        env.pandoc = Tool::locate("pandoc", path.as_deref(), true);
+        env.managed = env.tex_bin_dir() == Some(bin);
+        env
     }
 
     /// Look for the programs on `search_path` (a `PATH`-style list). `with_versions` runs each
@@ -55,10 +83,11 @@ impl TexEnvironment {
             latexmk: Tool::locate("latexmk", search_path, with_versions),
             biber: Tool::locate("biber", search_path, with_versions),
             pandoc: Tool::locate("pandoc", search_path, with_versions),
+            managed: false,
         }
     }
 
-    /// The required programs that were not found (pandoc is optional and never listed).
+    /// The required programs that were missing or failed their version check.
     pub fn missing(&self, needs_biber: bool) -> Vec<&'static str> {
         let mut missing = Vec::new();
         for tool in [&self.pdflatex, &self.latexmk] {
@@ -139,9 +168,33 @@ mod tests {
     }
 
     #[test]
+    fn psg_tex_comes_before_the_path() {
+        let managed = tempfile::tempdir().unwrap();
+        fake_program(managed.path(), "pdflatex");
+        fake_program(managed.path(), "latexmk");
+        let env = TexEnvironment::detect_with(Some(managed.path()));
+        assert!(env.managed);
+        assert_eq!(env.tex_bin_dir(), Some(managed.path()));
+        assert!(!TexEnvironment::detect_with(Some(&managed.path().join("missing"))).managed);
+    }
+
+    #[test]
     fn nothing_found_without_a_search_path() {
         let env = TexEnvironment::detect_in(None, false);
         assert_eq!(env.missing(true), vec!["pdflatex", "latexmk", "biber"]);
+    }
+
+    #[test]
+    fn a_launcher_that_reports_an_error_does_not_make_tex_ready() {
+        let dir = tempfile::tempdir().unwrap();
+        fake_program(dir.path(), "pdflatex");
+        fake_program(dir.path(), "latexmk");
+        std::fs::write(dir.path().join("latexmk"), "#!/bin/sh\necho 'MiKTeX could not find Perl' >&2\nexit 1\n").unwrap();
+        let env = TexEnvironment::detect_in(Some(dir.path().as_os_str()), true);
+        assert!(env.latexmk.path.is_some());
+        assert_eq!(env.latexmk.version, None);
+        assert_eq!(env.latexmk.probe_error.as_deref(), Some("MiKTeX could not find Perl"));
+        assert_eq!(env.missing(false), vec!["latexmk"]);
     }
 
     #[test]

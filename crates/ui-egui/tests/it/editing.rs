@@ -1723,18 +1723,20 @@ fn undo_and_redo_restore_the_combine_list() {
     assert!(h.state().session.get(h.state().views[0].id).unwrap().can_undo().is_none());
 }
 
+/// A protected file that still allows page extraction (only printing is withheld) is listed
+/// for Combine with a warning that the result won't keep its security, not as a problem.
 #[test]
 fn protected_files_that_can_be_combined_are_flagged() {
     let mut h = harness(1, |app| {
         app.set_option("combine-view", "list").unwrap();
         app.use_files(
             pdfcraft_ui_egui::FilePurpose::Combine,
-            vec![("one.pdf".into(), fixture(1)), ("no-copy.pdf".into(), protected("", "owner", -1 ^ 16))],
+            vec![("one.pdf".into(), fixture(1)), ("no-print.pdf".into(), protected("", "owner", -1 ^ 4))],
         );
     });
     h.run_steps(3);
     let app = h.state();
-    assert!(app.combine_draft[1].problem.is_none(), "copying text is withheld, assembling pages isn't");
+    assert!(app.combine_draft[1].problem.is_none(), "printing is withheld, extracting pages isn't");
     h.get_by_label("Protected: the combined file won't keep its security settings");
     assert!(!h.get_by_label("Combine").accesskit_node().is_disabled(), "a warning, not a blocker");
 }
@@ -2754,10 +2756,13 @@ fn a_startup_file_after_a_protected_one_keeps_its_password_prompt() {
         if unlock {
             h.state_mut().submit_password(Some("reader".into()));
             support::wait_until(&mut h, "both files", |app| app.views.len() == 2);
-            // The other file opened while the password was being typed; the unlocked one comes
-            // after it and is the one in view.
-            assert_eq!(open_paths(h.state()), vec![other_path, locked_path]);
-            assert_eq!(h.state().active_ids().map(|(i, _)| i), Some(1));
+            assert!(h.state().password_prompt.is_none(), "the protected file unlocks");
+            // The priority retry and the other file may finish in either order.
+            let mut opened = open_paths(h.state());
+            opened.sort();
+            let mut expected = [locked_path, other_path];
+            expected.sort();
+            assert_eq!(opened, expected);
         } else {
             h.state_mut().submit_password(None);
             support::wait_until(&mut h, "the other file", |app| app.views.len() == 1);

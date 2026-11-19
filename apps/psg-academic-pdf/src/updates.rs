@@ -20,6 +20,9 @@ pub const UPDATE_APP: App = App {
     // packaging/products.toml `accent`.
     accent: Some(crate::theme::PRODUCT.brand()),
     developer: PUBLISHER,
+    // The MSI's Manufacturer (packaging/windows/*.wxs): the updater finds its own uninstall
+    // record by it, so an MSI copy can update itself.
+    publisher: PUBLISHER,
     // packaging/products.toml `app_id`.
     app_id: Some("com.panoramascholarly.psgacademicpdf"),
     // Releases are signed with PSG's own key (docs/update-signing.md).
@@ -43,7 +46,7 @@ pub struct Updates {
 impl Default for Updates {
     fn default() -> Self {
         Self {
-            updater: Updater::new(&UPDATE_APP, env!("CARGO_PKG_VERSION")),
+            updater: Updater::new(&UPDATE_APP, env!("CARGO_PKG_VERSION")).with_translator(crate::i18n::updater_text),
             open: false,
             check_requested: false,
             beta: false,
@@ -53,10 +56,28 @@ impl Default for Updates {
     }
 }
 
+/// Whether a copy running `version` follows the betas, from the channel file's text `kept`
+/// ("beta" or "stable", written only when the user picks one). With none picked, a beta build
+/// follows the betas and a stable build stable releases, so an installed beta is offered the
+/// next beta instead of saying it is up to date.
+fn channel_from(kept: Option<&str>, version: &str) -> bool {
+    match kept.map(str::trim) {
+        Some("beta") => true,
+        Some("stable") => false,
+        _ => psg_brand::Release::of(version).follows_betas_by_default(),
+    }
+}
+
 impl Updates {
+    /// Keep the channel in `channel_file` from now on (the data folder moved). The channel in use
+    /// is unchanged; the move carried the file over.
+    pub fn set_channel_file(&mut self, channel_file: PathBuf) {
+        self.channel_file = Some(channel_file);
+    }
+
     /// Updates whose channel is kept in `channel_file`.
     pub fn with_channel_file(channel_file: PathBuf) -> Self {
-        let beta = std::fs::read_to_string(&channel_file).is_ok_and(|text| text.trim() == "beta");
+        let beta = channel_from(std::fs::read_to_string(&channel_file).ok().as_deref(), env!("CARGO_PKG_VERSION"));
         let mut updates = Self { beta, channel_file: Some(channel_file), ..Self::default() };
         updates.updater.set_prereleases(beta);
         updates
@@ -133,7 +154,10 @@ impl Updates {
             self.open = false;
         }
         if self.open {
-            let response = CheckResultDialog::new(&UPDATE_APP, env!("CARGO_PKG_VERSION")).show(ctx, self.updater.status());
+            let response = CheckResultDialog::new(&UPDATE_APP, env!("CARGO_PKG_VERSION"))
+                .with_translator(crate::i18n::updater_text)
+                .with_progress(self.updater.progress())
+                .show(ctx, self.updater.status());
             match response {
                 CheckResultResponse::None => {}
                 CheckResultResponse::Close => {
@@ -161,7 +185,8 @@ mod tests {
     fn the_beta_channel_is_kept_and_read_back() {
         let dir = tempfile::tempdir().unwrap();
         let file = dir.path().join("update-channel.txt");
-        assert!(!Updates::with_channel_file(file.clone()).beta(), "stable unless chosen");
+        let own = channel_from(None, env!("CARGO_PKG_VERSION"));
+        assert_eq!(Updates::with_channel_file(file.clone()).beta(), own, "the build's own channel unless chosen");
         let mut updates = Updates::with_channel_file(file.clone());
         updates.set_beta(true).unwrap();
         assert!(updates.updater.prereleases());
@@ -171,11 +196,34 @@ mod tests {
         assert!(!Updates::with_channel_file(file).beta());
     }
 
+    /// The bug: an installed beta followed the stable channel unless its user had joined the
+    /// betas, so it said "up to date" while newer betas were out.
+    #[test]
+    fn a_beta_follows_the_betas_until_its_user_picks_a_channel() {
+        assert!(channel_from(None, "0.20.1-beta.65"));
+        assert!(!channel_from(None, "0.20.0"));
+        assert!(!channel_from(Some("stable"), "0.20.1-beta.65"), "a picked channel wins");
+        assert!(channel_from(Some("beta\n"), "0.20.0"));
+        assert!(channel_from(Some(""), "0.20.1-beta.65"));
+    }
+
     #[test]
     fn the_update_channel_is_this_products_own() {
         // The stem the updater matches release assets by is this product's, not PSG PDF's.
         assert_eq!(UPDATE_APP.stems().collect::<Vec<_>>(), ["psg-academic-pdf"]);
         assert_eq!(UPDATE_APP.repo, "WENSHAO521/psg-pdf");
         assert_eq!(UPDATE_APP.name, "PSG Academic PDF");
+    }
+
+    #[test]
+    fn the_updater_knows_the_msis_own_uninstall_record() {
+        // An MSI copy updates only by finding exactly one uninstall record with this name and
+        // publisher, so both must be what packaging/windows/psg-academic-pdf.wxs registers.
+        let wxs = include_str!("../../../packaging/windows/psg-academic-pdf.wxs");
+        assert!(
+            wxs.contains(&format!(r#"<Package Name="{}" Manufacturer="{}""#, UPDATE_APP.name, UPDATE_APP.publisher)),
+            "the MSI registers another name or publisher"
+        );
+        assert!(wxs.contains(&format!(r"App Paths\{}.exe", UPDATE_APP.id)));
     }
 }

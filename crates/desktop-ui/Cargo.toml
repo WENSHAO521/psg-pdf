@@ -1,0 +1,27 @@
+[package]
+name = "psg-desktop-ui"
+description = "The PSG Desktop Design System: the egui theme, fonts and components PSG PDF and PSG Academic PDF share"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+# The design tokens (colours, radii, spacing, sizes, tones), shared with packaging and the web.
+psg-brand = { workspace = true }
+# The few words the components draw themselves go through the app's translator.
+psg-i18n = { workspace = true }
+egui = { workspace = true, features = ["default_fonts"] }
+# Inter Regular is embedded once, by pdfcraft-fonts (also used for typed signatures).
+pdfcraft-fonts = { workspace = true }
+# Lucide icons are drawn through craft-ui's SVG icon set, rasterised by egui_extras (as in PSG PDF).
+craft-ui = { workspace = true }
+egui_extras = { workspace = true }
+
+[dev-dependencies]
+egui_kittest = { workspace = true }
+# Reads the fonts' character maps in the coverage test; already in the tree via egui and pdfcraft-fonts.
+skrifa = "0.44"

@@ -5,6 +5,7 @@
 //! this machine with the local TeX installation (pdfLaTeX through latexmk, with BibLaTeX and
 //! Biber); nothing is uploaded.
 //!
+//! - [`managed`] installs, updates and completes PSG's own TeX (TinyTeX), so nobody installs TeX.
 //! - [`tex`] finds pdflatex, latexmk, biber and pandoc.
 //! - [`compile`] runs latexmk in the project directory with shell escape off, kpathsea's paranoid
 //!   file access, a time limit and cancellation, and turns the logs into [`diagnostics`].
@@ -18,8 +19,17 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
 pub mod bib;
+
+/// Marks a sentence the apps show in the interface language (the hints under a diagnostic, the
+/// advice for a script pdfLaTeX can't set). It returns `english` unchanged: the English is the
+/// catalog key, the app translates it when it draws it, and the translation tests find every
+/// marked string in the source. This crate itself never translates anything.
+pub const fn mark(english: &'static str) -> &'static str {
+    english
+}
 pub mod compile;
 pub mod diagnostics;
+pub mod managed;
 pub mod metadata;
 pub mod pandoc;
 pub mod paths;
@@ -43,7 +53,9 @@ pub use tex::TexEnvironment;
 pub enum Error {
     #[error("{path}: {source}")]
     Io { path: String, source: std::io::Error },
-    #[error("TeX is not ready: {0} not found. Install TeX Live (with latexmk and biber) and make sure it is on the PATH.")]
+    #[error(
+        "TeX is not ready: {0} not found. PSG Academic PDF installs its own TeX; wait for it to finish (Settings ▸ TeX installation), or press Install again there."
+    )]
     TexMissing(String),
     #[error("{0}")]
     Template(String),

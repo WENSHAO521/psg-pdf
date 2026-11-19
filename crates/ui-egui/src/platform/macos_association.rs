@@ -41,10 +41,11 @@ impl OpeningMetadata {
 
 /// Read a last-component-symlink-safe attribute with a strict allocation cap.
 fn read_attribute(path: &Path, name: &str) -> io::Result<Option<Vec<u8>>> {
-    read_attribute_with(|buffer| rustix::fs::lgetxattr(path, name, buffer))
+    // rustix 1 answers an empty buffer with 0, not the size: the probe asks for the size.
+    read_attribute_with(|buffer| if buffer.is_empty() { rustix::fs::lgetxattr_query(path, name) } else { rustix::fs::lgetxattr(path, name, buffer) })
 }
 
-/// Probe the length before allocating. A concurrently grown value fails safely; unreadable
+/// Probe the length (`get` with an empty buffer returns it) before allocating. A concurrently grown value fails safely; unreadable
 /// attributes or values beyond the parser cap skip recovery without affecting open/save.
 fn read_attribute_with(mut get: impl FnMut(&mut [u8]) -> rustix::io::Result<usize>) -> io::Result<Option<Vec<u8>>> {
     use rustix::io::Errno;
@@ -353,7 +354,20 @@ mod tests {
         let hex = "62706c6973743030d30102030405065776657273696f6e54706174685f101062756e646c656964656e74696669657210005f101a2f4170706c69636174696f6e732f50646643726166742e6170705f101761692e73746f727974656c6c65722e7064666372616674080f171c2f314e0000000000000101000000000000000700000000000000000000000000000068";
         let captured: Vec<u8> =
             hex.as_bytes().as_chunks::<2>().0.iter().map(|pair| u8::from_str_radix(std::str::from_utf8(pair).unwrap(), 16).unwrap()).collect();
-        assert!(points_to_this_app(&captured, Path::new("/Applications/PdfCraft.app")));
+        // The capture names the upstream bundle, so it must not count as PSG PDF's binding;
+        // the same native schema carrying PSG PDF's identifier and path does.
+        assert!(!points_to_this_app(&captured, Path::new("/Applications/PdfCraft.app")));
+        let mut native = plist::Value::from_reader(std::io::Cursor::new(&captured)).unwrap();
+        let fields = native.as_dictionary_mut().unwrap();
+        let mut keys: Vec<&str> = fields.keys().map(String::as_str).collect();
+        keys.sort_unstable();
+        assert_eq!(keys, ["bundleidentifier", "path", "version"]);
+        fields.insert("path".into(), plist::Value::String("/Applications/PSG PDF.app".into()));
+        fields.insert("bundleidentifier".into(), plist::Value::String(BUNDLE_ID.into()));
+        let mut ours = Vec::new();
+        native.to_writer_binary(&mut ours).unwrap();
+        assert!(points_to_this_app(&ours, Path::new("/Applications/PSG PDF.app")));
+        assert!(!points_to_this_app(&ours, Path::new("/Applications/PdfCraft.app")));
         let package = plist::from_bytes::<plist::Value>(include_bytes!("../../../../packaging/macos/Info.plist.in")).unwrap();
         assert_eq!(package.as_dictionary().unwrap().get("CFBundleIdentifier").unwrap().as_string(), Some(BUNDLE_ID));
     }

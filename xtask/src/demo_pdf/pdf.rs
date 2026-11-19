@@ -423,7 +423,7 @@ mod tests {
         // Years past 9999 keep the plain zero-padded year (no `+`).
         assert_eq!(Stamp::from_unix(253_402_300_800).iso, "10000-01-01T00:00:00Z");
         assert_eq!(Stamp::from_unix(253_402_300_800).pdf, "D:100000101000000Z");
-        // Past chrono's ±262143-year range the proleptic Gregorian date is kept, not the epoch.
+        // Past the date library’s year range the proleptic Gregorian date is kept, not the epoch.
         // Pinned to the old hand-rolled output (no year clamp — a negative year keeps its sign).
         assert_eq!(Stamp::from_unix(10_000_000_000_000).iso, "318857-05-20T17:46:40Z");
         assert_eq!(Stamp::from_unix(10_000_000_000_000).pdf, "D:3188570520174640Z");

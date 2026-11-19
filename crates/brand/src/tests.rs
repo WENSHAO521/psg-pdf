@@ -86,6 +86,16 @@ fn release_kinds_come_from_the_version() {
     assert_eq!(Release::of(""), Release::Stable);
 }
 
+/// An installed beta follows the beta channel until its user picks one, so it is offered the
+/// next beta instead of saying "up to date" until the next stable release.
+#[test]
+fn only_a_beta_follows_the_beta_channel_by_default() {
+    assert!(Release::of("0.20.1-beta.65").follows_betas_by_default());
+    assert!(Release::of("0.20.1-beta").follows_betas_by_default());
+    assert!(!Release::of("0.20.0").follows_betas_by_default());
+    assert!(!Release::of("0.20.1-dev").follows_betas_by_default());
+}
+
 #[test]
 fn versions_and_titles_read_as_people_expect() {
     assert_eq!(display_version("0.19.0"), "0.19.0");
@@ -95,4 +105,46 @@ fn versions_and_titles_read_as_people_expect() {
     assert_eq!(Product::Pdf.window_title("0.19.0-beta.4"), "PSG PDF Beta");
     assert_eq!(Product::Academic.window_title("0.19.0-beta.4"), "PSG Academic PDF Beta");
     assert_eq!(Product::Academic.window_title("1.0.0"), "PSG Academic PDF");
+}
+
+/// Body and secondary text stay readable (4.5:1) on every surface they are drawn on, in both
+/// themes, so the two products' shared chrome passes WCAG AA.
+#[test]
+fn neutral_text_is_readable_on_every_surface() {
+    for dark in [false, true] {
+        let s = surfaces(dark);
+        for (name, bg) in [("panel", s.panel), ("canvas", s.canvas), ("card", s.card), ("field", s.field)] {
+            for (which, fg) in [("text", s.text), ("muted", s.text_muted), ("faint", s.text_faint)] {
+                let ratio = contrast(fg, bg);
+                assert!(ratio >= 4.5, "dark={dark}: {which} {} on {name} {} is {ratio:.2}", hex(fg), hex(bg));
+            }
+        }
+        // Hovered rows keep body and secondary text readable.
+        assert!(contrast(s.text_muted, s.hover) >= 4.5, "dark={dark}: muted on hover");
+    }
+}
+
+/// Every tone's text is readable on panels and on its own wash, and its solid mark shows on a
+/// panel, in both products and both themes.
+#[test]
+fn tones_are_readable_in_both_themes() {
+    for product in Product::ALL {
+        for dark in [false, true] {
+            let panel = surfaces(dark).panel;
+            for tone in Tone::ALL {
+                let c = tone.colours(product, dark);
+                assert!(contrast(c.text, panel) >= 4.5, "{product:?} {tone:?} dark={dark}: text on panel");
+                assert!(contrast(c.text, c.soft) >= 4.5, "{product:?} {tone:?} dark={dark}: text on its wash");
+                assert!(contrast(c.solid, panel) >= 3.0, "{product:?} {tone:?} dark={dark}: solid mark on panel");
+            }
+        }
+    }
+}
+
+#[test]
+fn surfaces_agree_with_the_neutral_constants() {
+    assert_eq!(surfaces(false).panel, neutral::LIGHT_PANEL);
+    assert_eq!(surfaces(false).canvas, neutral::LIGHT_CANVAS);
+    assert_eq!(surfaces(true).panel, neutral::DARK_PANEL);
+    assert_eq!(surfaces(true).canvas, neutral::DARK_CANVAS);
 }

@@ -18,6 +18,9 @@ pub const UPDATE_APP: craft_update::app::App = craft_update::app::App {
     // packaging/products.toml `accent`, through the PSG design system.
     accent: Some(brand::PRODUCT.brand()),
     developer: brand::PUBLISHER,
+    // The MSI's Manufacturer (packaging/windows/*.wxs): the updater finds its own uninstall
+    // record by it, so an MSI copy can update itself.
+    publisher: brand::PUBLISHER,
     // PSG PDF continues the 0.18.x "PSG PDF Suite" MSI (same UpgradeCode), so its updater
     // recognises that install as its own (docs/products.md, "Migrating from the suite").
     former_names: &["PSG PDF Suite"],
@@ -490,8 +493,13 @@ pub struct PdfCraftApp {
     /// asks only from Help ▸ Check for updates.
     pub update_check_at_start: bool,
     /// Preferences: the beta channel. Updates offer the newest release, betas included; off,
-    /// only stable releases. Kept in the settings.
+    /// only stable releases. Until the user picks a channel (`beta_updates_chosen`), a beta build
+    /// follows the betas and a stable build the stable releases (`prefs::default_beta_updates`).
     pub beta_updates: bool,
+    /// Whether the user picked the channel (Preferences, or the control channel's option). Only a
+    /// picked channel is kept in the settings; otherwise each build follows its own default, so an
+    /// installed beta is offered the next beta.
+    pub beta_updates_chosen: bool,
     /// Preferences: the beta channel choice waiting for its confirmation (`Some(true)` joining,
     /// `Some(false)` leaving). Not kept.
     pub(crate) beta_updates_pending: Option<bool>,
@@ -686,6 +694,7 @@ pub struct PdfCraftApp {
     pub space_audit: Vec<pdfcraft_engine::optimize::SpaceUse>,
     /// The document and edit generation `space_audit` was measured from.
     pub(crate) space_audit_of: Option<(DocId, u64)>,
+    pub(crate) print_readiness_report: String,
     /// Combine files: the files staged so far.
     pub combine_draft: Vec<combine_ui::CombineFile>,
     /// The combine list's field-name conflict preview (computed once per list, never saved).
@@ -755,6 +764,7 @@ pub struct PdfCraftApp {
     pub duplicate_draft: Option<DuplicateDraft>,
     /// Page Properties: which pages, and the tab order chosen for them.
     pub page_props_draft: Option<PagePropsDraft>,
+    pub(crate) page_transition_draft: Option<organize_panel::TransitionDraft>,
     /// Text field table: the table being set up, and the page it goes on.
     pub field_table_draft: Option<field_table_ui::FieldTableDraft>,
     /// Prepare a form ▸ Preview: fill the form instead of editing its fields.
@@ -809,6 +819,8 @@ pub struct PdfCraftApp {
     /// Number pages dialog settings (1-based pages).
     pub number_draft: NumberDraft,
     pub(crate) word_count_draft: word_count_ui::Draft,
+    /// The AI assistant: the providers people added (Preferences) and each document's conversation.
+    pub(crate) ai: panels::ai::AiState,
     pub printer_marks_draft: printer_marks_ui::PrinterMarksDraft,
     pub convert_colours_draft: convert_colours_ui::ConvertColoursDraft,
     pub hairlines_draft: hairlines_ui::HairlinesDraft,

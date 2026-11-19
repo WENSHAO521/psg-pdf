@@ -52,6 +52,7 @@ impl PdfCraftApp {
             }
             ("beta_updates", _) => {
                 self.beta_updates = value.parse::<bool>().map_err(|_| "beta_updates must be true or false")?;
+                self.beta_updates_chosen = true;
             }
             ("scroll_speed", _) => {
                 self.scroll_speed = scroll_speed::ScrollSpeed::parse(value).ok_or("scroll_speed must be slow, normal, or fast")?;

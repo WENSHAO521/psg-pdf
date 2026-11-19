@@ -38,7 +38,7 @@ step, and `.nojekyll` keeps Pages from processing these notes.
 
 ## The shared PDF engine
 
-Both products share the PDF engine of [PdfCraft](https://github.com/storytold/pdfcraft), the
+Both products share the PDF engine of PdfCraft, the
 open-source project they are based on. These notes come from it and describe the engine and PSG
 PDF's interface in depth; they keep PdfCraft's name where they describe its design and history.
 
@@ -53,4 +53,3 @@ PDF's interface in depth; they keep PdfCraft's name where they describe its desi
 - Platform: [Windows renderer start-up](windows-renderer-startup.md),
   [egui 0.37 migration](egui-037-migration-plan.md), [integration notes](integration-20261030.md)
 - [Workflow research](research/pdf-workflows/README.md)
-- [The upstream PdfCraft README](upstream/pdfcraft-README.md), kept for reference

@@ -1,6 +1,6 @@
 # PDF workflow research reference
 
-> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Status:** reference documentation. Feature and roadmap snapshot: [`924c4da4`](https://github.com/storytold/pdfcraft/tree/924c4da4ac2879ac9107c6c82e20ac6be5570f0a), dated 2026-10-16. Detailed code inspection remains pinned to `3f044b62`, dated 2026-10-13.
+> **Last reviewed:** 2026-10-17 · **Last updated:** 2026-10-17 · **Status:** reference documentation. Feature and roadmap snapshot: `924c4da4`, dated 2026-10-16. Detailed code inspection remains pinned to `3f044b62`, dated 2026-10-13.
 
 This reference consolidates archived comparative research, public source locators and
 PdfCraft feature evidence. It separates documented workflows, historical observations,

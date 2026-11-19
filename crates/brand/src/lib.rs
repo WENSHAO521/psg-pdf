@@ -17,6 +17,10 @@ pub type Rgb = [u8; 3];
 pub const PUBLISHER: &str = "Panorama Scholarly Group";
 /// The short form of [`PUBLISHER`], as in the product names.
 pub const PUBLISHER_SHORT: &str = "PSG";
+/// Panorama Scholarly Group's website.
+pub const WEBSITE: &str = "https://panorama-sg.com/";
+/// PSG PDF's own website.
+pub const PDF_WEBSITE: &str = "https://pdf.panorama-sg.com/";
 /// The repository both products are developed and released from.
 pub const REPOSITORY: &str = "https://github.com/WENSHAO521/psg-pdf";
 /// Where both products' installers are published.
@@ -158,6 +162,164 @@ pub mod neutral {
     pub const DARK_CANVAS: Rgb = [0x19, 0x19, 0x1c];
 }
 
+/// Every neutral colour of one theme. Both products draw their chrome from the same set, so the
+/// two apps differ only in their accent ([`Product::accent`]).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Surfaces {
+    /// Title and tab strip.
+    pub titlebar: Rgb,
+    /// Toolbars, the mode bar and side panels.
+    pub chrome: Rgb,
+    /// Panels and pages of the app's own forms.
+    pub panel: Rgb,
+    /// The window background behind panels and the document area behind PDF pages.
+    pub canvas: Rgb,
+    /// Cards and dialogs drawn on a panel.
+    pub card: Rgb,
+    /// Outlines of fields, cards and controls.
+    pub border: Rgb,
+    /// Hairlines between sections.
+    pub divider: Rgb,
+    /// Body text.
+    pub text: Rgb,
+    /// Secondary text: hints, captions, metadata (4.5:1 on panels).
+    pub text_muted: Rgb,
+    /// Placeholders and disabled text (4.5:1 on panels, for small type).
+    pub text_faint: Rgb,
+    /// Monochrome icons.
+    pub icon: Rgb,
+    /// The wash behind a hovered control.
+    pub hover: Rgb,
+    /// The wash behind a pressed control.
+    pub pressed: Rgb,
+    /// Text field background.
+    pub field: Rgb,
+}
+
+/// The neutral surfaces of the light (`dark == false`) or dark theme.
+pub const fn surfaces(dark: bool) -> Surfaces {
+    if dark {
+        Surfaces {
+            titlebar: [0x1b, 0x1b, 0x1e],
+            chrome: neutral::DARK_PANEL,
+            panel: neutral::DARK_PANEL,
+            canvas: neutral::DARK_CANVAS,
+            card: [0x2e, 0x2e, 0x33],
+            border: [0x3c, 0x3c, 0x43],
+            divider: [0x33, 0x33, 0x39],
+            text: [0xec, 0xec, 0xef],
+            text_muted: [0xae, 0xae, 0xb6],
+            text_faint: [0x97, 0x97, 0x9e],
+            icon: [0xd4, 0xd4, 0xda],
+            hover: [0x34, 0x34, 0x3a],
+            pressed: [0x3e, 0x3e, 0x45],
+            field: [0x1e, 0x1e, 0x22],
+        }
+    } else {
+        Surfaces {
+            titlebar: [0xe9, 0xe9, 0xeb],
+            chrome: neutral::LIGHT_PANEL,
+            panel: neutral::LIGHT_PANEL,
+            canvas: neutral::LIGHT_CANVAS,
+            card: [0xff, 0xff, 0xff],
+            border: [0xda, 0xda, 0xde],
+            divider: [0xe8, 0xe8, 0xeb],
+            text: [0x22, 0x22, 0x26],
+            text_muted: [0x5e, 0x5e, 0x66],
+            text_faint: [0x6b, 0x6b, 0x73],
+            icon: [0x44, 0x44, 0x4b],
+            hover: [0xf0, 0xf0, 0xf3],
+            pressed: [0xe4, 0xe4, 0xe9],
+            field: [0xff, 0xff, 0xff],
+        }
+    }
+}
+
+/// What a message, badge or problem is about. Each tone has a text colour and a soft wash.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+pub enum Tone {
+    /// Neutral information.
+    Neutral,
+    /// Something in progress or worth knowing (uses the product accent).
+    Info,
+    /// Finished without problems.
+    Success,
+    /// Finished, with something to check.
+    Warning,
+    /// Failed, or needs fixing before it can go on.
+    Danger,
+}
+
+/// A tone's colours in one theme.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct ToneColours {
+    /// Text and icons in this tone (4.5:1 on panels and on [`ToneColours::soft`]).
+    pub text: Rgb,
+    /// The wash behind a badge, banner or notification in this tone.
+    pub soft: Rgb,
+    /// A solid mark: a status dot, the edge of a notification (3:1 on panels).
+    pub solid: Rgb,
+}
+
+impl Tone {
+    /// All tones, in order of severity.
+    pub const ALL: [Tone; 5] = [Tone::Neutral, Tone::Info, Tone::Success, Tone::Warning, Tone::Danger];
+
+    /// This tone's colours for `product` in the light or dark theme. Only [`Tone::Info`] differs
+    /// between the products: it is the product accent.
+    pub const fn colours(self, product: Product, dark: bool) -> ToneColours {
+        match (self, dark) {
+            (Tone::Neutral, false) => ToneColours { text: [0x4a, 0x4a, 0x52], soft: [0xee, 0xee, 0xf1], solid: [0x76, 0x76, 0x7e] },
+            (Tone::Neutral, true) => ToneColours { text: [0xc8, 0xc8, 0xcf], soft: [0x34, 0x34, 0x3a], solid: [0x8c, 0x8c, 0x94] },
+            (Tone::Info, _) => {
+                let a = product.accent(dark);
+                ToneColours { text: a.accent_text, soft: a.accent_soft, solid: a.accent }
+            }
+            (Tone::Success, false) => ToneColours { text: [0x1d, 0x6b, 0x3a], soft: [0xe3, 0xf3, 0xe8], solid: [0x2e, 0x8b, 0x4f] },
+            (Tone::Success, true) => ToneColours { text: [0x8f, 0xd6, 0xa7], soft: [0x1d, 0x33, 0x25], solid: [0x4c, 0xb0, 0x72] },
+            (Tone::Warning, false) => ToneColours { text: [0x85, 0x4d, 0x0e], soft: [0xfb, 0xf0, 0xd9], solid: [0xc0, 0x7a, 0x12] },
+            (Tone::Warning, true) => ToneColours { text: [0xf0, 0xc2, 0x7a], soft: [0x3b, 0x2f, 0x1a], solid: [0xd9, 0x9a, 0x3a] },
+            (Tone::Danger, false) => ToneColours { text: [0xa3, 0x1f, 0x1f], soft: [0xfb, 0xe5, 0xe4], solid: [0xc8, 0x36, 0x2e] },
+            (Tone::Danger, true) => ToneColours { text: [0xf3, 0xa5, 0x9f], soft: [0x40, 0x22, 0x22], solid: [0xe0, 0x5a, 0x50] },
+        }
+    }
+}
+
+/// Control and layout sizes, in logical pixels, shared by both products' workspaces.
+pub mod size {
+    /// The height of buttons, fields and toolbar controls (also the minimum hit target).
+    pub const CONTROL: f32 = 28.0;
+    /// The height of a primary call to action on a page or empty state.
+    pub const CONTROL_LARGE: f32 = 34.0;
+    /// The height of a workspace toolbar.
+    pub const TOOLBAR: f32 = 44.0;
+    /// The height of the status bar.
+    pub const STATUS_BAR: f32 = 26.0;
+    /// The width of the navigation rail when it shows labels.
+    pub const NAV_RAIL: f32 = 184.0;
+    /// The width of the navigation rail when collapsed to its marks.
+    pub const NAV_RAIL_COMPACT: f32 = 52.0;
+    /// Below this window width a workspace collapses its navigation rail and stacks panes.
+    pub const COMPACT_WIDTH: f32 = 1100.0;
+    /// The narrowest a resizable side panel may become.
+    pub const PANEL_MIN: f32 = 220.0;
+    /// The widest a resizable side panel may become.
+    pub const PANEL_MAX: f32 = 520.0;
+    /// The width of a focus ring.
+    pub const FOCUS_RING: f32 = 2.0;
+}
+
+/// Motion: how long the interface's own transitions take, in seconds. Both products honour the
+/// system's reduced-motion setting by skipping them.
+pub mod motion {
+    /// Hover and press washes.
+    pub const FAST: f32 = 0.12;
+    /// Panels opening and closing.
+    pub const PANEL: f32 = 0.18;
+    /// How long a notification stays before it fades (errors stay until dismissed).
+    pub const NOTICE_SECS: f32 = 6.0;
+}
+
 /// Corner radii, in logical pixels.
 pub mod radius {
     /// Badges, tags, small chips.
@@ -227,6 +389,14 @@ impl Release {
             Release::Beta(_) => Some("Beta"),
             Release::Development => Some("Development build"),
         }
+    }
+
+    /// The update channel a copy of this release follows until its user picks one: a beta
+    /// follows the beta channel (`true`), so that it is offered the next beta. On the stable
+    /// channel a beta is never offered anything until a newer stable release, which is how
+    /// installed betas used to say "up to date" while newer betas were out.
+    pub fn follows_betas_by_default(self) -> bool {
+        matches!(self, Release::Beta(_))
     }
 }
 

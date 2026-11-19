@@ -377,15 +377,11 @@ jobs:
   release:
     name: Release · ${{ needs.plan.outputs.tag }}
     needs: [plan, gate, build]
-    # Only with a tag (pushes to beta and main of this repository, packaging/release-tag.sh) and
-    # only when the checks passed. A stable release needs every platform built and installed; a
-    # beta publishes what passed as long as Linux and Windows did (on this repository the macOS
-    # runners have often never started), and its notes say what is missing. release-files.sh
-    # checks which platforms are there.
+    # Both release channels require both products to build and pass install tests on all
+    # platforms. release-files.sh also checks that every platform's installers were uploaded.
     if: >-
       !cancelled() && needs.plan.outputs.tag != '' &&
-      needs.plan.result == 'success' && needs.gate.result == 'success' &&
-      (needs.build.result == 'success' || (contains(needs.plan.outputs.tag, '-beta.') && needs.build.result != 'skipped'))
+      needs.plan.result == 'success' && needs.gate.result == 'success' && needs.build.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:

@@ -2,171 +2,379 @@
 # No escapes: a backslash is a backslash. Embedded by apps/psg-academic-pdf/src/i18n.rs; a missing row shows in English.
 # Written from the plain meaning of the English; no other product's translations were consulted.
 	(none)	（无）
+	A .tex or .docx file becomes the body of a new project	一个 .tex 或 .docx 文件将成为新项目的正文
 	A command is misspelt, or needs a package the journal template doesn't load. Check the command on this line, or remove it.	命令拼写有误，或需要期刊模板未加载的宏包。请检查这一行的命令，或将其删除。
 	A file the manuscript uses is not in the project. Add it with "Bibliography / figures…" and check the spelling: file names are case-sensitive.	稿件用到的某个文件不在项目中。请用“参考文献 / 图片…”添加，并检查拼写：文件名区分大小写。
 	A line sticks out into the margin. Rephrase it, allow a hyphenation with \-, or break a long URL or formula.	有一行伸进了页边距。请改写，用 \- 允许断词，或拆分过长的网址或公式。
 	Abbreviation	缩写
+	About	关于
 	Abstract	摘要
 	Accepted	接受日期
 	Activity	活动记录
 	Add affiliation	添加单位
 	Add author	添加作者
+	Add bibliography file…	添加参考文献文件…
 	Add bibliography, figures or other files	添加参考文献、图片或其他文件
 	Added {path} as {name}	已将 {path} 添加为 {name}
+	Adding the packages the templates use…	正在添加模板所需的宏包…
 	Affiliation numbers, e.g. 1, 2	单位编号，例如 1, 2
 	Affiliations	单位
+	All ({n})	全部（{n}）
+	All releases are listed at {url}	所有版本都列在 {url}
+	An open project keeps the template it was created with; the selection applies to new projects.	已打开的项目保留创建时的模板；此处的选择用于新项目。
 	Article	文章
+	Article details	文章信息
 	Article no.	文章编号
 	Author {n}	作者 {n}
-	Authors and affiliations	作者与单位
-	Before compiling	编译前检查
+	Authors	作者
+	Authors refer to these by number.	作者通过编号引用这些机构。
+	Auto Typeset	自动排版
+	Before typesetting	排版前
+	Before you export	导出前检查
+	Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):	除内置模板外，PSG Academic PDF 还会从以下文件夹读取模板（每个模板是一个含 template.toml 的文件夹）：
+	Beta	测试版
 	Biber could not read the bibliography file. Check that the .bib file named in main.tex is in the project.	Biber 无法读取参考文献文件。请确认 main.tex 中指定的 .bib 文件在项目中。
 	Bibliography / figures…	参考文献 / 图片…
+	Bibliography: {tool}	参考文献：{tool}
+	Built in	内置
 	Cancel	取消
+	Cancelled	已取消
 	Cancelling…	正在取消…
+	Cannot auto-update this installation type. Please download manually.	此安装类型无法自动更新。请手动下载。
+	Check Again	重新检查
 	Check again	重新检查
+	Check and export the finished PDF	检查并导出完成的 PDF
+	Check compatibility	检查兼容性
 	Check for updates…	检查更新…
+	Check the finished article and save the PDF where it is needed.	检查完成的文章，并把 PDF 保存到需要的位置。
+	Checking TeX…	正在检查 TeX…
+	Checking for updates…	正在检查更新…
 	Checking the TeX installation…	正在检查 TeX 安装…
 	Checking…	正在检查…
 	Choose an empty folder for the project	为项目选择一个空文件夹
+	Close	关闭
+	Close {app}	关闭 {app}
+	Close {app} to finish	关闭 {app} 以完成
+	Coming later	后续版本提供
 	Compilation started.	已开始编译。
-	Compile	编译
 	Compile output	编译输出
-	Compile the project to see the PDF here.	编译项目后在此查看 PDF。
-	Compile to see errors and warnings here.	编译后在此查看错误和警告。
-	Compile to see latexmk's output here.	编译后在此查看 latexmk 的输出。
-	Compiling with latexmk and pdfLaTeX…	正在用 latexmk 和 pdfLaTeX 编译…
 	Copyright	版权
 	Corresponding author	通讯作者
+	Could not check for updates.	无法检查更新。
 	Could not check the TeX installation: {error}	无法检查 TeX 安装：{error}
 	Could not create the project: {error}	无法创建项目：{error}
+	Could not install TeX: {error}	无法安装 TeX：{error}
 	Could not open the project: {error}	无法打开项目：{error}
 	Could not read {path}: {error}	无法读取 {path}：{error}
 	Could not save the project: {error}	无法保存项目：{error}
 	Could not save {file}: {error}	无法保存 {file}：{error}
 	Could not start the compilation: {error}	无法开始编译：{error}
+	Could not update TeX: {error}	无法更新 TeX：{error}
+	Couldn't start the update ({error})	无法开始更新（{error}）
 	Create the project in {path}	在 {path} 中创建项目
+	Ctrl	Ctrl
+	Current project	当前项目
 	DOI	DOI
+	Dark	深色
+	Dashboard	概览
 	Dates and licence	日期与许可
+	Development build	开发版本
 	Discard unsaved changes and read the file again	放弃未保存的更改并重新读取文件
+	Dismiss	关闭
+	Download	下载
+	Downloading TeX: {done} of {total} MB	正在下载 TeX：{done} / {total} MB
+	Downloading and installing update…	正在下载并安装更新…
+	Downloading update…	正在下载更新…
+	Reconnecting…	正在重新连接…
+	Verifying update…	正在验证更新…
+	Edit manuscript	编辑稿件
+	Editor	编辑器
 	Email	电子邮件
 	Engine	引擎
+	Engine: pdfLaTeX	引擎：pdfLaTeX
 	Entry	条目
+	Error	错误
+	Errors ({n})	错误（{n}）
+	Errors stop typesetting; warnings are worth a look before export.	错误会中止排版；导出前最好看看警告。
 	Experimental: converts with the local Pandoc	实验功能：使用本机 Pandoc 转换
+	Export	导出
 	Export PDF…	导出 PDF…
 	Export failed: {error}	导出失败：{error}
 	Export the PDF	导出 PDF
 	Exported {path}.	已导出 {path}。
+	Failed	失败
+	File	文件
 	Files added; see Activity for their names in the project.	文件已添加；在“活动记录”中查看它们在项目中的名称。
-	Filter	筛选
-	From the last compilation	上次编译的结果
+	Filter by key, author or title	按键名、作者或标题筛选
+	Finished	已完成
+	Fit width	适合宽度
+	Follow system	跟随系统
+	Follow system ({language})	跟随系统（{language}）
+	From the last typesetting run	来自上次排版
+	Get beta updates	获取测试版更新
 	Go to line	转到该行
 	ISSN	ISSN
+	Idle	空闲
 	Import	导入
 	Import a Word manuscript (experimental, via Pandoc)	导入 Word 稿件（实验功能，使用 Pandoc）
+	Import a manuscript	导入稿件
+	Import a manuscript or create a project from a template to start.	导入稿件或从模板新建项目即可开始。
 	Import failed: {error}	导入失败：{error}
+	Import manuscript…	导入稿件…
+	Import template (.zip)…	导入模板（.zip）…
 	Import the manuscript body (LaTeX)	导入稿件正文（LaTeX）
 	Install Pandoc to import .docx (experimental)	安装 Pandoc 后可导入 .docx（实验功能）
+	Install TeX	安装 TeX
+	Installed by PSG Academic PDF (TinyTeX {release}), updated {date}. Updates itself weekly.	由 PSG Academic PDF 安装（TinyTeX {release}），{date} 更新，每周自动更新。
+	Installed the TeX packages this document needs: {packages}	已安装此文档需要的 TeX 宏包：{packages}
+	Installing TeX for PSG Academic PDF…	正在为 PSG Academic PDF 安装 TeX…
+	Installing TeX…	正在安装 TeX…
+	Installing update…	正在安装更新…
+	Interface size	界面大小
 	Issue	期
+	Join beta	加入测试版
+	Join the beta channel? Betas can have unfinished features and bugs. PSG Academic PDF then updates to every new beta, and to each stable release as soon as it is newer.	加入测试版通道？测试版可能有未完成的功能和错误。之后 PSG Academic PDF 会更新到每个新测试版，以及更新的正式版。
 	Journal	期刊
 	Journal and issue	期刊与期号
-	Journal template	期刊模板
+	Journal templates set the layout, fonts and citation style. New projects use the selected template.	期刊模板决定版式、字体和引用格式。新项目使用所选模板。
 	Key	引用键
 	Keywords	关键词
 	Language	界面语言
+	Language and appearance	语言和外观
+	Later	稍后
+	Leave beta	退出测试版
+	Leave the beta channel? PSG Academic PDF keeps the version it has and updates again with the first stable release newer than it. It never goes back to an older version.	退出测试版通道？PSG Academic PDF 保留当前版本，直到出现比它更新的正式版才会再更新。它不会退回旧版本。
 	Licence statement	许可声明
+	Light	浅色
+	Line {n}	第 {n} 行
+	Looking for the newest TeX…	正在查找最新的 TeX…
+	Manuscript	稿件
 	Manuscript (.tex)…	稿件（.tex）…
+	Manuscript as a new project…	以稿件新建项目…
 	Mathematics outside a formula, or a stray _ or ^ in text. Put formulas in $…$, and write \_ for an underscore in text.	公式之外出现了数学内容，或正文中有多余的 _ 或 ^。请把公式放在 $…$ 中，正文中的下划线写作 \_。
+	Missing	缺失
+	Name	姓名
 	New in folder…	在文件夹中新建…
 	New project	新建项目
+	New project from this template	用此模板新建项目
 	New project from {template} around {path}.	已用 {template} 围绕 {path} 新建项目。
 	New project from {template} in {path}.	已用 {template} 在 {path} 中新建项目。
+	New projects use the {template} template. Choose another in the Template Library.	新项目使用 {template} 模板。可在模板库中选择其他模板。
+	No PDF yet	还没有 PDF
+	No PDF yet.	还没有 PDF。
 	No TeX log yet.	还没有 TeX 日志。
 	No \label with this name. Check the spelling of the \ref and the \label.	没有这个名称的 \label。请检查 \ref 和 \label 的拼写。
+	No \section headings yet.	还没有 \section 标题。
+	No bibliography	无参考文献
+	No bibliography entries yet.	还没有参考文献条目。
+	No errors	没有错误
 	No errors or warnings.	没有错误或警告。
+	No manuscript open	没有打开的稿件
 	No problems in the manuscript's scripts or the bibliography.	稿件文字和参考文献中没有发现问题。
-	No project yet. Choose a template and press New project.	还没有项目。请选择模板，然后点击“新建项目”。
+	No project open	没有打开的项目
 	No template is available.	没有可用的模板。
 	Not added: {error}	未添加：{error}
 	Not opened (one project at a time): {path}	未打开（一次只能打开一个项目）：{path}
+	Not typeset in this session	本次尚未排版
+	Nothing typeset in this session yet.	本次还没有排版过。
+	OK	确定
 	ORCID iD	ORCID iD
 	Open a PSG Academic PDF project folder	打开 PSG Academic PDF 项目文件夹
+	Open another project…	打开其他项目…
 	Open file	打开文件
 	Open in PSG PDF	在 PSG PDF 中打开
+	Open or create a project first.	请先打开或新建项目。
 	Open or create a project to check it.	请打开或新建项目以进行检查。
-	Open or create a project to edit its manuscript.	请打开或新建项目以编辑稿件。
-	Open or create a project to see its bibliography.	请打开或新建项目以查看参考文献。
+	Open or create a project to import into it.	打开或新建项目后才能向其中导入。
 	Open or create a project, and wait for the TeX check, before compiling.	编译前请先打开或新建项目，并等待 TeX 检查完成。
+	Open or create a project, then typeset it to export a PDF.	打开或新建项目并排版后即可导出 PDF。
+	Open project…	打开项目…
 	Open the compiled PDF in PSG PDF for review, annotation and further editing	在 PSG PDF 中打开编译好的 PDF，进行审阅、批注和进一步编辑
 	Opened {path} in PSG PDF.	已在 PSG PDF 中打开 {path}。
 	Opened {path} in the default PDF viewer.	已在默认 PDF 阅读器中打开 {path}。
 	Opened {path}.	已打开 {path}。
-	Open…	打开…
+	Outline	大纲
+	PDF	PDF
 	PDF engine: PdfCraft (MIT OR Apache-2.0)	PDF 引擎：PdfCraft（MIT OR Apache-2.0）
 	PDF preview	PDF 预览
+	PSG Academic PDF installs TeX by itself; nothing needs to be installed by hand.	PSG Academic PDF 会自动安装 TeX，无需手动安装任何东西。
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	未安装 PSG PDF，因此已在默认阅读器中打开 PDF。PSG PDF 需要单独下载。
 	Page {n}: {error}	第 {n} 页：{error}
 	Pages	页码
+	Planned for a later version; not available yet.	计划在后续版本提供，目前尚不可用。
 	Portable mode: settings and projects are kept in {path}.	便携模式：设置和项目保存在 {path}。
-	Preview zoom	预览缩放
+	Press Auto Typeset first.	请先点击“自动排版”。
+	Press Auto Typeset to typeset the manuscript; the PDF appears here.	点击“自动排版”排版稿件，PDF 会显示在这里。
+	Preview	预览
+	Problems	问题
 	Problems ({n})	问题（{n}）
-	Project	项目
 	Project: {path} (template {template})	项目：{path}（模板 {template}）
-	Publication metadata	出版元数据
+	Projects you open or create appear here.	打开或新建的项目会显示在这里。
+	Publication	出版信息
 	Published	出版日期
 	Rebuild everything each time	每次都完整重建
 	Received	收稿日期
-	Redraw preview	重新绘制预览
+	Recent projects	最近的项目
+	Redraw	重新绘制
 	References ({n})	参考文献（{n}）
 	Reload from disk	从磁盘重新载入
 	Remove	移除
+	Remove from the list (the folder is kept)	从列表中移除（文件夹保留）
 	Replaces the article body; a full document keeps only its body	替换文章正文；完整文档只保留其正文部分
+	Required publication details are filled in	必填的出版信息已填写
+	Reset	重置
+	Resize panes	调整窗格大小
+	Restart to Update	重启以更新
+	Review problems	查看问题
 	Revised	修回日期
+	Running	运行中
+	Runs in this session	本次的排版记录
 	Save	保存
-	Save the file (Ctrl+S / ⌘S)	保存文件（Ctrl+S / ⌘S）
+	Save or close your open work first; the update restarts the app.	请先保存或关闭正在进行的工作；更新会重启应用。
+	Save the file ({keys})	保存文件（{keys}）
+	Save, check and typeset with latexmk and pdfLaTeX ({keys})	保存、检查并用 latexmk 和 pdfLaTeX 排版（{keys}）
+	Saved with the project ({keys}) and before every typesetting run.	随项目保存（{keys}），每次排版前也会保存。
 	Saved {file}.	已保存 {file}。
+	Saved.	已保存。
+	See Manuscript ▸ Title & abstract, Authors and Publication.	请查看“稿件 ▸ 标题与摘要、作者、出版信息”。
+	Selected for new projects	新项目将使用
 	Separate keywords with ; or ,	用 ; 或 , 分隔关键词
+	Settings	设置
+	Settings for this project	本项目的设置
+	Settings ▸ TeX installation	设置 ▸ TeX 安装
+	Shift	Shift
 	Short title	短标题
+	Shortcuts:	快捷键：
+	Show the PDF beside the manuscript	在稿件旁显示 PDF
 	Showing the first {shown} of {total} pages.	显示 {total} 页中的前 {shown} 页。
+	Size	大小
 	Some citations or cross-references could not be resolved; the warnings above name them.	部分引用或交叉引用无法解析；上方的警告列出了它们。
-	Source and PDF	源码与 PDF
+	Source	源文件
+	Split	并排
+	Start a project	开始一个项目
+	Suggested name	建议文件名
 	Supported files	支持的文件
+	Switch area	切换功能区
 	TeX installation	TeX 安装
-	TeX is not ready: {tools} not found. Install TeX Live with latexmk and biber, then press Check again.	TeX 尚未就绪：未找到 {tools}。请安装含 latexmk 和 biber 的 TeX Live，然后点击“重新检查”。
+	TeX is being installed or updated; typesetting starts once it is done.	正在安装或更新 TeX，完成后即可排版。
+	TeX is installed (TinyTeX {release}) and will keep itself up to date.	TeX 已安装（TinyTeX {release}），之后会自动保持最新。
+	TeX is not ready: see Settings ▸ TeX installation.	TeX 尚未就绪：请查看“设置 ▸ TeX 安装”。
+	TeX is not ready: {tools} not found. Press Install TeX in Settings ▸ TeX installation.	TeX 尚未就绪：找不到 {tools}。请在“设置 ▸ TeX 安装”中点击“安装 TeX”。
 	TeX is ready.	TeX 已就绪。
+	TeX is up to date.	TeX 已是最新。
 	TeX log	TeX 日志
+	TeX not found	未找到 TeX
+	TeX not found yet ({tools}); PSG Academic PDF installs its own.	尚未找到 TeX（{tools}），PSG Academic PDF 将自行安装。
+	TeX ready	TeX 已就绪
+	TeX ready, no Biber	TeX 已就绪，缺少 Biber
 	TeX stopped at a fatal error. Fix the first error in the list; the later ones often follow from it.	TeX 遇到致命错误而停止。请先修正列表中的第一个错误，后面的错误往往由它引起。
+	Template Library	模板库
 	Template skipped: {problem}	已跳过模板：{problem}
+	Template: {template}	模板：{template}
 	Text before \begin{document}: the body file must hold the article text only. Import the manuscript again so its preamble is removed.	\begin{document} 之前有文字：正文文件只能包含文章正文。请重新导入稿件，以移除其导言区。
 	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	.bib 文件在此处所列条目附近有语法错误：缺少逗号、括号或引号。
 	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	pdfLaTeX 期刊模板无法排版中文、日文或韩文（需要 XeLaTeX 或 LuaLaTeX 加 CJK 字体，而这些模板不使用它们）。请用拉丁字母（罗马化，原文保留在源数据中）给出标题、姓名和参考文献，或在 PSG Academic PDF 之外使用支持 CJK 的模板排版。
 	The project folder: compilation happens here and only here	项目文件夹：编译只在这里进行
+	The project has been typeset	项目已排版
 	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	模板没有西里尔字母字体（T2A 编码）。请按多数英文期刊的要求，将西里尔字母的姓名和标题转写为拉丁字母。
 	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	模板没有希腊文正文字体。公式中请用命令书写希腊字母（$\alpha$、$\Omega$）；正文中的希腊文单词必须转写。
 	The templates have no font for this script. Transliterate the text.	模板没有这种文字的字体。请将文字转写为拉丁字母。
+	The update could not be installed: {reason}	无法安装更新：{reason}
+	The update failed unexpectedly.	更新意外失败。
+	The update is installed. Close {app} to finish; it restarts by itself.	更新已安装。关闭 {app} 即可完成，它会自动重新启动。
+	The update stopped unexpectedly.	更新意外中止。
+	Theme	主题
+	There is no folder PSG Academic PDF can install TeX in.	没有可供 PSG Academic PDF 安装 TeX 的文件夹。
 	This Pandoc is too old: DOCX import needs Pandoc 2.15 or newer	此 Pandoc 版本过旧：导入 DOCX 需要 Pandoc 2.15 或更新版本
 	This citation key is not in the bibliography. Add the entry to the .bib file, or correct the key.	参考文献中没有这个引用键。请在 .bib 文件中添加该条目，或更正引用键。
 	This template doesn't use a bibliography file.	此模板不使用参考文献文件。
 	Time limit	时间限制
+	Timed out	已超时
 	Title	标题
+	Title & abstract	标题与摘要
 	Type	类型
-	Typeset with latexmk and pdfLaTeX	用 latexmk 和 pdfLaTeX 排版
+	Typeset	排版时间
+	Typeset accepted articles into publication-ready PDFs with your journal's template.	使用期刊模板，将已录用文章排版为可出版的 PDF。
+	Typeset the project first.	请先排版项目。
+	Typeset to see errors and warnings here.	排版后会在这里显示错误和警告。
+	Typeset to see latexmk's output here.	排版后会在这里显示 latexmk 的输出。
 	Typesetting	排版
+	Typesetting cancelled.	排版已取消。
+	Typesetting for {secs} s…	已排版 {secs} 秒…
+	Typesetting is already running.	排版正在进行。
+	Typesetting stopped: it took longer than {secs} s.	排版已停止：用时超过 {secs} 秒。
+	Typesetting with latexmk and pdfLaTeX…	正在用 latexmk 和 pdfLaTeX 排版…
 	Unbalanced braces: a { without its } (or the other way round) near this line.	括号不配对：这一行附近有 { 缺少对应的 }（或相反）。
-	Unsaved changes; they are saved before compiling.	有未保存的更改；编译前会自动保存。
+	Unpacking TeX…	正在解压 TeX…
+	Unsaved	未保存
+	Unsaved changes	有未保存的更改
+	Untitled article	未命名文章
+	Update	更新
+	Update TeX now	立即更新 TeX
+	Update and Restart	更新并重启
+	Update ready. Close {app} to install it.	更新已就绪。关闭 {app} 即可安装。
+	Updates	更新
+	Updating TeX…	正在更新 TeX…
+	Used by this project	本项目使用
+	Using the TeX found on this computer until PSG Academic PDF has installed its own.	在 PSG Academic PDF 安装好自己的 TeX 之前，暂时使用本机已有的 TeX。
 	Volume	卷
+	Wait for the current task to finish.	请等待当前任务完成。
+	Warning	警告
+	Warnings ({n})	警告（{n}）
+	What's new	新功能
+	Where templates come from	模板来源
 	Word (.docx)…	Word（.docx）…
+	Worth a look, but they don't stop the export.	值得一看，但不会阻止导出。
 	Year	年份
+	being installed…	正在安装…
+	by {developer}	来自 {developer}
 	found	已找到
 	latexmk normally reruns until this goes away. If it stays, turn on "Rebuild everything each time" and compile again.	latexmk 通常会重复运行直到这条消失。如果一直存在，请开启“每次都完整重建”后重新编译。
+	latexmk runs pdfLaTeX (and Biber for the bibliography) in the project folder, without shell escape.	latexmk 在项目文件夹中运行 pdfLaTeX（以及处理参考文献的 Biber），不启用 shell escape。
 	not found	未找到
 	not found (optional, for DOCX import)	未找到（可选，用于导入 DOCX）
+	pdfLaTeX	pdfLaTeX
 	pdfLaTeX can't set right-to-left scripts with these templates. Transliterate the text, or prepare the article with a template for XeLaTeX or LuaLaTeX.	使用这些模板时，pdfLaTeX 无法排版从右到左书写的文字。请转写文字，或使用 XeLaTeX 或 LuaLaTeX 模板准备文章。
-	pdfLaTeX via latexmk (shell escape off)	通过 latexmk 调用 pdfLaTeX（已关闭 shell escape）
 	pdfLaTeX's fonts have no glyph for this character. Replace it, or write it as a LaTeX command (a Greek letter as $\alpha$, for example).	pdfLaTeX 的字体没有这个字符的字形。请替换它，或写成 LaTeX 命令（例如希腊字母写作 $\alpha$）。
+	via latexmk, shell escape off	经 latexmk，shell escape 关闭
+	v{from} to {to}	从 v{from} 到 {to}
+	{app} updated to {version}.	{app} 已更新到 {version}。
+	{app} {version} follows the version chosen in the launcher, so it does not update itself.	{app} {version} 使用启动器中选择的版本，因此不会自行更新。
+	{app} {version} is available with the latest features and bug fixes.	{app} {version} 已推出，包含最新功能和错误修复。
+	{app} {version} is the newest version available.	{app} {version} 已是最新版本。
 	{file} is not UTF-8 text; save it as UTF-8 and try again.	{file} 不是 UTF-8 文本；请另存为 UTF-8 后重试。
 	{file} is too large to edit here.	{file} 太大，无法在此编辑。
 	{first} Some things need fixing first: see Activity.	{first} 有些问题需要先修正：见“活动记录”。
-	{id} · {engine} · bibliography: {bibliography}	{id} · {engine} · 参考文献：{bibliography}
-	{n} problems found before compiling; see Problems.	编译前发现 {n} 个问题；见“问题”。
+	{id} · licence {licence}	{id} · 许可 {licence}
+	{name} (open)	{name}（已打开）
 	{path} is a Word manuscript; install Pandoc to import it.	{path} 是 Word 稿件；请安装 Pandoc 后导入。
+@other	Typeset in {secs} s with {n} warning.	排版完成，用时 {secs} 秒，{n} 个警告。
+@other	Typesetting failed after {secs} s with {n} error.	排版失败，用时 {secs} 秒，{n} 个错误。
+@other	{n} error	{n} 个错误
+@other	{n} error: see Problems.	{n} 个错误：请查看“问题”。
+@other	{n} page	{n} 页
+@other	{n} problem found before compiling; see Problems.	编译前发现 {n} 个问题；请查看“问题”。
+@other	{n} warning	{n} 个警告
+@other	{n} word	{n} 个字词
+	Data folder	数据文件夹
+	New projects and the app's settings are kept in this folder.	新项目和应用设置都保存在此文件夹。
+	Chosen	自定义
+	Default	默认
+	Moving the data folder…	正在移动数据文件夹…
+	Move the projects and settings to {path}?	要将项目和设置移动到 {path} 吗？
+	Everything is copied and checked first; the old copies are removed only after that.	会先复制并核对所有文件，确认无误后才删除旧文件。
+	Move data	移动数据
+	Change…	更改…
+	Use the default folder	改回默认文件夹
+	Open folder	打开文件夹
+	Choose where to keep projects and settings	选择保存项目和设置的位置
+	Moving the data folder from {path}.	正在从 {path} 移动数据文件夹。
+	Could not move the data folder: {error}	无法移动数据文件夹：{error}
+	Projects and settings are now kept in {path}.	项目和设置现在保存在 {path}。
+	Everything was copied, but some old files could not be removed from {path}. You can delete them yourself.	所有文件已复制完成，但 {path} 中有些旧文件无法删除，您可以自行删除。
+	{path} is not a full path. Choose a folder.	{path} 不是完整路径，请选择一个文件夹。
+	That is the folder already in use.	这就是当前使用的文件夹。
+	{path} is inside the data folder. Choose a folder outside it.	{path} 位于当前数据文件夹内，请选择其外的文件夹。
+	{path} already exists there. Nothing was moved; choose an empty folder.	该处已有 {path}。未移动任何项目或设置，请选择空文件夹。
+	That folder holds too many files to be a data folder. Nothing was moved.	该文件夹文件过多，不像是数据文件夹。未移动任何项目或设置。
+	Could not move the data folder ({path}: {error}). Nothing was changed.	无法移动数据文件夹（{path}：{error}），未做任何更改。

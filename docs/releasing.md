@@ -14,15 +14,15 @@ panorama-secure-access uses: small pull requests into `beta`, a pre-release for 
 | Push to `main` | yes, signed when the secrets exist | yes | `vX.Y.Z`, when `CHANGELOG.md` has its section |
 | Manual run (`full`, `release-check`) | yes, unsigned | yes | nothing |
 
-Nothing is published unless the identity and changelog checks, the gate (`cargo xtask ci` on Linux
-and Windows, with the academic TeX tests) and the Linux and Windows install tests pass; a stable
-release needs macOS too. SonarCloud, FreeBSD, Nix, house rules, packaging lint, fuzzing and the
+Beta and stable releases require the identity and changelog checks, the gate (`cargo xtask ci` on
+Linux and Windows, with the academic TeX tests), and both products' install tests on Windows,
+macOS and Linux. SonarCloud, FreeBSD, Nix, house rules, packaging lint, fuzzing and the
 macOS tests are jobs of the same workflow ([ci.md](ci.md#triggers) says when each runs).
 
 ## Branches
 
 - **Feature and fix branches** (`claude/…` or any other) open a pull request into `beta`.
-- **`beta`** collects the work for the next release. Every push publishes a pre-release
+- **`beta`** collects the work for the next release. Every push that passes the release checks publishes a pre-release
   `vX.Y.Z-beta.<run number>`: a test build anyone can install, never marked "latest".
 - **`main`** holds released code only. It changes when `beta` is merged into it for a release
   (and through no other pull request), and the push publishes the stable release `vX.Y.Z`.
@@ -31,7 +31,7 @@ macOS tests are jobs of the same workflow ([ci.md](ci.md#triggers) says when eac
 
 | Push to | Publishes | When |
 |---|---|---|
-| `beta` | `vX.Y.Z-beta.N` (pre-release) | always; once `vX.Y.Z` is out, betas are `vX.Y.(Z+1)-beta.N`, and a push whose tree is the release's own (main merged back) publishes nothing |
+| `beta` | `vX.Y.Z-beta.N` (pre-release) | after the release checks pass; once `vX.Y.Z` is out, betas are `vX.Y.(Z+1)-beta.N`, and a push whose tree is the release's own (main merged back) publishes nothing |
 | `main` | `vX.Y.Z` (latest) | `CHANGELOG.md` has a `## vX.Y.Z` section and `vX.Y.Z` isn't tagged yet; otherwise nothing |
 
 The publish job checks every file against the SHA-256 written where it was built, creates the tag
@@ -40,14 +40,12 @@ updaters) and one `SHA256SUMS-<product>.txt` per product, and writes the notes, 
 downloads under its own heading: for a beta the changes since the last release, for a
 stable release its `CHANGELOG.md` section.
 
-A stable release is published only when every platform built. A beta is published with the
-platforms that did, and both its title and the warning at the top of its notes name any that is
-missing (the macOS runners have at times never started for this repository), so it can't pass for
-a complete cross-platform release.
+If a platform build or install test fails or is cancelled, publication waits for a successful run
+with installers for all three platforms.
 
 Release titles follow the PSG brand guide ([brand.md](brand.md#release-badge)):
 `PSG PDF & PSG Academic PDF 0.19.0` for a stable release, `PSG PDF & PSG Academic PDF 0.19.0 Beta 3`
-for a beta, with `(no macOS)` appended when a platform is missing. `packaging/ci/release-notes.sh`
+for a beta. `packaging/ci/release-notes.sh`
 writes the title (`--title`) and the notes: one section per product with its icon, tagline and a
 download table per platform, then the changes, checksums and the suite migration note.
 
@@ -100,7 +98,7 @@ headings are `## vX.Y.Z (YYYY-MM-DD)`, newest first.
 
 | Platform | Artifacts | Built on |
 |---|---|---|
-| macOS 11+ (universal: Apple silicon + Intel) | `psg-pdf-<v>-macos-universal.dmg`, `pdfcraft-cli-<v>-macos-universal.zip`; `psg-academic-pdf-<v>-macos-universal.dmg` | `macos-15` |
+| macOS 11+ (universal: Apple silicon + Intel) | `psg-pdf-<v>-macos-universal.dmg`, `pdfcraft-cli-<v>-macos-universal.zip`; `psg-academic-pdf-<v>-macos-universal.dmg` | `macos-latest` |
 | Windows 10+ x64 | `psg-pdf-<v>-windows-x64.msi`, `psg-pdf-<v>-windows-x64-portable.zip`; `psg-academic-pdf-<v>-windows-x64.msi`, `psg-academic-pdf-<v>-windows-x64-portable.zip` | `windows-latest` |
 | Linux x86_64 | `psg-pdf-<v>-linux-x86_64.{deb,rpm,AppImage,tar.gz}`, `pdfcraft-cli-<v>-linux-x86_64.tar.gz`; `psg-academic-pdf-<v>-linux-x86_64.{deb,rpm,AppImage,tar.gz}` | `ubuntu-22.04` |
 
@@ -332,7 +330,7 @@ products' installers without publishing them; add the `full-ci` label to do that
 ## Scanner detections
 
 Antivirus and reputation scanners sometimes flag a released file. Check the facts before you change
-code or answer publicly. The first report was [issue #747](https://github.com/storytold/pdfcraft/issues/747),
+code or answer publicly. The first report was issue #747,
 a match of the `CobaltStrikeBeacon` family rule.
 
 1. **Confirm the file is the release.** Compare its SHA-256 with `SHA256SUMS.txt` on the GitHub
@@ -367,5 +365,5 @@ a match of the `CobaltStrikeBeacon` family rule.
    current one does not. Don't alter PdfCraft's binaries to change a scanner's result. That changes
    nothing about the software.
 7. **Report.** To the scanner, send the file's SHA-256, the release URL, the rule name and revision,
-   and the matched identifiers and offsets. Report PdfCraft problems at
-   <https://github.com/storytold/pdfcraft/issues> with the same facts.
+   and the matched identifiers and offsets. Report PSG problems at
+   <https://github.com/WENSHAO521/psg-pdf/issues> with the same facts.

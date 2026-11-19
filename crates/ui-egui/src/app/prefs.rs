@@ -20,6 +20,24 @@ pub(crate) const MAX_AUTHOR_CHARS: usize = 200;
 /// A restored colour: an `[r, g, b]` array of finite numbers, each clamped to 0–1 (restored
 /// settings are untrusted). Anything else (a string, a wrong length, a null or a non-finite
 /// number) is refused whole, so the caller keeps its default.
+/// The update channel a copy running `version` follows until its user picks one: the betas for a
+/// beta build, stable releases otherwise ([`psg_brand::Release::follows_betas_by_default`]).
+pub(crate) fn default_beta_updates(version: &str) -> bool {
+    psg_brand::Release::of(version).follows_betas_by_default()
+}
+
+/// The update channel the user picked, from saved settings `v` (`true`: the betas), or `None`
+/// when they never picked one. Settings written before `update_channel` kept `beta_updates`,
+/// false included; only `true` there was a pick (joining needed a confirmation), so a saved
+/// false is no pick, and a beta installed over it follows the betas.
+fn saved_beta_updates(v: &serde_json::Value) -> Option<bool> {
+    match v["update_channel"].as_str() {
+        Some("beta") => Some(true),
+        Some("stable") => Some(false),
+        _ => (v["beta_updates"].as_bool() == Some(true)).then_some(true),
+    }
+}
+
 fn rgb_triple(v: &serde_json::Value) -> Option<[f64; 3]> {
     let a = v.as_array()?;
     if a.len() != 3 {
@@ -183,11 +201,18 @@ impl PdfCraftApp {
         // Not `check_updates_at_start`: that key was an opt-in of its own, off unless chosen, and
         // settings written then would turn this off unasked.
         v["update_check_at_start"] = self.update_check_at_start.into();
-        v["beta_updates"] = self.beta_updates.into();
+        // Only a channel the user picked is kept: an unpicked one follows the running build
+        // (`default_beta_updates`). The key isn't the former `beta_updates`, which every build
+        // wrote, false included, so a saved false can't tell a pick from the old default.
+        if self.beta_updates_chosen {
+            v["update_channel"] = (if self.beta_updates { "beta" } else { "stable" }).into();
+        }
         v["hotbar"] = serde_json::to_value(&self.hotbar).unwrap_or_default();
         v["comment_tool_pinned"] = serde_json::Value::Bool(self.comment_prefs.pinned);
         v["show_secured_notice"] = serde_json::Value::Bool(self.show_secured_notice);
         v["text_links"] = serde_json::Value::Bool(self.text_links);
+        // The AI providers people added; their keys are in the OS keychain, never here.
+        v["ai"] = self.ai.settings.to_json();
         v["organize_zoom"] = serde_json::json!(self.organize_zoom);
         // Canonical names survive changes to the order of PAPERS and do not depend on UI language;
         // a custom paper is stored by the name it was given.
@@ -269,11 +294,15 @@ impl PdfCraftApp {
         if let Some(on) = v["update_check_at_start"].as_bool() {
             self.update_check_at_start = on;
         }
-        if let Some(on) = v["beta_updates"].as_bool() {
+        if let Some(on) = saved_beta_updates(v) {
             self.beta_updates = on;
+            self.beta_updates_chosen = true;
         }
         if let Some(on) = v["show_secured_notice"].as_bool() {
             self.show_secured_notice = on;
+        }
+        if v.get("ai").is_some() {
+            self.ai.settings = psg_ai::Settings::from_json(&v["ai"]);
         }
         if let Some(on) = v["text_links"].as_bool() {
             self.text_links = on;
@@ -576,5 +605,31 @@ impl PdfCraftApp {
             let certs = pems.iter().filter_map(|p| pdfcraft_engine::sign::x509::load_certificates(p.as_bytes()).ok()).flatten().collect();
             self.apply_trusted_certificates(certs);
         }
+    }
+}
+
+#[cfg(test)]
+mod update_channel_tests {
+    use super::{default_beta_updates, saved_beta_updates};
+    use serde_json::json;
+
+    /// The bug: an installed beta followed the stable channel unless its user had joined the
+    /// betas, so it said "up to date" while newer betas were out.
+    #[test]
+    fn a_beta_follows_the_betas_until_its_user_picks_a_channel() {
+        assert!(default_beta_updates("0.20.1-beta.65"));
+        assert!(!default_beta_updates("0.20.0"));
+        assert!(!default_beta_updates("0.20.1-dev"));
+    }
+
+    #[test]
+    fn only_a_picked_channel_is_read_back() {
+        assert_eq!(saved_beta_updates(&json!({})), None);
+        // Every build before `update_channel` wrote this, picked or not.
+        assert_eq!(saved_beta_updates(&json!({"beta_updates": false})), None);
+        assert_eq!(saved_beta_updates(&json!({"beta_updates": true})), Some(true));
+        assert_eq!(saved_beta_updates(&json!({"update_channel": "beta"})), Some(true));
+        assert_eq!(saved_beta_updates(&json!({"update_channel": "stable", "beta_updates": true})), Some(false));
+        assert_eq!(saved_beta_updates(&json!({"update_channel": "nightly"})), None);
     }
 }
