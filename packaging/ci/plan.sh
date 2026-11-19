@@ -10,7 +10,7 @@
 #             none    nothing: a push to a branch whose open pull request runs the same checks,
 #                     or a scheduled run (only the quality jobs below)
 #   quality   1 runs the long checks: fuzzing and the macOS tests (schedule, manual release-check)
-#   sonar, freebsd, nix, house_rules, packaging   1 runs that check (by event and changed files)
+#   sonar, nix, house_rules, packaging   1 runs that check (by event and changed files)
 #   tag, version   the release this run publishes (packaging/release-tag.sh), or empty
 #
 # Reads the GitHub Actions environment (GITHUB_EVENT_NAME, GITHUB_REF, GITHUB_REPOSITORY,
@@ -43,7 +43,7 @@ touched() { # <extended regex>: whether a changed file matches
   grep -Eq "^\*\$|$1" <<<"$files"
 }
 
-mode=quick quality=0 sonar=0 freebsd=0 nix=0 house_rules=0 packaging=0
+mode=quick quality=0 sonar=0 nix=0 house_rules=0 packaging=0
 files="$(changed_files)"
 case "$event" in
   pull_request)
@@ -63,17 +63,17 @@ case "$event" in
         fi
         ;;
     esac
-    [[ "$branch" == main ]] && sonar=1 freebsd=1
+    [[ "$branch" == main ]] && sonar=1
     ;;
   schedule)
-    mode=none quality=1 sonar=0 freebsd=1 nix=1
+    mode=none quality=1 sonar=0 nix=1
     ;;
   workflow_dispatch)
     case "${INPUT_MODE:-quick}" in
       quick) mode=quick ;;
       full) mode=full ;;
-      release-check) mode=full quality=1 sonar=1 freebsd=1 nix=1 house_rules=1 packaging=1 ;;
-      quality) mode=none quality=1 freebsd=1 nix=1 ;;
+      release-check) mode=full quality=1 sonar=1 nix=1 house_rules=1 packaging=1 ;;
+      quality) mode=none quality=1 nix=1 ;;
       *) echo "error: unknown mode ${INPUT_MODE}; use quick, full, release-check or quality" >&2; exit 2 ;;
     esac
     ;;
@@ -82,7 +82,6 @@ esac
 
 if [[ "$mode" != none ]]; then
   # The same path filters the separate workflows had.
-  touched '^(Cargo\.toml|Cargo\.lock|.*/Cargo\.toml|packaging/freebsd/|\.github/workflows/)' && freebsd=1
   touched '^(flake\.nix|flake\.lock|nix/|Cargo\.lock|\.github/workflows/)' && nix=1
   touched '^(AGENTS\.md|CLAUDE\.md|\.github/workflows/)' && house_rules=1
   touched '^(\.github/workflows/|packaging/|assets/app-icon)' && packaging=1
@@ -99,7 +98,6 @@ cat <<EOF
 mode=$mode
 quality=$quality
 sonar=$sonar
-freebsd=$freebsd
 nix=$nix
 house_rules=$house_rules
 packaging=$packaging

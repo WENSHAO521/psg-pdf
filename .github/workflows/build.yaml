@@ -9,7 +9,7 @@ name: PSG PDF — Build & Release
 #   Build    one job per platform, building both products on one Cargo target directory
 #   Verify   on the same runner right after its build: install, side by side, uninstall, upgrade
 #            from the 0.18.x suite (Linux deb + rpm, Windows, macOS)
-#   Quality  SonarCloud, FreeBSD, Nix, house rules, packaging lint, fuzzing, macOS tests
+#   Quality  SonarCloud, Nix, house rules, packaging lint, fuzzing, macOS tests
 #   Release  beta / stable release from what passed (packaging/release-tag.sh, docs/releasing.md)
 #
 # | Event                          | Check          | Build + Verify | Quality                     | Release |
@@ -17,8 +17,8 @@ name: PSG PDF — Build & Release
 # | pull request                   | Linux          | `full-ci` label or packaging changes | SonarCloud; others by path  | never   |
 # | push to another branch         | Linux (skipped while a PR runs it) | – | by path              | never   |
 # | push to beta                   | Linux, Windows | yes            | by path                     | vX.Y.Z-beta.N |
-# | push to main                   | Linux, Windows | yes            | SonarCloud, FreeBSD, by path| vX.Y.Z when CHANGELOG.md has it |
-# | schedule (nightly)             | –              | –              | fuzz, macOS tests, FreeBSD, Nix | never |
+# | push to main                   | Linux, Windows | yes            | SonarCloud, by path         | vX.Y.Z when CHANGELOG.md has it |
+# | schedule (nightly)             | –              | –              | fuzz, macOS tests, Nix      | never |
 # | manual: quick/full/release-check/quality | as named | full, release-check | release-check, quality | never |
 on:
   push:
@@ -66,7 +66,6 @@ jobs:
       mode: ${{ steps.plan.outputs.mode }}
       quality: ${{ steps.plan.outputs.quality }}
       sonar: ${{ steps.plan.outputs.sonar }}
-      freebsd: ${{ steps.plan.outputs.freebsd }}
       nix: ${{ steps.plan.outputs.nix }}
       house_rules: ${{ steps.plan.outputs.house_rules }}
       packaging: ${{ steps.plan.outputs.packaging }}
@@ -127,7 +126,7 @@ jobs:
       # Windows too in full runs (beta, main, `full-ci`, manual full). No macOS here: the org's
       # macOS runners are kept for the release builds; the nightly macOS tests are below.
       os: ${{ needs.plan.outputs.mode == 'full' && '["ubuntu-24.04","windows-latest"]' || '["ubuntu-24.04"]' }}
-      # Same craft-fonts commit as FreeBSD below and craft-fonts.rev (the release builds).
+      # Same craft-fonts commit as craft-fonts.rev (the release builds).
       craft-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
       # egui/winit/rfd, the independent oracles (crates/oracle), and PSG Academic PDF's TeX Live,
       # latexmk, Biber and Pandoc (3.1.3 on Ubuntu 24.04, new enough for --sandbox), installed
@@ -274,15 +273,6 @@ jobs:
     # Tracked at @main so org-wide CI improvements propagate without PR churn.
     uses: storytold/craft-common-actions/.github/workflows/sonarcloud.yml@main
     secrets: inherit
-
-  freebsd:
-    name: Quality · FreeBSD
-    needs: plan
-    if: needs.plan.outputs.freebsd == '1'
-    # Builds and tests the workspace in a FreeBSD VM (GitHub has no FreeBSD runners).
-    uses: storytold/craft-common-actions/.github/workflows/freebsd.yml@main
-    with:
-      craft-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
 
   nix:
     name: Quality · Nix

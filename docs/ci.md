@@ -13,7 +13,7 @@ identities and migration in [products.md](products.md).
 | Check | `Check · plan, …` | `packaging/ci/plan.sh` (what this run does), `cargo xtask products check`, `cargo xtask changelog verify` / `lint`, git dependencies only from storytold (`git-sources.sh`), Windows font-notice regressions |
 | | `Check` (shared gate) | `cargo xtask ci`: format, clippy `-D warnings`, every test (nextest), cargo-deny (advisories, licences, sources), assets, layers, products, parity, wasm. The Linux leg installs TeX Live, latexmk, Biber and Pandoc once, so the PSG Academic PDF TeX tests run there (`PSG_ACADEMIC_TEX_REQUIRED=1` fails instead of skipping) followed by `academic-smoke.sh` (template → PDF from the command line). Windows leg in full runs. |
 | Build + Verify | `Build · <platform>` ×3 | One job per platform builds **both** products, one after the other, on one Cargo target directory and one cache (`build-products.sh`), checks signatures (`verify-signatures.sh`), then on the same runner installs each product alone and side by side, uninstalls one at a time, and upgrades from the 0.18.x suite (`verify-installs.sh`: deb on Ubuntu, rpm in a Fedora container, MSI, DMG). |
-| Quality | `Quality · …` | SonarCloud, FreeBSD, Nix, house rules, packaging lint + Windows installation policy, macOS tests, fuzzing |
+| Quality | `Quality · …` | SonarCloud, Nix, house rules, packaging lint + Windows installation policy, macOS tests, fuzzing |
 | Release | `Release · <tag>` | Checksums, notes, GitHub release (`release-files.sh`, `release-notes.sh`) |
 
 The products stay separate throughout: each is built by its own packaging script with its own
@@ -26,22 +26,23 @@ release takes only those.
 
 | Event | Check | Build + Verify | Quality | Release |
 |---|---|---|---|---|
-| Pull request | Linux | with the `full-ci` label, or when it changes `packaging/`, the workflow or the app icons (+ Windows tests) | SonarCloud; FreeBSD, Nix, house rules, packaging lint when their files change | never |
+| Pull request | Linux | with the `full-ci` label, or when it changes `packaging/`, the workflow or the app icons (+ Windows tests) | SonarCloud; Nix, house rules, packaging lint when their files change | never |
 | Push to another branch | Linux; nothing when an open pull request runs the same commit | – | by changed files | never |
 | Push to `beta` | Linux + Windows | yes, signed when the secrets exist | by changed files; packaging lint | `vX.Y.Z-beta.N` (pre-release) |
-| Push to `main` | Linux + Windows | yes, signed | SonarCloud, FreeBSD, by changed files | `vX.Y.Z` when `CHANGELOG.md` has its section |
-| Schedule (03:17 UTC nightly) | – | – | fuzzing, macOS tests, FreeBSD, Nix | never |
+| Push to `main` | Linux + Windows | yes, signed | SonarCloud, by changed files | `vX.Y.Z` when `CHANGELOG.md` has its section |
+| Schedule (03:17 UTC nightly) | – | – | fuzzing, macOS tests, Nix | never |
 | Manual, `quick` | Linux | – | by changed files | never |
 | Manual, `full` | Linux + Windows | yes, unsigned | by changed files | never |
 | Manual, `release-check` | Linux + Windows | yes, unsigned | all of them | never |
 | Manual, `quality` | – | – | the nightly set | never |
 
-The path filters are the ones the separate workflows had: FreeBSD on Cargo manifests and
-`packaging/freebsd/`; Nix on `flake.*`, `nix/` and `Cargo.lock`; house rules on `AGENTS.md` and
-`CLAUDE.md`; packaging lint on `packaging/` and the app icons; all of them when the workflow itself
-changes. Release tags and their rules are unchanged (`packaging/release-tag.sh`): only a push to
-`beta` or `main` of `WENSHAO521/psg-pdf` publishes. A beta number never goes below an earlier beta of
-the same version, because the run counter restarted with the new workflow file.
+Nix runs for changes to `flake.*`, `nix/` and `Cargo.lock`. House rules run for changes to
+`AGENTS.md` and `CLAUDE.md`. Packaging lint runs for changes to `packaging/` and the app icons.
+Changes to the workflow also run all three checks.
+
+Only pushes to `beta` or `main` of `WENSHAO521/psg-pdf` publish releases
+(`packaging/release-tag.sh`). A beta number never goes below an earlier beta of the same version,
+because the run counter restarted with the new workflow file.
 
 **Release conditions.** The plan and the Linux and Windows gates must pass. Every beta and stable
 release requires both products to build and pass install tests on Windows, macOS and Linux.
