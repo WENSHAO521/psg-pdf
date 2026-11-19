@@ -155,8 +155,9 @@ fn check_tex() -> i32 {
         None => {}
     }
     for tool in [&env.pdflatex, &env.latexmk, &env.biber, &env.pandoc] {
-        match (&tool.path, &tool.version) {
-            (Some(p), v) => say(&format!("{:<9} {}  ({})", tool.name, p.display(), v.as_deref().unwrap_or("version unknown"))),
+        match (&tool.path, &tool.probe_error) {
+            (Some(p), Some(error)) => complain(&format!("{:<9} {}\n{error}", tool.name, p.display())),
+            (Some(p), None) => say(&format!("{:<9} {}  ({})", tool.name, p.display(), tool.version.as_deref().unwrap_or("version unknown"))),
             (None, _) => say(&format!("{:<9} not found", tool.name)),
         }
     }
@@ -165,7 +166,7 @@ fn check_tex() -> i32 {
         say("TeX is ready.");
         0
     } else {
-        complain(&format!("missing: {}", missing.join(", ")));
+        complain(&format!("missing or unusable: {}", missing.join(", ")));
         1
     }
 }

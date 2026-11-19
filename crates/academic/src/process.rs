@@ -135,16 +135,32 @@ pub fn hide_console(cmd: &mut Command) {
     let _ = cmd;
 }
 
-/// The first line a program prints for `--version`, or `None` if it can't be run.
+/// The first line a program successfully prints for `--version`.
 pub fn version_line(program: &Path) -> Option<String> {
+    probe_version(program, "--version").ok().flatten()
+}
+
+/// Run a version check and keep a short diagnostic if the program fails.
+pub(crate) fn probe_version(program: &Path, flag: &str) -> Result<Option<String>, String> {
     let mut cmd = Command::new(program);
-    cmd.arg("--version");
-    let out = run(cmd, Duration::from_secs(15), None).ok()?;
+    cmd.arg(flag);
+    let out = run(cmd, Duration::from_secs(15), None).map_err(|e| e.to_string())?;
     if out.timed_out {
-        return None;
+        return Err("Version check timed out".into());
+    }
+    let lines = |text: &str, count| {
+        text.lines().map(str::trim).filter(|l| !l.is_empty()).take(count).map(|l| l.chars().take(200).collect::<String>()).collect::<Vec<_>>()
+    };
+    if !out.success() {
+        let diagnostic = lines(&out.stderr, 3).into_iter().chain(lines(&out.stdout, 3)).collect::<Vec<_>>().join("\n");
+        return Err(if diagnostic.is_empty() {
+            out.status.map_or_else(|| "Version check failed".into(), |status| status.to_string())
+        } else {
+            diagnostic
+        });
     }
     let text = if out.stdout.trim().is_empty() { &out.stderr } else { &out.stdout };
-    text.lines().map(str::trim).find(|l| !l.is_empty()).map(|l| l.chars().take(200).collect())
+    Ok(lines(text, 1).into_iter().next())
 }
 
 #[cfg(all(test, unix))]
