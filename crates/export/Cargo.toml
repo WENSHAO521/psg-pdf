@@ -11,4 +11,6 @@ repository.workspace = true
 workspace = true
 
 [dependencies]
+craft-docx.workspace = true
+craft-wordmodel.workspace = true
 flate2.workspace = true

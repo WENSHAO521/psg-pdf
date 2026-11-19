@@ -30,6 +30,8 @@ default = ["mcp"]
 mcp = ["dep:base64"]
 
 [dev-dependencies]
+craft-docx.workspace = true
+craft-wordmodel.workspace = true
 psg-ai = { workspace = true }
 pdfcraft-fonts = { workspace = true }
 png = "0.18"

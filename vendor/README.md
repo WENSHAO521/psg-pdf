@@ -1,5 +1,14 @@
 # Vendored crates
 
+## craft-docx
+
+The DOCX library source is from [storytold/craft-libs](https://github.com/storytold/craft-libs/tree/b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3/crates/docx)
+at `b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3`, under MIT OR Apache-2.0. The
+manifest pins its shared Craft dependencies to that same revision. The PSG patch in
+`src/read/chart/format.rs` uses Jiff for Excel serial dates, preserving the 400-year
+calendar arithmetic and Excel's special dates. Use the shared crate again once it
+has migrated away from Chrono ([RUSTSEC-2026-0543](https://rustsec.org/advisories/RUSTSEC-2026-0543)).
+
 ## craft-print
 
 Copied from `storytold/craft-libs` at `60ede99985ef1e5df87a2aca66ed538eb23dec99`
