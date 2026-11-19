@@ -117,6 +117,7 @@
 	New bookmarks from text styles…	按文本样式新建书签…
 	No document language is set	未设置文档语言
 	No page has text: the document appears to be images of pages	没有页面含文字：文档似乎是页面图像
+	No printers match.	没有匹配的打印机。
 	No scanned pages were cleaned up.	没有清理任何扫描页面。
 	Only web (http, https) and email addresses open, and PSG PDF asks first, as for other links.	只会打开网页（http、https）和电子邮件地址，并且 PSG PDF 会像对待其他链接一样先询问。
 	Open web and email addresses written in the page text	打开页面文字中写出的网址和电子邮件地址
@@ -157,6 +158,7 @@
 	Save as {level}	另存为 {level}
 	Save or close your open work first; the update restarts the app.	请先保存或关闭正在进行的工作；更新会重启应用。
 	Search all tools…	搜索所有工具…
+	Search printers	搜索打印机
 	Search settings…	搜索设置…
 	Selects paper size and orientation from the printer driver. For paper tray, print quality or other driver defaults, use Properties…	通过打印机驱动程序选择纸张大小和方向。纸盒、打印质量或其他驱动程序默认设置，请使用属性…
 	Separation colour spaces named {} differ in their alternate space or tint transform	名为 {} 的分色色彩空间在替代空间或色调转换上不一致

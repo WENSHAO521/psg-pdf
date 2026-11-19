@@ -8,10 +8,13 @@ code is `crates/academic/src/managed.rs` (layout, unpacking, `tlmgr`) and
 
 - **TinyTeX-1** from the newest release of
   [rstudio/tinytex-releases](https://github.com/rstudio/tinytex-releases): TeX Live's
-  infrastructure with about a hundred common LaTeX packages.
-  - Windows: `TinyTeX-1-windows.exe` (a self-extracting archive, run with `-y -o<folder>`).
+  infrastructure with about a hundred common LaTeX packages. When it needs a bundle, the app
+  fetches the current release metadata and downloads the matching asset directly from GitHub.
+  It looks for the filename with the release tag first, then accepts the older unversioned name.
+  - Windows: `TinyTeX-1-windows-<tag>.exe` (a self-extracting archive, run with `-y -o<folder>`).
     TeX Live's Windows programs are x86-64; Windows on Arm runs them emulated.
-  - macOS: `TinyTeX-1-darwin.tar.xz`. Linux: `TinyTeX-1-linux-x86_64.tar.xz` or `-arm64`.
+  - macOS: `TinyTeX-1-darwin-<tag>.tar.xz`. Linux: `TinyTeX-1-linux-x86_64-<tag>.tar.xz`
+    or `TinyTeX-1-linux-arm64-<tag>.tar.xz`.
     Unpacked with the system's `tar`.
 - The download is checked against the SHA-256 that GitHub publishes for the release file (the
   asset's `digest`). A file without one is not downloaded. It goes through craft-update's HTTPS

@@ -3054,7 +3054,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "9e9082adb9e3907fbba8c5e543230eae079dea535597a9e58fdc4884267e1022"
+sha256 = "68775d38a20b1e8bccc227fdac1dae7cf33f6d2b379b112a01cc7f97c73ef3f0"
 
 [[asset]]
 path = "i18n/psg/zh-hant.tsv"
@@ -3065,7 +3065,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs"
-sha256 = "9fe4c2e63c00fc7de9635d53c926edb5f6c8dfdd59cb29cf120eaa1a1e8b1116"
+sha256 = "bfe6aeb67bdedf445d68963358106837c779e0dd9097e5079c65effb44f702d8"
 
 [[asset]]
 path = "i18n/psg-academic/de.tsv"
