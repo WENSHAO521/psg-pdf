@@ -4,10 +4,10 @@
 //! that is still extractable underneath — and redaction annotations that were marked but
 //! never applied. A properly applied redaction removes the text, so it never flags.
 //!
-//! A rectangle counts as a cover only when it was painted strictly *after* the text it
-//! overlaps, and only when it is dark enough against the text's color to make the text
-//! unreadable (WCAG contrast below 3.0). Page backgrounds, table shading and highlight
-//! marks are therefore not flagged.
+//! A rectangle counts as a cover when it was painted strictly *after* the text it overlaps
+//! and has low contrast with that text (WCAG contrast below 3.0), or is nearly white and
+//! opaque. White covers have their own finding kind. Backgrounds before the text and
+//! ordinary light table shading are ignored.
 //!
 //! Detection limits (documented, not hidden): `re` rectangles and single closed `m`/`l`
 //! subpaths whose four corners form an axis-aligned rectangle in user space (#1510) are
@@ -37,6 +37,8 @@ mod tests;
 pub enum FindingKind {
     /// An opaque filled rectangle covers text that is still extractable.
     CoveredText,
+    /// An opaque white or nearly white rectangle covers extractable text.
+    HiddenUnderWhite,
     /// A `/Redact` annotation was placed but never applied: the text is untouched.
     UnappliedMark,
 }
@@ -50,6 +52,7 @@ impl FindingKind {
     pub fn id(self) -> &'static str {
         match self {
             FindingKind::CoveredText => "covered-text",
+            FindingKind::HiddenUnderWhite => "hidden-under-white",
             FindingKind::UnappliedMark => "unapplied-mark",
         }
     }
@@ -99,6 +102,8 @@ const COVER_FRACTION: f64 = 0.4;
 const WORD_FRACTION: f64 = 0.5;
 /// WCAG contrast ratio below which the text is unreadable against the cover.
 const COVER_CONTRAST: f64 = 3.0;
+/// Relative luminance above ordinary light gray shading, reserved for white covers.
+const WHITE_COVER_LUMINANCE: f64 = 0.9;
 /// Bytes of a hidden line's text read (copied or trimmed) that cost one comparison: a byte scan
 /// is far cheaper than a box comparison, but a long padded line under many covers adds up.
 const TEXT_BYTES_PER_COMPARISON: usize = 16;
@@ -219,24 +224,23 @@ fn audit(doc: &Document, limits: Limits) -> Result<Vec<AuditFinding>, AuditError
         budget.start_page(&lines);
         // 1. Opaque filled rectangles over extractable text.
         for r in cover::filled_rects(doc, &page.dict)? {
-            if let Some(covered) = budget.hidden_text(&lines, copying, &r.rect, |line| is_cover(&r, line))? {
+            let kind = cover_kind(r.rgb);
+            if let Some(covered) = budget.hidden_text(&lines, copying, &r.rect, |line| {
+                r.pos > line.first_paint_pos() && covers(&r.rect, line) && cover_contrast(&kind, line, r.rgb)
+            })? {
                 let covered_text = budget.report_text(covered, copying)?;
-                out.push(AuditFinding { page: n, kind: FindingKind::CoveredText, rect: r.rect, covered_text });
+                out.push(AuditFinding { page: n, kind, rect: r.rect, covered_text });
             }
         }
         // 2. Annotation covers over extractable text.
         for annot in annots(doc, &page.dict)? {
-            let cover = match &annot {
-                AnnotationCover::Redact(rect) | AnnotationCover::Square { rect, .. } => *rect,
+            let (rect, kind, rgb) = match annot {
+                AnnotationCover::Redact(rect) => (rect, FindingKind::UnappliedMark, None),
+                AnnotationCover::Square { rect, rgb } => (rect, cover_kind(rgb), Some(rgb)),
             };
-            if let Some(covered) = budget.hidden_text(&lines, copying, &cover, |line| match &annot {
-                AnnotationCover::Redact(rect) => covers(rect, line),
-                AnnotationCover::Square { rect, rgb } => covers(rect, line) && contrast(line.color, *rgb) < COVER_CONTRAST,
-            })? {
-                let (kind, rect) = match annot {
-                    AnnotationCover::Redact(rect) => (FindingKind::UnappliedMark, rect),
-                    AnnotationCover::Square { rect, .. } => (FindingKind::CoveredText, rect),
-                };
+            if let Some(covered) =
+                budget.hidden_text(&lines, copying, &rect, |line| covers(&rect, line) && rgb.is_none_or(|rgb| cover_contrast(&kind, line, rgb)))?
+            {
                 let covered_text = budget.report_text(covered, copying)?;
                 out.push(AuditFinding { page: n, kind, rect, covered_text });
             }
@@ -245,14 +249,12 @@ fn audit(doc: &Document, limits: Limits) -> Result<Vec<AuditFinding>, AuditError
     Ok(out)
 }
 
-/// A filled rectangle is a faux-redaction cover for a text line iff it was painted strictly
-/// after the start of the line, overlaps it substantially, and is dark enough against the line's
-/// color to make the text unreadable. Light covers (table shading, highlights) over dark text fail
-/// the contrast check and are not flagged. A line can join runs painted before and after the
-/// cover; the later ones are drawn on it in the same low-contrast color, so they are unreadable
-/// too.
-fn is_cover(rect: &cover::FilledRect, line: &TextLine) -> bool {
-    rect.pos > line.first_paint_pos() && covers(&rect.rect, line) && contrast(line.color, rect.rgb) < COVER_CONTRAST
+fn cover_kind(rgb: [f64; 3]) -> FindingKind {
+    if luminance(rgb) >= WHITE_COVER_LUMINANCE { FindingKind::HiddenUnderWhite } else { FindingKind::CoveredText }
+}
+
+fn cover_contrast(kind: &FindingKind, line: &TextLine, rgb: [f64; 3]) -> bool {
+    *kind == FindingKind::HiddenUnderWhite || contrast(line.color, rgb) < COVER_CONTRAST
 }
 
 /// Does `cover` hide a substantial part of what `line` draws? Three ways, any is enough:

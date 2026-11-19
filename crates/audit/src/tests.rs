@@ -297,12 +297,26 @@ fn light_shading_after_text_is_not_flagged() {
 
 #[test]
 fn graphics_state_carries_across_streams() {
-    // The first stream sets a white fill after the text; the second stream's rectangle over
-    // the text is therefore white, not the default black: no finding. Without the carry fix
-    // the rectangle would default to black and flag.
+    // The second stream uses the first stream's white fill for its rectangle.
     let s1 = b"BT /F1 24 Tf 100 700 Td (SECRET DATA 123) Tj ET\n1 g\n";
     let s2 = b"100 688 220 32 re f\n";
     let findings = audit_redactions(&open(two_streams(s1, s2))).expect("audit must run");
+    assert_eq!(findings.len(), 1, "{findings:?}");
+    assert_eq!(findings[0].kind, FindingKind::HiddenUnderWhite);
+}
+
+#[test]
+fn white_cover_is_reported_when_painted_after_text() {
+    let text = b"0 g BT /F1 24 Tf 100 700 Td (ASSESSMENT DRAFT) Tj ET\n";
+    let cover = b"1 g 100 688 260 32 re f\n";
+    let content = [text.as_slice(), cover.as_slice()].concat();
+    let findings = audit_redactions(&open(one_page(&content, ""))).unwrap();
+    assert_eq!(findings.len(), 1, "{findings:?}");
+    assert_eq!(findings[0].kind, FindingKind::HiddenUnderWhite);
+    assert_eq!(findings[0].covered_text, "ASSESSMENT DRAFT");
+
+    let content = [cover.as_slice(), text.as_slice()].concat();
+    let findings = audit_redactions(&open(one_page(&content, ""))).unwrap();
     assert!(findings.is_empty(), "{findings:?}");
 }
 
@@ -480,6 +494,7 @@ fn finding_kind_ids_are_stable() {
     // The string IDs are the crate's public vocabulary (CLI output, future machine-readable
     // formats). They must not change; add a variant instead of renaming.
     assert_eq!(FindingKind::CoveredText.id(), "covered-text");
+    assert_eq!(FindingKind::HiddenUnderWhite.id(), "hidden-under-white");
     assert_eq!(FindingKind::UnappliedMark.id(), "unapplied-mark");
 }
 

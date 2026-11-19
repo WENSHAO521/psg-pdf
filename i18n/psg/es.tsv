@@ -259,3 +259,4 @@
 	Advance automatically	Avanzar automáticamente
 	The selected pages have different presentation settings. Applying sets the same values on all of them.	Las páginas seleccionadas tienen distintos ajustes de presentación. Al aplicar, todas tendrán los mismos valores.
 	The document changed while the dialog was open, so nothing was changed.	El documento cambió mientras el diálogo estaba abierto. No se aplicaron cambios.
+	Exported to {path}. Content was omitted on pages {pages}.	Se exportó a {path}. Se omitió contenido en las páginas {pages}.

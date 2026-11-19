@@ -987,12 +987,28 @@ impl PdfCraftApp {
         let Some(doc) = self.session.get(id) else { return };
         let stem = doc.name.trim_end_matches(".pdf").trim_end_matches(".PDF").to_string();
         let ext = format.extension();
+        #[cfg(not(target_arch = "wasm32"))]
         let folder = doc.path.clone();
-        let bytes = doc.export_office(format);
+        let export = doc.export_office_checked(format);
+        let bytes = export.bytes;
+        let pages = (!export.truncated_pages.is_empty()).then(|| {
+            let mut listed = export.truncated_pages.iter().take(12).map(|page| (page + 1).to_string()).collect::<Vec<_>>().join(", ");
+            if export.truncated_pages.len() > 12 {
+                listed.push_str(", …");
+            }
+            listed
+        });
         #[cfg(not(target_arch = "wasm32"))]
         {
             let write = move |app: &mut Self, path: std::path::PathBuf| match crate::editing::write_atomically(&path.to_string_lossy(), &bytes) {
-                Ok(()) => app.notify_fmt("Exported to {path}", &[("path", &path.display().to_string())]),
+                Ok(()) => {
+                    let path = path.display().to_string();
+                    if let Some(pages) = &pages {
+                        app.notify_fmt("Exported to {path}. Content was omitted on pages {pages}.", &[("path", &path), ("pages", pages)]);
+                    } else {
+                        app.notify_fmt("Exported to {path}", &[("path", &path)]);
+                    }
+                }
                 Err(e) => app.notify_fmt("Couldn't write {name}: {e}", &[("name", &path.display().to_string()), ("e", &e.to_string())]),
             };
             match self.save_override.clone() {
@@ -1008,8 +1024,16 @@ impl PdfCraftApp {
             }
         }
         #[cfg(target_arch = "wasm32")]
-        if let Err(e) = crate::editing::download(&format!("{stem}.{ext}"), &bytes) {
-            self.notify_error(e);
+        {
+            let path = format!("{stem}.{ext}");
+            match crate::editing::download(&path, &bytes) {
+                Err(e) => self.notify_error(e),
+                Ok(()) => {
+                    if let Some(pages) = pages {
+                        self.notify_fmt("Exported to {path}. Content was omitted on pages {pages}.", &[("path", &path), ("pages", &pages)]);
+                    }
+                }
+            }
         }
     }
 

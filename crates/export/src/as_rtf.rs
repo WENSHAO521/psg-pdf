@@ -3,6 +3,8 @@ use super::as_html::allowed;
 use super::layout::{Block, Item, Page, count_lookup_steps, items};
 use std::collections::HashMap;
 
+mod pictures;
+
 fn rtf_text(s: &str) -> String {
     let mut o = String::new();
     for c in s.chars().filter(|c| allowed(*c)) {
@@ -24,9 +26,13 @@ fn rtf_text(s: &str) -> String {
     o
 }
 
-/// Rich Text Format: paragraphs with their sizes and bold/italic, real table rows, page breaks
-/// between pages (images are left out).
+/// Rich Text Format with formatted paragraphs, real table rows, inline pictures and page breaks.
 pub fn rtf(pages: &[Page]) -> String {
+    rtf_checked(pages).0
+}
+
+/// RTF and the zero-based pages on which a picture could not be included.
+pub fn rtf_checked(pages: &[Page]) -> (String, Vec<usize>) {
     let items = items(pages);
     // The colour table: entry 0 is the default (auto) colour, then each non-black colour once.
     let mut colors: Vec<[u8; 3]> = Vec::new();
@@ -60,6 +66,9 @@ pub fn rtf(pages: &[Page]) -> String {
         }
         s.push_str("}\n");
     }
+    let mut page = 0;
+    let mut omitted = Vec::new();
+    let mut pictures = pictures::Budget::default();
     for it in items {
         match it {
             Item::Para(runs, _) => {
@@ -118,10 +127,17 @@ pub fn rtf(pages: &[Page]) -> String {
                     s.push_str("\\row\n");
                 }
             }
-            Item::Img(_) => {}
-            Item::PageBreak => s.push_str("\\page\n"),
+            Item::Img(image) => {
+                if !pictures.write(image, &mut s) && omitted.last() != Some(&page) {
+                    omitted.push(page);
+                }
+            }
+            Item::PageBreak => {
+                page += 1;
+                s.push_str("\\page\n");
+            }
         }
     }
     s.push('}');
-    s
+    (s, omitted)
 }

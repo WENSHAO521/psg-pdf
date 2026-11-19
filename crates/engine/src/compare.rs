@@ -16,6 +16,8 @@ use crate::{DocId, Edit, EditError, Markup, NewAnnotation, NoteIcon, Session, Sh
 /// Most bytes of encoded pictures one Office export prepares, counting each image object once
 /// (the Word and PowerPoint writers keep at most 512 MiB of them as well).
 pub const MAX_EXPORT_IMAGE_BYTES: usize = 512 << 20;
+// RTF writes each byte as two hexadecimal digits at every placement.
+const MAX_RTF_IMAGE_BYTES: usize = 128 << 20;
 
 /// Acrobat's compare colours: replaced blue, inserted green, deleted red.
 pub fn colour(kind: Kind) -> crate::Rgb {
@@ -195,16 +197,13 @@ pub struct OfficeExport {
     /// The exported file.
     pub bytes: Vec<u8>,
     /// Pages (0-based) that draw forms nested deeper than [`MAX_FORM_DEPTH`] or more of them
-    /// than [`MAX_FORM_VISITS`], or pictures past [`MAX_EXPORT_IMAGE_BYTES`] or past what one export
-    /// may decode: export stops reading there to stay bounded on hostile files, so the text and images of those forms, or
-    /// those pictures, are missing from `bytes`.
+    /// than [`MAX_FORM_VISITS`], or pictures past what an export can decode or embed. Their omitted
+    /// content is missing from `bytes`.
     pub truncated_pages: Vec<usize>,
 }
 
-/// An image object prepared for Office export: its file extension and encoded bytes, or why it is
-/// left out (`Err(true)`: past [`MAX_EXPORT_IMAGE_BYTES`], or what the export may decode;
-/// `Err(false)`: it can't be encoded).
-type PreparedImage = Result<(&'static str, Arc<[u8]>), bool>;
+/// The file extension and encoded bytes of an image prepared for Office export.
+type PreparedImage = Option<(&'static str, Arc<[u8]>)>;
 
 /// Displayed points per user-space unit on `info`'s page (`/UserUnit`), 1 when the page has no
 /// usable size.
@@ -284,21 +283,29 @@ impl crate::Document {
                         }
                     })
                     .collect();
-                let placed = if images { pdfcraft_edit::reading_images(cos, i).unwrap_or_default() } else { Vec::new() };
-                let mut over_budget = false;
+                let mut images_omitted = false;
+                let placed = if images {
+                    pdfcraft_edit::reading_images(cos, i).unwrap_or_else(|_| {
+                        images_omitted = true;
+                        Vec::new()
+                    })
+                } else {
+                    Vec::new()
+                };
                 let images = placed
                     .iter()
                     .filter_map(|im| {
-                        let object = im.object?;
+                        let Some(object) = im.object else {
+                            images_omitted = true;
+                            return None;
+                        };
                         let prepared = encoded.entry(object).or_insert_with(|| {
-                            let refused = image_work.refused();
-                            let (ext, bytes) =
-                                pdfcraft_create::image_file_within(cos, object, &mut *image_work).map_err(|_| image_work.refused() > refused)?;
-                            image_bytes = image_bytes.checked_sub(bytes.len()).ok_or(true)?;
-                            Ok((if ext == "jpg" { "jpg" } else { "png" }, Arc::from(bytes)))
+                            let (ext, bytes) = pdfcraft_create::image_file_within(cos, object, &mut *image_work).ok()?;
+                            image_bytes = image_bytes.checked_sub(bytes.len())?;
+                            Some((if ext == "jpg" { "jpg" } else { "png" }, Arc::from(bytes)))
                         });
-                        over_budget |= matches!(prepared, Err(true));
-                        let (ext, bytes) = prepared.clone().ok()?;
+                        images_omitted |= prepared.is_none();
+                        let (ext, bytes) = prepared.clone()?;
                         Some(pdfcraft_export::Image {
                             ext,
                             bytes,
@@ -308,7 +315,7 @@ impl crate::Document {
                         })
                     })
                     .collect();
-                if forms_unread || over_budget {
+                if forms_unread || images_omitted {
                     truncated.push(i);
                 }
                 // The page colour (Edit a PDF ▸ Background, a producer's page fill) for formats that keep one.
@@ -326,12 +333,11 @@ impl crate::Document {
         self.export_office_checked(format).bytes
     }
 
-    /// [`Self::export_office`], and the pages whose text it had to leave out
+    /// [`Self::export_office`], and the pages whose text or pictures it had to leave out
     /// ([`OfficeExport::truncated_pages`]).
     pub fn export_office_checked(&self, format: OfficeFormat) -> OfficeExport {
-        // RTF and Markdown leave pictures out.
-        let (pages, truncated_pages) =
-            self.export_pages_checked(!matches!(format, OfficeFormat::Rtf | OfficeFormat::Markdown), MAX_EXPORT_IMAGE_BYTES);
+        let image_budget = if matches!(format, OfficeFormat::Rtf) { MAX_RTF_IMAGE_BYTES } else { MAX_EXPORT_IMAGE_BYTES };
+        let (pages, mut truncated_pages) = self.export_pages_checked(!matches!(format, OfficeFormat::Markdown), image_budget);
         let title = self.info.title.clone().unwrap_or_else(|| self.name.trim_end_matches(".pdf").to_string());
         // Word and HTML name the document's language (`/Lang`), so spelling is checked in it.
         let language = self.initial_view().language;
@@ -340,7 +346,13 @@ impl crate::Document {
             OfficeFormat::Pptx => pdfcraft_export::pptx(&pages, &title),
             OfficeFormat::Html => pdfcraft_export::html_with_language(&pages, &title, language.as_deref()).into_bytes(),
             OfficeFormat::HtmlSimple => pdfcraft_export::html_simple_with_language(&pages, &title, language.as_deref()).into_bytes(),
-            OfficeFormat::Rtf => pdfcraft_export::rtf(&pages).into_bytes(),
+            OfficeFormat::Rtf => {
+                let (rtf, omitted) = pdfcraft_export::rtf_checked(&pages);
+                truncated_pages.extend(omitted);
+                truncated_pages.sort_unstable();
+                truncated_pages.dedup();
+                rtf.into_bytes()
+            }
             OfficeFormat::Markdown => pdfcraft_export::markdown(&pages).into_bytes(),
         };
         OfficeExport { bytes, truncated_pages }
