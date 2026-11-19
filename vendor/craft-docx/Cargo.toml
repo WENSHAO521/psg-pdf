@@ -1,0 +1,45 @@
+[package]
+name = "craft-docx"
+description = "DOCX (OOXML WordprocessingML) reader and writer on the craft-wordmodel document model, with Word XML (Flat OPC) and Word 2003 XML, password-protected packages and Restrict Editing hashes."
+version = "0.1.0"
+publish = false
+edition = "2024"
+license = "MIT OR Apache-2.0"
+rust-version = "1.95"
+repository = "https://github.com/storytold/craft-libs"
+
+[lints.rust]
+unsafe_code = "forbid"
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(craft_pdf_unicode_fixtures)"] }
+
+[lints.clippy]
+cognitive_complexity = "deny"
+too_many_arguments = "deny"
+wildcard_imports = "deny"
+dbg_macro = "warn"
+todo = "warn"
+
+[dependencies]
+craft-drawingml = { git = "https://github.com/storytold/craft-libs", version = "0.1.0", rev = "b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3" }
+craft-math = { git = "https://github.com/storytold/craft-libs", version = "0.1.0", rev = "b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3" }
+craft-offcrypto = { git = "https://github.com/storytold/craft-libs", version = "0.1.0", rev = "b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3" }
+craft-opc = { git = "https://github.com/storytold/craft-libs", version = "0.1.0", rev = "b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3" }
+craft-wordmodel = { git = "https://github.com/storytold/craft-libs", version = "0.1.0", rev = "b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3" }
+craft-xml = { git = "https://github.com/storytold/craft-libs", version = "0.1.0", rev = "b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3" }
+base64 = "0.23"
+jiff = { version = "1.0.1", default-features = false, features = ["std"] }
+log = "0.4"
+# The streaming readers of the Flat OPC file and of kept parts (not yet on craft-xml's pull reader).
+quick-xml = { version = "0.41", default-features = false }
+thiserror = "2"
+unicode-bidi = "0.3"
+zeroize = "1"
+
+[dev-dependencies]
+craft-cfb = { git = "https://github.com/storytold/craft-libs", version = "0.1.0", rev = "b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3" }
+craft-opc = { git = "https://github.com/storytold/craft-libs", version = "0.1.0", rev = "b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3", features = ["test-support"] }
+craft-wordmodel = { git = "https://github.com/storytold/craft-libs", version = "0.1.0", rev = "b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3", features = ["test-support"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+proptest = "1"
+serde_json = "1"
+zip = { version = "9", default-features = false, features = ["deflate-flate2"] }

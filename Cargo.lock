@@ -977,15 +977,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "chrono"
-version = "0.4.45"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1aa79e62e7697b8e29b513a68abacf485adcd1fe8284a4316c5ae868e6633327"
-dependencies = [
- "num-traits",
-]
-
-[[package]]
 name = "cipher"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1178,16 +1169,15 @@ source = "git+https://github.com/storytold/craft-libs?rev=787a7a0f972fd1d7a7618f
 [[package]]
 name = "craft-docx"
 version = "0.1.0"
-source = "git+https://github.com/storytold/craft-libs?rev=b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3#b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3"
 dependencies = [
  "base64 0.23.1",
- "chrono",
  "craft-drawingml",
  "craft-math",
  "craft-offcrypto",
  "craft-opc",
  "craft-wordmodel",
  "craft-xml",
+ "jiff",
  "log",
  "quick-xml 0.41.0",
  "thiserror 2.0.21",

@@ -34,7 +34,7 @@ craft-docpath = { version = "0.1.0", git = "https://github.com/storytold/craft-l
 # patch (vendor/README.md, "craft-update").
 craft-update = { path = "vendor/craft-update", version = "=0.1.0", features = ["egui"] }
 # The Word exporter maps PDF layout to this pinned revision of the shared word model.
-craft-docx = { git = "https://github.com/storytold/craft-libs", version = "0.1.0", rev = "b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3" }
+craft-docx = { path = "vendor/craft-docx", version = "0.1.0" }
 craft-wordmodel = { git = "https://github.com/storytold/craft-libs", version = "0.1.0", rev = "b8eaa8e2f3561f9fa27fcf3b7f67ce915e93caa3" }
 # internal
 pdfcraft-geom = { path = "crates/geom", version = "0.20.1" }
