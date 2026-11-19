@@ -248,12 +248,12 @@ mod tests {
     use crate::tex::Tool;
 
     fn env_with(dir: &Path) -> TexEnvironment {
-        let tool = |name: &'static str| Tool { name, path: Some(dir.join(name)), version: None };
+        let tool = |name: &'static str| Tool { name, path: Some(dir.join(name)), version: None, probe_error: None };
         TexEnvironment {
             pdflatex: tool("pdflatex"),
             latexmk: tool("latexmk"),
             biber: tool("biber"),
-            pandoc: Tool { name: "pandoc", path: None, version: None },
+            pandoc: Tool { name: "pandoc", path: None, version: None, probe_error: None },
             managed: false,
         }
     }

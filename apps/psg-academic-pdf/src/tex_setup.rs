@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 use std::sync::mpsc::{Receiver, Sender, channel};
 
 use craft_update::http::{Fetched, Transfer};
-use craft_update::{Http, Stop};
+use craft_update::{Asset, Http, Release, Stop};
 use psg_academic::managed::{self, ManagedTex, Step};
 
 /// What a job is doing now.
@@ -85,11 +85,11 @@ pub fn install(tex: &ManagedTex, progress: &mut dyn FnMut(Progress)) -> Result<S
         Fetched::NotFound | Fetched::NotModified => return Err("TinyTeX's release page could not be read.".into()),
     };
     let release = craft_update::parse_github_release(&text, managed::RELEASES_REPO)?;
-    let asset = release.assets.iter().find(|a| a.name == name).ok_or_else(|| format!("TinyTeX {} has no {name}", release.tag))?;
-    let sha256 = asset.sha256.clone().ok_or_else(|| format!("GitHub publishes no checksum for {name}, so it wasn't downloaded"))?;
-    let dest = tex.downloads().join(&name);
+    let asset = tinytex_asset(&release, &name).ok_or_else(|| format!("TinyTeX {} has no matching download for {name}", release.tag))?;
+    let sha256 = asset.sha256.as_deref().ok_or_else(|| format!("GitHub publishes no checksum for {}, so it wasn't downloaded", asset.name))?;
+    let dest = tex.downloads().join(&asset.name);
     let stop = Stop::default();
-    http.download(&asset.url, &dest, asset.size, &sha256, &stop, &mut |t| {
+    http.download(&asset.url, &dest, asset.size, sha256, &stop, &mut |t| {
         let (Transfer::Bytes { done, total } | Transfer::Reconnecting { done, total }) = t;
         progress(Progress::Downloading { done, total });
     })?;
@@ -102,6 +102,12 @@ pub fn install(tex: &ManagedTex, progress: &mut dyn FnMut(Progress)) -> Result<S
     let _ = std::fs::remove_file(&dest);
     result.map_err(|e| e.to_string())?;
     Ok(release.tag)
+}
+
+fn tinytex_asset<'a>(release: &'a Release, name: &str) -> Option<&'a Asset> {
+    managed::tagged_asset_name(name, &release.tag)
+        .and_then(|tagged| release.assets.iter().find(|asset| asset.name == tagged))
+        .or_else(|| release.assets.iter().find(|asset| asset.name == name))
 }
 
 /// Update `tex` with tlmgr, or reinstall it when TeX Live has started a new yearly release.
@@ -124,4 +130,31 @@ pub fn managed_for(data_root: &Path, portable: bool) -> Option<ManagedTex> {
 /// The managed programs folder, if installed.
 pub fn bin_dir(tex: Option<&ManagedTex>) -> Option<PathBuf> {
     tex.and_then(ManagedTex::bin_dir)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn tinytex_uses_the_current_or_legacy_name_for_the_exact_platform() {
+        for (os, arch, current) in [
+            ("windows", "x86_64", "TinyTeX-1-windows-v2026.11.exe"),
+            ("macos", "aarch64", "TinyTeX-1-darwin-v2026.11.tar.xz"),
+            ("linux", "x86_64", "TinyTeX-1-linux-x86_64-v2026.11.tar.xz"),
+            ("linux", "aarch64", "TinyTeX-1-linux-arm64-v2026.11.tar.xz"),
+        ] {
+            let name = managed::asset_name_for(os, arch).unwrap();
+            let mut release = Release {
+                tag: "v2026.11".into(),
+                assets: vec![Asset { name: "TinyTeX-0-windows-v2026.11.exe".into(), ..Asset::default() }],
+                ..Release::default()
+            };
+            assert!(tinytex_asset(&release, &name).is_none());
+            release.assets.push(Asset { name: name.clone(), ..Asset::default() });
+            assert_eq!(tinytex_asset(&release, &name).map(|a| a.name.as_str()), Some(name.as_str()));
+            release.assets.push(Asset { name: current.into(), ..Asset::default() });
+            assert_eq!(tinytex_asset(&release, &name).map(|a| a.name.as_str()), Some(current));
+        }
+    }
 }

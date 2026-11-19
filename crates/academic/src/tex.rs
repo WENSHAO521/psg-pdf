@@ -18,17 +18,26 @@ pub struct Tool {
     pub path: Option<PathBuf>,
     /// The first line of its `--version` output.
     pub version: Option<String>,
+    /// Why a located program failed its version check.
+    pub probe_error: Option<String>,
 }
 
 impl Tool {
+    /// Whether the program was located and passed its version check, if requested.
     pub fn found(&self) -> bool {
-        self.path.is_some()
+        self.path.is_some() && self.probe_error.is_none()
     }
 
     fn locate(name: &'static str, search_path: Option<&OsStr>, with_version: bool) -> Self {
         let path = find_program(name, search_path);
-        let version = if with_version { path.as_deref().and_then(process::version_line) } else { None };
-        Self { name, path, version }
+        let (version, probe_error) = match path.as_deref().filter(|_| with_version) {
+            Some(program) => match process::probe_version(program, if name == "latexmk" { "-v" } else { "--version" }) {
+                Ok(version) => (version, None),
+                Err(error) => (None, Some(error)),
+            },
+            None => (None, None),
+        };
+        Self { name, path, version, probe_error }
     }
 }
 
@@ -78,7 +87,7 @@ impl TexEnvironment {
         }
     }
 
-    /// The required programs that were not found (pandoc is optional and never listed).
+    /// The required programs that were missing or failed their version check.
     pub fn missing(&self, needs_biber: bool) -> Vec<&'static str> {
         let mut missing = Vec::new();
         for tool in [&self.pdflatex, &self.latexmk] {
@@ -173,6 +182,19 @@ mod tests {
     fn nothing_found_without_a_search_path() {
         let env = TexEnvironment::detect_in(None, false);
         assert_eq!(env.missing(true), vec!["pdflatex", "latexmk", "biber"]);
+    }
+
+    #[test]
+    fn a_launcher_that_reports_an_error_does_not_make_tex_ready() {
+        let dir = tempfile::tempdir().unwrap();
+        fake_program(dir.path(), "pdflatex");
+        fake_program(dir.path(), "latexmk");
+        std::fs::write(dir.path().join("latexmk"), "#!/bin/sh\necho 'MiKTeX could not find Perl' >&2\nexit 1\n").unwrap();
+        let env = TexEnvironment::detect_in(Some(dir.path().as_os_str()), true);
+        assert!(env.latexmk.path.is_some());
+        assert_eq!(env.latexmk.version, None);
+        assert_eq!(env.latexmk.probe_error.as_deref(), Some("MiKTeX could not find Perl"));
+        assert_eq!(env.missing(false), vec!["latexmk"]);
     }
 
     #[test]

@@ -213,6 +213,8 @@ impl AcademicApp {
                         ui.horizontal(|ui| {
                             let tone = if tool.found() {
                                 Tone::Success
+                            } else if tool.probe_error.is_some() {
+                                Tone::Danger
                             } else if tool.name == "pandoc" {
                                 Tone::Neutral
                             } else if self.tex_job.is_some() {
@@ -223,14 +225,20 @@ impl AcademicApp {
                             widgets::status_dot(ui, tone);
                             ui.label(tool.name);
                         });
-                        match &tool.path {
+                        match (&tool.path, &tool.probe_error) {
+                            (Some(path), Some(error)) => ui
+                                .add(
+                                    egui::Label::new(egui::RichText::new(error.lines().next().unwrap_or(error)).color(ui.visuals().error_fg_color))
+                                        .truncate(),
+                                )
+                                .on_hover_text(format!("{}\n{error}", path.display())),
                             // Version lines can be long; they end in "…" rather than widening the card.
-                            Some(p) => ui
+                            (Some(p), None) => ui
                                 .add(egui::Label::new(tool.version.clone().unwrap_or_else(|| t("found").into())).truncate())
                                 .on_hover_text(p.display().to_string()),
-                            None if tool.name == "pandoc" => widgets::muted(ui, t("not found (optional, for DOCX import)")),
-                            None if self.tex_job.is_some() => widgets::muted(ui, t("being installed…")),
-                            None => ui.colored_label(ui.visuals().error_fg_color, t("not found")),
+                            (None, _) if tool.name == "pandoc" => widgets::muted(ui, t("not found (optional, for DOCX import)")),
+                            (None, _) if self.tex_job.is_some() => widgets::muted(ui, t("being installed…")),
+                            (None, _) => ui.colored_label(ui.visuals().error_fg_color, t("not found")),
                         };
                         ui.end_row();
                     }

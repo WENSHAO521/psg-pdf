@@ -93,6 +93,15 @@ pub fn asset_name_for(os: &str, arch: &str) -> Option<String> {
     Some(format!("{BUNDLE}-{suffix}"))
 }
 
+/// The platform asset name used by TinyTeX releases that include the tag in each filename.
+pub fn tagged_asset_name(name: &str, tag: &str) -> Option<String> {
+    if tag.is_empty() || tag.len() > 64 || !tag.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'-' | b'_')) {
+        return None;
+    }
+    let (stem, extension) = name.split_once('.')?;
+    Some(format!("{stem}-{tag}.{extension}"))
+}
+
 /// `path` can hold a TeX Live tree on this platform: on Windows only ASCII without spaces.
 pub fn usable_root(path: &Path) -> bool {
     let text = path.to_string_lossy();

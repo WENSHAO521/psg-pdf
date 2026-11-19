@@ -527,6 +527,9 @@ impl AcademicApp {
                     env.biber.version.as_deref().unwrap_or("?"),
                     if env.pandoc.found() { ", pandoc found" } else { "" }
                 ));
+            } else if let Some(tool) = [&env.pdflatex, &env.latexmk, &env.biber].into_iter().find(|tool| tool.probe_error.is_some()) {
+                let detail = format!("{}: {}", tool.name, tool.probe_error.as_deref().unwrap_or_default());
+                self.fail(tf("Could not check the TeX installation: {error}", &[("error", &detail)]));
             } else if installing {
                 self.status = t("Installing TeX for PSG Academic PDF…").into();
                 self.note(tf("TeX not found yet ({tools}); PSG Academic PDF installs its own.", &[("tools", &missing.join(", "))]));
