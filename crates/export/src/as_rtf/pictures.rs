@@ -218,8 +218,9 @@ mod tests {
         assert!(omitted.is_empty());
         let data = rtf.split_once("\\pict\\pngblip\\picw1\\pich2\\picwgoal720\\pichgoal1440 \n").unwrap().1;
         let data: String = data.split_once('}').unwrap().0.split_whitespace().collect();
-        let bytes: Vec<u8> =
-            data.as_bytes().chunks_exact(2).map(|pair| u8::from_str_radix(std::str::from_utf8(pair).unwrap(), 16).unwrap()).collect();
+        let (pairs, remainder) = data.as_bytes().as_chunks::<2>();
+        assert!(remainder.is_empty());
+        let bytes: Vec<u8> = pairs.iter().map(|pair| u8::from_str_radix(std::str::from_utf8(pair).unwrap(), 16).unwrap()).collect();
         let pixels = image::load_from_memory(&bytes).unwrap().into_rgba8();
         assert_eq!(pixels.dimensions(), (1, 2));
         assert_eq!(pixels.get_pixel(0, 0).0, [0, 0, 255, 255]);
