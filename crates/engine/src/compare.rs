@@ -197,13 +197,15 @@ pub struct OfficeExport {
     /// The exported file.
     pub bytes: Vec<u8>,
     /// Pages (0-based) that draw forms nested deeper than [`MAX_FORM_DEPTH`] or more of them
-    /// than [`MAX_FORM_VISITS`], or pictures past what an export can decode or embed. Their omitted
+    /// than [`MAX_FORM_VISITS`], or pictures past the export's decoding or embedding limits. Their omitted
     /// content is missing from `bytes`.
     pub truncated_pages: Vec<usize>,
 }
 
-/// The file extension and encoded bytes of an image prepared for Office export.
-type PreparedImage = Option<(&'static str, Arc<[u8]>)>;
+/// An image object prepared for Office export: its file extension and encoded bytes, or why it is
+/// left out (`Err(true)`: past the export's image bytes or decoding work;
+/// `Err(false)`: it can't be encoded).
+type PreparedImage = Result<(&'static str, Arc<[u8]>), bool>;
 
 /// Displayed points per user-space unit on `info`'s page (`/UserUnit`), 1 when the page has no
 /// usable size.
@@ -283,29 +285,21 @@ impl crate::Document {
                         }
                     })
                     .collect();
-                let mut images_omitted = false;
-                let placed = if images {
-                    pdfcraft_edit::reading_images(cos, i).unwrap_or_else(|_| {
-                        images_omitted = true;
-                        Vec::new()
-                    })
-                } else {
-                    Vec::new()
-                };
+                let placed = if images { pdfcraft_edit::reading_images(cos, i).unwrap_or_default() } else { Vec::new() };
+                let mut over_budget = false;
                 let images = placed
                     .iter()
                     .filter_map(|im| {
-                        let Some(object) = im.object else {
-                            images_omitted = true;
-                            return None;
-                        };
+                        let object = im.object?;
                         let prepared = encoded.entry(object).or_insert_with(|| {
-                            let (ext, bytes) = pdfcraft_create::image_file_within(cos, object, &mut *image_work).ok()?;
-                            image_bytes = image_bytes.checked_sub(bytes.len())?;
-                            Some((if ext == "jpg" { "jpg" } else { "png" }, Arc::from(bytes)))
+                            let refused = image_work.refused();
+                            let (ext, bytes) =
+                                pdfcraft_create::image_file_within(cos, object, &mut *image_work).map_err(|_| image_work.refused() > refused)?;
+                            image_bytes = image_bytes.checked_sub(bytes.len()).ok_or(true)?;
+                            Ok((if ext == "jpg" { "jpg" } else { "png" }, Arc::from(bytes)))
                         });
-                        images_omitted |= prepared.is_none();
-                        let (ext, bytes) = prepared.clone()?;
+                        over_budget |= matches!(prepared, Err(true));
+                        let (ext, bytes) = prepared.clone().ok()?;
                         Some(pdfcraft_export::Image {
                             ext,
                             bytes,
@@ -315,7 +309,7 @@ impl crate::Document {
                         })
                     })
                     .collect();
-                if forms_unread || images_omitted {
+                if forms_unread || over_budget {
                     truncated.push(i);
                 }
                 // The page colour (Edit a PDF ▸ Background, a producer's page fill) for formats that keep one.
