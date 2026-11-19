@@ -9,6 +9,12 @@ History before the line below belongs to PdfCraft, the project both products are
 
 <!-- changelog-base: d2916decb3d948b7e404ee839d7542692bf18d92 -->
 
+## v0.20.2 (2026-11-19)
+
+**Other Changes**
+
+- **ci** Retire the automatic FreeBSD checks and run release installation tests for both apps on Windows, macOS and Linux (c20f8eb1)
+
 ## v0.20.1 (2026-11-19)
 
 **Features**
