@@ -51,7 +51,6 @@
 	Checking for updates…	正在检查更新…
 	Checking the TeX installation…	正在检查 TeX 安装…
 	Checking…	正在检查…
-	Choose an empty folder for the project	为项目选择一个空文件夹
 	Close	关闭
 	Close {app}	关闭 {app}
 	Close {app} to finish	关闭 {app} 以完成
@@ -189,7 +188,6 @@
 	Open or create a project, and wait for the TeX check, before compiling.	编译前请先打开或新建项目，并等待 TeX 检查完成。
 	Open or create a project, then typeset it to export a PDF.	打开或新建项目并排版后即可导出 PDF。
 	Open project…	打开项目…
-	Open the compiled PDF in PSG PDF for review, annotation and further editing	在 PSG PDF 中打开编译好的 PDF，进行审阅、批注和进一步编辑
 	Opened {path} in PSG PDF.	已在 PSG PDF 中打开 {path}。
 	Opened {path} in the default PDF viewer.	已在默认 PDF 阅读器中打开 {path}。
 	Opened {path}.	已打开 {path}。
@@ -203,7 +201,6 @@
 	Pages	页码
 	Planned for a later version; not available yet.	计划在后续版本提供，目前尚不可用。
 	Portable mode: settings and projects are kept in {path}.	便携模式：设置和项目保存在 {path}。
-	Press Auto Typeset first.	请先点击“自动排版”。
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	点击“自动排版”排版稿件，PDF 会显示在这里。
 	Preview	预览
 	Problems	问题
@@ -275,7 +272,6 @@
 	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	.bib 文件在此处所列条目附近有语法错误：缺少逗号、括号或引号。
 	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	pdfLaTeX 期刊模板无法排版中文、日文或韩文（需要 XeLaTeX 或 LuaLaTeX 加 CJK 字体，而这些模板不使用它们）。请用拉丁字母（罗马化，原文保留在源数据中）给出标题、姓名和参考文献，或在 PSG Academic PDF 之外使用支持 CJK 的模板排版。
 	The project folder: compilation happens here and only here	项目文件夹：编译只在这里进行
-	The project has been typeset	项目已排版
 	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	模板没有西里尔字母字体（T2A 编码）。请按多数英文期刊的要求，将西里尔字母的姓名和标题转写为拉丁字母。
 	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	模板没有希腊文正文字体。公式中请用命令书写希腊字母（$\alpha$、$\Omega$）；正文中的希腊文单词必须转写。
 	The templates have no font for this script. Transliterate the text.	模板没有这种文字的字体。请将文字转写为拉丁字母。
@@ -378,3 +374,24 @@
 	{path} already exists there. Nothing was moved; choose an empty folder.	该处已有 {path}。未移动任何项目或设置，请选择空文件夹。
 	That folder holds too many files to be a data folder. Nothing was moved.	该文件夹文件过多，不像是数据文件夹。未移动任何项目或设置。
 	Could not move the data folder ({path}: {error}). Nothing was changed.	无法移动数据文件夹（{path}：{error}），未做任何更改。
+	Back	后退
+	Forward	前进
+	Previous page	上一页
+	Page	页码
+	Next page	下一页
+	Typeset the current manuscript before exporting.	请先排版当前稿件，再导出。
+	Resolve the errors before exporting.	请先修正错误，再导出。
+	The current manuscript has been typeset	当前稿件已排版
+	Workspace folder	工作区文件夹
+	New projects are saved here.	新项目保存在这里。
+	The chosen workspace is unavailable: {path}	所选工作区不可用：{path}
+	Choose workspace…	选择工作区…
+	Use the default workspace	使用默认工作区
+	Workspace folder set to {path}.	工作区文件夹已设为 {path}。
+	Could not change the workspace: {error}	无法更改工作区：{error}
+	Workspace: {path}	工作区：{path}
+	Choose a folder for the new project	选择新项目的文件夹
+	Folder path	文件夹路径
+	Browse…	浏览…
+	Use this folder	使用此文件夹
+	Enter an existing folder path.	请输入已有文件夹的路径。

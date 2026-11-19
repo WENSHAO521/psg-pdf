@@ -45,6 +45,40 @@ fn the_sample_template_compiles_to_a_pdf() {
 }
 
 #[test]
+fn export_tracks_the_revision_produced_by_latexmk() {
+    let env = TexEnvironment::detect();
+    let missing = env.missing(false);
+    if !missing.is_empty() {
+        assert!(!required(), "PSG_ACADEMIC_TEX_REQUIRED=1 but {} not installed", missing.join(", "));
+        return;
+    }
+    let root = tempfile::tempdir().unwrap();
+    let mut project = sample_project(root.path());
+    project.file.uses_biber = false;
+    project.save().unwrap();
+    std::fs::write(
+        project.dir.join(&project.file.main),
+        format!("\\documentclass{{article}}\n\\begin{{document}}\n\\input{{{}}}\n\\end{{document}}", project.file.body),
+    )
+    .unwrap();
+    project.write_body("The first revision.").unwrap();
+    let report = project.compile(&env, None).unwrap();
+    assert_eq!(report.outcome, Outcome::Succeeded, "{}", report.output);
+    assert!(Project::open(&project.dir).unwrap().pdf_is_current());
+
+    project.write_body("The second and longer revision.").unwrap();
+    assert!(!project.pdf_is_current());
+    let report = project.compile(&env, None).unwrap();
+    assert_eq!(report.outcome, Outcome::Succeeded, "{}", report.output);
+    assert!(project.pdf_is_current());
+
+    let mut edited = Project::open(&project.dir).unwrap();
+    edited.file.metadata.title.clear();
+    assert!(edited.compile(&env, None).is_err());
+    assert!(!project.pdf_is_current(), "a rejected recompile must leave the old PDF uncertified");
+}
+
+#[test]
 fn an_error_is_reported_with_its_file_and_line() {
     let Some(env) = tex() else { return };
     let root = tempfile::tempdir().unwrap();

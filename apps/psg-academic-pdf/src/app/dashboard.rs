@@ -43,6 +43,12 @@ impl AcademicApp {
             widgets::section_header(ui, t("Start a project"));
             let template = self.templates.get(self.selected_template).map(|tpl| tpl.manifest.name.clone()).unwrap_or_else(|| t("(none)").into());
             widgets::muted(ui, tf("New projects use the {template} template. Choose another in the Template Library.", &[("template", &template)]));
+            ui.horizontal_wrapped(|ui| {
+                ui.label(tf("Workspace: {path}", &[("path", &self.workspace.display().to_string())]));
+                if widgets::ghost(ui, t("Choose workspace…")).clicked() {
+                    self.choose_workspace();
+                }
+            });
             ui.add_space(psg_brand::space::M);
             ui.horizontal_wrapped(|ui| {
                 let ready = self.env.is_some() && !self.templates.is_empty();

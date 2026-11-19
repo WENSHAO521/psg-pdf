@@ -125,7 +125,7 @@ impl Project {
     pub fn import_manuscript(&self, source: &Path) -> Result<String, Error> {
         let text = read_import_text(source)?;
         let (body, note) = extract_body(&text);
-        write_atomic(&self.dir.join(&self.file.body), body.as_bytes())?;
+        self.write_body(&body)?;
         Ok(format!("Imported {} as {}{note}", source.display(), self.file.body))
     }
 
@@ -143,6 +143,7 @@ impl Project {
             return Err(Error::Project(format!("{name} would replace one of the template's own files; rename it first")));
         }
         let bytes = read_import(source)?;
+        self.invalidate_pdf()?;
         write_atomic(&self.dir.join(&name), &bytes)?;
         Ok(name)
     }
@@ -158,8 +159,18 @@ impl Project {
 
     /// Write the metadata and compile.
     pub fn compile(&self, env: &TexEnvironment, cancel: Option<&Arc<AtomicBool>>) -> Result<CompileReport, Error> {
+        self.invalidate_pdf()?;
+        let inputs = crate::project_revision::sources(self).ok();
         self.write_metadata()?;
-        compile::compile(env, &self.dir, &self.compile_options(), cancel)
+        let report = compile::compile(env, &self.dir, &self.compile_options(), cancel)?;
+        if report.outcome == compile::Outcome::Succeeded
+            && report.errors().next().is_none()
+            && let Some(inputs) = inputs
+            && let Err(e) = crate::project_revision::record(self, inputs)
+        {
+            log::warn!("could not verify the current PDF for {}: {e}", self.dir.display());
+        }
+        Ok(report)
     }
 
     /// The manuscript body (the file an import replaces), as text.
@@ -172,6 +183,7 @@ impl Project {
         if text.len() as u64 > MAX_IMPORT {
             return Err(Error::Project(format!("the body is larger than {} MB", MAX_IMPORT / 1024 / 1024)));
         }
+        self.invalidate_pdf()?;
         write_atomic(&self.dir.join(&self.file.body), text.as_bytes())
     }
 
@@ -266,6 +278,16 @@ impl Project {
     /// The compiled PDF, if there is one.
     pub fn pdf_path(&self) -> PathBuf {
         self.dir.join(format!("{}.pdf", self.file.main.trim_end_matches(".tex")))
+    }
+
+    /// Whether the PDF belongs to the current saved inputs of a successful compilation.
+    pub fn pdf_is_current(&self) -> bool {
+        crate::project_revision::is_current(self)
+    }
+
+    /// Remove the certification before changing inputs outside the project methods.
+    pub fn invalidate_pdf(&self) -> Result<(), Error> {
+        crate::project_revision::forget(self)
     }
 
     /// Copy the compiled PDF to `dest` (atomically).

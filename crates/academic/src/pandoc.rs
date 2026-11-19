@@ -85,6 +85,7 @@ impl ManuscriptImporter for PandocImporter {
         {
             return Err(too_old(&version));
         }
+        project.invalidate_pdf()?;
         write_atomic(&project.dir.join(DOCX_COPY), &bytes)?;
         let mut cmd = Command::new(&self.pandoc);
         cmd.current_dir(&project.dir);

@@ -423,34 +423,80 @@ impl AcademicApp {
                         ),
                     );
                 }
+                let pages = self.preview.pages.len();
+                let navigation = &mut self.preview.navigation;
+                ui.horizontal_wrapped(|ui| {
+                    for (forward, label) in [(false, t("Back")), (true, t("Forward"))] {
+                        if ui.add_enabled(navigation.can_visit(forward), egui::Button::new(label)).clicked() {
+                            navigation.visit(forward);
+                        }
+                    }
+                    if ui.available_width() < 340.0 {
+                        ui.end_row();
+                    } else {
+                        ui.separator();
+                    }
+                    if ui.add_enabled(navigation.current > 0, egui::Button::new(t("Previous page"))).clicked() {
+                        navigation.go_to(navigation.current - 1);
+                    }
+                    ui.horizontal(|ui| {
+                        let mut page = navigation.current + 1;
+                        ui.label(t("Page"));
+                        if ui.add(egui::DragValue::new(&mut page).range(1..=pages).update_while_editing(false)).changed() {
+                            navigation.go_to(page - 1);
+                        }
+                        ui.label(format!("/ {pages}"));
+                    });
+                    if ui.add_enabled(navigation.current + 1 < pages, egui::Button::new(t("Next page"))).clicked() {
+                        navigation.go_to(navigation.current + 1);
+                    }
+                });
                 let ppp = ui.ctx().pixels_per_point();
                 let fit = self.fit_width;
-                egui::ScrollArea::both().id_salt("preview-scroll").auto_shrink([false, false]).show(ui, |ui| {
+                egui::ScrollArea::both().id_salt("preview-scroll").auto_shrink([false, false]).show_viewport(ui, |ui, viewport| {
+                    let jump = navigation.jump.take();
+                    let scrolled = navigation.scroll_offset.replace(viewport.top()).is_some_and(|before| before != viewport.top());
+                    let middle = ui.clip_rect().center().y;
+                    let mut nearest = (f32::INFINITY, navigation.current);
                     // Fit width: a page wider than the pane is drawn at the pane's width, so a
                     // narrow split shows whole lines instead of a page cut off on both sides.
                     let room = (ui.available_width() - 4.0).max(80.0);
                     ui.vertical_centered(|ui| {
                         for (i, page) in self.preview.pages.iter().enumerate() {
-                            match page {
+                            let rect = match page {
                                 PageSlot::Ready(texture, size) => {
                                     let natural = *size / ppp;
                                     let shown = if fit && natural.x > room { natural * (room / natural.x) } else { natural };
                                     let resp = ui.add(egui::Image::new((texture.id(), shown)));
                                     ui.painter().rect_stroke(resp.rect, 0, egui::Stroke::new(1.0, p.border), egui::StrokeKind::Outside);
+                                    resp.rect
                                 }
-                                PageSlot::Pending => {
-                                    ui.add_sized([200.0, 280.0], egui::Spinner::new());
-                                }
+                                PageSlot::Pending => ui.add_sized([200.0, 280.0], egui::Spinner::new()).rect,
                                 PageSlot::Failed(e) => {
                                     ui.colored_label(
                                         ui.visuals().error_fg_color,
                                         tf("Page {n}: {error}", &[("n", &(i + 1).to_string()), ("error", e)]),
-                                    );
+                                    )
+                                    .rect
+                                }
+                            };
+                            if jump == Some(i) {
+                                ui.scroll_to_rect_animation(rect, Some(egui::Align::Min), egui::style::ScrollAnimation::none());
+                            } else if scrolled && jump.is_none() {
+                                let distance = (rect.top() - middle).max(middle - rect.bottom()).max(0.0);
+                                if distance < nearest.0 {
+                                    nearest = (distance, i);
                                 }
                             }
                             ui.add_space(psg_brand::space::M);
                         }
                     });
+                    if jump.is_some() {
+                        // The next offset is from this jump, rather than from scrolling.
+                        navigation.scroll_offset = None;
+                    } else if scrolled {
+                        navigation.current = nearest.1;
+                    }
                 });
             });
     }
