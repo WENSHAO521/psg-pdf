@@ -35,6 +35,7 @@ pub mod pandoc;
 pub mod paths;
 pub mod process;
 pub mod project;
+mod project_revision;
 pub mod scripts;
 pub mod template;
 pub mod tex;

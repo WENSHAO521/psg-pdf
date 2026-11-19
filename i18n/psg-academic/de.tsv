@@ -51,7 +51,6 @@
 	Checking for updates…	Nach Updates wird gesucht…
 	Checking the TeX installation…	TeX-Installation wird geprüft…
 	Checking…	Wird geprüft…
-	Choose an empty folder for the project	Leeren Ordner für das Projekt wählen
 	Close	Schließen
 	Close {app}	{app} schließen
 	Close {app} to finish	{app} schließen, um abzuschließen
@@ -189,7 +188,6 @@
 	Open or create a project, and wait for the TeX check, before compiling.	Öffnen oder erstellen Sie vor dem Kompilieren ein Projekt und warten Sie die TeX-Prüfung ab.
 	Open or create a project, then typeset it to export a PDF.	Projekt öffnen oder anlegen und setzen, um ein PDF zu exportieren.
 	Open project…	Projekt öffnen…
-	Open the compiled PDF in PSG PDF for review, annotation and further editing	Das kompilierte PDF zum Prüfen, Kommentieren und Bearbeiten in PSG PDF öffnen
 	Opened {path} in PSG PDF.	{path} in PSG PDF geöffnet.
 	Opened {path} in the default PDF viewer.	{path} im Standard-PDF-Betrachter geöffnet.
 	Opened {path}.	{path} geöffnet.
@@ -203,7 +201,6 @@
 	Pages	Seiten
 	Planned for a later version; not available yet.	Für eine spätere Version geplant; noch nicht verfügbar.
 	Portable mode: settings and projects are kept in {path}.	Portabler Modus: Einstellungen und Projekte liegen in {path}.
-	Press Auto Typeset first.	Zuerst „Automatisch setzen“ drücken.
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	„Automatisch setzen“ setzt das Manuskript; das PDF erscheint hier.
 	Preview	Vorschau
 	Problems	Probleme
@@ -275,7 +272,6 @@
 	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	Die .bib-Datei hat nahe dem hier genannten Eintrag einen Syntaxfehler: ein fehlendes Komma, eine Klammer oder ein Anführungszeichen.
 	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	Die pdfLaTeX-Zeitschriftenvorlagen können kein Chinesisch, Japanisch oder Koreanisch setzen (dafür braucht es XeLaTeX oder LuaLaTeX mit einer CJK-Schrift, die diese Vorlagen nicht verwenden). Geben Sie Titel, Namen und Literatur in lateinischer Schrift an (romanisiert, das Original in den Quelldaten), oder setzen Sie den Artikel außerhalb von PSG Academic PDF mit einer CJK-fähigen Vorlage.
 	The project folder: compilation happens here and only here	Der Projektordner: Kompiliert wird hier und nur hier
-	The project has been typeset	Das Projekt ist gesetzt
 	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	Die Vorlagen haben keine kyrillische Schrift (T2A-Kodierung). Transliterieren Sie kyrillische Namen und Titel, wie es die meisten englischsprachigen Zeitschriften verlangen.
 	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	Die Vorlagen haben keine griechische Textschrift. Schreiben Sie griechische Buchstaben in Formeln als Befehle ($\alpha$, $\Omega$); griechische Wörter im Fließtext müssen transliteriert werden.
 	The templates have no font for this script. Transliterate the text.	Die Vorlagen haben keine Schrift für dieses Schriftsystem. Transliterieren Sie den Text.
@@ -386,3 +382,24 @@
 	{path} already exists there. Nothing was moved; choose an empty folder.	{path} ist dort bereits vorhanden. Keine Projekte oder Einstellungen wurden verschoben; wählen Sie einen leeren Ordner.
 	That folder holds too many files to be a data folder. Nothing was moved.	Dieser Ordner enthält zu viele Dateien für einen Datenordner. Keine Projekte oder Einstellungen wurden verschoben.
 	Could not move the data folder ({path}: {error}). Nothing was changed.	Der Datenordner konnte nicht verschoben werden ({path}: {error}). Nichts wurde geändert.
+	Back	Zurück
+	Forward	Vorwärts
+	Previous page	Vorherige Seite
+	Page	Seite
+	Next page	Nächste Seite
+	Typeset the current manuscript before exporting.	Setzen Sie das aktuelle Manuskript vor dem Export.
+	Resolve the errors before exporting.	Beheben Sie die Fehler vor dem Export.
+	The current manuscript has been typeset	Das aktuelle Manuskript ist gesetzt
+	Workspace folder	Ordner für neue Projekte
+	New projects are saved here.	Neue Projekte werden hier gespeichert.
+	The chosen workspace is unavailable: {path}	Der gewählte Arbeitsbereich ist nicht verfügbar: {path}
+	Choose workspace…	Arbeitsbereich auswählen…
+	Use the default workspace	Standardarbeitsbereich verwenden
+	Workspace folder set to {path}.	Der Arbeitsbereich wurde auf {path} eingestellt.
+	Could not change the workspace: {error}	Der Arbeitsbereich konnte nicht geändert werden: {error}
+	Workspace: {path}	Arbeitsbereich: {path}
+	Choose a folder for the new project	Ordner für das neue Projekt auswählen
+	Folder path	Ordnerpfad
+	Browse…	Durchsuchen…
+	Use this folder	Diesen Ordner verwenden
+	Enter an existing folder path.	Geben Sie den Pfad eines vorhandenen Ordners ein.

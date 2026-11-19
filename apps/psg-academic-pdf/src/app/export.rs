@@ -7,7 +7,33 @@ use super::AcademicApp;
 use crate::i18n::{t, tn};
 
 impl AcademicApp {
+    fn current_pdf(&self) -> bool {
+        !self.source.dirty() && self.project.as_ref().is_some_and(|project| project.pdf_is_current())
+    }
+
+    fn export_blocker(&self, current: bool) -> Option<&'static str> {
+        if self.running.is_some() {
+            Some(t("Typesetting is already running."))
+        } else if !current {
+            Some(t("Typeset the current manuscript before exporting."))
+        } else if self.problem_counts().0 > 0 || self.project.as_ref().is_some_and(|p| p.file.metadata.validate().iter().any(|i| i.blocking)) {
+            Some(t("Resolve the errors before exporting."))
+        } else {
+            None
+        }
+    }
+
+    pub(super) fn check_export(&mut self) -> bool {
+        self.apply_buffers();
+        if let Some(reason) = self.export_blocker(self.current_pdf()) {
+            self.fail(reason);
+            return false;
+        }
+        true
+    }
+
     pub(super) fn export_page(&mut self, ui: &mut egui::Ui) {
+        self.apply_buffers();
         egui::ScrollArea::vertical().auto_shrink([false, false]).show(ui, |ui| {
             ui.set_max_width(ui.available_width().min(820.0));
             widgets::page_header(ui, t("Export"), Some(t("Check the finished article and save the PDF where it is needed.")));
@@ -20,11 +46,13 @@ impl AcademicApp {
             let (errors, warnings) = self.problem_counts();
             let issues = project.file.metadata.validate();
             let blocking = issues.iter().filter(|i| i.blocking).count();
+            let current = self.current_pdf();
+            let blocker = self.export_blocker(current);
             let suggested = super::suggested_file_name(&project.file.metadata);
             widgets::card(ui, |ui| {
                 ui.set_width(ui.available_width());
                 widgets::section_header(ui, t("Before you export"));
-                check(ui, file.is_some(), t("The project has been typeset"), Some(t("Press Auto Typeset first.")));
+                check(ui, current, t("The current manuscript has been typeset"), Some(t("Typeset the current manuscript before exporting.")));
                 check(ui, errors == 0, t("No errors"), Some(&tn(errors, "{n} error: see Problems.", "{n} errors: see Problems.", &[])));
                 check(
                     ui,
@@ -75,12 +103,10 @@ impl AcademicApp {
                 }
                 ui.add_space(psg_brand::space::M);
                 ui.horizontal(|ui| {
-                    let ready = self.running.is_none() && file.is_some();
-                    export =
-                        widgets::button_enabled(ui, ready, widgets::ButtonKind::Primary, t("Export PDF…"), t("Typeset the project first.")).clicked();
-                    open = widgets::button_enabled(ui, ready, widgets::ButtonKind::Secondary, t("Open in PSG PDF"), t("Typeset the project first."))
-                        .on_hover_text(t("Open the compiled PDF in PSG PDF for review, annotation and further editing"))
-                        .clicked();
+                    let ready = blocker.is_none();
+                    let why = blocker.unwrap_or_default();
+                    export = widgets::button_enabled(ui, ready, widgets::ButtonKind::Primary, t("Export PDF…"), why).clicked();
+                    open = widgets::button_enabled(ui, ready, widgets::ButtonKind::Secondary, t("Open in PSG PDF"), why).clicked();
                 });
             });
             if export {

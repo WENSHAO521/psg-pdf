@@ -61,6 +61,11 @@ impl AcademicApp {
             ui.add_space(psg_brand::space::M);
             widgets::card(ui, |ui| {
                 ui.set_width(ui.available_width());
+                self.workspace_card(ui);
+            });
+            ui.add_space(psg_brand::space::M);
+            widgets::card(ui, |ui| {
+                ui.set_width(ui.available_width());
                 self.data_folder_card(ui);
             });
             ui.add_space(psg_brand::space::M);

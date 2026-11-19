@@ -35,15 +35,21 @@ corner; warnings and errors stay until you dismiss them.
 | Area | What it is for |
 |---|---|
 | **Dashboard** | Start a project (import a manuscript, new project, open), recent projects, the current project at a glance, and the TeX installation. |
-| **Manuscript** | The source editor beside the PDF (drag the divider to any ratio; it is remembered), the article outline, title and abstract, authors and affiliations, publication details, and references. |
+| **Manuscript** | The source editor beside the PDF (drag the divider to any ratio; it is remembered), the article outline, title and abstract, authors and affiliations, publication details, and references. Use the page number and previous and next page buttons to move through the preview, and Back and Forward to retrace jumps. |
 | **Template Library** | The journal templates as cards; the selected one is used for new projects. Importing templates from ZIP files and checking compatibility are planned and shown as such. |
 | **Typesetting** | The task centre: run or cancel, this session's runs, the project's time limit, and the latexmk output, TeX log and activity log beside the PDF. |
 | **Problems** | Errors and warnings from the checks made before typesetting and from the last run, with hints and **Go to line**. |
-| **Export** | A checklist (typeset, no errors, required details), the PDF's details, **Export PDF…** and **Open in PSG PDF**. |
-| **Settings** | Language, theme (follow system, light, dark), interface size, TeX installation, updates and About. |
+| **Export** | A checklist for the current revision, the PDF's details, **Export PDF…** and **Open in PSG PDF**. After editing the manuscript or its publication details, typeset again before exporting. Projects typeset by an older version require one new typeset to verify the PDF. |
+| **Settings** | Language, theme (follow system, light, dark), interface size, TeX installation, workspace folder, data folder, updates and About. |
 
 Shortcuts: Ctrl+S / ⌘S saves, Ctrl+R / ⌘R typesets, Ctrl+E / ⌘E opens Export, Ctrl+O / ⌘O opens a
 project, and Ctrl+1 … 7 / ⌘1 … 7 switch areas.
+
+Use **Choose workspace…** on the Dashboard or in Settings to pick where new projects go. The
+choice applies to new projects and manuscript imports. **New in folder…** can also create one
+project in a different folder. It uses the selected folder if empty, or creates a project
+subfolder when there are already files there. If saving fails when changing projects or closing
+the window, the current draft stays open so the save can be retried.
 
 ## Making an article
 

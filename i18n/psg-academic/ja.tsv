@@ -51,7 +51,6 @@
 	Checking for updates…	アップデートを確認しています…
 	Checking the TeX installation…	TeX のインストールを確認しています…
 	Checking…	確認しています…
-	Choose an empty folder for the project	プロジェクト用の空のフォルダーを選択
 	Close	閉じる
 	Close {app}	{app} を閉じる
 	Close {app} to finish	{app} を閉じて完了
@@ -189,7 +188,6 @@
 	Open or create a project, and wait for the TeX check, before compiling.	コンパイルする前に、プロジェクトを開くか作成し、TeX の確認が終わるのを待ってください。
 	Open or create a project, then typeset it to export a PDF.	プロジェクトを開くか作成し、組版すると PDF を書き出せます。
 	Open project…	プロジェクトを開く…
-	Open the compiled PDF in PSG PDF for review, annotation and further editing	コンパイルした PDF を PSG PDF で開き、確認、注釈、編集を行う
 	Opened {path} in PSG PDF.	{path} を PSG PDF で開きました。
 	Opened {path} in the default PDF viewer.	{path} を既定の PDF ビューアーで開きました。
 	Opened {path}.	{path} を開きました。
@@ -203,7 +201,6 @@
 	Pages	ページ
 	Planned for a later version; not available yet.	今後のバージョンで対応予定です。まだ使えません。
 	Portable mode: settings and projects are kept in {path}.	ポータブルモード: 設定とプロジェクトは {path} に保存されます。
-	Press Auto Typeset first.	まず「自動組版」を押してください。
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	「自動組版」を押すと原稿が組版され、PDF がここに表示されます。
 	Preview	プレビュー
 	Problems	問題
@@ -275,7 +272,6 @@
 	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	.bib ファイルのここに示した項目の近くに構文エラーがあります。カンマ、括弧、引用符が抜けています。
 	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	pdfLaTeX のジャーナルテンプレートは中国語、日本語、韓国語を組版できません（CJK フォントを使う XeLaTeX か LuaLaTeX が必要ですが、これらのテンプレートは使いません）。タイトル、氏名、参考文献はラテン文字（ローマ字表記、原文は元データに保存）で記すか、PSG Academic PDF 以外で CJK 対応のテンプレートを使ってください。
 	The project folder: compilation happens here and only here	プロジェクトフォルダー: コンパイルはここでのみ行われます
-	The project has been typeset	プロジェクトは組版済み
 	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	テンプレートにはキリル文字のフォント（T2A エンコーディング）がありません。多くの英語のジャーナルの求めに従い、キリル文字の氏名やタイトルは翻字してください。
 	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	テンプレートにはギリシャ文字の本文フォントがありません。数式ではギリシャ文字をコマンド（$\alpha$、$\Omega$）で書き、本文のギリシャ語は翻字してください。
 	The templates have no font for this script. Transliterate the text.	テンプレートにはこの文字のフォントがありません。翻字してください。
@@ -378,3 +374,24 @@
 	{path} already exists there. Nothing was moved; choose an empty folder.	移動先に {path} が既にあります。プロジェクトも設定も移動していません。空のフォルダーを選択してください。
 	That folder holds too many files to be a data folder. Nothing was moved.	そのフォルダーはファイルが多すぎるため、データフォルダーではないようです。プロジェクトも設定も移動していません。
 	Could not move the data folder ({path}: {error}). Nothing was changed.	データフォルダーを移動できませんでした（{path}：{error}）。何も変更していません。
+	Back	戻る
+	Forward	進む
+	Previous page	前のページ
+	Page	ページ
+	Next page	次のページ
+	Typeset the current manuscript before exporting.	書き出す前に現在の原稿を組版してください。
+	Resolve the errors before exporting.	エラーを解消してから書き出してください。
+	The current manuscript has been typeset	現在の原稿は組版済みです
+	Workspace folder	ワークスペースのフォルダー
+	New projects are saved here.	新しいプロジェクトはここに保存されます。
+	The chosen workspace is unavailable: {path}	選択したワークスペースを利用できません：{path}
+	Choose workspace…	ワークスペースを選択…
+	Use the default workspace	既定のワークスペースを使用
+	Workspace folder set to {path}.	ワークスペースのフォルダーを {path} に設定しました。
+	Could not change the workspace: {error}	ワークスペースを変更できません：{error}
+	Workspace: {path}	ワークスペース：{path}
+	Choose a folder for the new project	新しいプロジェクトのフォルダーを選択
+	Folder path	フォルダーのパス
+	Browse…	参照…
+	Use this folder	このフォルダーを使用
+	Enter an existing folder path.	既存のフォルダーのパスを入力してください。
