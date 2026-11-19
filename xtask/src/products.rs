@@ -422,6 +422,18 @@ mod tests {
     }
 
     #[test]
+    fn each_desktop_app_enables_the_system_clipboard_for_standalone_builds() {
+        let root = repo();
+        for product in load(&root).unwrap().products {
+            let manifest = root.join("apps").join(&product.id).join("Cargo.toml");
+            let manifest: toml::Value = toml::from_str(&std::fs::read_to_string(manifest).unwrap()).unwrap();
+            let features = manifest["dependencies"]["eframe"]["features"].as_array().unwrap();
+            // A workspace build can get this feature from the other app through feature unification.
+            assert!(features.iter().any(|feature| feature.as_str() == Some("clipboard")), "{} must enable eframe's system clipboard", product.id);
+        }
+    }
+
+    #[test]
     fn a_shared_upgrade_code_is_caught() {
         let root = repo();
         let mut m = load(&root).unwrap();
