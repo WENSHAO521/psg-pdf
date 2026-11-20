@@ -103,6 +103,15 @@ and why, the metadata used, the TeX packages installed and every problem with it
 psg-academic-pdf typeset paper.docx --template psg-article --metadata issue.toml --out article.pdf --json
 ```
 
+After typesetting, `source-at` and `page-of` jump between the PDF and the source the way
+double-clicking the preview and **Show in PDF** do in the window (pages count from 1, points from
+the page's top-left corner):
+
+```sh
+psg-academic-pdf source-at ./my-article --page 2 --x 150 --y 300 --json   # {"file":"body.tex","line":42}
+psg-academic-pdf page-of ./my-article --file body.tex --line 42 --json    # {"page":2,"y":300.4}
+```
+
 ```toml
 # issue.toml
 journal = "Journal of Things"
