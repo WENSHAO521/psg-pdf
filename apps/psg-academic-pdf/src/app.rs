@@ -192,6 +192,8 @@ pub struct AcademicApp {
     running: Option<Running>,
     report: Option<CompileReport>,
     preview: Preview,
+    /// The PDF's SyncTeX, read when first used after each compilation.
+    synctex: Option<psg_academic::synctex::SyncTex>,
     zoom: f32,
     /// Draw preview pages no wider than their pane.
     fit_width: bool,
@@ -267,6 +269,7 @@ impl AcademicApp {
             running: None,
             report: None,
             preview: Preview::default(),
+            synctex: None,
             zoom: 1.0,
             fit_width: true,
             page: Page::Dashboard,
@@ -719,6 +722,7 @@ impl AcademicApp {
     }
 
     fn load_preview(&mut self, ctx: &egui::Context) {
+        self.synctex = None;
         let Some(project) = &self.project else { return };
         let pdf = project.pdf_path();
         match std::fs::read(&pdf) {
@@ -825,6 +829,51 @@ impl AcademicApp {
     /// LaTeX and bibliography files.
     fn editable_files(&self) -> Vec<String> {
         self.project.as_ref().map(Project::text_files).unwrap_or_default()
+    }
+
+    /// The PDF's SyncTeX, read now if it wasn't yet. A note says why when there is none.
+    fn sync_tex(&mut self) -> Option<&psg_academic::synctex::SyncTex> {
+        if self.synctex.is_none() {
+            let project = self.project.as_ref()?;
+            match psg_academic::synctex::SyncTex::read(&project.dir, &project.file.main) {
+                Ok(Some(s)) => self.synctex = Some(s),
+                Ok(None) => {
+                    self.note(t("Typeset the manuscript again to jump between the PDF and the source."));
+                    return None;
+                }
+                Err(e) => {
+                    self.fail(e.to_string());
+                    return None;
+                }
+            }
+        }
+        self.synctex.as_ref()
+    }
+
+    /// Show the source line that put what is at (`x`, `y`) PDF points on `page` (0-based).
+    fn show_source_at(&mut self, page: usize, x: f32, y: f32) {
+        let Some(found) = self.sync_tex().and_then(|s| s.source_at(page, x, y)) else { return };
+        let (file, line) = found;
+        if self.editable_files().contains(&file) {
+            self.go_to(&file, Some(line));
+        } else {
+            self.note(tf("That part of the PDF comes from {file}, line {n}.", &[("file", &file), ("n", &line.to_string())]));
+        }
+    }
+
+    /// Show the place in the PDF that the source editor's cursor line produced.
+    fn show_in_pdf(&mut self) {
+        let (file, line) = (self.source.file.clone(), self.source.cursor_line());
+        let Some((page, y)) = self.sync_tex().and_then(|s| s.page_of(&file, line)) else {
+            self.note(tf("Line {n} of {file} is not in the PDF yet; typeset to update it.", &[("n", &line.to_string()), ("file", &file)]));
+            return;
+        };
+        self.preview.navigation.go_to(page);
+        self.preview.navigation.jump = Some(page);
+        self.preview.mark = Some((page, y));
+        if self.source_view == SourceView::Editor {
+            self.source_view = SourceView::Split;
+        }
     }
 
     /// Make the new file `name` and show it in the source editor.

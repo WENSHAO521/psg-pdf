@@ -240,6 +240,12 @@ impl AcademicApp {
                 self.source.load(&dir, &file);
             }
             ui.checkbox(&mut self.show_outline, t("Outline"));
+            if widgets::button_enabled(ui, self.has_pdf(), widgets::ButtonKind::Secondary, t("Show in PDF"), "")
+                .on_hover_text(t("Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way."))
+                .clicked()
+            {
+                self.show_in_pdf();
+            }
             if self.source.dirty() {
                 widgets::chip(ui, Tone::Warning, t("Unsaved"));
             }
@@ -457,6 +463,8 @@ impl AcademicApp {
                 });
                 let ppp = ui.ctx().pixels_per_point();
                 let fit = self.fit_width;
+                let (scale, mark) = (self.preview.scale.max(0.01), self.preview.mark);
+                let mut clicked: Option<(usize, f32, f32)> = None;
                 egui::ScrollArea::both().id_salt("preview-scroll").auto_shrink([false, false]).show_viewport(ui, |ui, viewport| {
                     let jump = navigation.jump.take();
                     let scrolled = navigation.scroll_offset.replace(viewport.top()).is_some_and(|before| before != viewport.top());
@@ -471,8 +479,31 @@ impl AcademicApp {
                                 PageSlot::Ready(texture, size) => {
                                     let natural = *size / ppp;
                                     let shown = if fit && natural.x > room { natural * (room / natural.x) } else { natural };
-                                    let resp = ui.add(egui::Image::new((texture.id(), shown)));
+                                    let resp = ui
+                                        .add(egui::Image::new((texture.id(), shown)).sense(egui::Sense::click()))
+                                        .on_hover_text(t("Double-click to show this place in the source"));
                                     ui.painter().rect_stroke(resp.rect, 0, egui::Stroke::new(1.0, p.border), egui::StrokeKind::Outside);
+                                    // The page's size in PDF points, to turn a place on it into points and back.
+                                    let points = *size / scale;
+                                    if resp.double_clicked()
+                                        && let Some(pos) = resp.interact_pointer_pos()
+                                        && resp.rect.width() > 0.0
+                                        && resp.rect.height() > 0.0
+                                    {
+                                        let at = (pos - resp.rect.min) / resp.rect.size() * points;
+                                        clicked = Some((i, at.x, at.y));
+                                    }
+                                    if let Some((page, y)) = mark
+                                        && page == i
+                                        && points.y > 0.0
+                                    {
+                                        let top = resp.rect.top() + (y / points.y) * resp.rect.height();
+                                        let band = egui::Rect::from_min_max(
+                                            egui::pos2(resp.rect.left(), top - 14.0),
+                                            egui::pos2(resp.rect.right(), top + 4.0),
+                                        );
+                                        ui.painter().rect_filled(band, 2, p.accent.gamma_multiply(0.18));
+                                    }
                                     resp.rect
                                 }
                                 PageSlot::Pending => ui.add_sized([200.0, 280.0], egui::Spinner::new()).rect,
@@ -502,6 +533,9 @@ impl AcademicApp {
                         navigation.current = nearest.1;
                     }
                 });
+                if let Some((page, x, y)) = clicked {
+                    self.show_source_at(page, x, y);
+                }
             });
     }
 }

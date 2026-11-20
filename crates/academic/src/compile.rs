@@ -142,7 +142,8 @@ pub fn command(env: &TexEnvironment, project: &Path, opts: &CompileOptions) -> R
     let mut cmd = Command::new(latexmk);
     cmd.current_dir(project);
     let [engine, template] = opts.engine.latexmk_args();
-    cmd.args(["-norc", engine, "-interaction=nonstopmode", "-halt-on-error", "-file-line-error"]);
+    // -synctex=1: where each source line went in the PDF, for jumping between them (`synctex`).
+    cmd.args(["-norc", engine, "-synctex=1", "-interaction=nonstopmode", "-halt-on-error", "-file-line-error"]);
     // latexmk runs this through its own command template; %O and %S are its placeholders.
     cmd.arg(template);
     if opts.force {

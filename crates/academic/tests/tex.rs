@@ -223,3 +223,21 @@ fn tiny_png() -> Vec<u8> {
     chunk(&mut png, b"IEND", &[]);
     png
 }
+
+#[test]
+fn the_pdf_and_the_source_point_at_each_other() {
+    let Some(env) = tex() else { return };
+    let root = tempfile::tempdir().unwrap();
+    let project = sample_project(root.path());
+    let report = project.compile(&env, None).unwrap();
+    assert_eq!(report.outcome, Outcome::Succeeded, "{}", report.output);
+    let sync = psg_academic::synctex::SyncTex::read(&project.dir, &project.file.main).unwrap().expect("TeX wrote SyncTeX");
+    let body = std::fs::read_to_string(project.dir.join(&project.file.body)).unwrap();
+    // A line of running text in the body.
+    let line = body.lines().position(|l| l.len() > 40 && !l.starts_with(['\\', '%'])).unwrap() + 1;
+    let line = u32::try_from(line).unwrap();
+    let (page, y) = sync.page_of(&project.file.body, line).unwrap();
+    let (file, found) = sync.source_at(page, 200.0, y).unwrap();
+    assert_eq!(file, project.file.body);
+    assert!(found.abs_diff(line) <= 2, "line {line} came back as {found}");
+}

@@ -412,3 +412,9 @@
 	Could not add the template: {error}	無法加入範本：{error}
 	New file	新增檔案
 	Made {file}.	已新增 {file}。
+	Show in PDF	在 PDF 中顯示
+	Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way.	顯示游標所在行在 PDF 中的位置。按兩下 PDF 可反向跳轉。
+	Double-click to show this place in the source	按兩下以在原始碼中顯示此處
+	Typeset the manuscript again to jump between the PDF and the source.	請重新排版稿件，以便在 PDF 與原始碼之間跳轉。
+	That part of the PDF comes from {file}, line {n}.	PDF 的這部分來自 {file} 第 {n} 行。
+	Line {n} of {file} is not in the PDF yet; typeset to update it.	{file} 第 {n} 行尚未出現在 PDF 中；請排版以更新。

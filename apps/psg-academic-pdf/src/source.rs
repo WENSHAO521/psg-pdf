@@ -30,6 +30,8 @@ pub struct SourceEditor {
     pub new_file: String,
     /// The coloured layout of the text last drawn, kept while the text doesn't change.
     highlighted: Option<(u64, Arc<LayoutJob>)>,
+    /// Where the cursor was at the last frame, as a character index.
+    cursor: usize,
 }
 
 /// What the editor asks of the app, besides editing.
@@ -71,6 +73,12 @@ impl SourceEditor {
     /// Mark the current text as saved (after the caller wrote it).
     pub fn mark_saved(&mut self) {
         self.saved.clone_from(&self.text);
+    }
+
+    /// The line (1-based) the cursor is on.
+    pub fn cursor_line(&self) -> u32 {
+        let newlines = self.text.chars().take(self.cursor).filter(|c| *c == '\n').count();
+        u32::try_from(newlines).unwrap_or(u32::MAX).saturating_add(1)
     }
 
     /// Put the cursor on `line` (1-based) at the next frame.
@@ -144,6 +152,9 @@ impl SourceEditor {
                         .layouter(&mut layouter),
                 );
                 self.highlighted = cache;
+                if let Some(range) = egui::TextEdit::load_state(ui.ctx(), id).and_then(|s| s.cursor.char_range()) {
+                    self.cursor = range.primary.index.into();
+                }
                 if let Some(line) = self.jump.take() {
                     let index = char_index_of_line(&self.text, line);
                     if let Some(mut state) = egui::TextEdit::load_state(ui.ctx(), id) {

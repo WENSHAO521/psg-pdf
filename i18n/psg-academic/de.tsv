@@ -420,3 +420,9 @@
 	Could not add the template: {error}	Die Vorlage konnte nicht hinzugefügt werden: {error}
 	New file	Neue Datei
 	Made {file}.	{file} angelegt.
+	Show in PDF	In PDF zeigen
+	Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way.	Zeigt, wo die Zeile mit dem Cursor im PDF steht. Doppelklicken Sie ins PDF für die Gegenrichtung.
+	Double-click to show this place in the source	Doppelklicken, um diese Stelle in der Quelle zu zeigen
+	Typeset the manuscript again to jump between the PDF and the source.	Setzen Sie das Manuskript erneut, um zwischen PDF und Quelle zu springen.
+	That part of the PDF comes from {file}, line {n}.	Diese Stelle im PDF stammt aus {file}, Zeile {n}.
+	Line {n} of {file} is not in the PDF yet; typeset to update it.	Zeile {n} von {file} ist noch nicht im PDF; setzen Sie neu, um es zu aktualisieren.

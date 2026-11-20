@@ -421,3 +421,9 @@
 	Could not add the template: {error}	No se pudo añadir la plantilla: {error}
 	New file	Archivo nuevo
 	Made {file}.	{file} creado.
+	Show in PDF	Mostrar en el PDF
+	Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way.	Muestra dónde está en el PDF la línea del cursor. Haga doble clic en el PDF para ir en sentido contrario.
+	Double-click to show this place in the source	Doble clic para mostrar este lugar en el código fuente
+	Typeset the manuscript again to jump between the PDF and the source.	Vuelva a maquetar el manuscrito para saltar entre el PDF y el código fuente.
+	That part of the PDF comes from {file}, line {n}.	Esa parte del PDF procede de {file}, línea {n}.
+	Line {n} of {file} is not in the PDF yet; typeset to update it.	La línea {n} de {file} aún no está en el PDF; maquete de nuevo para actualizarlo.

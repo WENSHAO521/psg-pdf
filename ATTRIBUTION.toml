@@ -3076,7 +3076,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "144af0a03362db1ea7af479bc05192bd0d1675d0aa8507ab0cb678fff5b5a9fa"
+sha256 = "e648b6f3dbf8d7b2ad17bfb3d79fe9e35ecbbfc8342fbf0afeae77aa226680eb"
 
 [[asset]]
 path = "i18n/psg-academic/es.tsv"
@@ -3087,7 +3087,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "382f35290cc80825788f01766ba3560a7eb268a90e3dac242f855f6b2aa068a1"
+sha256 = "45436d7d56cf3320d1d251fcb77f191f1ff4b96ea9ddd294d091ded55f7afdc6"
 
 [[asset]]
 path = "i18n/psg-academic/fr.tsv"
@@ -3098,7 +3098,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "277d9edf9ef8dfc6a81afd7e65f3dec35d96047d3dc68e5bdca569ddb6ef6c77"
+sha256 = "97d858b60db3c9d94247116c1390acf296a44e5f3a04ce6dc901633bb0dc7ab1"
 
 [[asset]]
 path = "i18n/psg-academic/ja.tsv"
@@ -3109,7 +3109,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "8e90b69e227739cb4c45dc8cf4cc7d9378ca6786fa9e2c3df9e6b06dcca13518"
+sha256 = "f4ac6192f2a5a9f87d25e1e97c990eef658d3687a307184e699465a14aa6f637"
 
 [[asset]]
 path = "i18n/psg-academic/ko.tsv"
@@ -3120,7 +3120,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "b4de45efc330fcad6658e8ffccfad0b0fca67fd4b73eb618088b21f44382482e"
+sha256 = "b13867090ac3b4e2b2fbc29288246703d9e94b3ca95d5ea1743ee6115cb581f2"
 
 [[asset]]
 path = "i18n/psg-academic/pt-br.tsv"
@@ -3131,7 +3131,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "5ecc36ed7aaebb77d72e2aebc51d03ebd9df38ad5016f76646def9ed3a4f24c1"
+sha256 = "a1a9166d392f8ad8b56493108c5e48b77969efd615a614077b7cfdc2c8430d2e"
 
 [[asset]]
 path = "i18n/psg-academic/vi.tsv"
@@ -3142,7 +3142,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "1323804728937a472a2e91cdbc89a7cb375d01bf29acd6f37075b45b393ccf05"
+sha256 = "3c677963d756e6e058956a266f417932471a8b79fb8e68ca14df1e356f440a56"
 
 [[asset]]
 path = "i18n/psg-academic/zh-hans.tsv"
@@ -3153,7 +3153,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "1774752f44f2652d181714aa91173038e87ff6a69017bbc414f229a94e9cbdc9"
+sha256 = "5917dfe85f64ba70e80934ed6dffaa8ac985821fb47936c7b090ac37e2fbc670"
 
 [[asset]]
 path = "i18n/psg-academic/zh-hant.tsv"
@@ -3164,7 +3164,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "c5a8439f3f5a70e3e22a4524984635561ab9e0008085c546b316cf33e4c14529"
+sha256 = "2e6e3d7069a7c74ed8e922413502a6b704d886c877bf02da6fac7d68ac558af8"
 
 [[asset]]
 path = "i18n/glossary.tsv"
