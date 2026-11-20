@@ -388,6 +388,9 @@ fn pptx_opens_in_libreoffice() {
         use std::os::unix::fs::DirBuilderExt as _;
         made.mode(0o700);
     }
+    // Elsewhere the default mode stands; this keeps `mut` used there too.
+    #[cfg(not(unix))]
+    let _ = &mut made;
     made.create(&dir).expect("a fresh test folder");
     let pptx_path = dir.join("test.pptx");
     std::fs::write(&pptx_path, &bytes).unwrap();
