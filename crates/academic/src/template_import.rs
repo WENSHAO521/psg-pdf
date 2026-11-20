@@ -421,7 +421,7 @@ pub(crate) struct Call {
     start: usize,
     pub(crate) end: usize,
     optional: Vec<(usize, usize)>,
-    mandatory: Vec<(usize, usize)>,
+    pub(crate) mandatory: Vec<(usize, usize)>,
 }
 
 /// `\name[..]{..}` at or after `from`, with up to `args` mandatory arguments.

@@ -30,6 +30,7 @@ pub mod bib;
 pub const fn mark(english: &'static str) -> &'static str {
     english
 }
+pub mod citations;
 pub mod compile;
 pub mod diagnostics;
 pub mod docx;

@@ -4,8 +4,9 @@
 //! Pandoc reads the Word file into its document tree, [`crate::docx`] takes the title, authors,
 //! affiliations, abstract and keywords out of it into the project's metadata and turns captioned
 //! pictures and tables into numbered figures and tables, and Pandoc writes the rest as the body.
-//! Word citations are not read into BibLaTeX yet. The app offers it only when `pandoc` is
-//! installed.
+//! Citations a reference manager put into the Word file become LaTeX citations, with their
+//! entries added to the template's bibliography ([`crate::citations`]). The app offers it only
+//! when `pandoc` is installed.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -95,10 +96,11 @@ impl ManuscriptImporter for PandocImporter {
         project.invalidate_pdf()?;
         write_atomic(&project.dir.join(DOCX_COPY), &bytes)?;
         // Read the manuscript into Pandoc's document tree, with its pictures extracted to media/.
-        let read = self.pandoc(project, &["--from=docx", "--to=json", "--extract-media=media", "-o", TREE, DOCX_COPY], source, cancel)?;
+        let read = self.pandoc(project, &["--from=docx+citations", "--to=json", "--extract-media=media", "-o", TREE, DOCX_COPY], source, cancel)?;
         let tree_path = project.dir.join(TREE);
         let mut doc = read_tree(&tree_path)?;
         let (front, changes) = crate::docx::restructure(&mut doc);
+        let cited = self.take_citations(project, &mut doc, source, cancel)?;
         let tree = serde_json::to_vec(&doc).map_err(|e| Error::Project(format!("could not write the document tree: {e}")))?;
         write_atomic(&tree_path, &tree)?;
         drop(doc);
@@ -119,6 +121,10 @@ impl ManuscriptImporter for PandocImporter {
             changes.figures,
             changes.tables
         );
+        if let Some(cited) = &cited {
+            note.push(' ');
+            note.push_str(cited);
+        }
         if changes.typed_heading_numbers > 0 {
             note.push_str(&format!(" {} heading(s) keep the numbers typed in Word.", changes.typed_heading_numbers));
         }
@@ -137,7 +143,82 @@ impl ManuscriptImporter for PandocImporter {
     }
 }
 
+/// Where Pandoc writes the bibliography entries of the Word citations, before they are added to
+/// the template's bibliography file.
+const REFERENCES_TREE: &str = "manuscript-references.json";
+const REFERENCES_BIB: &str = "manuscript-references.bib";
+
+/// How the template's main file cites, and the bibliography file it reads: `\addbibresource{x.bib}`
+/// (BibLaTeX) or `\bibliography{x}` (BibTeX). `None` when it has neither.
+pub fn citation_setup(main: &str) -> Option<(crate::citations::Style, String)> {
+    use crate::template_import::{find_call, mask_comments};
+    let masked = mask_comments(main);
+    let first_arg = |name: &str| {
+        let call = find_call(&masked, name, 0, 1)?;
+        let (a, b) = *call.mandatory.first()?;
+        let list = main.get(a..b)?;
+        let first = list.split(',').next()?.trim();
+        crate::paths::safe_relative_name(first).map(|_| first.to_owned())
+    };
+    if let Some(file) = first_arg("addbibresource") {
+        return Some((crate::citations::Style::Biblatex, file));
+    }
+    let file = first_arg("bibliography")?;
+    let file = if file.to_ascii_lowercase().ends_with(".bib") { file } else { format!("{file}.bib") };
+    Some((crate::citations::Style::Bibtex, file))
+}
+
 impl PandocImporter {
+    /// Turn the Word citations in `doc` into the template's kind of citation and add their entries
+    /// to its bibliography file. A note for the log, or `None` when there were none (or the
+    /// template has no bibliography, when Word's own citation text stays).
+    fn take_citations(
+        &self,
+        project: &Project,
+        doc: &mut serde_json::Value,
+        source: &Path,
+        cancel: Option<&Arc<AtomicBool>>,
+    ) -> Result<Option<String>, Error> {
+        let main_path = project.dir.join(&project.file.main);
+        let main = std::fs::read_to_string(&main_path).map_err(|e| Error::io(&main_path, e))?;
+        let Some((style, bib_name)) = citation_setup(&main) else { return Ok(None) };
+        let bib_path = project.dir.join(&bib_name);
+        let existing = std::fs::read_to_string(&bib_path).unwrap_or_default();
+        let taken = crate::bib::parse(&existing).0.into_iter().map(|e| e.key).collect();
+        let Some(converted) = crate::citations::convert(doc, style, &taken) else { return Ok(None) };
+        let tree = serde_json::to_vec(&converted.references).map_err(|e| Error::Project(format!("could not write the references: {e}")))?;
+        write_atomic(&project.dir.join(REFERENCES_TREE), &tree)?;
+        let to = match style {
+            crate::citations::Style::Biblatex => "--to=biblatex",
+            crate::citations::Style::Bibtex => "--to=bibtex",
+        };
+        let written = self.pandoc(project, &["--from=json", to, "-o", REFERENCES_BIB, REFERENCES_TREE], source, cancel);
+        let _ = std::fs::remove_file(project.dir.join(REFERENCES_TREE));
+        written?;
+        let new_path = project.dir.join(REFERENCES_BIB);
+        let entries = std::fs::read_to_string(&new_path).map_err(|e| Error::io(&new_path, e))?;
+        let _ = std::fs::remove_file(&new_path);
+        let mut bib = existing;
+        if !bib.is_empty() && !bib.ends_with('\n') {
+            bib.push('\n');
+        }
+        bib.push_str("\n% Added by PSG Academic PDF from the Word manuscript's citations.\n");
+        bib.push_str(&entries);
+        write_atomic(&bib_path, bib.as_bytes())?;
+        let mut note = format!(
+            "{} citation(s) from the reference manager became {}, with {} bibliography entr{} added to {bib_name}",
+            converted.citations,
+            match style {
+                crate::citations::Style::Biblatex => "\\parencite/\\textcite",
+                crate::citations::Style::Bibtex => "\\cite",
+            },
+            converted.keys.len(),
+            if converted.keys.len() == 1 { "y" } else { "ies" },
+        );
+        note.push_str(if converted.removed_list { "; Word's reference list was left out, as the template prints the bibliography." } else { "." });
+        Ok(Some(note))
+    }
+
     /// Run Pandoc sandboxed in the project with `args`. Returns the number of warning lines.
     fn pandoc(&self, project: &Project, args: &[&str], source: &Path, cancel: Option<&Arc<AtomicBool>>) -> Result<usize, Error> {
         let mut cmd = Command::new(&self.pandoc);
@@ -265,6 +346,17 @@ pub fn review_converted(body: &str, project_dir: &Path, engine: Engine) -> Vec<S
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_template_says_how_it_cites() {
+        use crate::citations::Style;
+        let biblatex = "\\usepackage{biblatex}\n% \\bibliography{old}\n\\addbibresource{references.bib}\n";
+        assert_eq!(citation_setup(biblatex), Some((Style::Biblatex, "references.bib".into())));
+        let bibtex = "\\bibliographystyle{plain}\n\\bibliography{refs,more}\n";
+        assert_eq!(citation_setup(bibtex), Some((Style::Bibtex, "refs.bib".into())));
+        assert_eq!(citation_setup("\\bibliography{../../etc/x}"), None, "outside the project");
+        assert_eq!(citation_setup("\\begin{document}\\end{document}"), None);
+    }
     use crate::metadata::PublicationMetadata;
     use crate::template::Template;
 
