@@ -130,7 +130,7 @@ impl SourceEditor {
                 let mut cache = self.highlighted.take();
                 let mut layouter = |ui: &egui::Ui, buf: &dyn TextBuffer, _wrap: f32| -> Arc<egui::Galley> {
                     let text = buf.as_str();
-                    let key = text_key(text);
+                    let key = text_key(text, &colors);
                     let job = match &cache {
                         Some((k, job)) if *k == key => Arc::clone(job),
                         _ => {
@@ -170,6 +170,7 @@ impl SourceEditor {
 }
 
 /// The colours of LaTeX source.
+#[derive(Hash)]
 struct Colors {
     text: egui::Color32,
     command: egui::Color32,
@@ -192,11 +193,13 @@ impl Colors {
 /// Text longer than this is shown without colours, so typing stays quick.
 const MAX_HIGHLIGHT: usize = 2 * 1024 * 1024;
 
-/// A cheap fingerprint of the text, to tell when it changed.
-fn text_key(text: &str) -> u64 {
+/// What the highlighted layout depends on: the text and the theme's colours, so switching
+/// between light and dark lays it out again.
+fn text_key(text: &str, colors: &Colors) -> u64 {
     use std::hash::{Hash, Hasher};
     let mut h = std::collections::hash_map::DefaultHasher::new();
     text.hash(&mut h);
+    colors.hash(&mut h);
     h.finish()
 }
 
@@ -331,6 +334,14 @@ pub fn char_index_of_line(text: &str, line: u32) -> usize {
 #[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_theme_change_lays_the_colours_out_again() {
+        let light = Colors::for_visuals(&egui::Visuals::light(), egui::Color32::BLACK);
+        let dark = Colors::for_visuals(&egui::Visuals::dark(), egui::Color32::WHITE);
+        assert_ne!(text_key("\\section{A}", &light), text_key("\\section{A}", &dark));
+        assert_eq!(text_key("x", &light), text_key("x", &light));
+    }
 
     #[test]
     fn latex_is_coloured_by_kind() {

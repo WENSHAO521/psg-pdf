@@ -199,33 +199,61 @@ fn cite_latex(c: &Value, style: Style, renamed: &HashMap<String, String>) -> Opt
     if keys.is_empty() {
         return None;
     }
-    let text = |field: &str, item: Option<&Value>| {
-        let inlines = item.and_then(|i| i.get(field)).and_then(Value::as_array).map(Vec::as_slice).unwrap_or_default();
+    let text = |field: &str, item: &Value| {
+        let inlines = item.get(field).and_then(Value::as_array).map(Vec::as_slice).unwrap_or_default();
         escape(inline_text(inlines).trim().trim_start_matches([',', ';']).trim())
     };
     // In braces, so a `]` in the text can't end the optional argument.
     let braced = |t: String| if t.is_empty() { t } else { format!("{{{t}}}") };
-    let prefix = braced(text("citationPrefix", items.first()));
-    let suffix = braced(text("citationSuffix", items.last()));
+    let notes: Vec<(String, String)> = items.iter().map(|i| (braced(text("citationPrefix", i)), braced(text("citationSuffix", i)))).collect();
     let mode = items.first().and_then(|i| i.get("citationMode")).and_then(|m| m.get("t")).and_then(Value::as_str).unwrap_or_default();
-    let keys = keys.join(",");
+    // One command for the group when only its first entry has a prefix and only its last a
+    // locator; otherwise each entry keeps its own.
+    let last = notes.len().saturating_sub(1);
+    let shared = notes.iter().enumerate().all(|(n, (pre, post))| (n == 0 || pre.is_empty()) && (n == last || post.is_empty()));
+    let optional = |pre: &str, post: &str| match (pre.is_empty(), post.is_empty()) {
+        (true, true) => String::new(),
+        (true, false) => format!("[{post}]"),
+        (false, _) => format!("[{pre}][{post}]"),
+    };
     Some(match style {
-        Style::Biblatex => {
+        Style::Biblatex if shared => {
             let command = match mode {
                 "AuthorInText" => "\\textcite",
                 "SuppressAuthor" => "\\parencite*",
                 _ => "\\parencite",
             };
-            match (prefix.is_empty(), suffix.is_empty()) {
-                (true, true) => format!("{command}{{{keys}}}"),
-                (true, false) => format!("{command}[{suffix}]{{{keys}}}"),
-                (false, _) => format!("{command}[{prefix}][{suffix}]{{{keys}}}"),
+            let pre = notes.first().map(|n| n.0.as_str()).unwrap_or_default();
+            let post = notes.last().map(|n| n.1.as_str()).unwrap_or_default();
+            format!("{command}{}{{{}}}", optional(pre, post), keys.join(","))
+        }
+        Style::Biblatex => {
+            // biblatex's multicite form: each key with its own notes.
+            let command = if mode == "AuthorInText" { "\\textcites" } else { "\\parencites" };
+            let mut out = command.to_owned();
+            for ((pre, post), key) in notes.iter().zip(&keys) {
+                // Each key's notes are optional on their own, so `{key}` alone is fine.
+                out.push_str(&optional(pre, post));
+                out.push_str(&format!("{{{key}}}"));
             }
+            out
         }
-        Style::Bibtex => {
-            let lead = if prefix.is_empty() { String::new() } else { format!("{prefix} ") };
-            if suffix.is_empty() { format!("{lead}\\cite{{{keys}}}") } else { format!("{lead}\\cite[{suffix}]{{{keys}}}") }
+        Style::Bibtex if shared => {
+            let pre = notes.first().map(|n| n.0.clone()).unwrap_or_default();
+            let post = notes.last().map(|n| n.1.as_str()).unwrap_or_default();
+            let lead = if pre.is_empty() { String::new() } else { format!("{pre} ") };
+            let keys = keys.join(",");
+            if post.is_empty() { format!("{lead}\\cite{{{keys}}}") } else { format!("{lead}\\cite[{post}]{{{keys}}}") }
         }
+        Style::Bibtex => notes
+            .iter()
+            .zip(&keys)
+            .map(|((pre, post), key)| {
+                let lead = if pre.is_empty() { String::new() } else { format!("{pre} ") };
+                if post.is_empty() { format!("{lead}\\cite{{{key}}}") } else { format!("{lead}\\cite[{post}]{{{key}}}") }
+            })
+            .collect::<Vec<_>>()
+            .join("; "),
     })
 }
 
@@ -332,6 +360,17 @@ mod tests {
         let mut d = json!({"meta": {}, "blocks": [header("References"), {"t": "Para", "c": [s("[1] A.")]}]});
         assert!(convert(&mut d, Style::Biblatex, &HashSet::new()).is_none());
         assert_eq!(d["blocks"].as_array().unwrap().len(), 2);
+    }
+
+    #[test]
+    fn each_entry_of_a_group_keeps_its_own_locator() {
+        let mut d = doc();
+        d["blocks"][1]["c"][3] = cite(&["2", "3"], "NormalCitation", "p. 9");
+        let mut bt = d.clone();
+        convert(&mut d, Style::Biblatex, &HashSet::new()).unwrap();
+        assert_eq!(d["blocks"][1]["c"][3]["c"][1], "\\parencites[{p. 9}]{smith2020a}[{p. 9}]{ref2019}");
+        convert(&mut bt, Style::Bibtex, &HashSet::new()).unwrap();
+        assert_eq!(bt["blocks"][1]["c"][3]["c"][1], "\\cite[{p. 9}]{smith2020a}; \\cite[{p. 9}]{ref2019}");
     }
 
     #[test]

@@ -862,7 +862,12 @@ impl AcademicApp {
     }
 
     /// Show the place in the PDF that the source editor's cursor line produced.
-    fn show_in_pdf(&mut self) {
+    fn show_in_pdf(&mut self, ctx: &egui::Context) {
+        // A reopened project's PDF isn't rendered until asked for; start it so there is a page
+        // to show. The page and mark set below outlive the load.
+        if self.preview.pages.is_empty() && !self.preview.rendering {
+            self.load_preview(ctx);
+        }
         let (file, line) = (self.source.file.clone(), self.source.cursor_line());
         let Some((page, y)) = self.sync_tex().and_then(|s| s.page_of(&file, line)) else {
             self.note(tf("Line {n} of {file} is not in the PDF yet; typeset to update it.", &[("n", &line.to_string()), ("file", &file)]));

@@ -244,7 +244,7 @@ impl AcademicApp {
                 .on_hover_text(t("Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way."))
                 .clicked()
             {
-                self.show_in_pdf();
+                self.show_in_pdf(ui.ctx());
             }
             if self.source.dirty() {
                 widgets::chip(ui, Tone::Warning, t("Unsaved"));
