@@ -3,7 +3,7 @@
 //!
 //! ```text
 //! psg-academic-pdf check-tex
-//! psg-academic-pdf install-tex | update-tex
+//! psg-academic-pdf install-tex | update-tex | repair-biber
 //! psg-academic-pdf templates
 //! psg-academic-pdf new <dir> [--template <id>]
 //! psg-academic-pdf check <dir>
@@ -57,7 +57,10 @@ fn tex_job(job: Job) -> Result<(), String> {
             tex_setup::Done::Updated => say("TeX is up to date."),
             tex_setup::Done::Installed(release) => say(&format!("Reinstalled from TinyTeX {release} (a new TeX Live year).")),
         },
-        Job::RepairBiber => tex.reinstall_biber().map_err(|e| e.to_string())?,
+        Job::RepairBiber => {
+            tex.reinstall_biber().map_err(|e| e.to_string())?;
+            say("Reinstalled Biber and biblatex.");
+        }
     }
     Ok(())
 }
@@ -72,6 +75,7 @@ Commands:
   install-tex                    download and install PSG's own TeX (TinyTeX) now,
                                  replacing an earlier one
   update-tex                     update PSG's own TeX (the window does this weekly)
+  repair-biber                   reinstall Biber and biblatex in PSG's own TeX
   templates                      list the journal templates
   new <dir> [--template <id>]    start a project in <dir> (default template: psg-article)
   check <dir>                    list the problems found before compiling (scripts the
@@ -96,6 +100,7 @@ pub fn run(args: &[String]) -> Option<i32> {
         "check-tex" => check_tex(),
         "install-tex" => report(tex_job(Job::Install)),
         "update-tex" => report(tex_job(Job::Update)),
+        "repair-biber" => report(tex_job(Job::RepairBiber)),
         "templates" => templates(),
         "new" => report(new(rest)),
         "check" => check(rest),
