@@ -88,7 +88,7 @@ pub enum RedactError {
     )]
     VerticalText(usize),
     #[error(
-        "page {0} shows text in a font whose CMap has codespace ranges PdfCraft could not read, so it cannot tell which text a string holds while a redaction mark is pending; nothing was changed"
+        "page {0} shows text in a font whose CMap has codespace ranges PSG PDF could not read, so it cannot tell which text a string holds while a redaction mark is pending; nothing was changed"
     )]
     DroppedCodespace(usize),
     #[error(
