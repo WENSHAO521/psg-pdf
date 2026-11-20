@@ -24,8 +24,10 @@ KEYCHAIN="$TMP/pdfcraft-signing.keychain-db"
 CERT="$TMP/pdfcraft-signing.p12"
 KC_PASS="${KEYCHAIN_PASSWORD:-$(openssl rand -hex 24)}"
 
-# Every exit path removes the keychain and the folder holding it: the keychain keeps the signing
+# A failed import removes the keychain and the folder holding it: the keychain keeps the signing
 # identity, and each run makes a new folder under a temporary parent that can outlive the job.
+# A successful import keeps them, because package.sh signs with MACOS_KEYCHAIN in a later step;
+# they live under RUNNER_TEMP, which the runner empties when the job ends.
 trap 'rm -f "$CERT"; security delete-keychain "$KEYCHAIN" 2>/dev/null || true; rm -rf "$TMP"' EXIT
 printf '%s' "$APPLE_CERTIFICATE" | base64 --decode >"$CERT"
 security create-keychain -p "$KC_PASS" "$KEYCHAIN"
@@ -46,6 +48,8 @@ if [[ -z "$IDENTITY" ]]; then
   exit 1
 fi
 echo "Imported signing identity $IDENTITY"
+# Success: keep the keychain for packaging (see the trap above).
+trap - EXIT
 if [[ -n "${GITHUB_ENV:-}" ]]; then
   { echo "MACOS_SIGN_IDENTITY=$IDENTITY"; echo "MACOS_KEYCHAIN=$KEYCHAIN"; } >>"$GITHUB_ENV"
 else
