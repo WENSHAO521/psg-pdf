@@ -419,3 +419,5 @@
 	Added the template {name} from {path}.	Se añadió la plantilla {name} desde {path}.
 	Added the template {name}. Check what was found before using it:	Se añadió la plantilla {name}. Revise lo que se encontró antes de usarla:
 	Could not add the template: {error}	No se pudo añadir la plantilla: {error}
+	New file	Archivo nuevo
+	Made {file}.	{file} creado.

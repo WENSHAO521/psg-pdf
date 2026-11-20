@@ -410,3 +410,5 @@
 	Added the template {name} from {path}.	{path}에서 템플릿 {name}을(를) 추가했습니다.
 	Added the template {name}. Check what was found before using it:	템플릿 {name}을(를) 추가했습니다. 사용하기 전에 찾은 내용을 확인하세요:
 	Could not add the template: {error}	템플릿을 추가하지 못했습니다: {error}
+	New file	새 파일
+	Made {file}.	{file}을(를) 만들었습니다.

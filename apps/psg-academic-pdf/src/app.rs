@@ -821,12 +821,22 @@ impl AcademicApp {
         }
     }
 
-    /// The files the source editor offers: the body, then the bibliography files.
+    /// The files the source editor offers: the body, the main file, then the project's other
+    /// LaTeX and bibliography files.
     fn editable_files(&self) -> Vec<String> {
-        let Some(project) = &self.project else { return Vec::new() };
-        let mut files = vec![project.file.body.clone()];
-        files.extend(project.bib_files());
-        files
+        self.project.as_ref().map(Project::text_files).unwrap_or_default()
+    }
+
+    /// Make the new file `name` and show it in the source editor.
+    fn create_source_file(&mut self, name: &str) {
+        let Some(project) = &self.project else { return };
+        match project.create_text_file(name) {
+            Ok(()) => {
+                self.note(tf("Made {file}.", &[("file", name)]));
+                self.go_to(name, None);
+            }
+            Err(e) => self.fail(e.to_string()),
+        }
     }
 
     /// Copy the text buffers into the metadata.

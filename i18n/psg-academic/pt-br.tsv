@@ -419,3 +419,5 @@
 	Added the template {name} from {path}.	Modelo {name} adicionado de {path}.
 	Added the template {name}. Check what was found before using it:	Modelo {name} adicionado. Confira o que foi encontrado antes de usá-lo:
 	Could not add the template: {error}	Não foi possível adicionar o modelo: {error}
+	New file	Novo arquivo
+	Made {file}.	{file} criado.

@@ -410,3 +410,5 @@
 	Added the template {name} from {path}.	已從 {path} 加入範本 {name}。
 	Added the template {name}. Check what was found before using it:	已加入範本 {name}。使用前請確認找到的內容：
 	Could not add the template: {error}	無法加入範本：{error}
+	New file	新增檔案
+	Made {file}.	已新增 {file}。

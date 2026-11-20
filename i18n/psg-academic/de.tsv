@@ -418,3 +418,5 @@
 	Added the template {name} from {path}.	Vorlage {name} aus {path} hinzugefügt.
 	Added the template {name}. Check what was found before using it:	Vorlage {name} hinzugefügt. Prüfen Sie vor der Verwendung, was gefunden wurde:
 	Could not add the template: {error}	Die Vorlage konnte nicht hinzugefügt werden: {error}
+	New file	Neue Datei
+	Made {file}.	{file} angelegt.

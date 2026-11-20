@@ -410,3 +410,5 @@
 	Added the template {name} from {path}.	已从 {path} 添加模板 {name}。
 	Added the template {name}. Check what was found before using it:	已添加模板 {name}。使用前请确认找到的内容：
 	Could not add the template: {error}	无法添加模板：{error}
+	New file	新建文件
+	Made {file}.	已新建 {file}。

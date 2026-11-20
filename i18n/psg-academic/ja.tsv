@@ -410,3 +410,5 @@
 	Added the template {name} from {path}.	{path} からテンプレート {name} を追加しました。
 	Added the template {name}. Check what was found before using it:	テンプレート {name} を追加しました。使う前に、見つかった内容を確認してください:
 	Could not add the template: {error}	テンプレートを追加できませんでした: {error}
+	New file	新規ファイル
+	Made {file}.	{file} を作成しました。

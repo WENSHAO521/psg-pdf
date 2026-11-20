@@ -411,3 +411,5 @@
 	Added the template {name} from {path}.	Đã thêm mẫu {name} từ {path}.
 	Added the template {name}. Check what was found before using it:	Đã thêm mẫu {name}. Hãy kiểm tra những gì tìm thấy trước khi dùng:
 	Could not add the template: {error}	Không thêm được mẫu: {error}
+	New file	Tệp mới
+	Made {file}.	Đã tạo {file}.

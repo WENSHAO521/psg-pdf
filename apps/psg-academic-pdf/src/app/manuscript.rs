@@ -312,8 +312,10 @@ impl AcademicApp {
                 picked = chosen;
             }
         }
-        if let Some(name) = picked {
-            self.go_to(&name, None);
+        match picked {
+            Some(crate::source::Request::Open(name)) => self.go_to(&name, None),
+            Some(crate::source::Request::Create(name)) => self.create_source_file(&name),
+            None => {}
         }
         if let Some(line) = jump {
             self.source.go_to(line);
