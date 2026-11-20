@@ -412,3 +412,7 @@
 	Repairing Biber…	Biber wird repariert…
 	Biber was reinstalled.	Biber wurde neu installiert.
 	Could not repair Biber: {error}	Biber konnte nicht repariert werden: {error}
+	Could not download the Chinese and Japanese fonts: {error}	Die chinesischen und japanischen Schriften konnten nicht heruntergeladen werden: {error}
+	Downloading the Chinese and Japanese fonts: {done} of {total} MB	Chinesische und japanische Schriften werden heruntergeladen: {done} von {total} MB
+	Downloading the Chinese and Japanese fonts…	Chinesische und japanische Schriften werden heruntergeladen…
+	The Chinese and Japanese fonts are installed.	Die chinesischen und japanischen Schriften sind installiert.

@@ -405,3 +405,7 @@
 	Repairing Biber…	Đang sửa Biber…
 	Biber was reinstalled.	Đã cài đặt lại Biber.
 	Could not repair Biber: {error}	Không thể sửa Biber: {error}
+	Could not download the Chinese and Japanese fonts: {error}	Không tải được phông chữ tiếng Trung và tiếng Nhật: {error}
+	Downloading the Chinese and Japanese fonts: {done} of {total} MB	Đang tải phông chữ tiếng Trung và tiếng Nhật: {done} / {total} MB
+	Downloading the Chinese and Japanese fonts…	Đang tải phông chữ tiếng Trung và tiếng Nhật…
+	The Chinese and Japanese fonts are installed.	Đã cài phông chữ tiếng Trung và tiếng Nhật.

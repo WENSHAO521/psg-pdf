@@ -66,6 +66,87 @@ pub const REQUIRED_PACKAGES: &[&str] = &[
     "etoolbox",
     "logreq",
     "url",
+    // XeLaTeX with xeCJK, for Chinese and Japanese.
+    "xetex",
+    "fontspec",
+    "xecjk",
+    "iftex",
+];
+
+/// A Chinese and Japanese font XeLaTeX templates use, downloaded into [`ManagedTex::fonts_dir`]
+/// from the Noto CJK project's own repository at a release tag, and checked against its SHA-256.
+/// Never bundled or committed (AGENTS.md §1.4); Noto CJK is OFL-1.1 (AGENTS.md §1.1).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CjkFont {
+    /// The file name the templates load it by.
+    pub file: &'static str,
+    /// Its path in the repository, starting with the release tag.
+    pub path: &'static str,
+    pub sha256: &'static str,
+    pub size: u64,
+}
+
+impl CjkFont {
+    pub fn url(&self) -> String {
+        format!("https://raw.githubusercontent.com/{CJK_FONTS_REPO}/{}", self.path)
+    }
+}
+
+/// The Noto CJK repository.
+pub const CJK_FONTS_REPO: &str = "notofonts/noto-cjk";
+
+/// Noto Serif and Sans CJK, Traditional Chinese first (Simplified covers the characters only it
+/// uses), Regular and Bold, and their licence. About 68 MB.
+pub const CJK_FONTS: &[CjkFont] = &[
+    CjkFont {
+        file: "NotoSerifTC-Regular.otf",
+        path: "Serif2.003/Serif/SubsetOTF/TC/NotoSerifTC-Regular.otf",
+        sha256: "63515eb0622d589a2f4062e8757c598b3da3bffd053f69abd181c210158ef10c",
+        size: 7936104,
+    },
+    CjkFont {
+        file: "NotoSerifTC-Bold.otf",
+        path: "Serif2.003/Serif/SubsetOTF/TC/NotoSerifTC-Bold.otf",
+        sha256: "3ca2b3294ec84b795d0a45695e78e3612a44dce50f9fc776cd40206340a5768d",
+        size: 8253304,
+    },
+    CjkFont {
+        file: "NotoSansTC-Regular.otf",
+        path: "Sans2.004/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf",
+        sha256: "5bab0cb3c1cf89dde07c4a95a4054b195afbcfe784d69d75c340780712237537",
+        size: 5683368,
+    },
+    CjkFont {
+        file: "NotoSansTC-Bold.otf",
+        path: "Sans2.004/Sans/SubsetOTF/TC/NotoSansTC-Bold.otf",
+        sha256: "55420b259eb119bf5f2a0aadba10cf9d736c12d64ab93e78546d69ef5f43558b",
+        size: 5839972,
+    },
+    CjkFont {
+        file: "NotoSerifSC-Regular.otf",
+        path: "Serif2.003/Serif/SubsetOTF/SC/NotoSerifSC-Regular.otf",
+        sha256: "e8f396decc1f0963a016a989c3d8852e863d1350996f573860a80767c83a1cd3",
+        size: 11625800,
+    },
+    CjkFont {
+        file: "NotoSerifSC-Bold.otf",
+        path: "Serif2.003/Serif/SubsetOTF/SC/NotoSerifSC-Bold.otf",
+        sha256: "24693d48bdb9152f0a06b02af625638a1097abd6de4010ebba027f6e82710527",
+        size: 12094336,
+    },
+    CjkFont {
+        file: "NotoSansSC-Regular.otf",
+        path: "Sans2.004/Sans/SubsetOTF/SC/NotoSansSC-Regular.otf",
+        sha256: "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
+        size: 8331336,
+    },
+    CjkFont {
+        file: "NotoSansSC-Bold.otf",
+        path: "Sans2.004/Sans/SubsetOTF/SC/NotoSansSC-Bold.otf",
+        sha256: "c6cb5a93abaa9edc8ee7463b7ebb7f42d618d40e6ed2f7a5371c97b0b64767c0",
+        size: 8543168,
+    },
+    CjkFont { file: "OFL.txt", path: "Sans2.004/LICENSE", sha256: "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2", size: 4301 },
 ];
 
 /// The longest a single `tlmgr` run may take (a full update of an old tree can be slow).
@@ -188,6 +269,17 @@ impl ManagedTex {
     /// Where downloads are kept until they are unpacked.
     pub fn downloads(&self) -> PathBuf {
         self.root.join("downloads")
+    }
+
+    /// Where the CJK fonts ([`CJK_FONTS`]) are kept. XeLaTeX finds them there by file name.
+    pub fn fonts_dir(&self) -> PathBuf {
+        self.root.join("fonts")
+    }
+
+    /// The CJK fonts not yet downloaded (or of the wrong size: a cut-off download).
+    pub fn missing_fonts(&self) -> Vec<CjkFont> {
+        let dir = self.fonts_dir();
+        CJK_FONTS.iter().filter(|f| std::fs::metadata(dir.join(f.file)).map_or(true, |m| m.len() != f.size)).copied().collect()
     }
 
     /// The folder of TeX's programs (`TinyTeX/bin/<platform>`), when the tree is installed.
@@ -594,6 +686,35 @@ fn last_lines(text: &str, n: usize) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn cjk_fonts_are_pinned_and_are_the_ones_the_templates_load() {
+        let mut names = std::collections::HashSet::new();
+        for f in CJK_FONTS {
+            assert!(names.insert(f.file), "{} twice", f.file);
+            assert!(f.sha256.len() == 64 && f.sha256.bytes().all(|b| b.is_ascii_hexdigit()), "{}", f.file);
+            assert!(f.path.starts_with("Serif2.") || f.path.starts_with("Sans2."), "pinned to a release tag: {}", f.path);
+            assert!(f.url().starts_with("https://raw.githubusercontent.com/notofonts/noto-cjk/"));
+            assert!(crate::paths::safe_relative_name(f.file).is_some());
+        }
+        let class = include_str!("../../../templates/academic/psg-article/psg-article.cls");
+        for f in CJK_FONTS.iter().filter(|f| f.file.ends_with(".otf")) {
+            assert!(class.contains(f.file), "the class doesn't load {}", f.file);
+        }
+    }
+
+    #[test]
+    fn fonts_of_the_wrong_size_are_missing() {
+        let dir = tempfile::tempdir().unwrap();
+        let tex = ManagedTex::new(dir.path().to_path_buf());
+        assert_eq!(tex.missing_fonts().len(), CJK_FONTS.len());
+        std::fs::create_dir_all(tex.fonts_dir()).unwrap();
+        std::fs::write(tex.fonts_dir().join("OFL.txt"), vec![b'x'; 4301]).unwrap();
+        std::fs::write(tex.fonts_dir().join("NotoSerifTC-Regular.otf"), b"cut off").unwrap();
+        let missing = tex.missing_fonts();
+        assert_eq!(missing.len(), CJK_FONTS.len() - 1);
+        assert!(missing.iter().any(|f| f.file == "NotoSerifTC-Regular.otf"));
+    }
 
     #[test]
     fn every_supported_platform_has_its_bundle() {

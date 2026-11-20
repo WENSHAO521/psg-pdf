@@ -404,3 +404,7 @@
 	Repairing Biber…	Biber を修復しています…
 	Biber was reinstalled.	Biber を再インストールしました。
 	Could not repair Biber: {error}	Biber を修復できませんでした: {error}
+	Could not download the Chinese and Japanese fonts: {error}	中国語・日本語フォントをダウンロードできませんでした: {error}
+	Downloading the Chinese and Japanese fonts: {done} of {total} MB	中国語・日本語フォントをダウンロード中: {done} / {total} MB
+	Downloading the Chinese and Japanese fonts…	中国語・日本語フォントをダウンロード中…
+	The Chinese and Japanese fonts are installed.	中国語・日本語フォントをインストールしました。

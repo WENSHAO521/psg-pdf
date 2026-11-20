@@ -28,13 +28,13 @@ fn managed() -> Option<ManagedTex> {
 /// The TeX programs, PSG's own first.
 fn detect() -> (TexEnvironment, Option<ManagedTex>) {
     let tex = managed();
-    (TexEnvironment::detect_with(tex_setup::bin_dir(tex.as_ref()).as_deref()), tex)
+    (tex_setup::detect(tex.as_ref()), tex)
 }
 
 fn tex_job(job: Job) -> Result<(), String> {
     let tex = managed().ok_or("there is no folder to install TeX in")?;
     say(&format!("PSG TeX folder: {}", tex.root.display()));
-    if job != Job::Install && !tex.installed() {
+    if matches!(job, Job::Update | Job::RepairBiber) && !tex.installed() {
         return Err("PSG's TeX is not installed; run install-tex first".into());
     }
     let mut last = None;
@@ -45,6 +45,7 @@ fn tex_job(job: Job) -> Result<(), String> {
             Progress::Unpacking => "Unpacking…".to_owned(),
             Progress::Packages => "Adding the packages the templates use…".to_owned(),
             Progress::Updating => "Updating with tlmgr…".to_owned(),
+            Progress::Fonts { total, .. } => format!("Downloading the Chinese and Japanese fonts ({} MB)…", total / 1_048_576),
         };
         if last.as_ref() != Some(&line) {
             say(&line);
@@ -53,6 +54,10 @@ fn tex_job(job: Job) -> Result<(), String> {
     };
     match job {
         Job::Install => say(&format!("Installed TinyTeX {}.", tex_setup::install(&tex, &mut progress)?)),
+        Job::Fonts => {
+            tex_setup::install_fonts(&tex, &mut progress)?;
+            say(&format!("The Chinese and Japanese fonts are in {}.", tex.fonts_dir().display()));
+        }
         Job::Update => match tex_setup::update(&tex, &mut progress)? {
             tex_setup::Done::Updated => say("TeX is up to date."),
             tex_setup::Done::Installed(release) => say(&format!("Reinstalled from TinyTeX {release} (a new TeX Live year).")),
@@ -76,6 +81,8 @@ Commands:
                                  replacing an earlier one
   update-tex                     update PSG's own TeX (the window does this weekly)
   repair-biber                   reinstall Biber and biblatex in PSG's own TeX
+  install-fonts                  download the Chinese and Japanese fonts (Noto CJK) the
+                                 XeLaTeX templates use (install-tex does this too)
   templates                      list the journal templates
   new <dir> [--template <id>]    start a project in <dir> (default template: psg-article)
   check <dir>                    list the problems found before compiling (scripts the
@@ -101,6 +108,7 @@ pub fn run(args: &[String]) -> Option<i32> {
         "install-tex" => report(tex_job(Job::Install)),
         "update-tex" => report(tex_job(Job::Update)),
         "repair-biber" => report(tex_job(Job::RepairBiber)),
+        "install-fonts" => report(tex_job(Job::Fonts)),
         "templates" => templates(),
         "new" => report(new(rest)),
         "check" => check(rest),
@@ -160,7 +168,7 @@ fn check_tex() -> i32 {
         Some(tex) => say(&format!("PSG TeX   not installed in {} (install-tex installs it)", tex.root.display())),
         None => {}
     }
-    for tool in [&env.pdflatex, &env.latexmk, &env.biber, &env.pandoc] {
+    for tool in [&env.pdflatex, &env.xelatex, &env.latexmk, &env.biber, &env.pandoc] {
         match (&tool.path, &tool.probe_error) {
             (Some(p), Some(error)) => complain(&format!("{:<9} {}\n{error}", tool.name, p.display())),
             (Some(p), None) => say(&format!("{:<9} {}  ({})", tool.name, p.display(), tool.version.as_deref().unwrap_or("version unknown"))),
@@ -211,7 +219,7 @@ fn compile(args: &[String]) -> Result<(), String> {
         let path = PathBuf::from(manuscript);
         let note = if manuscript.to_ascii_lowercase().ends_with(".docx") {
             let pandoc = env.pandoc.path.clone().ok_or("pandoc is not installed, so .docx can't be imported")?;
-            PandocImporter { pandoc }.import(&path, &project, None)
+            PandocImporter { pandoc }.import(&path, &mut project, None)
         } else {
             project.import_manuscript(&path)
         };
@@ -252,13 +260,14 @@ fn compile(args: &[String]) -> Result<(), String> {
 #[allow(clippy::unwrap_used)]
 mod tests {
     #[test]
-    fn check_fails_on_chinese_text_and_passes_on_the_sample() {
+    fn check_fails_on_text_the_template_cant_set_and_passes_on_the_sample() {
         let root = tempfile::tempdir().unwrap();
         let dir = root.path().join("p");
         let dir_arg = dir.display().to_string();
         assert_eq!(super::run(&["new".into(), dir_arg.clone()]), Some(0));
         assert_eq!(super::run(&["check".into(), dir_arg.clone()]), Some(0), "the sample has warnings at most");
-        std::fs::write(dir.join("body.tex"), "张三\n").unwrap();
+        // The template sets Chinese and Japanese with XeLaTeX, but not Korean.
+        std::fs::write(dir.join("body.tex"), "张三 김철수\n").unwrap();
         assert_eq!(super::run(&["check".into(), dir_arg]), Some(1));
         assert_eq!(super::run(&["check".into()]), Some(2));
     }

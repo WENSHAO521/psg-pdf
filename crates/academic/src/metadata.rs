@@ -48,6 +48,9 @@ pub struct PublicationMetadata {
     pub published: String,
     pub licence: String,
     pub copyright: String,
+    /// The article's language: `en` (or empty), `zh-hant`, `zh-hans` or `ja`. The templates
+    /// label the title block, figures, tables and references in it.
+    pub language: String,
 }
 
 impl Default for PublicationMetadata {
@@ -76,6 +79,7 @@ impl Default for PublicationMetadata {
             licence: "This article is distributed under the terms of the Creative Commons Attribution 4.0 International licence (CC BY 4.0)."
                 .to_owned(),
             copyright: String::new(),
+            language: String::new(),
         }
     }
 }
@@ -184,6 +188,10 @@ impl PublicationMetadata {
     /// The `psg-metadata.tex` file for the templates' `\psg…` setters. Every value is escaped.
     pub fn to_latex(&self) -> String {
         let mut out = String::from("% Publication metadata written by PSG Academic PDF. Edit it in the app: changes here are overwritten.\n");
+        if !self.language.trim().is_empty() {
+            // A template written before languages existed ignores it.
+            out.push_str("\\providecommand\\psgLanguage[1]{}\n");
+        }
         let mut set = |macro_name: &str, value: String| {
             out.push('\\');
             out.push_str(macro_name);
@@ -207,13 +215,20 @@ impl PublicationMetadata {
         set("psgAffiliations", self.affiliation_block());
         set("psgCorrespondence", self.correspondence());
         set("psgAbstract", escape_paragraphs(&self.abstract_text));
-        set("psgKeywords", self.keywords.iter().take(MAX_LIST).map(|k| escape(k)).filter(|k| !k.is_empty()).collect::<Vec<_>>().join("; "));
+        let keyword_separator = if self.is_cjk() { "；" } else { "; " };
+        set(
+            "psgKeywords",
+            self.keywords.iter().take(MAX_LIST).map(|k| escape(k)).filter(|k| !k.is_empty()).collect::<Vec<_>>().join(keyword_separator),
+        );
         set("psgReceived", escape(&self.received));
         set("psgRevised", escape(&self.revised));
         set("psgAccepted", escape(&self.accepted));
         set("psgPublished", escape(&self.published));
         set("psgLicence", escape(&self.licence));
         set("psgCopyright", escape(&self.copyright));
+        if !self.language.trim().is_empty() {
+            set("psgLanguage", escape(self.language.trim()));
+        }
         // PDF document information: plain text, no markup.
         set("psgPdfTitle", escape(&self.title));
         set("psgPdfAuthor", self.named_authors().map(escape).collect::<Vec<_>>().join(", "));
@@ -244,6 +259,9 @@ impl PublicationMetadata {
                 s
             })
             .collect();
+        if self.is_cjk() {
+            return authors.join("、");
+        }
         match authors.len() {
             0 => String::new(),
             1 => authors.concat(),
@@ -267,7 +285,18 @@ impl PublicationMetadata {
     fn correspondence(&self) -> String {
         let emails: Vec<String> =
             self.authors.iter().filter(|a| a.corresponding && !a.email.trim().is_empty()).map(|a| escape(a.email.trim())).collect();
-        if emails.is_empty() { String::new() } else { format!("\\psgAffMark{{*}}Corresponding author: {}", emails.join(", ")) }
+        let label = match self.language.trim() {
+            "zh-hant" => "通訊作者：",
+            "zh-hans" => "通讯作者：",
+            "ja" => "責任著者：",
+            _ => "Corresponding author: ",
+        };
+        if emails.is_empty() { String::new() } else { format!("\\psgAffMark{{*}}{label}{}", emails.join(", ")) }
+    }
+
+    /// Whether the article is in Chinese or Japanese, which list names with 、 instead of "and".
+    fn is_cjk(&self) -> bool {
+        matches!(self.language.trim(), "zh-hant" | "zh-hans" | "ja")
     }
 }
 
@@ -400,6 +429,19 @@ fn escape_url_part(doi: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn chinese_articles_list_authors_with_the_enumeration_comma() {
+        let mut m = PublicationMetadata::sample();
+        m.language = "zh-hans".into();
+        m.authors[0].name = "张三".into();
+        m.authors[1].name = "李四".into();
+        let latex = m.to_latex();
+        assert!(latex.contains("\\psgAuthors{张三\\psgAffMark{1,*}、李四\\psgAffMark{2}}"), "{latex}");
+        assert!(latex.contains("通讯作者：alex@example.org"));
+        assert!(latex.contains("\\psgKeywords{template；typesetting；pdfLaTeX}"), "{latex}");
+        assert!(!PublicationMetadata::sample().to_latex().contains("psgLanguage"), "English writes no language");
+    }
 
     #[test]
     fn escape_neutralises_tex_commands() {

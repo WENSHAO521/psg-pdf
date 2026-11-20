@@ -413,3 +413,7 @@
 	Repairing Biber…	Réparation de Biber…
 	Biber was reinstalled.	Biber a été réinstallé.
 	Could not repair Biber: {error}	Impossible de réparer Biber : {error}
+	Could not download the Chinese and Japanese fonts: {error}	Impossible de télécharger les polices chinoises et japonaises : {error}
+	Downloading the Chinese and Japanese fonts: {done} of {total} MB	Téléchargement des polices chinoises et japonaises : {done} sur {total} Mo
+	Downloading the Chinese and Japanese fonts…	Téléchargement des polices chinoises et japonaises…
+	The Chinese and Japanese fonts are installed.	Les polices chinoises et japonaises sont installées.

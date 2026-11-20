@@ -29,6 +29,8 @@ pub const fn mark(english: &'static str) -> &'static str {
 }
 pub mod compile;
 pub mod diagnostics;
+pub mod docx;
+pub mod engine;
 pub mod managed;
 pub mod metadata;
 pub mod pandoc;
@@ -44,6 +46,7 @@ use std::path::Path;
 
 pub use compile::{CompileOptions, CompileReport, Outcome};
 pub use diagnostics::{Diagnostic, Severity};
+pub use engine::Engine;
 pub use metadata::{Author, PublicationMetadata};
 pub use project::Project;
 pub use template::Template;

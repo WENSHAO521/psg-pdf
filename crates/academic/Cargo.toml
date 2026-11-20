@@ -17,6 +17,8 @@ log = { workspace = true }
 jiff = { workspace = true }
 # Template manifests and saved projects are TOML; the same major version xtask and ui-egui use.
 toml = "1"
+# Word import restructures Pandoc's JSON document tree (figures, tables, front matter).
+serde_json = { workspace = true }
 
 [dev-dependencies]
 tempfile = "3.27"

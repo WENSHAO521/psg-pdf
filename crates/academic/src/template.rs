@@ -30,7 +30,7 @@ pub struct Manifest {
     pub version: String,
     #[serde(default)]
     pub licence: String,
-    /// Only `pdflatex` in this phase.
+    /// `pdflatex` or `xelatex` ([`crate::Engine`]).
     #[serde(default = "default_engine")]
     pub engine: String,
     /// `biber` or `none`.
@@ -62,8 +62,8 @@ impl Manifest {
         if self.id.is_empty() || !self.id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {
             return bad("the id may use only letters, digits, '-' and '_'".into());
         }
-        if self.engine != "pdflatex" {
-            return bad(format!("engine \"{}\" is not supported; only pdflatex is", self.engine));
+        if crate::Engine::parse(&self.engine).is_none() {
+            return bad(format!("engine \"{}\" is not supported; use \"pdflatex\" or \"xelatex\"", self.engine));
         }
         if !matches!(self.bibliography.as_str(), "biber" | "none") {
             return bad(format!("bibliography \"{}\" is not supported; use \"biber\" or \"none\"", self.bibliography));
@@ -85,6 +85,11 @@ impl Manifest {
             }
         }
         Ok(())
+    }
+
+    /// The engine the template is typeset with.
+    pub fn engine(&self) -> crate::Engine {
+        crate::Engine::parse(&self.engine).unwrap_or_default()
     }
 
     pub fn uses_biber(&self) -> bool {

@@ -49,6 +49,9 @@ const REMOVED_VARIABLES: &[&str] = &[
     "TEXMFLOCAL",
     "TEXMFAUXTREES",
     "LUAINPUTS",
+    "OSFONTDIR",
+    "OPENTYPEFONTS",
+    "TTFONTS",
     "shell_escape_commands",
     "LATEXMKRCSYS",
     "PERL5OPT",
@@ -66,11 +69,12 @@ pub struct CompileOptions {
     pub force: bool,
     /// The template uses Biber; checked before running so the message is clear.
     pub needs_biber: bool,
+    pub engine: crate::Engine,
 }
 
 impl Default for CompileOptions {
     fn default() -> Self {
-        Self { main: "main.tex".into(), timeout: DEFAULT_TIMEOUT, force: false, needs_biber: true }
+        Self { main: "main.tex".into(), timeout: DEFAULT_TIMEOUT, force: false, needs_biber: true, engine: crate::Engine::Pdflatex }
     }
 }
 
@@ -130,22 +134,28 @@ pub fn command(env: &TexEnvironment, project: &Path, opts: &CompileOptions) -> R
     if !project.join(main).is_file() {
         return Err(Error::Compile(format!("{} has no {main}", project.display())));
     }
-    let missing = env.missing(opts.needs_biber);
+    let missing = env.missing_for(opts.engine, opts.needs_biber);
     if !missing.is_empty() {
         return Err(Error::TexMissing(missing.join(", ")));
     }
     let latexmk = env.latexmk.path.clone().ok_or_else(|| Error::TexMissing("latexmk".into()))?;
     let mut cmd = Command::new(latexmk);
     cmd.current_dir(project);
-    cmd.args(["-norc", "-pdf", "-interaction=nonstopmode", "-halt-on-error", "-file-line-error"]);
+    let [engine, template] = opts.engine.latexmk_args();
+    cmd.args(["-norc", engine, "-interaction=nonstopmode", "-halt-on-error", "-file-line-error"]);
     // latexmk runs this through its own command template; %O and %S are its placeholders.
-    cmd.arg("-pdflatex=pdflatex -no-shell-escape -interaction=nonstopmode -halt-on-error -file-line-error %O %S");
+    cmd.arg(template);
     if opts.force {
         cmd.arg("-g");
     }
     cmd.arg(main);
     for var in REMOVED_VARIABLES {
         cmd.env_remove(var);
+    }
+    // XeLaTeX finds the CJK fonts PSG installs by file name in these folders (kpathsea's
+    // OSFONTDIR), never through an absolute path the paranoid setting would refuse.
+    if let Some(dirs) = (!env.font_dirs.is_empty()).then(|| std::env::join_paths(&env.font_dirs).ok()).flatten() {
+        cmd.env("OSFONTDIR", dirs);
     }
     cmd.env("openin_any", "p").env("openout_any", "p").env("shell_escape", "f");
     // Long log lines unwrapped, so file:line: messages stay on one line.
@@ -251,10 +261,12 @@ mod tests {
         let tool = |name: &'static str| Tool { name, path: Some(dir.join(name)), version: None, probe_error: None };
         TexEnvironment {
             pdflatex: tool("pdflatex"),
+            xelatex: tool("xelatex"),
             latexmk: tool("latexmk"),
             biber: tool("biber"),
             pandoc: Tool { name: "pandoc", path: None, version: None, probe_error: None },
             managed: false,
+            font_dirs: Vec::new(),
         }
     }
 

@@ -166,8 +166,8 @@ fn an_imported_word_manuscript_compiles() {
     assert!(made.success());
     for template in Template::builtin() {
         let id = template.manifest.id.clone();
-        let project = Project::create(&root.path().join(&id), &template, PublicationMetadata::sample()).unwrap();
-        let note = PandocImporter { pandoc: pandoc.clone() }.import(&src.join("manuscript.docx"), &project, None).unwrap();
+        let mut project = Project::create(&root.path().join(&id), &template, PublicationMetadata::sample()).unwrap();
+        let note = PandocImporter { pandoc: pandoc.clone() }.import(&src.join("manuscript.docx"), &mut project, None).unwrap();
         assert!(!note.contains("To fix before compiling"), "{id}: {note}");
         let report = project.compile(&env, None).unwrap();
         assert_eq!(report.outcome, Outcome::Succeeded, "{id}: {}\n{:?}", report.output, report.diagnostics);

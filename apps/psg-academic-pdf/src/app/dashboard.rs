@@ -280,6 +280,11 @@ impl AcademicApp {
                     (if job.job == Job::RepairBiber { t("Repairing Biber…") } else { t("Adding the packages the templates use…") }.to_owned(), None)
                 }
                 Progress::Updating => (t("Updating TeX…").to_owned(), None),
+                Progress::Fonts { done, total } => {
+                    let mb = |b: u64| format!("{:.0}", b as f64 / 1_048_576.0);
+                    let fraction = (total > 0).then(|| (done as f64 / total as f64).clamp(0.0, 1.0) as f32);
+                    (tf("Downloading the Chinese and Japanese fonts: {done} of {total} MB", &[("done", &mb(done)), ("total", &mb(total))]), fraction)
+                }
             };
             ui.horizontal(|ui| {
                 ui.spinner();

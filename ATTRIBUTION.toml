@@ -3076,7 +3076,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "c3bd3cd23d14af788f345400c5af440b83eb122afb07571d21ebac53b42f1986"
+sha256 = "0540887e3000518f3ece716854822cea96777c3647f036dad953f3cdec66d790"
 
 [[asset]]
 path = "i18n/psg-academic/es.tsv"
@@ -3087,7 +3087,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "d3869caa4d473ab5e72b6f13abdbbb15fc27f66f6dc127919cc9105f136247ef"
+sha256 = "5e05adf50460a50555074913bbf339ed0325fc67765dd275172356cf555a2115"
 
 [[asset]]
 path = "i18n/psg-academic/fr.tsv"
@@ -3098,7 +3098,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "b98f96c301c742458d24d9ed4acf8f76dde9196f729f00f84662d31b2cd06f61"
+sha256 = "1d5b2748224ef9dc4bfbad8f0e70bd9f5f64ea0fd85c734b6c9f3ba7423746b6"
 
 [[asset]]
 path = "i18n/psg-academic/ja.tsv"
@@ -3109,7 +3109,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "9e25d0a25bb29657e0e43551fa0ec9f99011982b8592aab66f6df14fdd0ea30d"
+sha256 = "d7ed8f88e8127030b2a2b63296c316dfce59914dfc14a5213c36cef6c42d2324"
 
 [[asset]]
 path = "i18n/psg-academic/ko.tsv"
@@ -3120,7 +3120,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "246c424d3a81e2bc89f9511ed3f748f7877abdabf162597a2bc7031fe7930c3f"
+sha256 = "ca7df6d18551533720858e40c8d4bad480947d845da011c9926f92e3260cc8f7"
 
 [[asset]]
 path = "i18n/psg-academic/pt-br.tsv"
@@ -3131,7 +3131,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "aa69a5ac75e94f8ae070556309f3c211bdff457b862dd8b6617a3edd496d255a"
+sha256 = "517c4279f4b6e80b983ddcf2103de510c3873c60e0e2afa64e9291eb54341902"
 
 [[asset]]
 path = "i18n/psg-academic/vi.tsv"
@@ -3142,7 +3142,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "e825f195688b752e1ef82fbc8f6625e29d2ba7652b6f33b798d419d20b1d8354"
+sha256 = "63232e5c2f39ee77e39011c8ab589b95e96eddbec437597bcdbc03746c43313f"
 
 [[asset]]
 path = "i18n/psg-academic/zh-hans.tsv"
@@ -3153,7 +3153,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "0cbe2f9a7107a8bb0dfccaba559999f7fbfd61ae8700dc9a6621cc223c3f90c6"
+sha256 = "f901b401b2ae3a94a7f8ac9bf98955727547205fc6f49dca42b7f6faf87603a0"
 
 [[asset]]
 path = "i18n/psg-academic/zh-hant.tsv"
@@ -3164,7 +3164,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "LICENSE-MIT"
 kind = "translation"
 usage = "Interface text of PSG Academic PDF, embedded by apps/psg-academic-pdf/src/i18n.rs"
-sha256 = "c857b5cb9deec9124600bbfa29dc6f879c29caee2418f13fe61864a33e503f9a"
+sha256 = "4848c435caf72acaf786e0f8f5e0fec55815292937f547cba7c2e9e5f822c295"
 
 [[asset]]
 path = "i18n/glossary.tsv"
@@ -3198,6 +3198,17 @@ licence = "OFL-1.1"
 attribution = "https://github.com/storytold/craft-fonts/blob/main/ATTRIBUTION.md"
 kind = "font"
 usage = "Japanese fallback in the interface (BIZ UDPGothic first) and Japanese glyphs in edited PDF text (Shippori Mincho); Simplified Chinese interface fallback on native builds only (LXGW WenKai Lite Regular, font SHA-256 f799a538a3355877e597a0ae04050e897932c9ae7689eb9227c2953c5dd549ea, OFL SHA-256 0333a85fe077b6849f8e417acc44e8bd879442ceb681e271acf93e2d57fd4e2e, read from fonts/simplified-chinese-manifest.txt and never embedded on wasm); Arabic interface text, file names and document titles (Noto Sans Arabic); status captions of named-layer signatures in Arabic, Japanese, Thai and Devanagari, drawn as filled outlines into the display copy by crates/sign/src/status_layers.rs; the web build embeds BIZ UDPGothic Regular and the pinned small Arabic, Hebrew, Thai and Devanagari faces; the selected craft-fonts revision contains no Telugu face. Other non-Japanese CJK faces retain the general 4 MiB cap; the reviewed native-only LXGW fallback has a separate 16 MiB cap. Open-source OFL releases are permitted under current AGENTS.md §1.1"
+
+[[build_input]]
+name = "noto-cjk-academic"
+option = "PSG_ACADEMIC_TEX_DIR"
+title = "Noto Serif CJK and Noto Sans CJK, Traditional and Simplified Chinese (SubsetOTF Regular and Bold): the Chinese and Japanese faces of PSG Academic PDF's typesetting"
+author = "Google and Adobe (Noto CJK, released as open source under OFL-1.1)"
+source = "https://github.com/notofonts/noto-cjk at tags Serif2.003 (Serif/SubsetOTF/TC and SC) and Sans2.004 (Sans/SubsetOTF/TC and SC, and the OFL text Sans2.004/LICENSE); each file is pinned by SHA-256 and size in crates/academic/src/managed.rs (CJK_FONTS) and downloaded from raw.githubusercontent.com"
+licence = "OFL-1.1"
+attribution = "https://github.com/notofonts/noto-cjk/blob/Sans2.004/LICENSE"
+kind = "font"
+usage = "Chinese and Japanese text in PDFs that PSG Academic PDF typesets with XeLaTeX (templates/academic/*/psg-article.cls loads them by file name). Not committed, bundled or shipped: the app downloads them on first launch, after its TeX, into the fonts folder of its own TeX installation (PSG_ACADEMIC_TEX_DIR), verifies every file against the pinned SHA-256, and keeps the OFL text beside them. XeLaTeX embeds the subset a document uses, as the OFL allows. Open-source OFL releases are permitted under AGENTS.md §1.1"
 
 [[build_input]]
 name = "lxgw-wenkai-tc"
@@ -3638,7 +3649,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "7c0cd5c5227554a01c23155014476889bbb26f8770afaceabc69cee0f0f01542"
+sha256 = "7b954628d8831ea83ff85d835c1e316ef13fb06f59150ce399a87155aae63a2e"
 
 [[asset]]
 path = "templates/academic/psg-article/psg-metadata.tex"
@@ -3671,7 +3682,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "cbdaabf411b3f70543bf5836ed54ee932bc02b9873ccd7cb67500e375143842e"
+sha256 = "525cad50839c800cb669fe318aed0ee5552323ff42a3e4b0ec9c9bcb90186896"
 
 [[asset]]
 path = "templates/academic/psg-humanities/body.tex"
@@ -3704,7 +3715,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "7c0cd5c5227554a01c23155014476889bbb26f8770afaceabc69cee0f0f01542"
+sha256 = "7b954628d8831ea83ff85d835c1e316ef13fb06f59150ce399a87155aae63a2e"
 
 [[asset]]
 path = "templates/academic/psg-humanities/psg-metadata.tex"
@@ -3737,7 +3748,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "955aa1600a81912a57e3625a59237c30d1c081a03e968945e0a2b7e7bfecbcc6"
+sha256 = "20d095b1a77c751ada05c2124f3a01c98121ce6af627ba9b84717cf353367980"
 
 
 [[asset]]
