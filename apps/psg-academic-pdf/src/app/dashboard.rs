@@ -307,14 +307,14 @@ impl AcademicApp {
             let installed = tex.installed();
             let free = idle && self.running.is_none();
             if installed {
-                let (label, job) = if self.biber_repair_needed(self.env.as_ref()) {
-                    (t("Repair Biber"), Job::RepairBiber)
-                } else {
-                    (t("Update TeX now"), Job::Update)
-                };
-                if widgets::button_enabled(ui, free, widgets::ButtonKind::Secondary, label, t("Wait for the current task to finish.")).clicked() {
-                    let ctx = ui.ctx().clone();
-                    self.start_tex_job(&ctx, job);
+                let hint = t("Wait for the current task to finish.");
+                if widgets::button_enabled(ui, free, widgets::ButtonKind::Secondary, t("Update TeX now"), hint).clicked() {
+                    self.start_tex_job(ui.ctx(), Job::Update);
+                }
+                if self.biber_repair_needed(self.env.as_ref())
+                    && widgets::button_enabled(ui, free, widgets::ButtonKind::Secondary, t("Repair Biber"), hint).clicked()
+                {
+                    self.start_tex_job(ui.ctx(), Job::RepairBiber);
                 }
             } else if widgets::button_enabled(ui, free, widgets::ButtonKind::Primary, t("Install TeX"), t("Wait for the current task to finish."))
                 .clicked()
