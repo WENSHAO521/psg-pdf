@@ -44,7 +44,6 @@
 	Check Again	다시 확인
 	Check again	다시 확인
 	Check and export the finished PDF	완성된 PDF를 확인하고 내보내기
-	Check compatibility	호환성 확인
 	Check for updates…	업데이트 확인…
 	Check the finished article and save the PDF where it is needed.	완성된 논문을 확인하고 PDF를 필요한 곳에 저장합니다.
 	Checking TeX…	TeX 확인 중…
@@ -54,7 +53,6 @@
 	Close	닫기
 	Close {app}	{app} 닫기
 	Close {app} to finish	마치려면 {app}을(를) 닫으세요
-	Coming later	추후 제공
 	Compilation started.	컴파일을 시작했습니다.
 	Compile output	컴파일 출력
 	Copyright	저작권
@@ -120,7 +118,6 @@
 	Import a manuscript or create a project from a template to start.	원고를 가져오거나 템플릿으로 프로젝트를 만들어 시작하세요.
 	Import failed: {error}	가져오기 실패: {error}
 	Import manuscript…	원고 가져오기…
-	Import template (.zip)…	템플릿 가져오기(.zip)…
 	Import the manuscript body (LaTeX)	원고 본문 가져오기 (LaTeX)
 	Install Pandoc to import .docx (experimental)	.docx를 가져오려면 Pandoc을 설치하세요 (실험 기능)
 	Install TeX	TeX 설치
@@ -199,7 +196,6 @@
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF가 설치되어 있지 않아 기본 뷰어에서 PDF를 열었습니다. PSG PDF는 별도로 내려받아야 합니다.
 	Page {n}: {error}	{n}쪽: {error}
 	Pages	쪽
-	Planned for a later version; not available yet.	이후 버전에서 제공할 예정이며 아직 사용할 수 없습니다.
 	Portable mode: settings and projects are kept in {path}.	휴대 모드: 설정과 프로젝트는 {path}에 저장됩니다.
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	“자동 조판”을 누르면 원고를 조판하고 PDF가 여기에 표시됩니다.
 	Preview	미리 보기
@@ -408,3 +404,9 @@
 	Downloading the Chinese and Japanese fonts: {done} of {total} MB	중국어·일본어 글꼴 내려받는 중: {done} / {total} MB
 	Downloading the Chinese and Japanese fonts…	중국어·일본어 글꼴 내려받는 중…
 	The Chinese and Japanese fonts are installed.	중국어·일본어 글꼴이 설치되었습니다.
+	A journal's LaTeX template as the journal hands it out	학술지가 배포하는 LaTeX 템플릿 그대로
+	Add a template (.zip)…	템플릿 추가(.zip)…
+	Add a template folder…	템플릿 폴더 추가…
+	Added the template {name} from {path}.	{path}에서 템플릿 {name}을(를) 추가했습니다.
+	Added the template {name}. Check what was found before using it:	템플릿 {name}을(를) 추가했습니다. 사용하기 전에 찾은 내용을 확인하세요:
+	Could not add the template: {error}	템플릿을 추가하지 못했습니다: {error}

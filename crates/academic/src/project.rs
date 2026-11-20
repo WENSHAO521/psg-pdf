@@ -207,6 +207,39 @@ impl Project {
         Ok(taken)
     }
 
+    /// A pdfLaTeX template given a Chinese or Japanese manuscript can't typeset it: switch the
+    /// project to XeLaTeX and load xeCJK (with the Noto CJK faces PSG Academic PDF installs)
+    /// right after `\documentclass` in the main file. Returns what was done, or `None` when
+    /// nothing needed to change.
+    pub fn adapt_engine_to_text(&mut self) -> Result<Option<String>, Error> {
+        if self.file.engine != crate::Engine::Pdflatex {
+            return Ok(None);
+        }
+        let body = self.read_body()?;
+        let m = &self.file.metadata;
+        let cjk = |t: &str| t.chars().any(|c| matches!(c as u32, 0x3040..=0x30FF | 0x3400..=0x4DBF | 0x4E00..=0x9FFF | 0xF900..=0xFAFF));
+        if !(cjk(&body) || cjk(&m.title) || cjk(&m.abstract_text) || m.authors.iter().any(|a| cjk(&a.name)) || m.keywords.iter().any(|k| cjk(k))) {
+            return Ok(None);
+        }
+        let path = self.dir.join(&self.file.main);
+        let text = std::fs::read_to_string(&path).map_err(|e| Error::io(&path, e))?;
+        let masked = crate::template_import::mask_comments(&text);
+        let Some(class) = crate::template_import::find_call(&masked, "documentclass", 0, 1) else { return Ok(None) };
+        let mut patched = text.clone();
+        if !patched.is_char_boundary(class.end) {
+            return Ok(None);
+        }
+        patched.insert_str(class.end, crate::template_import::XECJK_FOR_PDFLATEX);
+        self.invalidate_pdf()?;
+        write_atomic(&path, patched.as_bytes())?;
+        self.file.engine = crate::Engine::Xelatex;
+        self.save()?;
+        Ok(Some(format!(
+            "The manuscript has Chinese or Japanese text, which pdfLaTeX can't set: {} now loads xeCJK and the project is typeset with XeLaTeX.",
+            self.file.main
+        )))
+    }
+
     /// Copy a bibliography, figure or other supporting file into the project under a safe name.
     /// Returns the name it got (what `\includegraphics` or `\addbibresource` should use).
     pub fn import_asset(&self, source: &Path) -> Result<String, Error> {
@@ -546,6 +579,31 @@ mod tests {
         p.apply_front_matter(&WordFrontMatter { language: "zh-hant".into(), ..WordFrontMatter::default() }).unwrap();
         assert_eq!(p.file.metadata.abstract_text, "Typed by hand.");
         assert_eq!(p.file.metadata.title, "數位人文研究");
+    }
+
+    #[test]
+    fn a_pdflatex_template_given_chinese_switches_to_xelatex() {
+        let root = tempfile::tempdir().unwrap();
+        let dir = root.path().join("t");
+        std::fs::create_dir(&dir).unwrap();
+        std::fs::write(dir.join("template.toml"), "id = \"x\"\nname = \"X\"\nengine = \"pdflatex\"\nbibliography = \"none\"\nmain = \"main.tex\"\nbody = \"body.tex\"\nmetadata = \"m.tex\"\nfiles = [\"main.tex\", \"body.tex\", \"m.tex\"]\n").unwrap();
+        std::fs::write(
+            dir.join("main.tex"),
+            "% \\documentclass{book}\n\\documentclass[11pt]{article}\n\\usepackage[T1]{fontenc}\n\\begin{document}\\input{body}\\end{document}\n",
+        )
+        .unwrap();
+        std::fs::write(dir.join("body.tex"), "").unwrap();
+        std::fs::write(dir.join("m.tex"), "").unwrap();
+        let t = Template::from_dir(&dir).unwrap();
+        let mut p = Project::create(&root.path().join("p"), &t, PublicationMetadata::sample()).unwrap();
+        assert_eq!(p.adapt_engine_to_text().unwrap(), None, "English stays with pdfLaTeX");
+        p.write_body("中文正文。\n").unwrap();
+        assert!(p.adapt_engine_to_text().unwrap().is_some());
+        assert_eq!(Project::open(&p.dir).unwrap().file.engine, crate::Engine::Xelatex);
+        let main = std::fs::read_to_string(p.dir.join("main.tex")).unwrap();
+        assert!(main.starts_with("% \\documentclass{book}\n\\documentclass[11pt]{article}\n%% Added by PSG Academic PDF"), "{main}");
+        assert!(main.contains("\\usepackage{xeCJK}\n"));
+        assert_eq!(p.adapt_engine_to_text().unwrap(), None, "done once");
     }
 
     #[test]

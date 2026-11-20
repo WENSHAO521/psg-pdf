@@ -562,7 +562,7 @@ fn figure(image: &Value, caption: Vec<Value>, n: usize) -> Option<Value> {
     let attrs = c.get(0).and_then(|a| a.get(2)).and_then(Value::as_array).map(Vec::as_slice).unwrap_or_default();
     let path = graphics_path(c.get(2).and_then(|t| t.get(0)).and_then(Value::as_str)?)?;
     let mut inlines =
-        vec![raw(&format!("\\begin{{figure}}[htbp]\n\\centering\n\\includegraphics[{}]{{{path}}}\n\\caption{{", graphics_options(attrs)))];
+        vec![raw(&format!("\\begin{{figure}}[!htbp]\n\\centering\n\\includegraphics[{}]{{{path}}}\n\\caption{{", graphics_options(attrs)))];
     inlines.extend(caption);
     inlines.push(raw(&format!("}}\\label{{fig:word-{n}}}\n\\end{{figure}}")));
     Some(json!({"t": "Plain", "c": inlines}))

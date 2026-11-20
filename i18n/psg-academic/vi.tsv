@@ -45,7 +45,6 @@
 	Check Again	Kiểm tra lại
 	Check again	Kiểm tra lại
 	Check and export the finished PDF	Kiểm tra và xuất PDF hoàn chỉnh
-	Check compatibility	Kiểm tra tương thích
 	Check for updates…	Kiểm tra bản cập nhật…
 	Check the finished article and save the PDF where it is needed.	Kiểm tra bài báo hoàn chỉnh và lưu PDF vào nơi cần dùng.
 	Checking TeX…	Đang kiểm tra TeX…
@@ -55,7 +54,6 @@
 	Close	Đóng
 	Close {app}	Đóng {app}
 	Close {app} to finish	Đóng {app} để hoàn tất
-	Coming later	Sắp có
 	Compilation started.	Đã bắt đầu biên dịch.
 	Compile output	Kết quả biên dịch
 	Copyright	Bản quyền
@@ -121,7 +119,6 @@
 	Import a manuscript or create a project from a template to start.	Để bắt đầu, hãy nhập một bản thảo hoặc tạo dự án từ một mẫu.
 	Import failed: {error}	Nhập thất bại: {error}
 	Import manuscript…	Nhập bản thảo…
-	Import template (.zip)…	Nhập mẫu (.zip)…
 	Import the manuscript body (LaTeX)	Nhập phần thân bản thảo (LaTeX)
 	Install Pandoc to import .docx (experimental)	Cài Pandoc để nhập .docx (thử nghiệm)
 	Install TeX	Cài đặt TeX
@@ -200,7 +197,6 @@
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	Chưa cài PSG PDF nên PDF được mở bằng trình xem mặc định. PSG PDF được tải về riêng.
 	Page {n}: {error}	Trang {n}: {error}
 	Pages	Trang
-	Planned for a later version; not available yet.	Dự kiến có trong phiên bản sau; hiện chưa có.
 	Portable mode: settings and projects are kept in {path}.	Chế độ di động: cài đặt và dự án được lưu trong {path}.
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	Nhấn Tự động dàn trang để dàn trang bản thảo; PDF sẽ hiện ở đây.
 	Preview	Xem trước
@@ -409,3 +405,9 @@
 	Downloading the Chinese and Japanese fonts: {done} of {total} MB	Đang tải phông chữ tiếng Trung và tiếng Nhật: {done} / {total} MB
 	Downloading the Chinese and Japanese fonts…	Đang tải phông chữ tiếng Trung và tiếng Nhật…
 	The Chinese and Japanese fonts are installed.	Đã cài phông chữ tiếng Trung và tiếng Nhật.
+	A journal's LaTeX template as the journal hands it out	Mẫu LaTeX của tạp chí, đúng như tạp chí cung cấp
+	Add a template (.zip)…	Thêm mẫu (.zip)…
+	Add a template folder…	Thêm thư mục mẫu…
+	Added the template {name} from {path}.	Đã thêm mẫu {name} từ {path}.
+	Added the template {name}. Check what was found before using it:	Đã thêm mẫu {name}. Hãy kiểm tra những gì tìm thấy trước khi dùng:
+	Could not add the template: {error}	Không thêm được mẫu: {error}

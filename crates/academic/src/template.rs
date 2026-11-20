@@ -6,7 +6,7 @@
 
 use std::path::{Path, PathBuf};
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::Error;
 use crate::paths::safe_relative_name;
@@ -19,7 +19,7 @@ const MAX_TEMPLATE_FILE: u64 = 8 * 1024 * 1024;
 const MAX_TEMPLATE_FILES: usize = 256;
 
 /// What a template's manifest says.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Manifest {
     pub id: String,
@@ -33,7 +33,7 @@ pub struct Manifest {
     /// `pdflatex` or `xelatex` ([`crate::Engine`]).
     #[serde(default = "default_engine")]
     pub engine: String,
-    /// `biber` or `none`.
+    /// `biber`, `bibtex` or `none`.
     #[serde(default = "default_bibliography")]
     pub bibliography: String,
     pub main: String,
@@ -65,18 +65,21 @@ impl Manifest {
         if crate::Engine::parse(&self.engine).is_none() {
             return bad(format!("engine \"{}\" is not supported; use \"pdflatex\" or \"xelatex\"", self.engine));
         }
-        if !matches!(self.bibliography.as_str(), "biber" | "none") {
-            return bad(format!("bibliography \"{}\" is not supported; use \"biber\" or \"none\"", self.bibliography));
+        if !matches!(self.bibliography.as_str(), "biber" | "bibtex" | "none") {
+            return bad(format!("bibliography \"{}\" is not supported; use \"biber\", \"bibtex\" or \"none\"", self.bibliography));
         }
         if self.files.len() > MAX_TEMPLATE_FILES {
             return bad(format!("more than {MAX_TEMPLATE_FILES} files"));
         }
         for f in &self.files {
-            if safe_relative_name(f).is_none() {
-                return bad(format!("\"{f}\" is not a plain file name"));
+            if crate::paths::safe_relative_path(f).is_none() {
+                return bad(format!("\"{f}\" is not a plain file name (folders are written with /)"));
             }
         }
         for (what, f) in [("main", &self.main), ("body", &self.body), ("metadata", &self.metadata)] {
+            if safe_relative_name(f).is_none() {
+                return bad(format!("its {what} file \"{f}\" must be a plain file name beside the manifest"));
+            }
             if !self.files.contains(f) {
                 return bad(format!("its {what} file \"{f}\" is not in `files`"));
             }
@@ -166,6 +169,9 @@ impl Template {
     pub fn materialize(&self, dest: &Path) -> Result<(), Error> {
         for name in &self.manifest.files {
             let target = dest.join(name);
+            if let Some(parent) = target.parent().filter(|p| *p != dest) {
+                std::fs::create_dir_all(parent).map_err(|e| Error::io(parent, e))?;
+            }
             match &self.source {
                 Source::Builtin(files) => {
                     let text = files

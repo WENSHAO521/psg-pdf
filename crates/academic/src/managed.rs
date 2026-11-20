@@ -542,30 +542,42 @@ impl ManagedTex {
 }
 
 /// Compile `project`; when PSG's TeX compiled it and the log names missing `.sty`/`.cls` files,
-/// install the packages holding them and compile once more. Returns the report and the packages
-/// installed (empty when none were needed).
+/// install the packages holding them and compile again, a few times, since a class that was
+/// missing often needs packages of its own. Returns the report and the packages installed
+/// (empty when none were needed).
 pub fn compile_completing(
     project: &crate::Project,
     env: &crate::TexEnvironment,
     tex: Option<&ManagedTex>,
     cancel: Option<&std::sync::Arc<std::sync::atomic::AtomicBool>>,
 ) -> Result<(crate::CompileReport, Vec<String>), Error> {
-    let report = project.compile(env, cancel)?;
-    let (Some(tex), true, crate::Outcome::Failed) = (tex, env.managed, report.outcome) else { return Ok((report, Vec::new())) };
-    let Some(log) = report.tex_log.as_deref() else { return Ok((report, Vec::new())) };
-    let installed = match tex.install_missing(log) {
-        Ok(installed) => installed,
-        Err(e) => {
-            log::warn!("installing missing packages: {e}");
-            Vec::new()
+    let mut report = project.compile(env, cancel)?;
+    let mut all = Vec::new();
+    let Some(tex) = tex.filter(|_| env.managed) else { return Ok((report, all)) };
+    for _ in 0..MISSING_ROUNDS {
+        if report.outcome != crate::Outcome::Failed {
+            break;
         }
-    };
-    if installed.is_empty() {
-        return Ok((report, installed));
+        let Some(log) = report.tex_log.as_deref() else { break };
+        let installed = match tex.install_missing(log) {
+            Ok(installed) => installed,
+            Err(e) => {
+                log::warn!("installing missing packages: {e}");
+                Vec::new()
+            }
+        };
+        // Nothing new to install: the failure is something else.
+        if installed.is_empty() || installed.iter().all(|p| all.contains(p)) {
+            break;
+        }
+        all.extend(installed.into_iter().filter(|p| !all.contains(p)).collect::<Vec<_>>());
+        report = project.compile(env, cancel)?;
     }
-    let again = project.compile(env, cancel)?;
-    Ok((again, installed))
+    Ok((report, all))
 }
+
+/// How many times missing packages are installed for one compilation.
+const MISSING_ROUNDS: usize = 4;
 
 /// What an installation is doing, for a progress line.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

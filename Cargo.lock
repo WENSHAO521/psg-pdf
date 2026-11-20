@@ -5277,6 +5277,7 @@ dependencies = [
 name = "psg-academic"
 version = "0.20.2"
 dependencies = [
+ "flate2",
  "jiff",
  "log",
  "serde",
@@ -5284,6 +5285,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "toml",
+ "zip",
 ]
 
 [[package]]
@@ -5303,6 +5305,7 @@ dependencies = [
  "psg-desktop-ui",
  "psg-i18n",
  "rfd",
+ "serde_json",
  "tempfile",
  "winresource",
 ]

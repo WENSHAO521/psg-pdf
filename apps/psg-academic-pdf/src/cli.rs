@@ -4,7 +4,8 @@
 //! ```text
 //! psg-academic-pdf check-tex
 //! psg-academic-pdf install-tex | update-tex | repair-biber
-//! psg-academic-pdf templates
+//! psg-academic-pdf templates | add-template <file.zip|folder> [--name <name>]
+//! psg-academic-pdf typeset <manuscript.docx|.tex> --out <file.pdf> [--template <id>] [--metadata <file>] [--project <dir>] [--json]
 //! psg-academic-pdf new <dir> [--template <id>]
 //! psg-academic-pdf check <dir>
 //! psg-academic-pdf compile <dir> [--out <file.pdf>] [--timeout <seconds>] [--manuscript <file.tex|file.docx>]
@@ -23,6 +24,23 @@ use crate::tex_setup::{self, Job, Progress};
 fn managed() -> Option<ManagedTex> {
     let data = crate::data_dir::DataDir::for_this_run(crate::app::APP_NAME);
     tex_setup::managed_for(&data.root, data.portable)
+}
+
+/// Where templates people add are kept (the same folder the window uses).
+pub fn user_templates(data_root: &std::path::Path) -> PathBuf {
+    data_root.join("templates")
+}
+
+/// The template folders: the ones people added, then the ones beside the program.
+pub fn template_dirs(data_root: &std::path::Path) -> Vec<PathBuf> {
+    let mut dirs = vec![user_templates(data_root)];
+    dirs.extend(template::default_template_dirs());
+    dirs
+}
+
+fn all_templates() -> (Vec<template::Template>, Vec<String>) {
+    let data = crate::data_dir::DataDir::for_this_run(crate::app::APP_NAME);
+    template::discover(&template_dirs(&data.root))
 }
 
 /// The TeX programs, PSG's own first.
@@ -84,6 +102,17 @@ Commands:
   install-fonts                  download the Chinese and Japanese fonts (Noto CJK) the
                                  XeLaTeX templates use (install-tex does this too)
   templates                      list the journal templates
+  add-template <file.zip|folder> [--name <name>]
+                                 add a journal's own LaTeX template: finds its main file,
+                                 the article's text and where the title, authors, abstract
+                                 and keywords go, and says what it found
+  typeset <manuscript.docx|.tex> --out <file.pdf> [--template <id>] [--metadata <file>]
+          [--project <dir>] [--timeout <seconds>] [--json]
+                                 one step from a manuscript to a PDF: a new project from the
+                                 template, the manuscript's title, authors, abstract,
+                                 keywords, figures and tables read, the metadata file's
+                                 fields (TOML or JSON: volume, doi, received, …) laid over
+                                 them, typeset and exported; --json prints a report
   new <dir> [--template <id>]    start a project in <dir> (default template: psg-article)
   check <dir>                    list the problems found before compiling (scripts the
                                  templates can't set, the bibliography); exit 1 on an error
@@ -110,6 +139,8 @@ pub fn run(args: &[String]) -> Option<i32> {
         "repair-biber" => report(tex_job(Job::RepairBiber)),
         "install-fonts" => report(tex_job(Job::Fonts)),
         "templates" => templates(),
+        "add-template" => report(add_template(rest)),
+        "typeset" => typeset(rest),
         "new" => report(new(rest)),
         "check" => check(rest),
         "compile" => report(compile(rest)),
@@ -186,7 +217,7 @@ fn check_tex() -> i32 {
 }
 
 fn templates() -> i32 {
-    let (templates, problems) = template::discover(&template::default_template_dirs());
+    let (templates, problems) = all_templates();
     for t in &templates {
         let m = &t.manifest;
         say(&format!("{:<20} {} {} — {}", m.id, m.name, m.version, m.description));
@@ -204,11 +235,97 @@ fn flag<'a>(args: &'a [String], name: &str) -> Option<&'a str> {
 fn new(args: &[String]) -> Result<(), String> {
     let dir = args.first().filter(|a| !a.starts_with("--")).ok_or("new: name the project folder")?;
     let id = flag(args, "--template").unwrap_or("psg-article");
-    let (templates, _) = template::discover(&template::default_template_dirs());
+    let (templates, _) = all_templates();
     let t = templates.into_iter().find(|t| t.manifest.id == id).ok_or_else(|| format!("no template \"{id}\" (see `psg-academic-pdf templates`)"))?;
     let p = Project::create(&PathBuf::from(dir), &t, PublicationMetadata::sample()).map_err(|e| e.to_string())?;
     say(&format!("Created {} from {}.", p.dir.display(), t.manifest.name));
     Ok(())
+}
+
+fn add_template(args: &[String]) -> Result<(), String> {
+    let source = args.first().filter(|a| !a.starts_with("--")).ok_or("add-template: name a .zip file or a folder")?;
+    let data = crate::data_dir::DataDir::for_this_run(crate::app::APP_NAME);
+    let added = psg_academic::template_import::import(&PathBuf::from(source), &user_templates(&data.root), flag(args, "--name"))
+        .map_err(|e| e.to_string())?;
+    let m = &added.template.manifest;
+    say(&format!("Added \"{}\" as template {} in {}.", m.name, m.id, added.dir.display()));
+    for line in &added.found {
+        say(&format!("  found: {line}"));
+    }
+    for line in &added.warnings {
+        complain(&format!("check: {line}"));
+    }
+    say(&format!("Use it with: psg-academic-pdf typeset <manuscript.docx> --template {} --out <file.pdf>", m.id));
+    Ok(())
+}
+
+/// `typeset`: exit 0 when the PDF was made, 1 when a step failed, 2 for a usage mistake.
+fn typeset(args: &[String]) -> i32 {
+    let json = args.iter().any(|a| a == "--json");
+    let usage = |why: &str| {
+        complain(&format!("typeset: {why}"));
+        2
+    };
+    let Some(manuscript) = args.first().filter(|a| !a.starts_with("--")) else { return usage("name the manuscript (.docx or .tex)") };
+    let Some(out) = flag(args, "--out") else { return usage("--out <file.pdf> says where the PDF goes") };
+    let id = flag(args, "--template").unwrap_or("psg-article");
+    let (templates, _) = all_templates();
+    let Some(template) = templates.into_iter().find(|t| t.manifest.id == id) else {
+        return usage(&format!("no template \"{id}\" (see `psg-academic-pdf templates`)"));
+    };
+    let timeout_secs = match flag(args, "--timeout").map(str::parse::<u64>) {
+        Some(Ok(secs)) => Some(secs),
+        Some(Err(_)) => return usage("--timeout takes a number of seconds"),
+        None => None,
+    };
+    let project_dir = match flag(args, "--project") {
+        Some(dir) => PathBuf::from(dir),
+        None => {
+            // A new project in the workspace, named after the manuscript, as the window does.
+            let data = crate::data_dir::DataDir::for_this_run(crate::app::APP_NAME);
+            let stamp = crate::app::local_now().strftime("%Y%m%d-%H%M%S").to_string();
+            data.projects().join(crate::launch::project_name(std::path::Path::new(manuscript), &stamp))
+        }
+    };
+    let (env, tex) = detect();
+    let request = psg_academic::typeset::Request {
+        manuscript: PathBuf::from(manuscript),
+        template,
+        project_dir,
+        metadata: flag(args, "--metadata").map(PathBuf::from),
+        out: Some(PathBuf::from(out)),
+        timeout_secs,
+    };
+    let report = psg_academic::typeset::typeset(&request, &env, tex.as_ref(), env.pandoc.path.as_deref());
+    if json {
+        match serde_json::to_string_pretty(&report) {
+            Ok(text) => say(&text),
+            Err(e) => complain(&e.to_string()),
+        }
+    } else {
+        for line in &report.import {
+            say(line);
+        }
+        if !report.metadata_set.is_empty() {
+            say(&format!("Metadata from the file: {}", report.metadata_set.join(", ")));
+        }
+        if !report.installed_packages.is_empty() {
+            say(&format!("Installed the TeX packages this document needs: {}", report.installed_packages.join(", ")));
+        }
+        for p in &report.problems {
+            complain(&p.diagnostic.to_string());
+            if let Some(hint) = p.hint {
+                complain(&format!("  hint: {hint}"));
+            }
+        }
+        say(&format!("Project: {}", report.project));
+        match (&report.pdf, &report.error) {
+            (Some(pdf), _) => say(&format!("Typeset in {:.1} s: {pdf}", report.seconds)),
+            (None, Some(e)) => complain(&format!("{} failed: {e}", report.failed_step.unwrap_or("typesetting"))),
+            (None, None) => {}
+        }
+    }
+    i32::from(!report.ok)
 }
 
 fn compile(args: &[String]) -> Result<(), String> {

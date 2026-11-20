@@ -122,6 +122,37 @@ impl PublicationMetadata {
         }
     }
 
+    /// Set the fields that `text` (TOML, or JSON when it starts with `{`) names, leaving the
+    /// others as they are: a journal's volume, DOI and dates for an article, say. Authors are a
+    /// list of tables (`name`, `affiliations`, `orcid`, `email`, `corresponding`). Returns the
+    /// fields set. A field that doesn't exist is refused with the ones that do.
+    pub fn overlay(&mut self, text: &str) -> Result<Vec<String>, String> {
+        let given: serde_json::Value = if text.trim_start().starts_with('{') {
+            serde_json::from_str(text).map_err(|e| format!("not valid JSON: {e}"))?
+        } else {
+            let table: toml::Table = toml::from_str(text).map_err(|e| format!("not valid TOML: {e}"))?;
+            serde_json::to_value(table).map_err(|e| e.to_string())?
+        };
+        let serde_json::Value::Object(given) = given else { return Err("expected a table of fields".into()) };
+        let mut current = serde_json::to_value(&*self).map_err(|e| e.to_string())?;
+        let serde_json::Value::Object(fields) = &mut current else { return Err("the metadata is not a table".into()) };
+        let mut set = Vec::new();
+        for (key, value) in given {
+            if !fields.contains_key(&key) {
+                let mut known: Vec<&String> = fields.keys().collect();
+                known.sort();
+                return Err(format!(
+                    "\"{key}\" is not a metadata field; the fields are {}",
+                    known.iter().map(|k| k.as_str()).collect::<Vec<_>>().join(", ")
+                ));
+            }
+            fields.insert(key.clone(), value);
+            set.push(key);
+        }
+        *self = serde_json::from_value(current).map_err(|e| format!("a field has the wrong kind of value: {e}"))?;
+        Ok(set)
+    }
+
     /// Check the metadata. Blocking issues make the generated file unusable; the others are
     /// things a production editor would want to fix before publication.
     pub fn validate(&self) -> Vec<MetadataIssue> {
@@ -192,6 +223,9 @@ impl PublicationMetadata {
             // A template written before languages existed ignores it.
             out.push_str("\\providecommand\\psgLanguage[1]{}\n");
         }
+        // The authors and affiliations as lists, for templates that set each one with its own
+        // command (authblk's \author[1]{…} and \affil[1]{…}); others ignore them.
+        out.push_str("\\providecommand\\psgAuthorList[1]{}\\providecommand\\psgAffiliationList[1]{}\n");
         let mut set = |macro_name: &str, value: String| {
             out.push('\\');
             out.push_str(macro_name);
@@ -213,6 +247,16 @@ impl PublicationMetadata {
         set("psgShortTitle", escape(&self.short_title));
         set("psgAuthors", self.author_line());
         set("psgAffiliations", self.affiliation_block());
+        set("psgAuthorList", self.author_list());
+        set(
+            "psgAffiliationList",
+            self.affiliations
+                .iter()
+                .take(MAX_LIST)
+                .enumerate()
+                .map(|(i, a)| format!("\\psgAffiliationItem{{{}}}{{{}}}", i + 1, escape(a)))
+                .collect::<String>(),
+        );
         set("psgCorrespondence", self.correspondence());
         set("psgAbstract", escape_paragraphs(&self.abstract_text));
         let keyword_separator = if self.is_cjk() { "；" } else { "; " };
@@ -270,6 +314,23 @@ impl PublicationMetadata {
                 format!("{} and {}", head.join(", "), last.concat())
             }
         }
+    }
+
+    /// `\psgAuthorItem{name}{1,2,*}` for each author.
+    fn author_list(&self) -> String {
+        self.authors
+            .iter()
+            .take(MAX_LIST)
+            .filter(|a| !a.name.trim().is_empty())
+            .map(|a| {
+                let mut marks: Vec<String> =
+                    a.affiliations.iter().filter(|&&i| i >= 1 && i <= self.affiliations.len()).map(usize::to_string).collect();
+                if a.corresponding {
+                    marks.push("*".into());
+                }
+                format!("\\psgAuthorItem{{{}}}{{{}}}", escape(a.name.trim()), escape(&marks.join(",")))
+            })
+            .collect()
     }
 
     fn affiliation_block(&self) -> String {
@@ -429,6 +490,21 @@ fn escape_url_part(doi: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn overlay_sets_only_the_fields_given() {
+        let mut m = PublicationMetadata::sample();
+        let set = m.overlay("volume = \"12\"\ndoi = \"10.1234/x.5\"\n[[authors]]\nname = \"Ann\"\naffiliations = [1]\n").unwrap();
+        assert_eq!(set, ["authors", "doi", "volume"]);
+        assert_eq!((m.volume.as_str(), m.doi.as_str(), m.authors.len()), ("12", "10.1234/x.5", 1));
+        assert_eq!(m.journal, PublicationMetadata::sample().journal);
+        m.overlay("{\"issue\": \"3\"}").unwrap();
+        assert_eq!(m.issue, "3");
+        let err = m.overlay("jornal = \"x\"").unwrap_err();
+        assert!(err.contains("\"jornal\" is not a metadata field") && err.contains("journal"), "{err}");
+        assert!(m.overlay("volume = 12").is_err(), "a number is not text");
+        assert_eq!(m.issue, "3", "a refused overlay changes nothing");
+    }
 
     #[test]
     fn chinese_articles_list_authors_with_the_enumeration_comma() {

@@ -50,7 +50,7 @@ pub const APP_NAME: &str = crate::theme::PRODUCT.name();
 /// The organisation that publishes it.
 pub const PUBLISHER: &str = psg_brand::PUBLISHER;
 
-fn local_now() -> jiff::ZonedDateTime {
+pub(crate) fn local_now() -> jiff::ZonedDateTime {
     psg_academic::managed::now_utc().to_zoned_datetime(jiff::tz::TimeZone::system())
 }
 
@@ -181,6 +181,8 @@ pub struct AcademicApp {
     tex_error: Option<String>,
     templates: Vec<Template>,
     template_problems: Vec<String>,
+    /// What the last template added was found to have: its name, what was found, what to check.
+    template_added: Option<(String, Vec<String>, Vec<String>)>,
     selected_template: usize,
     workspace: PathBuf,
     folder_choice: Option<data_folder::FolderChoice>,
@@ -234,7 +236,7 @@ pub struct AcademicApp {
 
 impl AcademicApp {
     pub fn new(ctx: &egui::Context, data: DataDir, paths: Vec<PathBuf>) -> Self {
-        let (templates, template_problems) = template::discover(&template::default_template_dirs());
+        let (templates, template_problems) = template::discover(&crate::cli::template_dirs(&data.root));
         let workspace = data.projects();
         let language_file = data.root.join("language.txt");
         let chosen = std::fs::read_to_string(&language_file).unwrap_or_default();
@@ -255,6 +257,7 @@ impl AcademicApp {
             tex_error: None,
             templates,
             template_problems,
+            template_added: None,
             selected_template: 0,
             workspace,
             folder_choice: None,

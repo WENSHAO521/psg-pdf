@@ -45,7 +45,6 @@
 	Check Again	Vérifier à nouveau
 	Check again	Vérifier à nouveau
 	Check and export the finished PDF	Vérifier et exporter le PDF final
-	Check compatibility	Vérifier la compatibilité
 	Check for updates…	Rechercher des mises à jour…
 	Check the finished article and save the PDF where it is needed.	Vérifiez l'article final et enregistrez le PDF là où vous en avez besoin.
 	Checking TeX…	Vérification de TeX…
@@ -55,7 +54,6 @@
 	Close	Fermer
 	Close {app}	Fermer {app}
 	Close {app} to finish	Fermez {app} pour terminer
-	Coming later	Bientôt disponible
 	Compilation started.	Compilation lancée.
 	Compile output	Sortie de compilation
 	Copyright	Droits d'auteur
@@ -121,7 +119,6 @@
 	Import a manuscript or create a project from a template to start.	Pour commencer, importez un manuscrit ou créez un projet à partir d'un modèle.
 	Import failed: {error}	Échec de l'import : {error}
 	Import manuscript…	Importer un manuscrit…
-	Import template (.zip)…	Importer un modèle (.zip)…
 	Import the manuscript body (LaTeX)	Importer le corps du manuscrit (LaTeX)
 	Install Pandoc to import .docx (experimental)	Installez Pandoc pour importer des .docx (expérimental)
 	Install TeX	Installer TeX
@@ -200,7 +197,6 @@
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF n'est pas installé : le PDF s'est ouvert dans le lecteur par défaut. PSG PDF se télécharge séparément.
 	Page {n}: {error}	Page {n} : {error}
 	Pages	Pages
-	Planned for a later version; not available yet.	Prévu pour une version ultérieure ; pas encore disponible.
 	Portable mode: settings and projects are kept in {path}.	Mode portable : les réglages et les projets sont conservés dans {path}.
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	Appuyez sur Composer automatiquement pour composer le manuscrit ; le PDF apparaît ici.
 	Preview	Aperçu
@@ -417,3 +413,9 @@
 	Downloading the Chinese and Japanese fonts: {done} of {total} MB	Téléchargement des polices chinoises et japonaises : {done} sur {total} Mo
 	Downloading the Chinese and Japanese fonts…	Téléchargement des polices chinoises et japonaises…
 	The Chinese and Japanese fonts are installed.	Les polices chinoises et japonaises sont installées.
+	A journal's LaTeX template as the journal hands it out	Le modèle LaTeX d’une revue, tel qu’elle le fournit
+	Add a template (.zip)…	Ajouter un modèle (.zip)…
+	Add a template folder…	Ajouter un dossier de modèle…
+	Added the template {name} from {path}.	Modèle {name} ajouté depuis {path}.
+	Added the template {name}. Check what was found before using it:	Modèle {name} ajouté. Vérifiez ce qui a été trouvé avant de l’utiliser :
+	Could not add the template: {error}	Impossible d’ajouter le modèle : {error}

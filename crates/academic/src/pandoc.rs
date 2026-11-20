@@ -110,6 +110,7 @@ impl ManuscriptImporter for PandocImporter {
         let _ = std::fs::remove_file(&converted);
         let _ = std::fs::remove_file(&tree_path);
         let taken = project.apply_front_matter(&front)?;
+        let adapted = project.adapt_engine_to_text()?;
         let warnings = read.saturating_add(write);
         let mut note = format!(
             "Converted {} with Pandoc into {} ({warnings} warning line(s)): {} figure(s) and {} table(s) with captions; figures are in media/.",
@@ -123,6 +124,10 @@ impl ManuscriptImporter for PandocImporter {
         }
         if !taken.is_empty() {
             note.push_str(&format!(" From the manuscript's front matter: {}.", taken.join(", ")));
+        }
+        if let Some(adapted) = adapted {
+            note.push(' ');
+            note.push_str(&adapted);
         }
         for problem in review_converted(&String::from_utf8_lossy(&body), &project.dir, project.file.engine) {
             note.push_str("\nTo fix before compiling: ");
