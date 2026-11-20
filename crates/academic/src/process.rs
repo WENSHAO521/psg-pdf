@@ -17,6 +17,7 @@ pub const MAX_CAPTURE: usize = 4 * 1024 * 1024;
 
 /// How often the child is polled while it runs.
 const POLL: Duration = Duration::from_millis(50);
+pub(crate) const VERSION_TIMEOUT: Duration = Duration::from_secs(15);
 
 /// What a finished (or stopped) run produced.
 #[derive(Debug, Clone)]
@@ -137,14 +138,14 @@ pub fn hide_console(cmd: &mut Command) {
 
 /// The first line a program successfully prints for `--version`.
 pub fn version_line(program: &Path) -> Option<String> {
-    probe_version(program, "--version").ok().flatten()
+    probe_version(program, "--version", VERSION_TIMEOUT).ok().flatten()
 }
 
 /// Run a version check and keep a short diagnostic if the program fails.
-pub(crate) fn probe_version(program: &Path, flag: &str) -> Result<Option<String>, String> {
+pub(crate) fn probe_version(program: &Path, flag: &str, timeout: Duration) -> Result<Option<String>, String> {
     let mut cmd = Command::new(program);
     cmd.arg(flag);
-    let out = run(cmd, Duration::from_secs(15), None).map_err(|e| e.to_string())?;
+    let out = run(cmd, timeout, None).map_err(|e| e.to_string())?;
     if out.timed_out {
         return Err("Version check timed out".into());
     }

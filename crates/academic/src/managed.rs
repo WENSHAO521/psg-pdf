@@ -286,6 +286,16 @@ impl ManagedTex {
         }
     }
 
+    /// Restore the bibliography tools from TeX Live in this managed installation.
+    pub fn reinstall_biber(&self) -> Result<(), Error> {
+        let bin = self.bin_dir().ok_or_else(|| Error::TexMissing("PSG TeX".into()))?;
+        self.run_tlmgr(&["install", "--reinstall", "biber", "biblatex"])?;
+        if missing_core_tools(&bin).any(|tool| tool == "biber") {
+            return Err(Error::TexMissing("biber".into()));
+        }
+        Ok(())
+    }
+
     fn repair_core_tools(&self) -> Result<(), Error> {
         let bin = self.bin_dir().ok_or_else(|| Error::TexMissing("PSG TeX".into()))?;
         let missing: Vec<_> = missing_core_tools(&bin).collect();
@@ -398,11 +408,10 @@ impl ManagedTex {
         // installed: what matters is that the programs a compilation runs are there.
         let install = self.install_packages(&packages);
         let bin = self.bin_dir().ok_or_else(|| Error::TexMissing("PSG TeX".into()))?;
-        if let Some(tool) = missing_core_tools(&bin).next() {
+        if missing_core_tools(&bin).next().is_some() {
             install?;
-            return Err(Error::TexMissing(tool.into()));
-        }
-        if let Err(e) = install {
+            self.repair_core_tools()?;
+        } else if let Err(e) = install {
             log::warn!("installing the template packages: {e}");
         }
         let mut state = self.state();
@@ -790,6 +799,17 @@ fi
         let env = crate::TexEnvironment::detect_with(Some(&bin));
         assert_eq!(env.biber.path.as_deref(), Some(bin.join("biber").as_path()));
         assert!(env.biber.found());
+
+        // The executable can be present but fail to start. Targeted repair replaces it without
+        // touching the weekly-update timestamp and the next probe verifies it can run.
+        let state = tex.state();
+        std::fs::write(bin.join("biber"), "#!/bin/sh\necho Biber startup failed >&2\nexit 1\n").unwrap();
+        let env = crate::TexEnvironment::detect_with(Some(&bin));
+        assert!(!env.biber.found());
+        assert_eq!(env.biber.probe_error.as_deref(), Some("Biber startup failed"));
+        tex.reinstall_biber().unwrap();
+        assert!(crate::TexEnvironment::detect_with(Some(&bin)).biber.found());
+        assert_eq!(tex.state(), state);
     }
 
     #[cfg(unix)]

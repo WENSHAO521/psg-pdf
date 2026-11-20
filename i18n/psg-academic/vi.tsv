@@ -396,3 +396,12 @@
 	Browse…	Duyệt…
 	Use this folder	Dùng thư mục này
 	Enter an existing folder path.	Nhập đường dẫn tới thư mục có sẵn.
+	Copy TeX diagnostics	Sao chép thông tin chẩn đoán TeX
+	TeX diagnostics copied.	Đã sao chép thông tin chẩn đoán TeX.
+	Cut	Cắt
+	Copy	Sao chép
+	Paste	Dán
+	Repair Biber	Sửa Biber
+	Repairing Biber…	Đang sửa Biber…
+	Biber was reinstalled.	Đã cài đặt lại Biber.
+	Could not repair Biber: {error}	Không thể sửa Biber: {error}

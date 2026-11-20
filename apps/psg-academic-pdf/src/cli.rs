@@ -34,7 +34,7 @@ fn detect() -> (TexEnvironment, Option<ManagedTex>) {
 fn tex_job(job: Job) -> Result<(), String> {
     let tex = managed().ok_or("there is no folder to install TeX in")?;
     say(&format!("PSG TeX folder: {}", tex.root.display()));
-    if job == Job::Update && !tex.installed() {
+    if job != Job::Install && !tex.installed() {
         return Err("PSG's TeX is not installed; run install-tex first".into());
     }
     let mut last = None;
@@ -57,6 +57,7 @@ fn tex_job(job: Job) -> Result<(), String> {
             tex_setup::Done::Updated => say("TeX is up to date."),
             tex_setup::Done::Installed(release) => say(&format!("Reinstalled from TinyTeX {release} (a new TeX Live year).")),
         },
+        Job::RepairBiber => tex.reinstall_biber().map_err(|e| e.to_string())?,
     }
     Ok(())
 }

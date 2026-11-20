@@ -14,6 +14,7 @@ mod app;
 #[cfg(target_os = "macos")]
 mod apple_events;
 mod cli;
+mod clipboard;
 mod data_dir;
 mod fonts;
 mod i18n;
