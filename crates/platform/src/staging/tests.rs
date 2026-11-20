@@ -6,12 +6,16 @@ fn test_dir(test: &str) -> PathBuf {
     let seed = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_nanos());
     for n in 0..64u32 {
         let dir = std::env::temp_dir().join(format!("pdfcraft-platform-staging-{}-{test}-{:x}", std::process::id(), seed.wrapping_add(n.into())));
-        let mut made = std::fs::DirBuilder::new();
+        // Owner-only on Unix; other systems create it with their defaults.
         #[cfg(unix)]
-        {
+        let made = {
             use std::os::unix::fs::DirBuilderExt as _;
-            made.mode(0o700);
-        }
+            let mut b = std::fs::DirBuilder::new();
+            b.mode(0o700);
+            b
+        };
+        #[cfg(not(unix))]
+        let made = std::fs::DirBuilder::new();
         if made.create(&dir).is_ok() {
             return dir;
         }
