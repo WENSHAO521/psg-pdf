@@ -10,7 +10,8 @@
 //! form-wide appearance inputs a locked field is drawn from. A lock that is there but can't be
 //! read, or a form too large to compare, is unchecked: never "no lock".
 
-use std::collections::{BTreeMap, HashSet as NameSet};
+use std::collections::{BTreeMap, HashMap, HashSet as NameSet};
+use std::rc::Rc;
 
 use super::listing::{Field, MAX_ENTRIES, MAX_FIELD_NAME_BYTES, MAX_FIELDS, MAX_NAME_BYTES};
 use super::{Dict, Document, HashSet, ObjRef, Object};
@@ -225,7 +226,9 @@ struct Node {
 /// One field under its fully qualified name: its node, and its widgets apart from it.
 struct Entry {
     node: usize,
-    widgets: Vec<Dict>,
+    /// Shared: a `/Kids` array can name one widget many times, and copying it for each would
+    /// let a small file allocate without bound.
+    widgets: Vec<Rc<Dict>>,
 }
 
 /// Every field of a form by fully qualified name, terminal or not, in walk order (a parent before
@@ -266,6 +269,7 @@ fn form_fields(doc: &Document) -> Option<Form> {
     };
     let (mut fields_left, mut entries_left, mut names_left) = (MAX_FIELDS, MAX_ENTRIES, MAX_NAME_BYTES);
     let mut seen: HashSet<ObjRef> = HashSet::new();
+    let mut copies: HashMap<(ObjRef, Option<usize>), Rc<Dict>> = HashMap::new();
     let mut stack: Vec<(Object, Option<usize>, usize)> = Vec::new();
     entries_left = entries_left.checked_sub(top.len())?;
     for f in top.into_iter().rev() {
@@ -295,13 +299,14 @@ fn form_fields(doc: &Document) -> Option<Form> {
         // Counted twice: each name is kept by its node and as a key.
         names_left = names_left.checked_sub(name.len().saturating_mul(2))?;
         let node = form.nodes.len();
+        let array = d.get(b"Kids").and_then(Object::as_ref);
         let kids = d.get(b"Kids").map(|k| doc.resolve(k));
         let kids: Vec<Object> = kids.as_deref().and_then(Object::as_array).cloned().unwrap_or_default();
         entries_left = entries_left.checked_sub(kids.len())?;
         form.nodes.push(Node { name: name.clone(), dict: d, parent });
         let mut widgets = Vec::new();
         let mut sub = Vec::new();
-        for k in kids {
+        for (i, k) in kids.into_iter().enumerate() {
             let kd = doc.resolve(&k);
             let Some(kd) = kd.as_dict() else { continue };
             // Kids with a /T are fields, and so are those with kids of their own; the others are
@@ -309,7 +314,12 @@ fn form_fields(doc: &Document) -> Option<Form> {
             if kd.contains(b"T") || kd.contains(b"Kids") {
                 sub.push(k);
             } else {
-                widgets.push(kd.clone());
+                // One copy per widget object, or per slot of a shared /Kids array for a direct one.
+                let key = k.as_ref().map(|r| (r, None)).or_else(|| array.map(|a| (a, Some(i))));
+                widgets.push(match key {
+                    Some(key) => Rc::clone(copies.entry(key).or_insert_with(|| Rc::new(kd.clone()))),
+                    None => Rc::new(kd.clone()),
+                });
             }
         }
         for k in sub.into_iter().rev() {
@@ -472,6 +482,23 @@ mod tests {
             form.nodes.push(Node { name: (*n).to_owned(), dict: Dict::new(), parent });
         }
         form
+    }
+
+    /// A /Kids array naming one large widget many times keeps one copy of it, not one per mention.
+    #[test]
+    fn a_widget_named_many_times_is_copied_once() {
+        let mut doc = Document::new_empty();
+        let big = Object::String(PdfString::text(&"x".repeat(1 << 16)));
+        let widget = doc.add(Object::Dict(dict(vec![("Subtype", Object::Name(b"Widget".to_vec())), ("Big", big)])));
+        let kids = doc.add(Object::Array(vec![Object::Ref(widget); 1000]));
+        let field = doc.add(Object::Dict(dict(vec![("T", Object::String(PdfString::text("a"))), ("Kids", Object::Ref(kids))])));
+        let acroform = dict(vec![("Fields", Object::Array(vec![Object::Ref(field)]))]);
+        let root = doc.add(Object::Dict(dict(vec![("AcroForm", Object::Dict(acroform))])));
+        doc.trailer_mut().set(b"Root".to_vec(), Object::Ref(root));
+        let form = form_fields(&doc).unwrap();
+        let widgets = &form.fields["a"][0].widgets;
+        assert_eq!(widgets.len(), 1000);
+        assert!(widgets.iter().all(|w| Rc::ptr_eq(w, &widgets[0])), "each mention is its own copy");
     }
 
     /// The names `rules` lock among `names`.
