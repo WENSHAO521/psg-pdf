@@ -243,7 +243,7 @@ impl PublicationMetadata {
         set("psgArticleNumber", escape(&self.article_number));
         set("psgDOI", escape_url_part(self.doi.trim()));
         set("psgArticleType", escape(&self.article_type));
-        set("psgTitle", escape(&self.title));
+        set("psgTitle", escape_math(&self.title));
         set("psgShortTitle", escape(&self.short_title));
         set("psgAuthors", self.author_line());
         set("psgAffiliations", self.affiliation_block());
@@ -258,7 +258,7 @@ impl PublicationMetadata {
                 .collect::<String>(),
         );
         set("psgCorrespondence", self.correspondence());
-        set("psgAbstract", escape_paragraphs(&self.abstract_text));
+        set("psgAbstract", escape_paragraphs_math(&self.abstract_text));
         let keyword_separator = if self.is_cjk() { "；" } else { "; " };
         set(
             "psgKeywords",
@@ -454,10 +454,74 @@ pub fn escape(text: &str) -> String {
     out.trim().to_owned()
 }
 
+/// The most math one field may carry through as TeX, in bytes.
+const MAX_MATH: usize = 4096;
+
+/// [`escape`], except that `\(…\)` stays inline math: what a Word equation in a title or an
+/// abstract becomes ([`crate::docx`]). Math whose braces don't balance, or that would end the
+/// group it sits in, is escaped as text like everything else.
+pub fn escape_math(text: &str) -> String {
+    let mut out = String::new();
+    let mut rest = text;
+    let mut math_left = MAX_MATH;
+    while let Some(start) = rest.find("\\(") {
+        let (before, from) = rest.split_at(start);
+        let body = from.get(2..).unwrap_or_default();
+        let Some(end) = body.find("\\)") else { break };
+        let inner = body.get(..end).unwrap_or_default();
+        push_text(&mut out, before);
+        if math_left >= inner.len() && balanced(inner) {
+            math_left -= inner.len();
+            out.push_str("\\(");
+            out.extend(inner.chars().filter(|c| !c.is_control()));
+            out.push_str("\\)");
+        } else {
+            push_text(&mut out, from.get(..end + 4).unwrap_or_default());
+        }
+        rest = body.get(end + 2..).unwrap_or_default();
+    }
+    push_text(&mut out, rest);
+    out.trim().to_owned()
+}
+
+/// Escaped text, keeping one space where the text began or ended with one.
+fn push_text(out: &mut String, text: &str) {
+    if text.starts_with(char::is_whitespace) && !out.ends_with(' ') {
+        out.push(' ');
+    }
+    out.push_str(&escape(text));
+    if text.ends_with(char::is_whitespace) && !text.trim().is_empty() {
+        out.push(' ');
+    }
+}
+
+/// Whether TeX math `inner` keeps its braces balanced and starts no paragraph or other math.
+fn balanced(inner: &str) -> bool {
+    let mut depth: usize = 0;
+    for c in inner.chars() {
+        match c {
+            '{' => depth += 1,
+            '}' => match depth.checked_sub(1) {
+                Some(d) => depth = d,
+                None => return false,
+            },
+            '$' | '%' | '#' => return false,
+            _ => {}
+        }
+    }
+    depth == 0 && !inner.contains("\\par") && !inner.contains("\\(") && !inner.contains("\\[") && !inner.contains("\\end")
+}
+
 /// [`escape`], keeping blank-line paragraph breaks as `\par`.
 pub fn escape_paragraphs(text: &str) -> String {
     let normalized = text.replace("\r\n", "\n");
     normalized.split("\n\n").map(escape).filter(|p| !p.is_empty()).collect::<Vec<_>>().join("\\par ")
+}
+
+/// [`escape_paragraphs`] with [`escape_math`]'s inline math.
+fn escape_paragraphs_math(text: &str) -> String {
+    let normalized = text.replace("\r\n", "\n");
+    normalized.split("\n\n").map(escape_math).filter(|p| !p.is_empty()).collect::<Vec<_>>().join("\\par ")
 }
 
 /// A page range: digits and letters as typed, with a hyphen or en dash between them written as `--`.
@@ -490,6 +554,17 @@ fn escape_url_part(doi: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn math_stays_math_only_when_it_is_whole() {
+        assert_eq!(escape_math("Fit \\(\\alpha_1\\) now"), "Fit \\(\\alpha_1\\) now");
+        // Unbalanced braces, or math that would end its group, are text.
+        assert_eq!(escape_math("a \\(x}\\) b"), "a \\textbackslash{}(x\\}\\textbackslash{}) b");
+        assert!(!escape_math("\\(\\end{document}\\)").contains("\\end{"));
+        // Outside math, everything is escaped as before.
+        assert_eq!(escape_math("50% & $5"), escape("50% & $5"));
+        assert_eq!(escape_math("no end \\(x"), escape("no end \\(x"));
+    }
 
     #[test]
     fn overlay_sets_only_the_fields_given() {

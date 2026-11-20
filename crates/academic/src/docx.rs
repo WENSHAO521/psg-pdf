@@ -120,7 +120,13 @@ fn push_inlines(inlines: &[Value], out: &mut String, depth: usize) {
                 push_inlines(inner, out, depth + 1);
                 out.push_str(close);
             }
-            "Code" | "Math" => out.push_str(c.and_then(|c| c.get(1)).and_then(Value::as_str).unwrap_or_default()),
+            "Code" => out.push_str(c.and_then(|c| c.get(1)).and_then(Value::as_str).unwrap_or_default()),
+            // Kept as TeX math, which the metadata writes as math (`metadata::escape_math`).
+            "Math" => {
+                out.push_str("\\(");
+                out.push_str(c.and_then(|c| c.get(1)).and_then(Value::as_str).unwrap_or_default().trim());
+                out.push_str("\\)");
+            }
             _ => {}
         }
     }
@@ -344,17 +350,19 @@ fn front_from_body(blocks: &mut Vec<Value>, front: &mut WordFrontMatter) -> usiz
     let mut remove = Vec::new();
     // Title, authors and affiliations: the paragraphs before the first heading or abstract.
     let first_heading = blocks.iter().position(|b| tag(b) == "Header" && after_label(&block_text(b), ABSTRACT_WORDS).is_none());
-    let lead_end = blocks
-        .iter()
-        .position(|b| after_label(&block_text(b), ABSTRACT_WORDS).is_some() || after_label(&block_text(b), KEYWORD_WORDS).is_some())
-        .into_iter()
-        .chain(first_heading)
-        .min()
-        .unwrap_or(0)
-        .min(MAX_FRONT);
+    let labelled =
+        blocks.iter().position(|b| after_label(&block_text(b), ABSTRACT_WORDS).is_some() || after_label(&block_text(b), KEYWORD_WORDS).is_some());
+    let lead_end = labelled.into_iter().chain(first_heading).min().unwrap_or(0).min(MAX_FRONT);
     let lead: Vec<usize> = (0..lead_end).filter(|&i| blocks.get(i).is_some_and(|b| !block_text(b).trim().is_empty())).collect();
     // Only a short lead looks like a title block; a manuscript starting with prose keeps it.
-    let looks_like_title_block = !lead.is_empty() && lead.iter().all(|&i| blocks.get(i).is_some_and(|b| block_text(b).chars().count() <= 300));
+    let short = !lead.is_empty() && lead.iter().all(|&i| blocks.get(i).is_some_and(|b| block_text(b).chars().count() <= 300));
+    // Short paragraphs alone are not enough: an introduction can be short too. The lead is a title
+    // block only when something says so: Word's Title style gave the title, an abstract or
+    // keywords label follows it, or one of its lines is an affiliation.
+    let evidence = !front.title.is_empty()
+        || labelled.is_some_and(|l| l == lead_end)
+        || lead.iter().any(|&i| blocks.get(i).and_then(para_inlines).is_some_and(|p| affiliation_line(p).is_some()));
+    let looks_like_title_block = short && evidence;
     if looks_like_title_block {
         let mut iter = lead.into_iter();
         if front.title.is_empty()
@@ -924,6 +932,32 @@ mod tests {
         let (front, _) = restructure(&mut doc);
         assert!(front.title.is_empty());
         assert_eq!(doc["blocks"].as_array().unwrap().len(), 2);
+    }
+
+    #[test]
+    fn a_short_introduction_before_the_first_heading_stays_in_the_body() {
+        let mut doc = json!({"meta": {}, "blocks": [
+            para(words("This study asks why.")),
+            para(words("It answers in three parts.")),
+            {"t": "Header", "c": [1, ["m", [], []], [s("Methods")]]},
+        ]});
+        let (front, _) = restructure(&mut doc);
+        assert!(front.title.is_empty() && front.authors.is_empty(), "{front:?}");
+        assert_eq!(doc["blocks"].as_array().unwrap().len(), 3);
+    }
+
+    #[test]
+    fn an_equation_in_the_abstract_stays_math() {
+        let math = json!({"t": "Math", "c": [{"t": "InlineMath"}, "\\alpha + x^2"]});
+        let mut doc = json!({"meta": {"title": {"t": "MetaString", "c": "T"}}, "blocks": [
+            para({ let mut p = words("Abstract: We fit"); p.extend([sp(), math, s(".")]); p }),
+            {"t": "Header", "c": [1, ["i", [], []], [s("Introduction")]]},
+        ]});
+        let (front, _) = restructure(&mut doc);
+        assert_eq!(front.abstract_text, "We fit \\(\\alpha + x^2\\).");
+        let mut m = crate::PublicationMetadata::sample();
+        m.abstract_text = front.abstract_text;
+        assert!(m.to_latex().contains("We fit \\(\\alpha + x^2\\)."), "{}", m.to_latex());
     }
 
     #[test]

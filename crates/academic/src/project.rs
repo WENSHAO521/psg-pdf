@@ -218,7 +218,13 @@ impl Project {
         let body = self.read_body()?;
         let m = &self.file.metadata;
         let cjk = |t: &str| t.chars().any(|c| matches!(c as u32, 0x3040..=0x30FF | 0x3400..=0x4DBF | 0x4E00..=0x9FFF | 0xF900..=0xFAFF));
-        if !(cjk(&body) || cjk(&m.title) || cjk(&m.abstract_text) || m.authors.iter().any(|a| cjk(&a.name)) || m.keywords.iter().any(|k| cjk(k))) {
+        if !(cjk(&body)
+            || cjk(&m.title)
+            || cjk(&m.abstract_text)
+            || m.authors.iter().any(|a| cjk(&a.name))
+            || m.affiliations.iter().any(|a| cjk(a))
+            || m.keywords.iter().any(|k| cjk(k)))
+        {
             return Ok(None);
         }
         let path = self.dir.join(&self.file.main);

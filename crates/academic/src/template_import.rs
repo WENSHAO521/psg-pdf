@@ -82,7 +82,7 @@ pub fn import(source: &Path, store: &Path, name: Option<&str>) -> Result<Importe
     let text = text.strip_prefix('\u{feff}').unwrap_or(&text).to_owned();
 
     let display_name = name.map(str::trim).filter(|n| !n.is_empty()).map(str::to_owned).unwrap_or_else(|| default_name(source));
-    let id = template_id(&display_name);
+    let id = unreserved_id(template_id(&display_name));
     let names: Vec<&str> = kept.iter().map(|(p, _)| p.as_str()).collect();
     let body_name = ["body.tex", "psg-body.tex", "psg-article-body.tex"].into_iter().find(|n| !names.contains(n)).unwrap_or("psg-body.tex");
     let analysis = analyse(&text, body_name.trim_end_matches(".tex"))?;
@@ -152,6 +152,13 @@ fn default_name(source: &Path) -> String {
 
 /// An id from `name`: ASCII letters and digits with `-`; a name without any (Chinese) gets one
 /// from its characters' code points, so the same name always gets the same id.
+/// `id`, or `id-journal` when a built-in template has it: the template list starts with the
+/// built-ins and leaves out a template whose id is already listed, so an upload named like one
+/// would never be used.
+fn unreserved_id(id: String) -> String {
+    if Template::builtin().iter().any(|t| t.manifest.id == id) { format!("{id}-journal") } else { id }
+}
+
 pub fn template_id(name: &str) -> String {
     let mut id = String::new();
     for c in name.chars() {
@@ -1063,6 +1070,20 @@ Sample text 50\% of the time.
         // Adding it again replaces it.
         assert!(import(&src, &store, None).is_ok());
         assert_eq!(std::fs::read_dir(&store).unwrap().count(), 1);
+    }
+
+    #[test]
+    fn a_template_named_like_a_built_in_one_gets_its_own_id() {
+        let root = tempfile::tempdir().unwrap();
+        let src = root.path().join("src");
+        std::fs::create_dir_all(&src).unwrap();
+        std::fs::write(src.join("main.tex"), ARTICLE).unwrap();
+        let store = root.path().join("templates");
+        let imported = import(&src, &store, Some("PSG Article")).unwrap();
+        assert_eq!(imported.template.manifest.id, "psg-article-journal");
+        // The upload is listed, not hidden behind the built-in template.
+        let (all, _) = crate::template::discover(std::slice::from_ref(&store));
+        assert!(all.iter().any(|t| t.manifest.id == "psg-article-journal" && t.manifest.name == "PSG Article"));
     }
 
     #[test]

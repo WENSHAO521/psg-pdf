@@ -396,9 +396,13 @@ impl ManagedTex {
         }
         // The local package registry may still list a package whose launcher was deleted.
         let mut args = vec!["install", "--reinstall"];
-        args.extend(missing.iter().copied());
-        if missing.contains(&"biber") {
-            args.push("biblatex");
+        for tool in missing.iter().copied() {
+            // The TeX Live packages that bring each program.
+            match tool {
+                "biber" => args.extend(["biber", "biblatex"]),
+                "xelatex" => args.extend(["xetex", "fontspec", "xecjk"]),
+                other => args.push(other),
+            }
         }
         self.run_tlmgr(&args)?;
         if let Some(tool) = missing_core_tools(&bin).next() {
@@ -595,8 +599,10 @@ fn bin_dir_in(tree: &Path) -> Option<PathBuf> {
     dirs.into_iter().next()
 }
 
+/// The programs every PSG template needs. XeLaTeX joined later (the built-in templates moved to
+/// it), so a tree installed before then is repaired by the weekly maintenance, not only a new one.
 fn missing_core_tools(bin: &Path) -> impl Iterator<Item = &'static str> + '_ {
-    ["latexmk", "biber"].into_iter().filter(|name| {
+    ["latexmk", "biber", "xelatex"].into_iter().filter(|name| {
         let file = if cfg!(windows) { bin.join(format!("{name}.exe")) } else { bin.join(name) };
         !file.is_file()
     })
@@ -823,7 +829,7 @@ mod tests {
         assert!(!tex.update_due(now), "nothing installed, nothing to update");
         let bin = tex.tree().join("bin").join("x");
         std::fs::create_dir_all(&bin).unwrap();
-        for name in ["pdflatex", "latexmk", "biber"] {
+        for name in ["pdflatex", "latexmk", "biber", "xelatex"] {
             let executable = if cfg!(windows) { bin.join(format!("{name}.exe")) } else { bin.join(name) };
             std::fs::write(executable, "").unwrap();
         }
@@ -857,6 +863,7 @@ mod tests {
             ("pdflatex", "#!/bin/sh\necho pdfTeX fake\n"),
             ("latexmk", "#!/bin/sh\necho latexmk fake\n"),
             ("biber", "#!/bin/sh\necho biber fake\n"),
+            ("xelatex", "#!/bin/sh\necho XeTeX fake\n"),
             ("tlmgr", "#!/bin/sh\necho \"$@\" >> \"$(dirname \"$0\")/tlmgr.log\"\n"),
         ] {
             let p = bin.join(name);
@@ -943,6 +950,32 @@ fi
         tex.reinstall_biber().unwrap();
         assert!(crate::TexEnvironment::detect_with(Some(&bin)).biber.found());
         assert_eq!(tex.state(), state);
+    }
+
+    /// A tree installed before the templates moved to XeLaTeX has no xelatex: maintenance is due
+    /// and installs it, so the built-in templates compile there too.
+    #[cfg(unix)]
+    #[test]
+    fn maintenance_adds_xelatex_to_an_older_installation() {
+        let dir = tempfile::tempdir().unwrap();
+        let archive = fake_bundle(dir.path());
+        let tex = ManagedTex::new(dir.path().join("root"));
+        tex.install_from(&archive, "v2026.11", &mut |_| {}).unwrap();
+        let bin = tex.bin_dir().unwrap();
+        std::fs::remove_file(bin.join("xelatex")).unwrap();
+        assert!(tex.update_due(now_utc()), "a tree without XeLaTeX needs maintenance");
+        let tlmgr = r#"#!/bin/sh
+bin="$(dirname "$0")"
+echo "$@" >> "$bin/tlmgr.log"
+if [ "$*" = "install --reinstall xetex fontspec xecjk" ]; then
+    printf '#!/bin/sh\necho XeTeX fake\n' > "$bin/xelatex"
+    chmod +x "$bin/xelatex"
+fi
+"#;
+        std::fs::write(bin.join("tlmgr"), tlmgr).unwrap();
+        assert!(tex.update().unwrap());
+        assert!(bin.join("xelatex").is_file());
+        assert!(!tex.update_due(now_utc()));
     }
 
     #[cfg(unix)]

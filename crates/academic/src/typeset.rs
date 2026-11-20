@@ -113,7 +113,14 @@ pub fn typeset(req: &Request, env: &TexEnvironment, tex: Option<&ManagedTex>, pa
         if let Err(e) = project.save().and_then(|()| project.write_metadata()) {
             return report.fail("metadata", e, started);
         }
+        // The file may have brought the first Chinese or Japanese text (a title, say).
+        match project.adapt_engine_to_text() {
+            Ok(Some(note)) => report.import.push(note),
+            Ok(None) => {}
+            Err(e) => return report.fail("metadata", e, started),
+        }
     }
+    report.engine = project.file.engine.title().to_owned();
     if let Some(secs) = req.timeout_secs {
         project.file.settings.timeout_secs = secs;
         if let Err(e) = project.save() {
@@ -175,6 +182,20 @@ mod tests {
         assert!(r.error.unwrap().contains("Pandoc"));
         let json = serde_json::to_value(typeset(&request(root.path(), "b.docx"), &TexEnvironment::detect_in(None, false), None, None)).unwrap();
         assert_eq!(json["failed_step"], "project", "the project folder is no longer empty");
+    }
+
+    #[test]
+    fn chinese_from_the_metadata_file_switches_a_pdflatex_template_to_xelatex() {
+        let root = tempfile::tempdir().unwrap();
+        std::fs::write(root.path().join("m.tex"), "\\section{A}\nText.\n").unwrap();
+        std::fs::write(root.path().join("meta.toml"), "title = \"研究\"\n").unwrap();
+        let mut req = request(root.path(), "m.tex");
+        // A journal's pdfLaTeX template, as the built-in one would be on pdfLaTeX.
+        req.template.manifest.engine = "pdflatex".into();
+        req.metadata = Some(root.path().join("meta.toml"));
+        let r = typeset(&req, &TexEnvironment::detect_in(None, false), None, None);
+        assert_eq!(r.engine, "XeLaTeX", "{r:?}");
+        assert!(r.import.iter().any(|n| n.contains("XeLaTeX")), "{:?}", r.import);
     }
 
     #[test]
