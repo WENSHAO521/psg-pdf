@@ -11,7 +11,7 @@ apps/psg-academic-pdf      egui/eframe window + headless commands (cli.rs)
   ├── app.rs               project, template, metadata, settings, compile, preview, logs, export
   ├── preview.rs           renders the PDF with pdfcraft-render on a worker thread
   ├── tex_setup.rs         downloads and installs/updates PSG's own TeX in the background
-  └── cli.rs               check-tex · install-tex · update-tex · templates · new · compile
+  └── cli.rs               check-tex · install-tex · update-tex · repair-biber · templates · new · compile
 crates/academic            (psg-academic, no UI, layer 4 in xtask/src/layers.rs)
   ├── managed.rs           PSG's own TeX (TinyTeX): layout, unpacking, tlmgr updates,
   │                        installing the packages a document is missing (academic-tex.md)

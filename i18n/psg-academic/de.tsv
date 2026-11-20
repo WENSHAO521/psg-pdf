@@ -403,3 +403,12 @@
 	Browse…	Durchsuchen…
 	Use this folder	Diesen Ordner verwenden
 	Enter an existing folder path.	Geben Sie den Pfad eines vorhandenen Ordners ein.
+	Copy TeX diagnostics	TeX-Diagnose kopieren
+	TeX diagnostics copied.	TeX-Diagnose kopiert.
+	Cut	Ausschneiden
+	Copy	Kopieren
+	Paste	Einfügen
+	Repair Biber	Biber reparieren
+	Repairing Biber…	Biber wird repariert…
+	Biber was reinstalled.	Biber wurde neu installiert.
+	Could not repair Biber: {error}	Biber konnte nicht repariert werden: {error}

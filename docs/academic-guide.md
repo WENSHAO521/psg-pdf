@@ -23,7 +23,9 @@ first install needs an internet connection. `pandoc` is optional (the experiment
 import) and is not installed for you. See [academic-tex.md](academic-tex.md) for where the files
 go and how to remove them.
 
-From the command line: `psg-academic-pdf install-tex`, `update-tex` and `check-tex`.
+Use `psg-academic-pdf install-tex` to install TeX, `update-tex` to update it, and
+`check-tex` to check the tools. Run `psg-academic-pdf repair-biber` to reinstall Biber and
+biblatex in PSG's managed TeX.
 
 ## The workspace
 

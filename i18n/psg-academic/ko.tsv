@@ -395,3 +395,12 @@
 	Browse…	찾아보기…
 	Use this folder	이 폴더 사용
 	Enter an existing folder path.	기존 폴더의 경로를 입력하세요.
+	Copy TeX diagnostics	TeX 진단 정보 복사
+	TeX diagnostics copied.	TeX 진단 정보를 복사했습니다.
+	Cut	잘라내기
+	Copy	복사
+	Paste	붙여넣기
+	Repair Biber	Biber 복구
+	Repairing Biber…	Biber 복구 중…
+	Biber was reinstalled.	Biber를 다시 설치했습니다.
+	Could not repair Biber: {error}	Biber를 복구할 수 없습니다: {error}

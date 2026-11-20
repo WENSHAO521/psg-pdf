@@ -404,3 +404,12 @@
 	Browse…	Examinar…
 	Use this folder	Usar esta carpeta
 	Enter an existing folder path.	Introduzca la ruta de una carpeta existente.
+	Copy TeX diagnostics	Copiar diagnóstico de TeX
+	TeX diagnostics copied.	Se ha copiado el diagnóstico de TeX.
+	Cut	Cortar
+	Copy	Copiar
+	Paste	Pegar
+	Repair Biber	Reparar Biber
+	Repairing Biber…	Reparando Biber…
+	Biber was reinstalled.	Se ha reinstalado Biber.
+	Could not repair Biber: {error}	No se pudo reparar Biber: {error}

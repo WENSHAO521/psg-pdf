@@ -7,6 +7,7 @@ use psg_academic::Author;
 use psg_desktop_ui::{Tone, layout, widgets};
 
 use super::{AcademicApp, ManuscriptTab, SourceView};
+use crate::clipboard::text_edit;
 use crate::i18n::{t, tf, tn};
 use crate::preview::{MAX_PREVIEW_PAGES, PageSlot};
 
@@ -84,16 +85,16 @@ impl AcademicApp {
             widgets::form_grid(ui, "article-grid", |ui| {
                 for (label, value) in [(t("Type"), &mut m.article_type), (t("Title"), &mut m.title), (t("Short title"), &mut m.short_title)] {
                     widgets::form_label(ui, label);
-                    ui.add(widgets::text_field(value, ""));
+                    text_edit(ui, widgets::text_field(value, ""));
                     ui.end_row();
                 }
                 widgets::form_label(ui, t("Keywords"));
-                ui.add(widgets::text_field(&mut self.buffers.keywords, t("Separate keywords with ; or ,")));
+                text_edit(ui, widgets::text_field(&mut self.buffers.keywords, t("Separate keywords with ; or ,")));
                 ui.end_row();
             });
             ui.add_space(psg_brand::space::S);
             widgets::form_label(ui, t("Abstract"));
-            ui.add(egui::TextEdit::multiline(&mut m.abstract_text).desired_rows(10).desired_width(f32::INFINITY));
+            text_edit(ui, egui::TextEdit::multiline(&mut m.abstract_text).desired_rows(10).desired_width(f32::INFINITY));
             let words = m.abstract_text.split_whitespace().count();
             widgets::muted(ui, tn(words, "{n} word", "{n} words", &[]));
         });
@@ -121,16 +122,16 @@ impl AcademicApp {
                     });
                     widgets::form_grid(ui, "author", |ui| {
                         widgets::form_label(ui, t("Name"));
-                        ui.add(widgets::text_field(&mut author.name, ""));
+                        text_edit(ui, widgets::text_field(&mut author.name, ""));
                         ui.end_row();
                         widgets::form_label(ui, t("Affiliations"));
-                        ui.add(widgets::text_field(aff, t("Affiliation numbers, e.g. 1, 2")));
+                        text_edit(ui, widgets::text_field(aff, t("Affiliation numbers, e.g. 1, 2")));
                         ui.end_row();
                         widgets::form_label(ui, t("ORCID iD"));
-                        ui.add(widgets::text_field(&mut author.orcid, "0000-0000-0000-0000"));
+                        text_edit(ui, widgets::text_field(&mut author.orcid, "0000-0000-0000-0000"));
                         ui.end_row();
                         widgets::form_label(ui, t("Email"));
-                        ui.add(widgets::text_field(&mut author.email, ""));
+                        text_edit(ui, widgets::text_field(&mut author.email, ""));
                         ui.end_row();
                         ui.label("");
                         ui.checkbox(&mut author.corresponding, t("Corresponding author"));
@@ -157,7 +158,8 @@ impl AcademicApp {
             for (i, a) in m.affiliations.iter_mut().enumerate() {
                 ui.horizontal(|ui| {
                     ui.label(egui::RichText::new(format!("{}", i + 1)).strong());
-                    ui.add(egui::TextEdit::singleline(a).desired_width(ui.available_width() - 40.0));
+                    let width = ui.available_width() - 40.0;
+                    text_edit(ui, egui::TextEdit::singleline(a).desired_width(width));
                     if ui.small_button("×").on_hover_text(t("Remove")).clicked() {
                         remove = Some(i);
                     }
@@ -191,7 +193,7 @@ impl AcademicApp {
                     (t("DOI"), &mut m.doi),
                 ] {
                     widgets::form_label(ui, label);
-                    ui.add(widgets::text_field(value, ""));
+                    text_edit(ui, widgets::text_field(value, ""));
                     ui.end_row();
                 }
             });
@@ -208,16 +210,16 @@ impl AcademicApp {
                     (t("Published"), &mut m.published),
                 ] {
                     widgets::form_label(ui, label);
-                    ui.add(widgets::text_field(value, "YYYY-MM-DD"));
+                    text_edit(ui, widgets::text_field(value, "YYYY-MM-DD"));
                     ui.end_row();
                 }
                 widgets::form_label(ui, t("Copyright"));
-                ui.add(widgets::text_field(&mut m.copyright, ""));
+                text_edit(ui, widgets::text_field(&mut m.copyright, ""));
                 ui.end_row();
             });
             ui.add_space(psg_brand::space::S);
             widgets::form_label(ui, t("Licence statement"));
-            ui.add(egui::TextEdit::multiline(&mut m.licence).desired_rows(3).desired_width(f32::INFINITY));
+            text_edit(ui, egui::TextEdit::multiline(&mut m.licence).desired_rows(3).desired_width(f32::INFINITY));
         });
     }
 
@@ -325,7 +327,7 @@ impl AcademicApp {
             ui.add_space(psg_brand::space::S);
         }
         ui.horizontal(|ui| {
-            ui.add(widgets::text_field(&mut self.bib_filter, t("Filter by key, author or title")).desired_width(320.0));
+            text_edit(ui, widgets::text_field(&mut self.bib_filter, t("Filter by key, author or title")).desired_width(320.0));
             if widgets::secondary(ui, t("Check again")).clicked() {
                 self.refresh_checks();
             }
