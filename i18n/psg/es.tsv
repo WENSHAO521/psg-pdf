@@ -259,3 +259,8 @@
 	Advance automatically	Avanzar automáticamente
 	The selected pages have different presentation settings. Applying sets the same values on all of them.	Las páginas seleccionadas tienen distintos ajustes de presentación. Al aplicar, todas tendrán los mismos valores.
 	The document changed while the dialog was open, so nothing was changed.	El documento cambió mientras el diálogo estaba abierto. No se aplicaron cambios.
+	Esc leaves full screen	Esc sale de la pantalla completa
+	Full screen fills the screen with one page at a time	La pantalla completa muestra una página cada vez, llenando la pantalla
+	Turn off so that only Ctrl+L (⌘L on macOS) leaves full screen, as for a kiosk display.	Desactívelo para que solo Ctrl+L (⌘L en macOS) salga de la pantalla completa, como en una pantalla de quiosco.
+	Turn off to keep the page display, such as continuous scrolling, in full screen.	Desactívelo para mantener la visualización de páginas, como el desplazamiento continuo, en pantalla completa.
+	locked field	campo bloqueado
