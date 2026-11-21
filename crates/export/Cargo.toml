@@ -14,3 +14,4 @@ workspace = true
 craft-docx.workspace = true
 craft-wordmodel.workspace = true
 flate2.workspace = true
+image = { version = "0.25", default-features = false, features = ["jpeg", "png"] }

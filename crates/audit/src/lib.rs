@@ -4,10 +4,10 @@
 //! that is still extractable underneath — and redaction annotations that were marked but
 //! never applied. A properly applied redaction removes the text, so it never flags.
 //!
-//! A rectangle counts as a cover only when it was painted strictly *after* the text it
-//! overlaps, and only when it is dark enough against the text's color to make the text
-//! unreadable (WCAG contrast below 3.0). Page backgrounds, table shading and highlight
-//! marks are therefore not flagged.
+//! A rectangle counts as a cover when it was painted strictly *after* the text it overlaps
+//! and has low contrast with that text (WCAG contrast below 3.0), or is nearly white and
+//! opaque. White covers have their own finding kind. Backgrounds before the text and
+//! ordinary light table shading are ignored.
 //!
 //! Detection limits (documented, not hidden): `re` rectangles and single closed `m`/`l`
 //! subpaths whose four corners form an axis-aligned rectangle in user space (#1510) are
@@ -37,6 +37,8 @@ mod tests;
 pub enum FindingKind {
     /// An opaque filled rectangle covers text that is still extractable.
     CoveredText,
+    /// An opaque white or nearly white rectangle covers extractable text.
+    HiddenUnderWhite,
     /// A `/Redact` annotation was placed but never applied: the text is untouched.
     UnappliedMark,
 }
@@ -50,6 +52,7 @@ impl FindingKind {
     pub fn id(self) -> &'static str {
         match self {
             FindingKind::CoveredText => "covered-text",
+            FindingKind::HiddenUnderWhite => "hidden-under-white",
             FindingKind::UnappliedMark => "unapplied-mark",
         }
     }
@@ -99,6 +102,8 @@ const COVER_FRACTION: f64 = 0.4;
 const WORD_FRACTION: f64 = 0.5;
 /// WCAG contrast ratio below which the text is unreadable against the cover.
 const COVER_CONTRAST: f64 = 3.0;
+/// Relative luminance above ordinary light gray shading, reserved for white covers.
+const WHITE_COVER_LUMINANCE: f64 = 0.9;
 /// Bytes of a hidden line's text read (copied or trimmed) that cost one comparison: a byte scan
 /// is far cheaper than a box comparison, but a long padded line under many covers adds up.
 const TEXT_BYTES_PER_COMPARISON: usize = 16;
@@ -158,6 +163,7 @@ impl Budget {
         lines: &[TextLine],
         copying: bool,
         cover: &[f64; 4],
+        before: Option<usize>,
         hides: impl Fn(&TextLine) -> bool,
     ) -> Result<Option<String>, AuditError> {
         self.spend(self.page_cost)?;
@@ -181,7 +187,7 @@ impl Budget {
             if !covered.is_empty() {
                 covered.push(' ');
             }
-            covered_words(cover, line, &mut covered);
+            covered_words(cover, line, before, &mut covered);
         }
         Ok((!covered.trim().is_empty()).then_some(covered))
     }
@@ -219,24 +225,26 @@ fn audit(doc: &Document, limits: Limits) -> Result<Vec<AuditFinding>, AuditError
         budget.start_page(&lines);
         // 1. Opaque filled rectangles over extractable text.
         for r in cover::filled_rects(doc, &page.dict)? {
-            if let Some(covered) = budget.hidden_text(&lines, copying, &r.rect, |line| is_cover(&r, line))? {
+            let kind = cover_kind(r.rgb);
+            // Text drawn on a white cover stays visible: only the runs painted before it count.
+            let before = (kind == FindingKind::HiddenUnderWhite).then_some(r.pos.1);
+            if let Some(covered) = budget.hidden_text(&lines, copying, &r.rect, before, |line| match before {
+                Some(at) => r.pos > line.first_paint_pos() && whites_out(&r.rect, line, at),
+                None => r.pos > line.first_paint_pos() && covers(&r.rect, line) && cover_contrast(&kind, line, r.rgb),
+            })? {
                 let covered_text = budget.report_text(covered, copying)?;
-                out.push(AuditFinding { page: n, kind: FindingKind::CoveredText, rect: r.rect, covered_text });
+                out.push(AuditFinding { page: n, kind, rect: r.rect, covered_text });
             }
         }
         // 2. Annotation covers over extractable text.
         for annot in annots(doc, &page.dict)? {
-            let cover = match &annot {
-                AnnotationCover::Redact(rect) | AnnotationCover::Square { rect, .. } => *rect,
+            let (rect, kind, rgb) = match annot {
+                AnnotationCover::Redact(rect) => (rect, FindingKind::UnappliedMark, None),
+                AnnotationCover::Square { rect, rgb } => (rect, cover_kind(rgb), Some(rgb)),
             };
-            if let Some(covered) = budget.hidden_text(&lines, copying, &cover, |line| match &annot {
-                AnnotationCover::Redact(rect) => covers(rect, line),
-                AnnotationCover::Square { rect, rgb } => covers(rect, line) && contrast(line.color, *rgb) < COVER_CONTRAST,
-            })? {
-                let (kind, rect) = match annot {
-                    AnnotationCover::Redact(rect) => (FindingKind::UnappliedMark, rect),
-                    AnnotationCover::Square { rect, .. } => (FindingKind::CoveredText, rect),
-                };
+            if let Some(covered) = budget
+                .hidden_text(&lines, copying, &rect, None, |line| covers(&rect, line) && rgb.is_none_or(|rgb| cover_contrast(&kind, line, rgb)))?
+            {
                 let covered_text = budget.report_text(covered, copying)?;
                 out.push(AuditFinding { page: n, kind, rect, covered_text });
             }
@@ -245,14 +253,12 @@ fn audit(doc: &Document, limits: Limits) -> Result<Vec<AuditFinding>, AuditError
     Ok(out)
 }
 
-/// A filled rectangle is a faux-redaction cover for a text line iff it was painted strictly
-/// after the start of the line, overlaps it substantially, and is dark enough against the line's
-/// color to make the text unreadable. Light covers (table shading, highlights) over dark text fail
-/// the contrast check and are not flagged. A line can join runs painted before and after the
-/// cover; the later ones are drawn on it in the same low-contrast color, so they are unreadable
-/// too.
-fn is_cover(rect: &cover::FilledRect, line: &TextLine) -> bool {
-    rect.pos > line.first_paint_pos() && covers(&rect.rect, line) && contrast(line.color, rect.rgb) < COVER_CONTRAST
+fn cover_kind(rgb: [f64; 3]) -> FindingKind {
+    if luminance(rgb) >= WHITE_COVER_LUMINANCE { FindingKind::HiddenUnderWhite } else { FindingKind::CoveredText }
+}
+
+fn cover_contrast(kind: &FindingKind, line: &TextLine, rgb: [f64; 3]) -> bool {
+    *kind == FindingKind::HiddenUnderWhite || contrast(line.color, rgb) < COVER_CONTRAST
 }
 
 /// Does `cover` hide a substantial part of what `line` draws? Three ways, any is enough:
@@ -270,18 +276,42 @@ fn is_cover(rect: &cover::FilledRect, line: &TextLine) -> bool {
 ///
 /// A line without word boxes is measured on its box alone.
 fn covers(cover: &[f64; 4], line: &TextLine) -> bool {
+    covers_ink(cover, &line.rect, &line.ink)
+}
+
+/// Does a white cover painted at operator `at` hide part of `line`? Only the runs painted before
+/// it lie under it: a run painted later is drawn on the white and stays visible, so a label, a
+/// white box behind the value beside it, then the value, hides nothing. Those earlier runs are
+/// measured as [`covers`] measures a line, inside the box they span. A line whose runs can't say
+/// (its text was reordered for reading) is measured whole, as a line painted from its start.
+fn whites_out(cover: &[f64; 4], line: &TextLine, at: usize) -> bool {
+    if line.runs().next().is_none() {
+        return covers(cover, line);
+    }
+    if line.painted_runs().all(|(.., op)| op < at) {
+        return covers(cover, line);
+    }
+    let ink: Vec<[f64; 4]> = line.painted_runs().filter(|(.., op)| *op < at).flat_map(|(_, ink, _)| ink.iter().copied()).collect();
+    let Some(span) = ink.iter().copied().reduce(|a, b| [a[0].min(b[0]), a[1].min(b[1]), a[2].max(b[2]), a[3].max(b[3])]) else {
+        return false;
+    };
+    covers_ink(cover, &[span[0], line.rect[1], span[2], line.rect[3]], &ink)
+}
+
+/// [`covers`] for the words `ink` of a line inside `rect`.
+fn covers_ink(cover: &[f64; 4], rect: &[f64; 4], ink: &[[f64; 4]]) -> bool {
     let hidden = |b: &[f64; 4]| area(&[cover[0].max(b[0]), cover[1].max(b[1]), cover[2].min(b[2]), cover[3].min(b[3])]);
     let fraction = |boxes: &[[f64; 4]]| {
         let total: f64 = boxes.iter().map(area).sum();
         if total > 0.0 { boxes.iter().map(hidden).sum::<f64>() / total } else { 0.0 }
     };
-    if line.ink.iter().any(|w| area(w) > 0.0 && hidden(w) / area(w) >= WORD_FRACTION) {
+    if ink.iter().any(|w| area(w) > 0.0 && hidden(w) / area(w) >= WORD_FRACTION) {
         return true;
     }
-    let inked = fraction(&line.ink) >= COVER_FRACTION;
-    let boxed = fraction(std::slice::from_ref(&line.rect)) >= COVER_FRACTION;
-    let word_intersects = || line.ink.iter().any(|w| hidden(w) > 0.0);
-    inked || (boxed && (line.ink.is_empty() || word_intersects()))
+    let inked = fraction(ink) >= COVER_FRACTION;
+    let boxed = fraction(std::slice::from_ref(rect)) >= COVER_FRACTION;
+    let word_intersects = || ink.iter().any(|w| hidden(w) > 0.0);
+    inked || (boxed && (ink.is_empty() || word_intersects()))
 }
 
 /// Appends the text of `line` that `cover` lies on to `out`: the runs whose words it overlaps
@@ -290,12 +320,15 @@ fn covers(cover: &[f64; 4], line: &TextLine) -> bool {
 /// across runs stays one word; runs with others left out between them are spaced. The whole
 /// line when its runs can't say: a single run, a line whose text was reordered for reading, or
 /// a cover that overlaps the line's box but none of its words.
-fn covered_words(cover: &[f64; 4], line: &TextLine, out: &mut String) {
+///
+/// With `before` (a white cover's operator), runs painted after it are left out: they are drawn on
+/// the cover and stay visible.
+fn covered_words(cover: &[f64; 4], line: &TextLine, before: Option<usize>, out: &mut String) {
     let overlaps = |w: &[f64; 4]| area(&[cover[0].max(w[0]), cover[1].max(w[1]), cover[2].min(w[2]), cover[3].min(w[3])]) > 0.0;
     let mut words = String::new();
     let mut last = None;
-    for (i, (text, ink, spaced)) in line.runs().enumerate() {
-        if text.trim().is_empty() || !ink.iter().any(overlaps) {
+    for (i, ((text, ink, spaced), (.., op))) in line.runs().zip(line.painted_runs()).enumerate() {
+        if text.trim().is_empty() || !ink.iter().any(overlaps) || before.is_some_and(|at| op >= at) {
             continue;
         }
         let apart = last.is_some_and(|l: usize| l.saturating_add(1) != i || spaced);
