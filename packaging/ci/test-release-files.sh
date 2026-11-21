@@ -10,7 +10,9 @@ unset UPDATE_SIGNING_KEY
 make_inventory() {
   local tag="$1" root="$2" product platform suffix folder hashes
   local -a suffixes
-  for product in psg-pdf; do
+  # Every released product (packaging/products.toml).
+  local -a products=(psg-pdf)
+  for product in "${products[@]}"; do
     for platform in linux-x86_64 windows-x64 macos-universal; do
       case "$platform" in
         linux-x86_64) suffixes=(.deb .rpm .AppImage .tar.gz) ;;
