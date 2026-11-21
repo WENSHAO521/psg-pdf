@@ -1,10 +1,10 @@
 # PSG Academic PDF template manifest. See templates/academic/README.md for the format.
 id = "psg-article"
 name = "PSG Research Article"
-description = "Single-column research article for Panorama Scholarly Group journals: pdfLaTeX, BibLaTeX with Biber, A4."
+description = "Single-column research article for Panorama Scholarly Group journals: XeLaTeX with Chinese and Japanese, BibLaTeX with Biber, A4."
 version = "1.0.0"
 licence = "MIT OR Apache-2.0"
-engine = "pdflatex"
+engine = "xelatex"
 bibliography = "biber"
 main = "main.tex"
 # The file an imported manuscript body replaces.

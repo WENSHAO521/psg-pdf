@@ -44,18 +44,15 @@
 	Check Again	重新檢查
 	Check again	重新檢查
 	Check and export the finished PDF	檢查並匯出完成的 PDF
-	Check compatibility	檢查相容性
 	Check for updates…	檢查更新…
 	Check the finished article and save the PDF where it is needed.	檢查完成的文章，並將 PDF 儲存到需要的位置。
 	Checking TeX…	正在檢查 TeX…
 	Checking for updates…	正在檢查更新…
 	Checking the TeX installation…	正在檢查 TeX 安裝…
 	Checking…	正在檢查…
-	Choose an empty folder for the project	為專案選擇一個空資料夾
 	Close	關閉
 	Close {app}	關閉 {app}
 	Close {app} to finish	關閉 {app} 以完成
-	Coming later	後續版本提供
 	Compilation started.	已開始編譯。
 	Compile output	編譯輸出
 	Copyright	版權
@@ -121,7 +118,6 @@
 	Import a manuscript or create a project from a template to start.	匯入稿件或從範本新增專案即可開始。
 	Import failed: {error}	匯入失敗：{error}
 	Import manuscript…	匯入稿件…
-	Import template (.zip)…	匯入範本（.zip）…
 	Import the manuscript body (LaTeX)	匯入稿件正文（LaTeX）
 	Install Pandoc to import .docx (experimental)	安裝 Pandoc 後可匯入 .docx（實驗功能）
 	Install TeX	安裝 TeX
@@ -189,7 +185,6 @@
 	Open or create a project, and wait for the TeX check, before compiling.	編譯前請先開啟或新增專案，並等待 TeX 檢查完成。
 	Open or create a project, then typeset it to export a PDF.	開啟或新增專案並排版後即可匯出 PDF。
 	Open project…	開啟專案…
-	Open the compiled PDF in PSG PDF for review, annotation and further editing	在 PSG PDF 中開啟編譯好的 PDF，進行審閱、註解與進一步編輯
 	Opened {path} in PSG PDF.	已在 PSG PDF 中開啟 {path}。
 	Opened {path} in the default PDF viewer.	已在預設 PDF 檢視器中開啟 {path}。
 	Opened {path}.	已開啟 {path}。
@@ -201,9 +196,7 @@
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	未安裝 PSG PDF，因此已在預設檢視器中開啟 PDF。PSG PDF 需要另外下載。
 	Page {n}: {error}	第 {n} 頁：{error}
 	Pages	頁碼
-	Planned for a later version; not available yet.	計畫在後續版本提供，目前尚不可用。
 	Portable mode: settings and projects are kept in {path}.	可攜模式：設定與專案保存在 {path}。
-	Press Auto Typeset first.	請先按「自動排版」。
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	按「自動排版」排版稿件，PDF 會顯示在這裡。
 	Preview	預覽
 	Problems	問題
@@ -275,7 +268,6 @@
 	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	.bib 檔案在此處所列條目附近有語法錯誤：缺少逗號、括號或引號。
 	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	pdfLaTeX 期刊範本無法排版中文、日文或韓文（需要 XeLaTeX 或 LuaLaTeX 加 CJK 字型，而這些範本不使用它們）。請用拉丁字母（羅馬化，原文保留在來源資料中）提供標題、姓名與參考文獻，或在 PSG Academic PDF 之外使用支援 CJK 的範本排版。
 	The project folder: compilation happens here and only here	專案資料夾：編譯只在這裡進行
-	The project has been typeset	專案已排版
 	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	範本沒有西里爾字母字型（T2A 編碼）。請按多數英文期刊的要求，將西里爾字母的姓名與標題轉寫為拉丁字母。
 	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	範本沒有希臘文正文字型。公式中請用指令書寫希臘字母（$\alpha$、$\Omega$）；正文中的希臘文單字必須轉寫。
 	The templates have no font for this script. Transliterate the text.	範本沒有這種文字的字型。請將文字轉寫為拉丁字母。
@@ -378,3 +370,51 @@
 	{path} already exists there. Nothing was moved; choose an empty folder.	該處已有 {path}。未搬移任何專案或設定，請選擇空的資料夾。
 	That folder holds too many files to be a data folder. Nothing was moved.	該資料夾檔案過多，不像是資料夾。未搬移任何專案或設定。
 	Could not move the data folder ({path}: {error}). Nothing was changed.	無法搬移資料夾（{path}：{error}），未做任何變更。
+	Back	返回
+	Forward	前進
+	Previous page	上一頁
+	Page	頁碼
+	Next page	下一頁
+	Typeset the current manuscript before exporting.	請先排版目前的稿件，再匯出。
+	Resolve the errors before exporting.	請先修正錯誤，再匯出。
+	The current manuscript has been typeset	目前的稿件已完成排版
+	Workspace folder	工作區資料夾
+	New projects are saved here.	新專案會儲存在這裡。
+	The chosen workspace is unavailable: {path}	所選工作區無法使用：{path}
+	Choose workspace…	選擇工作區…
+	Use the default workspace	使用預設工作區
+	Workspace folder set to {path}.	工作區資料夾已設為 {path}。
+	Could not change the workspace: {error}	無法變更工作區：{error}
+	Workspace: {path}	工作區：{path}
+	Choose a folder for the new project	選擇新專案的資料夾
+	Folder path	資料夾路徑
+	Browse…	瀏覽…
+	Use this folder	使用此資料夾
+	Enter an existing folder path.	請輸入現有資料夾的路徑。
+	Copy TeX diagnostics	複製 TeX 診斷
+	TeX diagnostics copied.	已複製 TeX 診斷。
+	Cut	剪下
+	Copy	複製
+	Paste	貼上
+	Repair Biber	修復 Biber
+	Repairing Biber…	正在修復 Biber…
+	Biber was reinstalled.	已重新安裝 Biber。
+	Could not repair Biber: {error}	無法修復 Biber：{error}
+	Could not download the Chinese and Japanese fonts: {error}	無法下載中日文字型：{error}
+	Downloading the Chinese and Japanese fonts: {done} of {total} MB	正在下載中日文字型：{done} / {total} MB
+	Downloading the Chinese and Japanese fonts…	正在下載中日文字型…
+	The Chinese and Japanese fonts are installed.	中日文字型已安裝。
+	A journal's LaTeX template as the journal hands it out	期刊提供的 LaTeX 範本原檔
+	Add a template (.zip)…	加入範本（.zip）…
+	Add a template folder…	加入範本資料夾…
+	Added the template {name} from {path}.	已從 {path} 加入範本 {name}。
+	Added the template {name}. Check what was found before using it:	已加入範本 {name}。使用前請確認找到的內容：
+	Could not add the template: {error}	無法加入範本：{error}
+	New file	新增檔案
+	Made {file}.	已新增 {file}。
+	Show in PDF	在 PDF 中顯示
+	Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way.	顯示游標所在行在 PDF 中的位置。按兩下 PDF 可反向跳轉。
+	Double-click to show this place in the source	按兩下以在原始碼中顯示此處
+	Typeset the manuscript again to jump between the PDF and the source.	請重新排版稿件，以便在 PDF 與原始碼之間跳轉。
+	That part of the PDF comes from {file}, line {n}.	PDF 的這部分來自 {file} 第 {n} 行。
+	Line {n} of {file} is not in the PDF yet; typeset to update it.	{file} 第 {n} 行尚未出現在 PDF 中；請排版以更新。

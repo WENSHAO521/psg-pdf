@@ -45,18 +45,15 @@
 	Check Again	Vérifier à nouveau
 	Check again	Vérifier à nouveau
 	Check and export the finished PDF	Vérifier et exporter le PDF final
-	Check compatibility	Vérifier la compatibilité
 	Check for updates…	Rechercher des mises à jour…
 	Check the finished article and save the PDF where it is needed.	Vérifiez l'article final et enregistrez le PDF là où vous en avez besoin.
 	Checking TeX…	Vérification de TeX…
 	Checking for updates…	Recherche de mises à jour…
 	Checking the TeX installation…	Vérification de l'installation TeX…
 	Checking…	Vérification…
-	Choose an empty folder for the project	Choisissez un dossier vide pour le projet
 	Close	Fermer
 	Close {app}	Fermer {app}
 	Close {app} to finish	Fermez {app} pour terminer
-	Coming later	Bientôt disponible
 	Compilation started.	Compilation lancée.
 	Compile output	Sortie de compilation
 	Copyright	Droits d'auteur
@@ -122,7 +119,6 @@
 	Import a manuscript or create a project from a template to start.	Pour commencer, importez un manuscrit ou créez un projet à partir d'un modèle.
 	Import failed: {error}	Échec de l'import : {error}
 	Import manuscript…	Importer un manuscrit…
-	Import template (.zip)…	Importer un modèle (.zip)…
 	Import the manuscript body (LaTeX)	Importer le corps du manuscrit (LaTeX)
 	Install Pandoc to import .docx (experimental)	Installez Pandoc pour importer des .docx (expérimental)
 	Install TeX	Installer TeX
@@ -190,7 +186,6 @@
 	Open or create a project, and wait for the TeX check, before compiling.	Avant de compiler, ouvrez ou créez un projet et attendez la vérification de TeX.
 	Open or create a project, then typeset it to export a PDF.	Ouvrez ou créez un projet, puis composez-le pour exporter un PDF.
 	Open project…	Ouvrir un projet…
-	Open the compiled PDF in PSG PDF for review, annotation and further editing	Ouvrir le PDF compilé dans PSG PDF pour le relire, l'annoter et le retoucher
 	Opened {path} in PSG PDF.	{path} ouvert dans PSG PDF.
 	Opened {path} in the default PDF viewer.	{path} ouvert dans le lecteur PDF par défaut.
 	Opened {path}.	{path} ouvert.
@@ -202,9 +197,7 @@
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF n'est pas installé : le PDF s'est ouvert dans le lecteur par défaut. PSG PDF se télécharge séparément.
 	Page {n}: {error}	Page {n} : {error}
 	Pages	Pages
-	Planned for a later version; not available yet.	Prévu pour une version ultérieure ; pas encore disponible.
 	Portable mode: settings and projects are kept in {path}.	Mode portable : les réglages et les projets sont conservés dans {path}.
-	Press Auto Typeset first.	Appuyez d'abord sur Composer automatiquement.
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	Appuyez sur Composer automatiquement pour composer le manuscrit ; le PDF apparaît ici.
 	Preview	Aperçu
 	Problems	Problèmes
@@ -276,7 +269,6 @@
 	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	Le fichier .bib contient une erreur de syntaxe près de l'entrée indiquée ici : une virgule, une accolade ou un guillemet manquant.
 	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	Les modèles de revue pdfLaTeX ne peuvent pas composer le chinois, le japonais ni le coréen (il faut XeLaTeX ou LuaLaTeX avec une police CJK, que ces modèles n'utilisent pas). Donnez titres, noms et références en écriture latine (romanisés, l'original restant dans les données sources), ou préparez l'article hors de PSG Academic PDF avec un modèle compatible CJK.
 	The project folder: compilation happens here and only here	Le dossier du projet : la compilation a lieu ici et seulement ici
-	The project has been typeset	Le projet a été composé
 	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	Les modèles n'ont pas de police cyrillique (codage T2A). Translittérez les noms et titres cyrilliques, comme l'exigent la plupart des revues anglophones.
 	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	Les modèles n'ont pas de police de texte grecque. Dans les formules, écrivez les lettres grecques sous forme de commandes ($\alpha$, $\Omega$) ; les mots grecs du texte courant doivent être translittérés.
 	The templates have no font for this script. Transliterate the text.	Les modèles n'ont pas de police pour cette écriture. Translittérez le texte.
@@ -387,3 +379,51 @@
 	{path} already exists there. Nothing was moved; choose an empty folder.	{path} existe déjà à cet endroit. Aucun projet ni réglage n’a été déplacé ; choisissez un dossier vide.
 	That folder holds too many files to be a data folder. Nothing was moved.	Ce dossier contient trop de fichiers pour être un dossier de données. Aucun projet ni réglage n’a été déplacé.
 	Could not move the data folder ({path}: {error}). Nothing was changed.	Impossible de déplacer le dossier de données ({path} : {error}). Rien n’a été modifié.
+	Back	Précédent
+	Forward	Suivant
+	Previous page	Page précédente
+	Page	Page
+	Next page	Page suivante
+	Typeset the current manuscript before exporting.	Composez le manuscrit actuel avant de l’exporter.
+	Resolve the errors before exporting.	Corrigez les erreurs avant l’exportation.
+	The current manuscript has been typeset	Le manuscrit actuel est composé
+	Workspace folder	Dossier de l’espace de travail
+	New projects are saved here.	Les nouveaux projets sont enregistrés ici.
+	The chosen workspace is unavailable: {path}	L’espace de travail choisi est indisponible : {path}
+	Choose workspace…	Choisir l’espace de travail…
+	Use the default workspace	Utiliser l’espace de travail par défaut
+	Workspace folder set to {path}.	Le dossier de l’espace de travail est désormais {path}.
+	Could not change the workspace: {error}	Impossible de changer l’espace de travail : {error}
+	Workspace: {path}	Espace de travail : {path}
+	Choose a folder for the new project	Choisir un dossier pour le nouveau projet
+	Folder path	Chemin du dossier
+	Browse…	Parcourir…
+	Use this folder	Utiliser ce dossier
+	Enter an existing folder path.	Saisissez le chemin d’un dossier existant.
+	Copy TeX diagnostics	Copier le diagnostic TeX
+	TeX diagnostics copied.	Diagnostic TeX copié.
+	Cut	Couper
+	Copy	Copier
+	Paste	Coller
+	Repair Biber	Réparer Biber
+	Repairing Biber…	Réparation de Biber…
+	Biber was reinstalled.	Biber a été réinstallé.
+	Could not repair Biber: {error}	Impossible de réparer Biber : {error}
+	Could not download the Chinese and Japanese fonts: {error}	Impossible de télécharger les polices chinoises et japonaises : {error}
+	Downloading the Chinese and Japanese fonts: {done} of {total} MB	Téléchargement des polices chinoises et japonaises : {done} sur {total} Mo
+	Downloading the Chinese and Japanese fonts…	Téléchargement des polices chinoises et japonaises…
+	The Chinese and Japanese fonts are installed.	Les polices chinoises et japonaises sont installées.
+	A journal's LaTeX template as the journal hands it out	Le modèle LaTeX d’une revue, tel qu’elle le fournit
+	Add a template (.zip)…	Ajouter un modèle (.zip)…
+	Add a template folder…	Ajouter un dossier de modèle…
+	Added the template {name} from {path}.	Modèle {name} ajouté depuis {path}.
+	Added the template {name}. Check what was found before using it:	Modèle {name} ajouté. Vérifiez ce qui a été trouvé avant de l’utiliser :
+	Could not add the template: {error}	Impossible d’ajouter le modèle : {error}
+	New file	Nouveau fichier
+	Made {file}.	{file} créé.
+	Show in PDF	Afficher dans le PDF
+	Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way.	Montre où se trouve dans le PDF la ligne du curseur. Double-cliquez dans le PDF pour aller dans l’autre sens.
+	Double-click to show this place in the source	Double-cliquez pour afficher cet endroit dans la source
+	Typeset the manuscript again to jump between the PDF and the source.	Recomposez le manuscrit pour passer du PDF à la source et inversement.
+	That part of the PDF comes from {file}, line {n}.	Cette partie du PDF vient de {file}, ligne {n}.
+	Line {n} of {file} is not in the PDF yet; typeset to update it.	La ligne {n} de {file} n’est pas encore dans le PDF ; recomposez pour le mettre à jour.

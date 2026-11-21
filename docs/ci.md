@@ -1,24 +1,24 @@
 # CI/CD: one workflow, `PSG PDF — Build & Release`
 
-Everything that checks, builds, tests and publishes PSG PDF and PSG Academic PDF runs from one
+Everything that checks, builds, tests and publishes PSG PDF runs from one
 file, [`.github/workflows/build.yaml`](../.github/workflows/build.yaml), so the Actions tab lists
 one workflow. Its shell lives in `packaging/ci/`, where it can be run and shellchecked locally.
-Releases themselves are described in [releasing.md](releasing.md), and the two products'
-identities and migration in [products.md](products.md).
+Releases themselves are described in [releasing.md](releasing.md), and the product identities and
+migration in [products.md](products.md). PSG Academic PDF is retired and no longer built.
 
 ## Stages
 
 | Stage | Jobs | What runs |
 |---|---|---|
 | Check | `Check · plan, …` | `packaging/ci/plan.sh` (what this run does), `cargo xtask products check`, `cargo xtask changelog verify` / `lint`, git dependencies only from storytold (`git-sources.sh`), Windows font-notice regressions |
-| | `Check` (shared gate) | `cargo xtask ci`: format, clippy `-D warnings`, every test (nextest), cargo-deny (advisories, licences, sources), assets, layers, products, parity, wasm. The Linux leg installs TeX Live, latexmk, Biber and Pandoc once, so the PSG Academic PDF TeX tests run there (`PSG_ACADEMIC_TEX_REQUIRED=1` fails instead of skipping) followed by `academic-smoke.sh` (template → PDF from the command line). Windows leg in full runs. |
-| Build + Verify | `Build · <platform>` ×3 | One job per platform builds **both** products, one after the other, on one Cargo target directory and one cache (`build-products.sh`), checks signatures (`verify-signatures.sh`), then on the same runner installs each product alone and side by side, uninstalls one at a time, and upgrades from the 0.18.x suite (`verify-installs.sh`: deb on Ubuntu, rpm in a Fedora container, MSI, DMG). |
+| | `Check` (shared gate) | `cargo xtask ci`: format, clippy `-D warnings`, every test (nextest), cargo-deny (advisories, licences, sources), assets, layers, products, parity, wasm. The retired PSG Academic PDF's TeX and Pandoc tests skip (no TeX Live is installed). Windows leg in full runs. |
+| Build + Verify | `Build · <platform>` ×3 | One job per platform builds every product (`build-products.sh`), checks signatures (`verify-signatures.sh`), then on the same runner installs, runs and uninstalls PSG PDF and upgrades from the 0.18.x suite (`verify-installs.sh`: deb on Ubuntu, rpm in a Fedora container, MSI, DMG). |
 | Quality | `Quality · …` | SonarCloud, Nix, house rules, packaging lint + Windows installation policy, macOS tests, fuzzing |
 | Release | `Release · <tag>` | Checksums, notes, GitHub release (`release-files.sh`, `release-notes.sh`) |
 
 The products stay separate throughout: each is built by its own packaging script with its own
 `cargo build -p …`, every file must be named after exactly one product, and each product's files go
-into their own artifact (`psg-pdf-<platform>`, `psg-academic-pdf-<platform>`) with their own
+into their own artifact (`psg-pdf-<platform>`) with their own
 SHA-256 list. An artifact is uploaded only after that platform's install tests passed, and the
 release takes only those.
 
@@ -45,7 +45,7 @@ Only pushes to `beta` or `main` of `WENSHAO521/psg-pdf` publish releases
 because the run counter restarted with the new workflow file.
 
 **Release conditions.** The plan and the Linux and Windows gates must pass. Every beta and stable
-release requires both products to build and pass install tests on Windows, macOS and Linux.
+release requires every product to build and pass install tests on Windows, macOS and Linux.
 The release job checks that all expected installer files are present in the platform artifacts.
 
 **Concurrency.** A newer push to a pull request or feature branch cancels the older run. Runs on
@@ -54,11 +54,9 @@ The release job checks that all expected installer files are present in the plat
 ## Caches
 
 - The gate uses the shared `rust-cache` of craft-common-actions (written by `main`).
-- Each platform build has one cache, `build-<platform>`, shared by both products. The plan job
+- Each platform build has one cache, `build-<platform>`, shared by every product. The plan job
   has `plan` (xtask only). Both are written only by `beta` and `main`, so pull requests read them
   without evicting them with their own.
-- TeX Live, latexmk, Biber and Pandoc are installed once per run, in the Linux gate (cached apt
-  packages), instead of in a job of their own.
 
 ## Pinned actions
 
@@ -98,7 +96,6 @@ are estimates until the first runs of `build.yaml` report real numbers.
 ```sh
 GITHUB_EVENT_NAME=pull_request GITHUB_REF=refs/pull/1/merge BASE_SHA=$(git merge-base HEAD origin/beta) packaging/ci/plan.sh
 packaging/ci/git-sources.sh
-PSG_ACADEMIC_TEX_REQUIRED=1 cargo test -p psg-academic && packaging/ci/academic-smoke.sh
-packaging/ci/build-products.sh linux-x86_64        # both products' Linux packages into dist/upload/
+packaging/ci/build-products.sh linux-x86_64        # the Linux packages into dist/upload/
 packaging/ci/verify-installs.sh linux-x86_64       # changes installed packages: a throwaway machine only
 ```

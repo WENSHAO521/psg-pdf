@@ -6,8 +6,19 @@
 
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
+use std::time::Duration;
 
 use crate::process;
+
+fn version_probe(name: &str) -> (&'static str, Duration) {
+    match name {
+        "latexmk" => ("-v", process::VERSION_TIMEOUT),
+        // Standalone Biber unpacks its Perl runtime into a cache on first start. Killing
+        // the version check mid-extraction can make the next check start from scratch.
+        "biber" => ("--version", Duration::from_secs(120)),
+        _ => ("--version", process::VERSION_TIMEOUT),
+    }
+}
 
 /// One external program and what was found for it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -31,10 +42,13 @@ impl Tool {
     fn locate(name: &'static str, search_path: Option<&OsStr>, with_version: bool) -> Self {
         let path = find_program(name, search_path);
         let (version, probe_error) = match path.as_deref().filter(|_| with_version) {
-            Some(program) => match process::probe_version(program, if name == "latexmk" { "-v" } else { "--version" }) {
-                Ok(version) => (version, None),
-                Err(error) => (None, Some(error)),
-            },
+            Some(program) => {
+                let (flag, timeout) = version_probe(name);
+                match process::probe_version(program, flag, timeout) {
+                    Ok(version) => (version, None),
+                    Err(error) => (None, Some(error)),
+                }
+            }
             None => (None, None),
         };
         Self { name, path, version, probe_error }
@@ -45,12 +59,17 @@ impl Tool {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TexEnvironment {
     pub pdflatex: Tool,
+    /// For templates typeset with XeLaTeX ([`crate::Engine::Xelatex`]).
+    pub xelatex: Tool,
     pub latexmk: Tool,
     pub biber: Tool,
     /// Optional: converts DOCX manuscripts (see [`crate::pandoc`]).
     pub pandoc: Tool,
     /// pdflatex is PSG's own TeX ([`crate::managed`]), not one found on the `PATH`.
     pub managed: bool,
+    /// Folders XeLaTeX looks in for fonts by file name: the CJK fonts PSG installs
+    /// ([`crate::managed::ManagedTex::fonts_dir`]). Set by the caller.
+    pub font_dirs: Vec<PathBuf>,
 }
 
 impl TexEnvironment {
@@ -80,11 +99,22 @@ impl TexEnvironment {
     pub fn detect_in(search_path: Option<&OsStr>, with_versions: bool) -> Self {
         Self {
             pdflatex: Tool::locate("pdflatex", search_path, with_versions),
+            xelatex: Tool::locate("xelatex", search_path, with_versions),
             latexmk: Tool::locate("latexmk", search_path, with_versions),
             biber: Tool::locate("biber", search_path, with_versions),
             pandoc: Tool::locate("pandoc", search_path, with_versions),
             managed: false,
+            font_dirs: Vec::new(),
         }
+    }
+
+    /// [`Self::missing`] for typesetting with `engine`.
+    pub fn missing_for(&self, engine: crate::Engine, needs_biber: bool) -> Vec<&'static str> {
+        let mut missing = self.missing(needs_biber);
+        if engine == crate::Engine::Xelatex && !self.xelatex.found() {
+            missing.insert(0, self.xelatex.name);
+        }
+        missing
     }
 
     /// The required programs that were missing or failed their version check.
@@ -139,6 +169,14 @@ fn is_executable(path: &Path) -> bool {
 #[cfg(not(unix))]
 fn is_executable(path: &Path) -> bool {
     path.is_file()
+}
+
+#[cfg(test)]
+#[test]
+fn biber_has_time_to_unpack_before_the_version_check_expires() {
+    assert_eq!(version_probe("biber"), ("--version", Duration::from_secs(120)));
+    assert_eq!(version_probe("pdflatex"), ("--version", Duration::from_secs(15)));
+    assert_eq!(version_probe("latexmk"), ("-v", Duration::from_secs(15)));
 }
 
 #[cfg(all(test, unix))]

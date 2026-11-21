@@ -1,6 +1,6 @@
 //! Template Library: the journal templates as cards. One is chosen for new projects; the open
-//! project's template is marked. Importing a template from a ZIP file and checking a template's
-//! compatibility are planned and shown as such, never as working buttons.
+//! project's template is marked. A journal's own template is added from a .zip file or a folder
+//! (`psg_academic::template_import`), and what was found in it is shown for checking.
 
 use psg_desktop_ui::{Tone, widgets};
 
@@ -13,11 +13,30 @@ impl AcademicApp {
             ui.set_max_width(ui.available_width().min(1100.0));
             widgets::page_header(ui, t("Template Library"), Some(t("Journal templates set the layout, fonts and citation style. New projects use the selected template.")));
             ui.horizontal_wrapped(|ui| {
-                let soon = t("Planned for a later version; not available yet.");
-                widgets::button_enabled(ui, false, widgets::ButtonKind::Secondary, t("Import template (.zip)…"), soon);
-                widgets::button_enabled(ui, false, widgets::ButtonKind::Secondary, t("Check compatibility"), soon);
-                widgets::chip(ui, Tone::Neutral, t("Coming later"));
+                if widgets::secondary(ui, t("Add a template (.zip)…")).on_hover_text(t("A journal's LaTeX template as the journal hands it out")).clicked()
+                    && let Some(path) = rfd::FileDialog::new().set_title(t("Add a template (.zip)…")).add_filter("ZIP", &["zip"]).pick_file()
+                {
+                    self.add_template(&path);
+                }
+                if widgets::secondary(ui, t("Add a template folder…")).clicked()
+                    && let Some(path) = rfd::FileDialog::new().set_title(t("Add a template folder…")).pick_folder()
+                {
+                    self.add_template(&path);
+                }
             });
+            if let Some((name, found, warnings)) = self.template_added.clone() {
+                ui.add_space(psg_brand::space::S);
+                widgets::banner(ui, Tone::Success, &tf("Added the template {name}. Check what was found before using it:", &[("name", &name)]), None);
+                for line in &found {
+                    ui.label(format!("✓ {line}"));
+                }
+                for line in &warnings {
+                    widgets::banner(ui, Tone::Warning, line, None);
+                }
+                if widgets::ghost(ui, t("Dismiss")).clicked() {
+                    self.template_added = None;
+                }
+            }
             ui.add_space(psg_brand::space::M);
             if self.templates.is_empty() {
                 widgets::banner(ui, Tone::Danger, t("No template is available."), None);
@@ -26,45 +45,52 @@ impl AcademicApp {
             let width = 320.0;
             let mut chosen = None;
             let mut start = None;
-            ui.horizontal_wrapped(|ui| {
-                ui.spacing_mut().item_spacing = egui::vec2(psg_brand::space::M, psg_brand::space::M);
-                for (i, tpl) in self.templates.iter().enumerate() {
-                    let m = &tpl.manifest;
-                    let selected = i == self.selected_template;
-                    let resp = widgets::selectable_card(ui, selected, width, |ui| {
-                        ui.set_min_height(170.0);
-                        template_thumbnail(ui, &m.id);
-                        ui.add_space(psg_brand::space::S);
-                        ui.add(egui::Label::new(egui::RichText::new(&m.name).font(psg_desktop_ui::fonts::semibold(psg_brand::text::HEADING))).wrap());
-                        ui.add(egui::Label::new(egui::RichText::new(&m.description).small()).wrap());
-                        ui.add_space(psg_brand::space::XS);
-                        ui.horizontal_wrapped(|ui| {
-                            widgets::chip(ui, Tone::Neutral, m.engine.clone());
-                            let bib = if m.bibliography == "none" { t("No bibliography").to_owned() } else { tf("Bibliography: {tool}", &[("tool", &m.bibliography)]) };
-                            widgets::chip(ui, Tone::Neutral, bib);
-                            if !m.version.is_empty() {
-                                widgets::chip(ui, Tone::Neutral, format!("v{}", m.version));
-                            }
-                            if matches!(tpl.source, psg_academic::template::Source::Builtin(_)) {
-                                widgets::chip(ui, Tone::Info, t("Built in"));
-                            }
-                            if in_use.as_deref() == Some(m.id.as_str()) {
-                                widgets::chip(ui, Tone::Success, t("Used by this project"));
-                            }
-                            if selected {
-                                widgets::chip(ui, Tone::Info, t("Selected for new projects"));
-                            }
+            // Rows of cards, as many as fit across (a wrapped layout doesn't wrap cards).
+            let gap = psg_brand::space::M;
+            let per_row = (((ui.available_width() + gap) / (width + gap)).floor().max(1.0)) as usize;
+            for (row, chunk) in self.templates.chunks(per_row).enumerate() {
+                ui.horizontal_top(|ui| {
+                    ui.spacing_mut().item_spacing = egui::vec2(gap, gap);
+                    for (j, tpl) in chunk.iter().enumerate() {
+                        let i = row * per_row + j;
+                        let m = &tpl.manifest;
+                        let selected = i == self.selected_template;
+                        let resp = widgets::selectable_card(ui, selected, width, |ui| {
+                            ui.set_min_height(170.0);
+                            template_thumbnail(ui, &m.id);
+                            ui.add_space(psg_brand::space::S);
+                            ui.add(egui::Label::new(egui::RichText::new(&m.name).font(psg_desktop_ui::fonts::semibold(psg_brand::text::HEADING))).wrap());
+                            ui.add(egui::Label::new(egui::RichText::new(&m.description).small()).wrap());
+                            ui.add_space(psg_brand::space::XS);
+                            ui.horizontal_wrapped(|ui| {
+                                widgets::chip(ui, Tone::Neutral, m.engine.clone());
+                                let bib = if m.bibliography == "none" { t("No bibliography").to_owned() } else { tf("Bibliography: {tool}", &[("tool", &m.bibliography)]) };
+                                widgets::chip(ui, Tone::Neutral, bib);
+                                if !m.version.is_empty() {
+                                    widgets::chip(ui, Tone::Neutral, format!("v{}", m.version));
+                                }
+                                if matches!(tpl.source, psg_academic::template::Source::Builtin(_)) {
+                                    widgets::chip(ui, Tone::Info, t("Built in"));
+                                }
+                                if in_use.as_deref() == Some(m.id.as_str()) {
+                                    widgets::chip(ui, Tone::Success, t("Used by this project"));
+                                }
+                                if selected {
+                                    widgets::chip(ui, Tone::Info, t("Selected for new projects"));
+                                }
+                            });
                         });
-                    });
-                    let resp = resp.on_hover_text(tf("{id} · licence {licence}", &[("id", &m.id), ("licence", &m.licence)]));
-                    if resp.clicked() {
-                        chosen = Some(i);
+                        let resp = resp.on_hover_text(tf("{id} · licence {licence}", &[("id", &m.id), ("licence", &m.licence)]));
+                        if resp.clicked() {
+                            chosen = Some(i);
+                        }
+                        if resp.double_clicked() {
+                            start = Some(i);
+                        }
                     }
-                    if resp.double_clicked() {
-                        start = Some(i);
-                    }
-                }
-            });
+                });
+                ui.add_space(gap);
+            }
             if let Some(i) = chosen {
                 self.selected_template = i;
             }
@@ -84,7 +110,7 @@ impl AcademicApp {
             ui.add_space(psg_brand::space::L);
             widgets::section_header(ui, t("Where templates come from"));
             widgets::muted(ui, t("Besides the built-in templates, PSG Academic PDF reads templates from these folders (each template is a folder with a template.toml):"));
-            for dir in psg_academic::template::default_template_dirs() {
+            for dir in crate::cli::template_dirs(&self.data.root) {
                 ui.label(egui::RichText::new(dir.display().to_string()).monospace().small());
             }
             if !self.template_problems.is_empty() {
@@ -101,6 +127,27 @@ impl AcademicApp {
                 }
             }
         });
+    }
+}
+
+impl AcademicApp {
+    /// Add the journal template in `source` (a .zip or a folder), list it and select it.
+    fn add_template(&mut self, source: &std::path::Path) {
+        match psg_academic::template_import::import(source, &crate::cli::user_templates(&self.data.root), None) {
+            Ok(added) => {
+                let id = added.template.manifest.id.clone();
+                let name = added.template.manifest.name.clone();
+                let (templates, problems) = psg_academic::template::discover(&crate::cli::template_dirs(&self.data.root));
+                self.templates = templates;
+                self.template_problems = problems;
+                if let Some(i) = self.templates.iter().position(|t| t.manifest.id == id) {
+                    self.selected_template = i;
+                }
+                self.note(tf("Added the template {name} from {path}.", &[("name", &name), ("path", &source.display().to_string())]));
+                self.template_added = Some((name, added.found, added.warnings));
+            }
+            Err(e) => self.fail(tf("Could not add the template: {error}", &[("error", &e.to_string())])),
+        }
     }
 }
 

@@ -33,6 +33,7 @@ it from its publishers. Bundling it into the installers was considered (offline 
 | When | What |
 |---|---|
 | The window starts and PSG's TeX isn't installed | Install, in the background. Typesetting with a TeX already on the PATH works meanwhile. |
+| The window starts and PSG's TeX is missing Biber or latexmk | Update the managed installation, then reinstall the packages with missing tools. Biber is installed with BibLaTeX. |
 | The window starts and the last update is 7 days old | `tlmgr update --self --all`. |
 | `tlmgr` refuses a cross-release update (a new TeX Live year) | Reinstall from the newest TinyTeX, then put back the packages added for documents. |
 | A compilation with PSG's TeX stops at ``File `x.sty' not found`` (or `.cls`, `.def`, `.bbx`, …) | `tlmgr search --global --file /x.sty`, install the package holding exactly that file (at most 12), compile once more. |
@@ -72,6 +73,3 @@ on latexmk's `PATH` and keeps every sandbox measure in [academic.md](academic.md
 
 - `cargo test -p psg-academic managed` covers the layout, unpacking a fake bundle, replacing a
   tree, the weekly schedule and the log and `tlmgr search` parsing.
-- `packaging/ci/academic-tex-smoke.sh <platform>` runs the real thing with a built program:
-  installs TinyTeX into a temporary folder, typesets the template with a package TinyTeX-1 lacks,
-  and updates. It needs the network.

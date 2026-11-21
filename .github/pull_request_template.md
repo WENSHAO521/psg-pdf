@@ -1,9 +1,9 @@
 <!--
-Thanks for contributing to PSG PDF and PSG Academic PDF.
+Thanks for contributing to PSG PDF.
 
 Base this on `beta`: pull requests go into `beta`, and `main` changes only when a release
 merges `beta` into it (docs/releasing.md). Use a Conventional Commit subject worded as the change
-users see, such as `fix(academic): …`; the changelog is generated from it.
+users see, such as `fix(pdf): …`; the changelog is generated from it.
 Say which product the change is for. Delete any section below that does not apply.
 -->
 

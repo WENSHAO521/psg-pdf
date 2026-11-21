@@ -25,7 +25,115 @@ pub(super) enum Relocation {
     Moving { rx: Receiver<Result<Moved, Error>>, reopen: Option<PathBuf> },
 }
 
+#[derive(Clone, Copy)]
+pub(super) enum FolderUse {
+    Workspace,
+    NewProject,
+}
+
+pub(super) struct FolderChoice {
+    use_for: FolderUse,
+    path: String,
+}
+
 impl AcademicApp {
+    pub(super) fn workspace_card(&mut self, ui: &mut egui::Ui) {
+        widgets::section_header(ui, t("Workspace folder"));
+        widgets::muted(ui, t("New projects are saved here."));
+        ui.label(egui::RichText::new(self.workspace.display().to_string()).monospace().small());
+        let chosen = self.data.chosen_workspace();
+        if let Some(path) = &chosen
+            && !path.is_dir()
+        {
+            widgets::banner(ui, Tone::Warning, &tf("The chosen workspace is unavailable: {path}", &[("path", &path.display().to_string())]), None);
+        }
+        ui.horizontal_wrapped(|ui| {
+            let busy = self.moving_data();
+            let why = t("Moving the data folder…");
+            if widgets::button_enabled(ui, !busy, widgets::ButtonKind::Secondary, t("Choose workspace…"), why).clicked() {
+                self.choose_workspace();
+            }
+            if chosen.is_some() && widgets::button_enabled(ui, !busy, widgets::ButtonKind::Ghost, t("Use the default workspace"), why).clicked() {
+                self.set_workspace(None);
+            }
+        });
+    }
+
+    pub(super) fn choose_workspace(&mut self) {
+        self.choose_folder(FolderUse::Workspace);
+    }
+
+    pub(super) fn choose_folder(&mut self, use_for: FolderUse) {
+        if self.moving_data() {
+            return;
+        }
+        self.folder_choice = Some(FolderChoice { use_for, path: self.workspace.display().to_string() });
+    }
+
+    pub(super) fn folder_dialog(&mut self, ctx: &egui::Context) {
+        let Some(mut choice) = self.folder_choice.take() else { return };
+        let title = match choice.use_for {
+            FolderUse::Workspace => t("Choose workspace…"),
+            FolderUse::NewProject => t("Choose a folder for the new project"),
+        };
+        let modal = egui::Modal::new(egui::Id::unique("psg-academic-folder-choice")).show(ctx, |ui| {
+            ui.set_max_width(540.0);
+            widgets::section_header(ui, title);
+            ui.label(t("Folder path"));
+            ui.horizontal_wrapped(|ui| {
+                crate::clipboard::text_edit(ui, egui::TextEdit::singleline(&mut choice.path).desired_width(365.0));
+                if widgets::secondary(ui, t("Browse…")).clicked() {
+                    let directory = Path::new(&choice.path);
+                    let dialog = rfd::FileDialog::new().set_title(title);
+                    let dialog = if directory.is_dir() { dialog.set_directory(directory) } else { dialog };
+                    if let Some(folder) = dialog.pick_folder() {
+                        choice.path = folder.display().to_string();
+                    }
+                }
+            });
+            ui.add_space(psg_brand::space::S);
+            ui.horizontal(|ui| {
+                let folder = Path::new(&choice.path);
+                let valid = folder.is_absolute() && folder.is_dir();
+                let apply =
+                    widgets::button_enabled(ui, valid, widgets::ButtonKind::Primary, t("Use this folder"), t("Enter an existing folder path."))
+                        .clicked();
+                let cancel = widgets::ghost(ui, t("Cancel")).clicked();
+                (apply, cancel)
+            })
+            .inner
+        });
+        let (apply, cancel) = modal.inner;
+        if apply {
+            let folder = Path::new(&choice.path);
+            let accepted = match choice.use_for {
+                FolderUse::Workspace => self.set_workspace(Some(folder)),
+                FolderUse::NewProject => self.create_project_in_folder(folder),
+            };
+            if accepted {
+                return;
+            }
+        } else if cancel || modal.should_close() {
+            return;
+        }
+        self.folder_choice = Some(choice);
+    }
+
+    fn set_workspace(&mut self, folder: Option<&Path>) -> bool {
+        match self.data.remember_workspace(folder) {
+            Ok(()) => {
+                self.workspace = self.data.projects();
+                self.status = tf("Workspace folder set to {path}.", &[("path", &self.workspace.display().to_string())]);
+                self.queued.push((Tone::Success, self.status.clone()));
+                true
+            }
+            Err(e) => {
+                self.fail(tf("Could not change the workspace: {error}", &[("error", &e.to_string())]));
+                false
+            }
+        }
+    }
+
     pub(super) fn data_folder_card(&mut self, ui: &mut egui::Ui) {
         widgets::section_header(ui, t("Data folder"));
         widgets::muted(ui, t("New projects and the app's settings are kept in this folder."));

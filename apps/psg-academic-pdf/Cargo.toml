@@ -18,7 +18,7 @@ psg-desktop-ui = { workspace = true }
 psg-academic = { path = "../../crates/academic" }
 # The shared PdfCraft engine draws the PDF preview (the same renderer PSG PDF uses).
 pdfcraft-render = { workspace = true }
-eframe = { workspace = true, features = ["default_fonts", "wgpu", "glow", "accesskit", "wayland", "x11", "persistence"] }
+eframe = { workspace = true, features = ["default_fonts", "wgpu", "glow", "accesskit", "wayland", "x11", "persistence", "clipboard"] }
 egui = { workspace = true, features = ["default_fonts"] }
 # Chinese, Japanese and Korean interface faces from the craft-fonts build input (OFL).
 pdfcraft-fonts = { workspace = true }
@@ -29,6 +29,8 @@ rfd = { workspace = true }
 log = { workspace = true }
 # Timestamped project folder names use the system time zone.
 jiff = { workspace = true, features = ["tz-system", "tzdb-bundle-platform", "tzdb-zoneinfo", "tzdb-concatenated", "tz-fat"] }
+# The typeset command's --json report.
+serde_json = { workspace = true }
 # Check for updates on this product's own channel (`psg-academic-pdf-*` release assets).
 craft-update = { workspace = true }
 

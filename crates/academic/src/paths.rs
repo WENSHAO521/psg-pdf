@@ -21,6 +21,16 @@ pub fn safe_relative_name(name: &str) -> Option<&str> {
     ok.then_some(name)
 }
 
+/// The deepest folder a template's file may be in.
+pub const MAX_FOLDERS: usize = 4;
+
+/// `path` if it is a relative path of [`safe_relative_name`] parts joined with `/`, at most
+/// [`MAX_FOLDERS`] folders deep: a template's `figures/logo.pdf`.
+pub fn safe_relative_path(path: &str) -> Option<&str> {
+    let parts: Vec<&str> = path.split('/').collect();
+    (parts.len() <= MAX_FOLDERS + 1 && parts.iter().all(|p| safe_relative_name(p).is_some())).then_some(path)
+}
+
 /// A safe file name made from `original` (an imported file's name): unsafe characters become `_`.
 /// Returns `None` when nothing usable is left.
 pub fn sanitize_name(original: &str) -> Option<String> {

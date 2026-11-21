@@ -771,7 +771,7 @@ pub fn tools() -> Vec<ToolDef> {
         t(
             "doc_audit_redactions",
             "Audit faux redactions",
-            "Find faux redactions: opaque filled rectangles painted over text that is still extractable, and /Redact annotations that were marked but never applied. Paint-order and colour-aware: a rectangle counts only when painted after the text and dark enough to hide it (page backgrounds and light shading are not flagged). Each finding reports the 1-based page, the kind (covered-text or unapplied-mark), the rectangle (points from the top-left of the displayed page, like comment_list), and the hidden text. Fails closed: unreadable content is an error, never a clean bill. A properly applied redaction removes the text and never flags.",
+            "Find faux redactions: opaque filled rectangles painted over text that is still extractable, and /Redact annotations that were marked but never applied. Paint order matters: low-contrast or opaque white rectangles drawn over text are reported, while backgrounds drawn first and ordinary light shading are ignored. Each finding reports the 1-based page, the kind (covered-text, hidden-under-white or unapplied-mark), the rectangle (points from the top-left of the displayed page, like comment_list), and the hidden text. Fails closed: unreadable content is an error, never a clean bill. A properly applied redaction removes the text and never flags.",
         )
         .ro()
         .with(schema(json!({ "doc": doc() }), &["doc"])),
@@ -1223,7 +1223,7 @@ pub fn tools() -> Vec<ToolDef> {
         t(
             "page_set_box",
             "Set page boxes / crop",
-            "Set a page box (crop by default; also trim, bleed, art, media) on pages: either margins in points from the media box [left, bottom, right, top], or an absolute rect in points from the top-left of the displayed page. Omit both to reset the box to its default. Undoable.",
+            "Set a page box (crop by default; also trim, bleed, art, media) on pages: either margins from the media box [left, bottom, right, top] in default user-space units of the unrotated page (not points when the page has /UserUnit), or an absolute rect in points from the top-left of the displayed page. Omit both to reset the box to its default. Undoable.",
         )
         .cmd("page.boxes")
         .with(schema(
@@ -1460,7 +1460,7 @@ pub fn tools() -> Vec<ToolDef> {
                 json!({ "doc": doc(), "field": { "type": "string" }, "event": { "type": "string", "enum": ["keystroke", "format", "validate", "calculate", "mouse_up"] }, "script": { "type": "string" } }),
                 &["doc", "field", "event"],
             )),
-        t("doc_export_office", "Export to Word, PowerPoint, HTML, RTF or Markdown", "Export a PDF ▸ Word (.docx), PowerPoint (.pptx, one slide per page), HTML (.html, one file with images inline), RTF (.rtf) or Markdown (.md or .markdown: pipe tables, images left out), chosen by path's extension: text, headings, bold and italic. HTML uses rich styling by default; set html_mode to simple for CSS-free headings, paragraphs, emphasis and tables. Simple HTML keeps text and inline images but omits colour and layout styling. Word uses inferred tables, bordered only along the grid lines the page draws, and positioned editable shapes on pages with artwork, rotated or large text; each source page retains its size. Font matching and vector graphics remain limited. Export reads forms 50 deep and up to 50 000 a page, counting forms the page draws itself. Pages that go past either limit, or that have pictures past what one export may hold or decode, are listed in truncated_pages, with a warning; what was left out is missing.")
+        t("doc_export_office", "Export to Word, PowerPoint, HTML, RTF or Markdown", "Export a PDF ▸ Word (.docx), PowerPoint (.pptx, one slide per page), HTML (.html, one file with images inline), RTF (.rtf) or Markdown (.md or .markdown: pipe tables, images left out), chosen by path's extension: text, headings, bold and italic. HTML uses rich styling by default; set html_mode to simple for CSS-free headings, paragraphs, emphasis and tables. Simple HTML keeps text and inline images but omits colour and layout styling. RTF keeps inline PNG and JPEG pictures in reading order and bakes PDF rotation into their pixels. Word uses inferred tables, bordered only along the grid lines the page draws, and positioned editable shapes on pages with artwork, rotated or large text; each source page retains its size. Font matching and vector graphics remain limited. Export reads forms 50 deep and up to 50 000 a page, counting forms the page draws itself. Pages that go past either limit, or that have pictures past what one export may hold or decode, are listed in truncated_pages, with a warning; what was left out is missing.")
             .cmd("export.docx")
             .with(schema(json!({ "doc": doc(), "path": { "type": "string" }, "html_mode": { "type": "string", "enum": ["rich", "simple"], "default": "rich" } }), &["doc", "path"])),
         t("doc_export_outlined_pdf", "Export PDF with outlined text", "Export a separate PDF with ordinary page text converted to vector paths. Page text in the copy is not searchable or selectable. Rejects unsupported page content, signed and encrypted files without writing an output. The source is kept.")
@@ -1756,6 +1756,7 @@ pub fn tools() -> Vec<ToolDef> {
                     "aligns": { "type": "array", "maxItems": 4096, "items": { "type": "string", "enum": ["left", "center", "right", "justify", "inherit"] }, "description": "Each paragraph's (line's) own alignment, by index; inherit (or legacy null) follows align." },
                     "underline": { "type": "boolean" },
                     "line_spacing": { "type": "number", "description": "Multiple of the font size (1.2 is ordinary)." },
+                    "paragraph_spacing": { "type": "number", "description": "Points between paragraphs (a line break in text starts one), beyond the line spacing; unset, half the size for a paragraph the page did not have (rows it had keep their space); 0 is none." },
                     "dx": { "type": "number", "description": "Paragraph only: move right by this many points (negative: left)." },
                     "dy": { "type": "number", "description": "Paragraph only: move up by this many points (negative: down)." },
                     "width": { "type": "number", "description": "Paragraph only: rewrap to this width in points (dragging the box's edge)." },

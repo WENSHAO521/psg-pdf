@@ -8,6 +8,65 @@ use pdfcraft_render::{PageRenderer, RenderConfig, RenderRequest};
 
 /// The most pages rendered for the preview. Longer documents show this many and say so.
 pub const MAX_PREVIEW_PAGES: usize = 300;
+const MAX_HISTORY: usize = 64;
+
+/// The page in view and the places visited using the navigation controls.
+#[derive(Default)]
+pub struct PageNavigation {
+    pub current: usize,
+    pub jump: Option<usize>,
+    pub scroll_offset: Option<f32>,
+    back: Vec<usize>,
+    forward: Vec<usize>,
+}
+
+impl PageNavigation {
+    pub fn go_to(&mut self, page: usize) {
+        if page != self.current {
+            Self::remember(&mut self.back, self.current);
+            self.forward.clear();
+            self.current = page;
+            self.reveal();
+        }
+    }
+
+    pub fn can_visit(&self, forward: bool) -> bool {
+        let history = if forward { &self.forward } else { &self.back };
+        history.iter().any(|page| *page != self.current)
+    }
+
+    pub fn visit(&mut self, forward: bool) {
+        let (from, to) = if forward { (&mut self.forward, &mut self.back) } else { (&mut self.back, &mut self.forward) };
+        while let Some(page) = from.pop() {
+            if page == self.current {
+                continue;
+            }
+            Self::remember(to, self.current);
+            self.current = page;
+            self.reveal();
+            break;
+        }
+    }
+
+    fn remember(history: &mut Vec<usize>, page: usize) {
+        if history.len() == MAX_HISTORY {
+            history.remove(0);
+        }
+        history.push(page);
+    }
+
+    fn reveal(&mut self) {
+        self.jump = Some(self.current);
+        self.scroll_offset = None;
+    }
+
+    fn fit(&mut self, pages: usize) {
+        self.back.retain(|page| *page < pages);
+        self.forward.retain(|page| *page < pages);
+        self.current = self.current.min(pages.saturating_sub(1));
+        self.reveal();
+    }
+}
 
 enum Message {
     Count(usize),
@@ -26,9 +85,16 @@ pub enum PageSlot {
 #[derive(Default)]
 pub struct Preview {
     pub pages: Vec<PageSlot>,
+    pub navigation: PageNavigation,
     pub total_pages: usize,
     pub rendering: bool,
     pub error: Option<String>,
+    /// Device pixels per PDF point the pages were drawn at: a page's size in points is its
+    /// size in pixels divided by this.
+    pub scale: f32,
+    /// A place to point out, from the source editor's "Show in PDF": the page and the height on
+    /// it in PDF points from the top.
+    pub mark: Option<(usize, f32)>,
     rx: Option<Receiver<Message>>,
     generation: u64,
 }
@@ -40,7 +106,10 @@ impl Preview {
 
     /// Start rendering `bytes` at `scale` device pixels per point.
     pub fn load(&mut self, bytes: Vec<u8>, scale: f32, ctx: &egui::Context) {
+        let navigation = std::mem::take(&mut self.navigation);
         self.clear();
+        self.navigation = navigation;
+        self.scale = scale;
         let (tx, rx) = channel();
         self.rx = Some(rx);
         self.rendering = true;
@@ -61,6 +130,7 @@ impl Preview {
                 Message::Count(n) => {
                     self.total_pages = n;
                     self.pages = (0..n.min(MAX_PREVIEW_PAGES)).map(|_| PageSlot::Pending).collect();
+                    self.navigation.fit(self.pages.len());
                     if n == 0 {
                         self.error = Some("The PDF has no pages, or it could not be read.".into());
                     }
@@ -77,7 +147,10 @@ impl Preview {
                         *slot = PageSlot::Failed(error);
                     }
                 }
-                Message::Done => done = true,
+                Message::Done => {
+                    self.navigation.reveal();
+                    done = true;
+                }
             }
         }
         if done {
@@ -108,4 +181,29 @@ fn render_all(bytes: Vec<u8>, scale: f32, tx: &Sender<Message>, ctx: &egui::Cont
     }
     let _ = tx.send(Message::Done);
     ctx.request_repaint();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn page_history_can_be_retraced_and_a_new_jump_replaces_the_forward_path() {
+        let mut nav = PageNavigation::default();
+        nav.go_to(3);
+        nav.go_to(5);
+        nav.visit(false);
+        assert_eq!(nav.jump, Some(3));
+        nav.visit(true);
+        assert_eq!(nav.jump, Some(5));
+        nav.visit(false);
+        nav.go_to(1);
+        assert!(!nav.can_visit(true));
+        nav.visit(false);
+        assert_eq!(nav.current, 3);
+        nav.fit(2);
+        assert_eq!(nav.jump, Some(1));
+        nav.visit(false);
+        assert_eq!(nav.current, 0);
+    }
 }

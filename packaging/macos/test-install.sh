@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
-# Installs both PSG products from their DMGs as a user would (drag to an Applications folder),
-# checks their signatures and identities, runs them, and removes them one at a time:
+# Installs PSG PDF from its DMG as a user would (drag to an Applications folder), checks its
+# signature and identity, and runs it:
 #
-#   - each DMG holds exactly one app and the Applications link;
-#   - the two apps have their own names, bundle ids and executables, so they coexist;
+#   - the DMG holds exactly one app and the Applications link;
+#   - the app has its own name, bundle id and executable;
 #   - `codesign --verify` passes (ad-hoc or Developer ID); with SIGNED=1, Gatekeeper (spctl)
-#     accepts them too, which needs a Developer ID and notarization;
-#   - removing either app leaves the other working.
+#     accepts it too, which needs a Developer ID and notarization.
 #
-# The 0.18.x "PSG PDF Suite" DMG held both apps under the same names and bundle ids, so the new
-# DMGs replace them in place: there is nothing to migrate on macOS (docs/products.md).
+# The 0.18.x "PSG PDF Suite" DMG held PSG PDF.app under the same name and bundle id, so the new
+# DMG replaces it in place: there is nothing to migrate on macOS (docs/products.md).
 #
-# Usage: packaging/macos/test-install.sh <folder with both products' DMGs>
+# Usage: packaging/macos/test-install.sh <folder with the DMG>
 set -euo pipefail
 DIR="${1:?folder with the DMGs}"
 APPS="$(mktemp -d)/Applications"
@@ -51,19 +50,7 @@ check_app() { # <stem> <app name> <bundle id> <executable>
 }
 
 install_dmg psg-pdf "PSG PDF" com.panoramascholarly.psgpdf "PSG PDF"
-install_dmg psg-academic-pdf "PSG Academic PDF" com.panoramascholarly.psgacademicpdf "PSG Academic PDF"
-"$APPS/PSG Academic PDF.app/Contents/MacOS/PSG Academic PDF" templates | grep -q '^psg-article ' || fail "PSG Academic PDF lists no templates"
 [[ ! -e "$APPS/PSG PDF.app/Contents/MacOS/PSG Academic PDF" ]] || fail "PSG PDF.app contains PSG Academic PDF"
-[[ ! -e "$APPS/PSG Academic PDF.app/Contents/MacOS/PSG PDF" ]] || fail "PSG Academic PDF.app contains PSG PDF"
-
-step "Removing PSG Academic PDF leaves PSG PDF"
-rm -rf "$APPS/PSG Academic PDF.app"
-check_app psg-pdf "PSG PDF" com.panoramascholarly.psgpdf "PSG PDF"
-
-step "Removing PSG PDF leaves PSG Academic PDF"
-install_dmg psg-academic-pdf "PSG Academic PDF" com.panoramascholarly.psgacademicpdf "PSG Academic PDF"
-rm -rf "$APPS/PSG PDF.app"
-check_app psg-academic-pdf "PSG Academic PDF" com.panoramascholarly.psgacademicpdf "PSG Academic PDF"
 
 rm -rf "$APPS"
 echo "install tests passed"

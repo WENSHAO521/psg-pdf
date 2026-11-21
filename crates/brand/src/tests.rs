@@ -31,11 +31,13 @@ fn manifest_value(id: &str, key: &str) -> Option<String> {
 
 #[test]
 fn names_taglines_and_brand_colours_match_the_product_manifest() {
-    for product in Product::ALL {
-        assert_eq!(manifest_value(product.id(), "name").as_deref(), Some(product.name()), "{product:?}");
-        assert_eq!(manifest_value(product.id(), "tagline").as_deref(), Some(product.tagline()), "{product:?}");
-        assert_eq!(manifest_value(product.id(), "accent").as_deref(), Some(hex(product.brand()).as_str()), "{product:?}");
-    }
+    // Only PSG PDF: PSG Academic PDF is retired, and no longer in the manifest because it is no
+    // longer packaged.
+    let product = Product::Pdf;
+    assert_eq!(manifest_value(product.id(), "name").as_deref(), Some(product.name()));
+    assert_eq!(manifest_value(product.id(), "tagline").as_deref(), Some(product.tagline()));
+    assert_eq!(manifest_value(product.id(), "accent").as_deref(), Some(hex(product.brand()).as_str()));
+    assert_eq!(manifest_value(Product::Academic.id(), "name"), None);
 }
 
 #[test]

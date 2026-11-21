@@ -45,18 +45,15 @@
 	Check Again	Kiểm tra lại
 	Check again	Kiểm tra lại
 	Check and export the finished PDF	Kiểm tra và xuất PDF hoàn chỉnh
-	Check compatibility	Kiểm tra tương thích
 	Check for updates…	Kiểm tra bản cập nhật…
 	Check the finished article and save the PDF where it is needed.	Kiểm tra bài báo hoàn chỉnh và lưu PDF vào nơi cần dùng.
 	Checking TeX…	Đang kiểm tra TeX…
 	Checking for updates…	Đang kiểm tra bản cập nhật…
 	Checking the TeX installation…	Đang kiểm tra bản cài đặt TeX…
 	Checking…	Đang kiểm tra…
-	Choose an empty folder for the project	Chọn một thư mục trống cho dự án
 	Close	Đóng
 	Close {app}	Đóng {app}
 	Close {app} to finish	Đóng {app} để hoàn tất
-	Coming later	Sắp có
 	Compilation started.	Đã bắt đầu biên dịch.
 	Compile output	Kết quả biên dịch
 	Copyright	Bản quyền
@@ -122,7 +119,6 @@
 	Import a manuscript or create a project from a template to start.	Để bắt đầu, hãy nhập một bản thảo hoặc tạo dự án từ một mẫu.
 	Import failed: {error}	Nhập thất bại: {error}
 	Import manuscript…	Nhập bản thảo…
-	Import template (.zip)…	Nhập mẫu (.zip)…
 	Import the manuscript body (LaTeX)	Nhập phần thân bản thảo (LaTeX)
 	Install Pandoc to import .docx (experimental)	Cài Pandoc để nhập .docx (thử nghiệm)
 	Install TeX	Cài đặt TeX
@@ -190,7 +186,6 @@
 	Open or create a project, and wait for the TeX check, before compiling.	Trước khi biên dịch, hãy mở hoặc tạo dự án và chờ kiểm tra TeX xong.
 	Open or create a project, then typeset it to export a PDF.	Hãy mở hoặc tạo dự án, rồi dàn trang để xuất PDF.
 	Open project…	Mở dự án…
-	Open the compiled PDF in PSG PDF for review, annotation and further editing	Mở PDF đã biên dịch trong PSG PDF để duyệt, chú thích và chỉnh sửa thêm
 	Opened {path} in PSG PDF.	Đã mở {path} trong PSG PDF.
 	Opened {path} in the default PDF viewer.	Đã mở {path} bằng trình xem PDF mặc định.
 	Opened {path}.	Đã mở {path}.
@@ -202,9 +197,7 @@
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	Chưa cài PSG PDF nên PDF được mở bằng trình xem mặc định. PSG PDF được tải về riêng.
 	Page {n}: {error}	Trang {n}: {error}
 	Pages	Trang
-	Planned for a later version; not available yet.	Dự kiến có trong phiên bản sau; hiện chưa có.
 	Portable mode: settings and projects are kept in {path}.	Chế độ di động: cài đặt và dự án được lưu trong {path}.
-	Press Auto Typeset first.	Hãy nhấn Tự động dàn trang trước.
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	Nhấn Tự động dàn trang để dàn trang bản thảo; PDF sẽ hiện ở đây.
 	Preview	Xem trước
 	Problems	Vấn đề
@@ -276,7 +269,6 @@
 	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	Tệp .bib có lỗi cú pháp gần mục được nêu ở đây: thiếu dấu phẩy, dấu ngoặc nhọn hoặc dấu nháy.
 	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	Các mẫu tạp chí pdfLaTeX không thể dàn trang tiếng Trung, tiếng Nhật hay tiếng Hàn (cần XeLaTeX hoặc LuaLaTeX với phông chữ CJK, mà các mẫu này không dùng). Hãy ghi tiêu đề, tên và tài liệu dẫn bằng chữ Latinh (phiên âm, giữ bản gốc trong dữ liệu nguồn), hoặc chuẩn bị bài báo bằng một mẫu hỗ trợ CJK bên ngoài PSG Academic PDF.
 	The project folder: compilation happens here and only here	Thư mục dự án: việc biên dịch diễn ra ở đây và chỉ ở đây
-	The project has been typeset	Dự án đã được dàn trang
 	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	Các mẫu không có phông chữ Kirin (mã hóa T2A). Hãy chuyển tự tên và tiêu đề Kirin, như phần lớn tạp chí tiếng Anh yêu cầu.
 	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	Các mẫu không có phông chữ Hy Lạp cho văn bản. Trong công thức, hãy viết chữ cái Hy Lạp bằng lệnh ($\alpha$, $\Omega$); từ Hy Lạp trong văn bản phải được chuyển tự.
 	The templates have no font for this script. Transliterate the text.	Các mẫu không có phông chữ cho hệ chữ này. Hãy chuyển tự văn bản.
@@ -379,3 +371,51 @@
 	{path} already exists there. Nothing was moved; choose an empty folder.	{path} đã có ở đó. Không dự án hay cài đặt nào được di chuyển; hãy chọn một thư mục trống.
 	That folder holds too many files to be a data folder. Nothing was moved.	Thư mục đó có quá nhiều tệp để là thư mục dữ liệu. Không dự án hay cài đặt nào được di chuyển.
 	Could not move the data folder ({path}: {error}). Nothing was changed.	Không thể di chuyển thư mục dữ liệu ({path}: {error}). Không có gì thay đổi.
+	Back	Quay lại
+	Forward	Tiến tới
+	Previous page	Trang trước
+	Page	Trang
+	Next page	Trang sau
+	Typeset the current manuscript before exporting.	Dàn trang bản thảo hiện tại trước khi xuất.
+	Resolve the errors before exporting.	Sửa các lỗi trước khi xuất.
+	The current manuscript has been typeset	Bản thảo hiện tại đã được dàn trang
+	Workspace folder	Thư mục không gian làm việc
+	New projects are saved here.	Dự án mới được lưu ở đây.
+	The chosen workspace is unavailable: {path}	Không thể sử dụng không gian làm việc đã chọn: {path}
+	Choose workspace…	Chọn không gian làm việc…
+	Use the default workspace	Dùng không gian làm việc mặc định
+	Workspace folder set to {path}.	Đã đặt thư mục không gian làm việc thành {path}.
+	Could not change the workspace: {error}	Không thể đổi không gian làm việc: {error}
+	Workspace: {path}	Không gian làm việc: {path}
+	Choose a folder for the new project	Chọn thư mục cho dự án mới
+	Folder path	Đường dẫn thư mục
+	Browse…	Duyệt…
+	Use this folder	Dùng thư mục này
+	Enter an existing folder path.	Nhập đường dẫn tới thư mục có sẵn.
+	Copy TeX diagnostics	Sao chép thông tin chẩn đoán TeX
+	TeX diagnostics copied.	Đã sao chép thông tin chẩn đoán TeX.
+	Cut	Cắt
+	Copy	Sao chép
+	Paste	Dán
+	Repair Biber	Sửa Biber
+	Repairing Biber…	Đang sửa Biber…
+	Biber was reinstalled.	Đã cài đặt lại Biber.
+	Could not repair Biber: {error}	Không thể sửa Biber: {error}
+	Could not download the Chinese and Japanese fonts: {error}	Không tải được phông chữ tiếng Trung và tiếng Nhật: {error}
+	Downloading the Chinese and Japanese fonts: {done} of {total} MB	Đang tải phông chữ tiếng Trung và tiếng Nhật: {done} / {total} MB
+	Downloading the Chinese and Japanese fonts…	Đang tải phông chữ tiếng Trung và tiếng Nhật…
+	The Chinese and Japanese fonts are installed.	Đã cài phông chữ tiếng Trung và tiếng Nhật.
+	A journal's LaTeX template as the journal hands it out	Mẫu LaTeX của tạp chí, đúng như tạp chí cung cấp
+	Add a template (.zip)…	Thêm mẫu (.zip)…
+	Add a template folder…	Thêm thư mục mẫu…
+	Added the template {name} from {path}.	Đã thêm mẫu {name} từ {path}.
+	Added the template {name}. Check what was found before using it:	Đã thêm mẫu {name}. Hãy kiểm tra những gì tìm thấy trước khi dùng:
+	Could not add the template: {error}	Không thêm được mẫu: {error}
+	New file	Tệp mới
+	Made {file}.	Đã tạo {file}.
+	Show in PDF	Hiện trong PDF
+	Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way.	Hiện vị trí của dòng có con trỏ trong PDF. Nhấp đúp vào PDF để đi theo chiều ngược lại.
+	Double-click to show this place in the source	Nhấp đúp để hiện chỗ này trong mã nguồn
+	Typeset the manuscript again to jump between the PDF and the source.	Hãy dàn trang bản thảo lại để chuyển qua lại giữa PDF và mã nguồn.
+	That part of the PDF comes from {file}, line {n}.	Phần này của PDF đến từ {file}, dòng {n}.
+	Line {n} of {file} is not in the PDF yet; typeset to update it.	Dòng {n} của {file} chưa có trong PDF; hãy dàn trang để cập nhật.

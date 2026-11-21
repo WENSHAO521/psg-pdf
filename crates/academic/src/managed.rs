@@ -5,7 +5,8 @@
 //! GitHub releases into a per-user folder, adds what the PSG templates need (latexmk, Biber,
 //! BibLaTeX, …) with TeX Live's own package manager `tlmgr`, and from then on:
 //!
-//! - updates it with `tlmgr update --self --all` about once a week;
+//! - updates it with `tlmgr update --self --all` about once a week and repairs it when a
+//!   required tool is missing;
 //! - reinstalls it from the newest release when TeX Live's yearly release makes `tlmgr` refuse a
 //!   cross-release update;
 //! - installs the package that holds a missing `.sty` or `.cls` when a compilation stops for one,
@@ -65,6 +66,87 @@ pub const REQUIRED_PACKAGES: &[&str] = &[
     "etoolbox",
     "logreq",
     "url",
+    // XeLaTeX with xeCJK, for Chinese and Japanese.
+    "xetex",
+    "fontspec",
+    "xecjk",
+    "iftex",
+];
+
+/// A Chinese and Japanese font XeLaTeX templates use, downloaded into [`ManagedTex::fonts_dir`]
+/// from the Noto CJK project's own repository at a release tag, and checked against its SHA-256.
+/// Never bundled or committed (AGENTS.md §1.4); Noto CJK is OFL-1.1 (AGENTS.md §1.1).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct CjkFont {
+    /// The file name the templates load it by.
+    pub file: &'static str,
+    /// Its path in the repository, starting with the release tag.
+    pub path: &'static str,
+    pub sha256: &'static str,
+    pub size: u64,
+}
+
+impl CjkFont {
+    pub fn url(&self) -> String {
+        format!("https://raw.githubusercontent.com/{CJK_FONTS_REPO}/{}", self.path)
+    }
+}
+
+/// The Noto CJK repository.
+pub const CJK_FONTS_REPO: &str = "notofonts/noto-cjk";
+
+/// Noto Serif and Sans CJK, Traditional Chinese first (Simplified covers the characters only it
+/// uses), Regular and Bold, and their licence. About 68 MB.
+pub const CJK_FONTS: &[CjkFont] = &[
+    CjkFont {
+        file: "NotoSerifTC-Regular.otf",
+        path: "Serif2.003/Serif/SubsetOTF/TC/NotoSerifTC-Regular.otf",
+        sha256: "63515eb0622d589a2f4062e8757c598b3da3bffd053f69abd181c210158ef10c",
+        size: 7936104,
+    },
+    CjkFont {
+        file: "NotoSerifTC-Bold.otf",
+        path: "Serif2.003/Serif/SubsetOTF/TC/NotoSerifTC-Bold.otf",
+        sha256: "3ca2b3294ec84b795d0a45695e78e3612a44dce50f9fc776cd40206340a5768d",
+        size: 8253304,
+    },
+    CjkFont {
+        file: "NotoSansTC-Regular.otf",
+        path: "Sans2.004/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf",
+        sha256: "5bab0cb3c1cf89dde07c4a95a4054b195afbcfe784d69d75c340780712237537",
+        size: 5683368,
+    },
+    CjkFont {
+        file: "NotoSansTC-Bold.otf",
+        path: "Sans2.004/Sans/SubsetOTF/TC/NotoSansTC-Bold.otf",
+        sha256: "55420b259eb119bf5f2a0aadba10cf9d736c12d64ab93e78546d69ef5f43558b",
+        size: 5839972,
+    },
+    CjkFont {
+        file: "NotoSerifSC-Regular.otf",
+        path: "Serif2.003/Serif/SubsetOTF/SC/NotoSerifSC-Regular.otf",
+        sha256: "e8f396decc1f0963a016a989c3d8852e863d1350996f573860a80767c83a1cd3",
+        size: 11625800,
+    },
+    CjkFont {
+        file: "NotoSerifSC-Bold.otf",
+        path: "Serif2.003/Serif/SubsetOTF/SC/NotoSerifSC-Bold.otf",
+        sha256: "24693d48bdb9152f0a06b02af625638a1097abd6de4010ebba027f6e82710527",
+        size: 12094336,
+    },
+    CjkFont {
+        file: "NotoSansSC-Regular.otf",
+        path: "Sans2.004/Sans/SubsetOTF/SC/NotoSansSC-Regular.otf",
+        sha256: "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
+        size: 8331336,
+    },
+    CjkFont {
+        file: "NotoSansSC-Bold.otf",
+        path: "Sans2.004/Sans/SubsetOTF/SC/NotoSansSC-Bold.otf",
+        sha256: "c6cb5a93abaa9edc8ee7463b7ebb7f42d618d40e6ed2f7a5371c97b0b64767c0",
+        size: 8543168,
+    },
+    CjkFont { file: "OFL.txt", path: "Sans2.004/LICENSE", sha256: "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2", size: 4301 },
 ];
 
 /// The longest a single `tlmgr` run may take (a full update of an old tree can be slow).
@@ -189,6 +271,17 @@ impl ManagedTex {
         self.root.join("downloads")
     }
 
+    /// Where the CJK fonts ([`CJK_FONTS`]) are kept. XeLaTeX finds them there by file name.
+    pub fn fonts_dir(&self) -> PathBuf {
+        self.root.join("fonts")
+    }
+
+    /// The CJK fonts not yet downloaded (or of the wrong size: a cut-off download).
+    pub fn missing_fonts(&self) -> Vec<CjkFont> {
+        let dir = self.fonts_dir();
+        CJK_FONTS.iter().filter(|f| std::fs::metadata(dir.join(f.file)).map_or(true, |m| m.len() != f.size)).copied().collect()
+    }
+
     /// The folder of TeX's programs (`TinyTeX/bin/<platform>`), when the tree is installed.
     pub fn bin_dir(&self) -> Option<PathBuf> {
         bin_dir_in(&self.tree())
@@ -208,10 +301,11 @@ impl ManagedTex {
         crate::paths::write_atomic(&self.root.join(STATE), text.as_bytes())
     }
 
-    /// An update is due: installed, and never updated or last updated [`UPDATE_EVERY`] ago.
+    /// Maintain an installed tree when a required tool is missing or the weekly update is due.
     pub fn update_due(&self, now: jiff::Timestamp) -> bool {
-        if !self.installed() {
-            return false;
+        let Some(bin) = self.bin_dir() else { return false };
+        if missing_core_tools(&bin).next().is_some() {
+            return true;
         }
         let state = self.state();
         let last = if state.updated_at.is_empty() { &state.installed_at } else { &state.updated_at };
@@ -268,10 +362,11 @@ impl ManagedTex {
         self.run_tlmgr(&args)
     }
 
-    /// Update `tlmgr` and every installed package. `Ok(false)` when TeX Live has moved to a new
-    /// yearly release, which `tlmgr` can't update across: the tree must be reinstalled.
+    /// Update the package manager and installed packages, then restore missing core tools.
+    /// `Ok(false)` when TeX Live has moved to a new yearly release and needs a new bundle.
     pub fn update(&self) -> Result<bool, Error> {
-        match self.run_tlmgr(&["update", "--self", "--all"]) {
+        let result = self.run_tlmgr(&["update", "--self", "--all"]).and_then(|_| self.repair_core_tools());
+        match result {
             Ok(_) => {
                 let mut state = self.state();
                 state.updated_at = now_utc().to_string();
@@ -281,6 +376,39 @@ impl ManagedTex {
             Err(Error::Compile(text)) if needs_reinstall(&text) => Ok(false),
             Err(e) => Err(e),
         }
+    }
+
+    /// Restore the bibliography tools from TeX Live in this managed installation.
+    pub fn reinstall_biber(&self) -> Result<(), Error> {
+        let bin = self.bin_dir().ok_or_else(|| Error::TexMissing("PSG TeX".into()))?;
+        self.run_tlmgr(&["install", "--reinstall", "biber", "biblatex"])?;
+        if missing_core_tools(&bin).any(|tool| tool == "biber") {
+            return Err(Error::TexMissing("biber".into()));
+        }
+        Ok(())
+    }
+
+    fn repair_core_tools(&self) -> Result<(), Error> {
+        let bin = self.bin_dir().ok_or_else(|| Error::TexMissing("PSG TeX".into()))?;
+        let missing: Vec<_> = missing_core_tools(&bin).collect();
+        if missing.is_empty() {
+            return Ok(());
+        }
+        // The local package registry may still list a package whose launcher was deleted.
+        let mut args = vec!["install", "--reinstall"];
+        for tool in missing.iter().copied() {
+            // The TeX Live packages that bring each program.
+            match tool {
+                "biber" => args.extend(["biber", "biblatex"]),
+                "xelatex" => args.extend(["xetex", "fontspec", "xecjk"]),
+                other => args.push(other),
+            }
+        }
+        self.run_tlmgr(&args)?;
+        if let Some(tool) = missing_core_tools(&bin).next() {
+            return Err(Error::TexMissing(tool.into()));
+        }
+        Ok(())
     }
 
     /// The TeX Live packages holding `files` (`soul.sty`), found with `tlmgr search --global`.
@@ -374,13 +502,13 @@ impl ManagedTex {
         packages.extend(state.added_packages.iter().cloned());
         // One name the repository has dropped fails the whole command, though the rest are
         // installed: what matters is that the programs a compilation runs are there.
-        if let Err(e) = self.install_packages(&packages) {
+        let install = self.install_packages(&packages);
+        let bin = self.bin_dir().ok_or_else(|| Error::TexMissing("PSG TeX".into()))?;
+        if missing_core_tools(&bin).next().is_some() {
+            install?;
+            self.repair_core_tools()?;
+        } else if let Err(e) = install {
             log::warn!("installing the template packages: {e}");
-            let bin = self.bin_dir().unwrap_or_default();
-            let exe = |name: &str| if cfg!(windows) { bin.join(format!("{name}.exe")) } else { bin.join(name) };
-            if !exe("latexmk").is_file() || !exe("biber").is_file() {
-                return Err(e);
-            }
         }
         let mut state = self.state();
         state.updated_at = now_utc().to_string();
@@ -418,30 +546,42 @@ impl ManagedTex {
 }
 
 /// Compile `project`; when PSG's TeX compiled it and the log names missing `.sty`/`.cls` files,
-/// install the packages holding them and compile once more. Returns the report and the packages
-/// installed (empty when none were needed).
+/// install the packages holding them and compile again, a few times, since a class that was
+/// missing often needs packages of its own. Returns the report and the packages installed
+/// (empty when none were needed).
 pub fn compile_completing(
     project: &crate::Project,
     env: &crate::TexEnvironment,
     tex: Option<&ManagedTex>,
     cancel: Option<&std::sync::Arc<std::sync::atomic::AtomicBool>>,
 ) -> Result<(crate::CompileReport, Vec<String>), Error> {
-    let report = project.compile(env, cancel)?;
-    let (Some(tex), true, crate::Outcome::Failed) = (tex, env.managed, report.outcome) else { return Ok((report, Vec::new())) };
-    let Some(log) = report.tex_log.as_deref() else { return Ok((report, Vec::new())) };
-    let installed = match tex.install_missing(log) {
-        Ok(installed) => installed,
-        Err(e) => {
-            log::warn!("installing missing packages: {e}");
-            Vec::new()
+    let mut report = project.compile(env, cancel)?;
+    let mut all = Vec::new();
+    let Some(tex) = tex.filter(|_| env.managed) else { return Ok((report, all)) };
+    for _ in 0..MISSING_ROUNDS {
+        if report.outcome != crate::Outcome::Failed {
+            break;
         }
-    };
-    if installed.is_empty() {
-        return Ok((report, installed));
+        let Some(log) = report.tex_log.as_deref() else { break };
+        let installed = match tex.install_missing(log) {
+            Ok(installed) => installed,
+            Err(e) => {
+                log::warn!("installing missing packages: {e}");
+                Vec::new()
+            }
+        };
+        // Nothing new to install: the failure is something else.
+        if installed.is_empty() || installed.iter().all(|p| all.contains(p)) {
+            break;
+        }
+        all.extend(installed.into_iter().filter(|p| !all.contains(p)).collect::<Vec<_>>());
+        report = project.compile(env, cancel)?;
     }
-    let again = project.compile(env, cancel)?;
-    Ok((again, installed))
+    Ok((report, all))
 }
+
+/// How many times missing packages are installed for one compilation.
+const MISSING_ROUNDS: usize = 4;
 
 /// What an installation is doing, for a progress line.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -457,6 +597,15 @@ fn bin_dir_in(tree: &Path) -> Option<PathBuf> {
         std::fs::read_dir(tree.join("bin")).ok()?.flatten().map(|e| e.path()).filter(|p| p.join(pdflatex).is_file()).collect();
     dirs.sort();
     dirs.into_iter().next()
+}
+
+/// The programs every PSG template needs. XeLaTeX joined later (the built-in templates moved to
+/// it), so a tree installed before then is repaired by the weekly maintenance, not only a new one.
+fn missing_core_tools(bin: &Path) -> impl Iterator<Item = &'static str> + '_ {
+    ["latexmk", "biber", "xelatex"].into_iter().filter(|name| {
+        let file = if cfg!(windows) { bin.join(format!("{name}.exe")) } else { bin.join(name) };
+        !file.is_file()
+    })
 }
 
 /// The TeX tree an unpacked bundle holds: the folder (one level down, `TinyTeX` or `.TinyTeX`)
@@ -557,6 +706,35 @@ mod tests {
     use super::*;
 
     #[test]
+    fn cjk_fonts_are_pinned_and_are_the_ones_the_templates_load() {
+        let mut names = std::collections::HashSet::new();
+        for f in CJK_FONTS {
+            assert!(names.insert(f.file), "{} twice", f.file);
+            assert!(f.sha256.len() == 64 && f.sha256.bytes().all(|b| b.is_ascii_hexdigit()), "{}", f.file);
+            assert!(f.path.starts_with("Serif2.") || f.path.starts_with("Sans2."), "pinned to a release tag: {}", f.path);
+            assert!(f.url().starts_with("https://raw.githubusercontent.com/notofonts/noto-cjk/"));
+            assert!(crate::paths::safe_relative_name(f.file).is_some());
+        }
+        let class = include_str!("../../../templates/academic/psg-article/psg-article.cls");
+        for f in CJK_FONTS.iter().filter(|f| f.file.ends_with(".otf")) {
+            assert!(class.contains(f.file), "the class doesn't load {}", f.file);
+        }
+    }
+
+    #[test]
+    fn fonts_of_the_wrong_size_are_missing() {
+        let dir = tempfile::tempdir().unwrap();
+        let tex = ManagedTex::new(dir.path().to_path_buf());
+        assert_eq!(tex.missing_fonts().len(), CJK_FONTS.len());
+        std::fs::create_dir_all(tex.fonts_dir()).unwrap();
+        std::fs::write(tex.fonts_dir().join("OFL.txt"), vec![b'x'; 4301]).unwrap();
+        std::fs::write(tex.fonts_dir().join("NotoSerifTC-Regular.otf"), b"cut off").unwrap();
+        let missing = tex.missing_fonts();
+        assert_eq!(missing.len(), CJK_FONTS.len() - 1);
+        assert!(missing.iter().any(|f| f.file == "NotoSerifTC-Regular.otf"));
+    }
+
+    #[test]
     fn every_supported_platform_has_its_bundle() {
         assert_eq!(asset_name_for("windows", "x86_64").as_deref(), Some("TinyTeX-1-windows.exe"));
         assert_eq!(asset_name_for("macos", "aarch64").as_deref(), Some("TinyTeX-1-darwin.tar.xz"));
@@ -651,7 +829,10 @@ mod tests {
         assert!(!tex.update_due(now), "nothing installed, nothing to update");
         let bin = tex.tree().join("bin").join("x");
         std::fs::create_dir_all(&bin).unwrap();
-        std::fs::write(bin.join(if cfg!(windows) { "pdflatex.exe" } else { "pdflatex" }), "").unwrap();
+        for name in ["pdflatex", "latexmk", "biber", "xelatex"] {
+            let executable = if cfg!(windows) { bin.join(format!("{name}.exe")) } else { bin.join(name) };
+            std::fs::write(executable, "").unwrap();
+        }
         // Read the +00:00 offset written by older versions.
         let installed_at = (now - jiff::SignedDuration::from_hours(24)).strftime("%Y-%m-%dT%H:%M:%S%.9f+00:00").to_string();
         let state = State { installed_at, ..State::default() };
@@ -682,6 +863,7 @@ mod tests {
             ("pdflatex", "#!/bin/sh\necho pdfTeX fake\n"),
             ("latexmk", "#!/bin/sh\necho latexmk fake\n"),
             ("biber", "#!/bin/sh\necho biber fake\n"),
+            ("xelatex", "#!/bin/sh\necho XeTeX fake\n"),
             ("tlmgr", "#!/bin/sh\necho \"$@\" >> \"$(dirname \"$0\")/tlmgr.log\"\n"),
         ] {
             let p = bin.join(name);
@@ -725,6 +907,75 @@ mod tests {
         let log = std::fs::read_to_string(tex.bin_dir().unwrap().join("tlmgr.log")).unwrap();
         assert!(log.lines().any(|l| l.starts_with("install ") && l.ends_with(" soul")), "{log}");
         assert_eq!(tex.state().release, "v2026.12");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn maintenance_reinstalls_biber_even_when_tex_was_recently_updated() {
+        let dir = tempfile::tempdir().unwrap();
+        let archive = fake_bundle(dir.path());
+        let tex = ManagedTex::new(dir.path().join("root"));
+        tex.install_from(&archive, "v2026.11", &mut |_| {}).unwrap();
+        let bin = tex.bin_dir().unwrap();
+        let state = tex.state();
+        std::fs::remove_file(bin.join("biber")).unwrap();
+        assert!(tex.update_due(now_utc()));
+
+        // A successful tlmgr exit alone cannot mark an incomplete installation as healthy.
+        assert!(matches!(tex.update(), Err(Error::TexMissing(tool)) if tool == "biber"));
+        assert_eq!(tex.state(), state);
+
+        let tlmgr = r#"#!/bin/sh
+bin="$(dirname "$0")"
+echo "$@" >> "$bin/tlmgr.log"
+if [ "$*" = "install --reinstall biber biblatex" ]; then
+    printf '#!/bin/sh\necho Biber fake\n' > "$bin/biber"
+    chmod +x "$bin/biber"
+fi
+"#;
+        std::fs::write(bin.join("tlmgr"), tlmgr).unwrap();
+        assert!(tex.update().unwrap());
+        assert!(!tex.update_due(now_utc()));
+        let env = crate::TexEnvironment::detect_with(Some(&bin));
+        assert_eq!(env.biber.path.as_deref(), Some(bin.join("biber").as_path()));
+        assert!(env.biber.found());
+
+        // The executable can be present but fail to start. Targeted repair replaces it without
+        // touching the weekly-update timestamp and the next probe verifies it can run.
+        let state = tex.state();
+        std::fs::write(bin.join("biber"), "#!/bin/sh\necho Biber startup failed >&2\nexit 1\n").unwrap();
+        let env = crate::TexEnvironment::detect_with(Some(&bin));
+        assert!(!env.biber.found());
+        assert_eq!(env.biber.probe_error.as_deref(), Some("Biber startup failed"));
+        tex.reinstall_biber().unwrap();
+        assert!(crate::TexEnvironment::detect_with(Some(&bin)).biber.found());
+        assert_eq!(tex.state(), state);
+    }
+
+    /// A tree installed before the templates moved to XeLaTeX has no xelatex: maintenance is due
+    /// and installs it, so the built-in templates compile there too.
+    #[cfg(unix)]
+    #[test]
+    fn maintenance_adds_xelatex_to_an_older_installation() {
+        let dir = tempfile::tempdir().unwrap();
+        let archive = fake_bundle(dir.path());
+        let tex = ManagedTex::new(dir.path().join("root"));
+        tex.install_from(&archive, "v2026.11", &mut |_| {}).unwrap();
+        let bin = tex.bin_dir().unwrap();
+        std::fs::remove_file(bin.join("xelatex")).unwrap();
+        assert!(tex.update_due(now_utc()), "a tree without XeLaTeX needs maintenance");
+        let tlmgr = r#"#!/bin/sh
+bin="$(dirname "$0")"
+echo "$@" >> "$bin/tlmgr.log"
+if [ "$*" = "install --reinstall xetex fontspec xecjk" ]; then
+    printf '#!/bin/sh\necho XeTeX fake\n' > "$bin/xelatex"
+    chmod +x "$bin/xelatex"
+fi
+"#;
+        std::fs::write(bin.join("tlmgr"), tlmgr).unwrap();
+        assert!(tex.update().unwrap());
+        assert!(bin.join("xelatex").is_file());
+        assert!(!tex.update_due(now_utc()));
     }
 
     #[cfg(unix)]

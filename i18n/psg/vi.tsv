@@ -341,3 +341,9 @@
 	Advance automatically	Tự động chuyển trang
 	The selected pages have different presentation settings. Applying sets the same values on all of them.	Các trang đã chọn có thiết lập trình bày khác nhau. Khi áp dụng, tất cả sẽ có cùng giá trị.
 	The document changed while the dialog was open, so nothing was changed.	Tài liệu đã thay đổi trong lúc hộp thoại mở. Không có thay đổi nào được áp dụng.
+	Exported to {path}. Content was omitted on pages {pages}.	Đã xuất sang {path}. Một phần nội dung ở các trang {pages} đã bị bỏ qua.
+	Esc leaves full screen	Esc thoát toàn màn hình
+	Full screen fills the screen with one page at a time	Toàn màn hình hiển thị từng trang một, lấp đầy màn hình
+	Turn off so that only Ctrl+L (⌘L on macOS) leaves full screen, as for a kiosk display.	Tắt để chỉ Ctrl+L (⌘L trên macOS) mới thoát toàn màn hình, như cho màn hình kiosk.
+	Turn off to keep the page display, such as continuous scrolling, in full screen.	Tắt để giữ cách hiển thị trang, như cuộn liên tục, khi ở toàn màn hình.
+	locked field	trường bị khóa

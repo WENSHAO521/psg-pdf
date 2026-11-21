@@ -17,7 +17,7 @@ use std::path::{Path, PathBuf};
 use crate::data_dir::LOCATION_FILE;
 
 /// The settings files at the top of the data folder that a move may replace in the new folder.
-pub const SETTINGS_FILES: [&str; 5] = ["app.ron", "language.txt", "theme.txt", "update-channel.txt", RECENT_FILE];
+pub const SETTINGS_FILES: [&str; 6] = ["app.ron", "language.txt", "theme.txt", "update-channel.txt", crate::data_dir::WORKSPACE_FILE, RECENT_FILE];
 /// The recent projects list, whose paths are moved along with the projects.
 pub const RECENT_FILE: &str = "recent-projects.txt";
 /// The log folder stays behind: this run is still writing to it, and the next run starts a new

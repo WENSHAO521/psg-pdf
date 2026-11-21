@@ -1,8 +1,9 @@
 %% psg-article.cls -- research article class for Panorama Scholarly Group journals.
 %% Part of PSG Academic PDF. Licensed MIT OR Apache-2.0, like the rest of the repository.
-%% Written for pdfLaTeX; the bibliography uses BibLaTeX with the Biber backend.
+%% Typeset with XeLaTeX (Chinese and Japanese through xeCJK) or pdfLaTeX (Western text only);
+%% the bibliography uses BibLaTeX with the Biber backend.
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{psg-article}[2026/11/15 v1.1.0 PSG research article]
+\ProvidesClass{psg-article}[2026/11/20 v1.3.0 PSG research article]
 
 %% Options. `authoryear`: author-year citations (Humanities and Social Sciences template) instead
 %% of numbered ones.
@@ -13,9 +14,39 @@
 
 \LoadClass[10pt,a4paper,twoside]{article}
 
-%% Fonts and encoding (pdfLaTeX).
-\RequirePackage[T1]{fontenc}
-\RequirePackage{lmodern}
+%% Fonts. XeLaTeX: Latin Modern through fontspec, and for Chinese and Japanese the Noto CJK faces
+%% PSG Academic PDF installs (OFL-1.1), found by file name: Noto Serif TC for running text with
+%% Noto Serif SC for characters only Simplified Chinese uses, Noto Sans for sans-serif. Without
+%% them, a Noto or Source Han face installed on the computer is used. pdfLaTeX: Latin Modern.
+\RequirePackage{iftex}
+\ifXeTeX
+  \RequirePackage{fontspec}
+  \RequirePackage[AutoFallBack=true]{xeCJK}
+  \xeCJKsetup{CJKspace=false}
+  \newif\ifpsg@cjk
+  \IfFontExistsTF{NotoSerifTC-Regular.otf}{%
+    \psg@cjktrue
+    \setCJKmainfont{NotoSerifTC-Regular.otf}[BoldFont=NotoSerifTC-Bold.otf]
+    \setCJKsansfont{NotoSansTC-Regular.otf}[BoldFont=NotoSansTC-Bold.otf]
+    \setCJKmonofont{NotoSansTC-Regular.otf}
+    \IfFontExistsTF{NotoSerifSC-Regular.otf}{%
+      \setCJKfallbackfamilyfont{\CJKrmdefault}[BoldFont=NotoSerifSC-Bold.otf]{NotoSerifSC-Regular.otf}
+      \setCJKfallbackfamilyfont{\CJKsfdefault}[BoldFont=NotoSansSC-Bold.otf]{NotoSansSC-Regular.otf}}{}%
+  }{}
+  \ifpsg@cjk\else
+    \IfFontExistsTF{Noto Serif CJK TC}{\psg@cjktrue
+      \setCJKmainfont{Noto Serif CJK TC}\setCJKsansfont{Noto Sans CJK TC}\setCJKmonofont{Noto Sans CJK TC}}{%
+    \IfFontExistsTF{Source Han Serif TC}{\psg@cjktrue
+      \setCJKmainfont{Source Han Serif TC}\setCJKsansfont{Source Han Sans TC}\setCJKmonofont{Source Han Sans TC}}{}}
+  \fi
+  \ifpsg@cjk\else
+    \ClassWarningNoLine{psg-article}{No Chinese or Japanese font was found. PSG Academic PDF
+      installs Noto CJK with its TeX (Settings > TeX installation)}
+  \fi
+\else
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage{lmodern}
+\fi
 \RequirePackage{microtype}
 
 %% Page layout.
@@ -120,6 +151,44 @@
 \newcommand\psgPdfAuthor[1]{\renewcommand*\psg@pdfauthor{#1}}
 \newcommand\psgPdfKeywords[1]{\renewcommand*\psg@pdfkeywords{#1}}
 
+%% The article's language, from the metadata (\psgLanguage{zh-hant}, zh-hans, ja or en): the
+%% labels of the title block, figures, tables and the bibliography follow it.
+\newcommand*\psg@lbl@abstract{Abstract.}
+\newcommand*\psg@lbl@keywords{Keywords:}
+\newcommand*\psg@lbl@received{Received:}
+\newcommand*\psg@lbl@revised{Revised:}
+\newcommand*\psg@lbl@accepted{Accepted:}
+\newcommand*\psg@lbl@published{Published:}
+\newcommand*\psg@lbl@figure{Figure}
+\newcommand*\psg@lbl@table{Table}
+\newcommand*\psg@lbl@references{References}
+\newcommand\psg@labels[9]{%
+  \renewcommand*\psg@lbl@abstract{#1}\renewcommand*\psg@lbl@keywords{#2}%
+  \renewcommand*\psg@lbl@received{#3}\renewcommand*\psg@lbl@revised{#4}%
+  \renewcommand*\psg@lbl@accepted{#5}\renewcommand*\psg@lbl@published{#6}%
+  \renewcommand*\psg@lbl@figure{#7}\renewcommand*\psg@lbl@table{#8}%
+  \renewcommand*\psg@lbl@references{#9}}
+\def\psg@lang@zhhant{zh-hant}
+\def\psg@lang@zhhans{zh-hans}
+\def\psg@lang@ja{ja}
+\newcommand\psgLanguage[1]{%
+  \edef\psg@lang{#1}%
+  \ifx\psg@lang\psg@lang@zhhant
+    \psg@labels{摘要：}{關鍵詞：}{收稿日期：}{修訂日期：}{接受日期：}{出版日期：}{圖}{表}{參考文獻}\fi
+  \ifx\psg@lang\psg@lang@zhhans
+    \psg@labels{摘要：}{关键词：}{收稿日期：}{修订日期：}{接受日期：}{出版日期：}{图}{表}{参考文献}\fi
+  \ifx\psg@lang\psg@lang@ja
+    \psg@labels{要旨：}{キーワード：}{受付：}{改訂：}{受理：}{公開：}{図}{表}{参考文献}\fi
+  \DefineBibliographyStrings{english}{references={\psg@lbl@references},bibliography={\psg@lbl@references}}%
+  % Chinese and Japanese: every paragraph indented two characters, and a space after "圖 1".
+  \ifx\psg@lbl@figure\psg@lbl@en@figure\else
+    \setlength\parindent{2em}\RequirePackage{indentfirst}\captionsetup{labelsep=quad}%
+  \fi}
+\newcommand*\psg@lbl@en@figure{Figure}
+\AtBeginDocument{%
+  \renewcommand*\figurename{\psg@lbl@figure}%
+  \renewcommand*\tablename{\psg@lbl@table}}
+
 %% Author superscripts, used by the generated author list.
 \newcommand\psgAffMark[1]{\textsuperscript{#1}}
 
@@ -161,6 +230,16 @@
   {-2.5ex \@plus -1ex \@minus -.2ex}{1ex \@plus .2ex}%
   {\normalfont\normalsize\bfseries\color{psgaccent}}}
 
+%% Whether a metadata value (a macro) is empty, however it was defined: \psg@ifempty\macro{yes}{no}.
+\newcommand\psg@ifempty[1]{%
+  \if\relax\detokenize\expandafter{#1}\relax\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
+%% The abstract and keywords, each only when there is one.
+\newcommand\psg@abstractbox{%
+  \noindent\colorbox{psgaccent!6}{\begin{minipage}{\textwidth-2\fboxsep}
+    \small\psg@ifempty\psg@abstract{}{\textbf{\psg@lbl@abstract}\space\psg@abstract}%
+    \psg@ifempty\psg@keywords{}{\psg@ifempty\psg@abstract{}{\par\smallskip}\textbf{\psg@lbl@keywords}\space\psg@keywords}%
+  \end{minipage}}\par}
+
 %% The title block.
 \newcommand\psgmaketitle{%
   \thispagestyle{psgfirst}%
@@ -180,16 +259,13 @@
     \ifx\psg@correspondence\@empty\else\par\smallskip\psg@correspondence\fi\end{minipage}\par
   \vspace{8pt}%
   \noindent\begin{minipage}{\textwidth}\footnotesize
-    \ifx\psg@received\@empty\else Received: \psg@received\quad\fi
-    \ifx\psg@revised\@empty\else Revised: \psg@revised\quad\fi
-    \ifx\psg@accepted\@empty\else Accepted: \psg@accepted\quad\fi
-    \ifx\psg@published\@empty\else Published: \psg@published\fi
+    \ifx\psg@received\@empty\else \psg@lbl@received\space\psg@received\quad\fi
+    \ifx\psg@revised\@empty\else \psg@lbl@revised\space\psg@revised\quad\fi
+    \ifx\psg@accepted\@empty\else \psg@lbl@accepted\space\psg@accepted\quad\fi
+    \ifx\psg@published\@empty\else \psg@lbl@published\space\psg@published\fi
   \end{minipage}\par
   \vspace{10pt}%
-  \noindent\colorbox{psgaccent!6}{\begin{minipage}{\textwidth-2\fboxsep}
-    \small\textbf{Abstract.}\space\psg@abstract
-    \ifx\psg@keywords\@empty\else\par\smallskip\textbf{Keywords:}\space\psg@keywords\fi
-  \end{minipage}}\par
+  \psg@ifempty\psg@abstract{\psg@ifempty\psg@keywords{}{\psg@abstractbox}}{\psg@abstractbox}%
   \vspace{14pt}%
   \endgroup}
 

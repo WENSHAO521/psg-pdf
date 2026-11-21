@@ -44,18 +44,15 @@
 	Check Again	다시 확인
 	Check again	다시 확인
 	Check and export the finished PDF	완성된 PDF를 확인하고 내보내기
-	Check compatibility	호환성 확인
 	Check for updates…	업데이트 확인…
 	Check the finished article and save the PDF where it is needed.	완성된 논문을 확인하고 PDF를 필요한 곳에 저장합니다.
 	Checking TeX…	TeX 확인 중…
 	Checking for updates…	업데이트 확인 중…
 	Checking the TeX installation…	TeX 설치를 확인하는 중…
 	Checking…	확인하는 중…
-	Choose an empty folder for the project	프로젝트용 빈 폴더 선택
 	Close	닫기
 	Close {app}	{app} 닫기
 	Close {app} to finish	마치려면 {app}을(를) 닫으세요
-	Coming later	추후 제공
 	Compilation started.	컴파일을 시작했습니다.
 	Compile output	컴파일 출력
 	Copyright	저작권
@@ -121,7 +118,6 @@
 	Import a manuscript or create a project from a template to start.	원고를 가져오거나 템플릿으로 프로젝트를 만들어 시작하세요.
 	Import failed: {error}	가져오기 실패: {error}
 	Import manuscript…	원고 가져오기…
-	Import template (.zip)…	템플릿 가져오기(.zip)…
 	Import the manuscript body (LaTeX)	원고 본문 가져오기 (LaTeX)
 	Install Pandoc to import .docx (experimental)	.docx를 가져오려면 Pandoc을 설치하세요 (실험 기능)
 	Install TeX	TeX 설치
@@ -189,7 +185,6 @@
 	Open or create a project, and wait for the TeX check, before compiling.	컴파일하기 전에 프로젝트를 열거나 만들고 TeX 확인이 끝날 때까지 기다리세요.
 	Open or create a project, then typeset it to export a PDF.	프로젝트를 열거나 만든 뒤 조판하면 PDF를 내보낼 수 있습니다.
 	Open project…	프로젝트 열기…
-	Open the compiled PDF in PSG PDF for review, annotation and further editing	컴파일한 PDF를 PSG PDF에서 열어 검토, 주석, 추가 편집하기
 	Opened {path} in PSG PDF.	{path}을(를) PSG PDF에서 열었습니다.
 	Opened {path} in the default PDF viewer.	{path}을(를) 기본 PDF 뷰어에서 열었습니다.
 	Opened {path}.	{path}을(를) 열었습니다.
@@ -201,9 +196,7 @@
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF가 설치되어 있지 않아 기본 뷰어에서 PDF를 열었습니다. PSG PDF는 별도로 내려받아야 합니다.
 	Page {n}: {error}	{n}쪽: {error}
 	Pages	쪽
-	Planned for a later version; not available yet.	이후 버전에서 제공할 예정이며 아직 사용할 수 없습니다.
 	Portable mode: settings and projects are kept in {path}.	휴대 모드: 설정과 프로젝트는 {path}에 저장됩니다.
-	Press Auto Typeset first.	먼저 “자동 조판”을 누르세요.
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	“자동 조판”을 누르면 원고를 조판하고 PDF가 여기에 표시됩니다.
 	Preview	미리 보기
 	Problems	문제
@@ -275,7 +268,6 @@
 	The .bib file has a syntax error near the entry named here: a missing comma, brace or quote.	.bib 파일의 여기 표시된 항목 근처에 구문 오류가 있습니다. 쉼표, 중괄호 또는 따옴표가 빠졌습니다.
 	The pdfLaTeX journal templates can't typeset Chinese, Japanese or Korean (they need XeLaTeX or LuaLaTeX with a CJK font, which these templates don't use). Give titles, names and references in Latin script (romanized, with the original in the source data), or prepare the article with a CJK-capable template outside PSG Academic PDF.	pdfLaTeX 학술지 템플릿은 중국어, 일본어, 한국어를 조판할 수 없습니다 (CJK 글꼴을 쓰는 XeLaTeX나 LuaLaTeX가 필요하지만 이 템플릿은 사용하지 않습니다). 제목, 이름, 참고문헌을 라틴 문자(로마자 표기, 원문은 원본 데이터에 보관)로 쓰거나, PSG Academic PDF 밖에서 CJK를 지원하는 템플릿으로 준비하세요.
 	The project folder: compilation happens here and only here	프로젝트 폴더: 컴파일은 여기에서만 이루어집니다
-	The project has been typeset	프로젝트가 조판되었습니다
 	The templates have no Cyrillic font (T2A encoding). Transliterate Cyrillic names and titles, as most English-language journals require.	템플릿에 키릴 문자 글꼴(T2A 인코딩)이 없습니다. 대부분의 영문 학술지가 요구하듯 키릴 문자 이름과 제목을 음역하세요.
 	The templates have no Greek text font. In formulas write Greek letters as commands ($\alpha$, $\Omega$); Greek words in running text must be transliterated.	템플릿에 그리스 문자 본문 글꼴이 없습니다. 수식에서는 그리스 문자를 명령($\alpha$, $\Omega$)으로 쓰고, 본문의 그리스어 단어는 음역하세요.
 	The templates have no font for this script. Transliterate the text.	템플릿에 이 문자의 글꼴이 없습니다. 음역하세요.
@@ -378,3 +370,51 @@
 	{path} already exists there. Nothing was moved; choose an empty folder.	그곳에 {path}이(가) 이미 있습니다. 프로젝트와 설정을 옮기지 않았습니다. 빈 폴더를 선택하세요.
 	That folder holds too many files to be a data folder. Nothing was moved.	그 폴더에는 파일이 너무 많아 데이터 폴더로 보이지 않습니다. 프로젝트와 설정을 옮기지 않았습니다.
 	Could not move the data folder ({path}: {error}). Nothing was changed.	데이터 폴더를 옮길 수 없습니다({path}: {error}). 아무것도 바꾸지 않았습니다.
+	Back	뒤로
+	Forward	앞으로
+	Previous page	이전 페이지
+	Page	페이지
+	Next page	다음 페이지
+	Typeset the current manuscript before exporting.	내보내기 전에 현재 원고를 조판하세요.
+	Resolve the errors before exporting.	내보내기 전에 오류를 해결하세요.
+	The current manuscript has been typeset	현재 원고의 조판이 완료되었습니다
+	Workspace folder	작업 공간 폴더
+	New projects are saved here.	새 프로젝트는 여기에 저장됩니다.
+	The chosen workspace is unavailable: {path}	선택한 작업 공간을 사용할 수 없습니다: {path}
+	Choose workspace…	작업 공간 선택…
+	Use the default workspace	기본 작업 공간 사용
+	Workspace folder set to {path}.	작업 공간 폴더를 {path}(으)로 설정했습니다.
+	Could not change the workspace: {error}	작업 공간을 변경할 수 없습니다: {error}
+	Workspace: {path}	작업 공간: {path}
+	Choose a folder for the new project	새 프로젝트의 폴더 선택
+	Folder path	폴더 경로
+	Browse…	찾아보기…
+	Use this folder	이 폴더 사용
+	Enter an existing folder path.	기존 폴더의 경로를 입력하세요.
+	Copy TeX diagnostics	TeX 진단 정보 복사
+	TeX diagnostics copied.	TeX 진단 정보를 복사했습니다.
+	Cut	잘라내기
+	Copy	복사
+	Paste	붙여넣기
+	Repair Biber	Biber 복구
+	Repairing Biber…	Biber 복구 중…
+	Biber was reinstalled.	Biber를 다시 설치했습니다.
+	Could not repair Biber: {error}	Biber를 복구할 수 없습니다: {error}
+	Could not download the Chinese and Japanese fonts: {error}	중국어·일본어 글꼴을 내려받지 못했습니다: {error}
+	Downloading the Chinese and Japanese fonts: {done} of {total} MB	중국어·일본어 글꼴 내려받는 중: {done} / {total} MB
+	Downloading the Chinese and Japanese fonts…	중국어·일본어 글꼴 내려받는 중…
+	The Chinese and Japanese fonts are installed.	중국어·일본어 글꼴이 설치되었습니다.
+	A journal's LaTeX template as the journal hands it out	학술지가 배포하는 LaTeX 템플릿 그대로
+	Add a template (.zip)…	템플릿 추가(.zip)…
+	Add a template folder…	템플릿 폴더 추가…
+	Added the template {name} from {path}.	{path}에서 템플릿 {name}을(를) 추가했습니다.
+	Added the template {name}. Check what was found before using it:	템플릿 {name}을(를) 추가했습니다. 사용하기 전에 찾은 내용을 확인하세요:
+	Could not add the template: {error}	템플릿을 추가하지 못했습니다: {error}
+	New file	새 파일
+	Made {file}.	{file}을(를) 만들었습니다.
+	Show in PDF	PDF에서 보기
+	Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way.	커서가 있는 줄이 PDF의 어디에 있는지 보여 줍니다. PDF를 두 번 클릭하면 반대로 이동합니다.
+	Double-click to show this place in the source	두 번 클릭하여 원본에서 이 위치 보기
+	Typeset the manuscript again to jump between the PDF and the source.	PDF와 원본 사이를 이동하려면 원고를 다시 조판하세요.
+	That part of the PDF comes from {file}, line {n}.	PDF의 이 부분은 {file}의 {n}번째 줄에서 왔습니다.
+	Line {n} of {file} is not in the PDF yet; typeset to update it.	{file}의 {n}번째 줄은 아직 PDF에 없습니다. 조판하여 업데이트하세요.

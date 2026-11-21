@@ -26,11 +26,19 @@ impl TextLine {
     /// visual-order Indic text): then only the line's text as a whole says what it reads.
     pub fn runs(&self) -> impl Iterator<Item = (&str, &[[f64; 4]], bool)> {
         let mut start = 0;
-        self.runs.iter().map(move |(text, end, spaced)| {
+        self.runs.iter().map(move |(text, end, spaced, _)| {
             let ink = self.ink.get(start..*end).unwrap_or_default();
             start = *end;
             (text.as_str(), ink, *spaced)
         })
+    }
+
+    /// [`Self::runs`] with where each run is painted: the index of its text-showing operator in
+    /// the page's joined operator list, comparable with [`Self::first_paint_pos`]'s second
+    /// element. Something painted after a run's operator lies on top of that run, and runs of
+    /// one line can be painted before and after it. None when [`Self::runs`] has none.
+    pub fn painted_runs(&self) -> impl Iterator<Item = (&str, &[[f64; 4]], usize)> {
+        self.runs().zip(&self.runs).map(|((text, ink, _), (.., op))| (text, ink, *op))
     }
 
     pub(crate) fn rotation(&self) -> f64 {
@@ -504,7 +512,7 @@ fn text_lines_in(doc: &Document, p: &pdfcraft_model::Page, actual_text: bool, in
             l.rect = [l.rect[0].min(s.rect[0]), l.rect[1].min(s.rect[1]), l.rect[2].max(s.rect[2]), l.rect[3].max(s.rect[3])];
             l.frame = union(l.frame, s.frame);
             l.ink.extend(s.ink.iter().copied());
-            l.runs.push((s.text.clone(), l.ink.len(), spaced));
+            l.runs.push((s.text.clone(), l.ink.len(), spaced, s.op));
             l.ops.push(s.op);
             l.ops.extend(s.extra_ops.iter().copied());
             l.decodable &= s.decodable;
@@ -538,7 +546,7 @@ fn text_lines_in(doc: &Document, p: &pdfcraft_model::Page, actual_text: bool, in
                 actual_text: s.actual_text,
                 clips: s.state.render_mode >= 4,
                 unreadable_mode: s.state.unreadable.as_deref().map(str::to_owned),
-                runs: vec![(s.text.clone(), s.ink.len(), false)],
+                runs: vec![(s.text.clone(), s.ink.len(), false, s.op)],
                 soft_break: s.soft_break,
                 hard_break: s.hard_break,
                 soft_gap: s.soft_gap,
@@ -624,7 +632,7 @@ fn add_shown(lines: &mut Vec<TextLine>, last: &mut Option<Pen>, s: Shown, stream
         l.rect = [l.rect[0].min(s.rect[0]), l.rect[1].min(s.rect[1]), l.rect[2].max(s.rect[2]), l.rect[3].max(s.rect[3])];
         l.frame = union(l.frame, s.frame);
         l.ink.extend(s.ink.iter().copied());
-        l.runs.push((s.text.clone(), l.ink.len(), spaced));
+        l.runs.push((s.text.clone(), l.ink.len(), spaced, s.op));
         l.ops.push(s.op);
         l.ops.extend(s.extra_ops.iter().copied());
         l.decodable &= s.decodable;
@@ -657,7 +665,7 @@ fn add_shown(lines: &mut Vec<TextLine>, last: &mut Option<Pen>, s: Shown, stream
             actual_text: s.actual_text,
             clips: s.state.render_mode >= 4,
             unreadable_mode: s.state.unreadable.as_deref().map(str::to_owned),
-            runs: vec![(s.text.clone(), s.ink.len(), false)],
+            runs: vec![(s.text.clone(), s.ink.len(), false, s.op)],
             soft_break: s.soft_break,
             hard_break: s.hard_break,
             soft_gap: s.soft_gap,

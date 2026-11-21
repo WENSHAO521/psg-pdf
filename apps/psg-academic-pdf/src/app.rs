@@ -13,7 +13,7 @@
 //! is open, so egui's own widgets are used here.
 #![allow(clippy::disallowed_methods, clippy::disallowed_types)]
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, channel};
@@ -50,7 +50,7 @@ pub const APP_NAME: &str = crate::theme::PRODUCT.name();
 /// The organisation that publishes it.
 pub const PUBLISHER: &str = psg_brand::PUBLISHER;
 
-fn local_now() -> jiff::ZonedDateTime {
+pub(crate) fn local_now() -> jiff::ZonedDateTime {
     psg_academic::managed::now_utc().to_zoned_datetime(jiff::tz::TimeZone::system())
 }
 
@@ -181,13 +181,19 @@ pub struct AcademicApp {
     tex_error: Option<String>,
     templates: Vec<Template>,
     template_problems: Vec<String>,
+    /// What the last template added was found to have: its name, what was found, what to check.
+    template_added: Option<(String, Vec<String>, Vec<String>)>,
     selected_template: usize,
     workspace: PathBuf,
+    folder_choice: Option<data_folder::FolderChoice>,
     project: Option<Project>,
+    saved_project: Option<psg_academic::project::ProjectFile>,
     buffers: Buffers,
     running: Option<Running>,
     report: Option<CompileReport>,
     preview: Preview,
+    /// The PDF's SyncTeX, read when first used after each compilation.
+    synctex: Option<psg_academic::synctex::SyncTex>,
     zoom: f32,
     /// Draw preview pages no wider than their pane.
     fit_width: bool,
@@ -232,7 +238,7 @@ pub struct AcademicApp {
 
 impl AcademicApp {
     pub fn new(ctx: &egui::Context, data: DataDir, paths: Vec<PathBuf>) -> Self {
-        let (templates, template_problems) = template::discover(&template::default_template_dirs());
+        let (templates, template_problems) = template::discover(&crate::cli::template_dirs(&data.root));
         let workspace = data.projects();
         let language_file = data.root.join("language.txt");
         let chosen = std::fs::read_to_string(&language_file).unwrap_or_default();
@@ -253,13 +259,17 @@ impl AcademicApp {
             tex_error: None,
             templates,
             template_problems,
+            template_added: None,
             selected_template: 0,
             workspace,
+            folder_choice: None,
             project: None,
+            saved_project: None,
             buffers: Buffers::default(),
             running: None,
             report: None,
             preview: Preview::default(),
+            synctex: None,
             zoom: 1.0,
             fit_width: true,
             page: Page::Dashboard,
@@ -371,10 +381,18 @@ impl AcademicApp {
     /// nothing without a project. False when something couldn't be saved (already reported).
     fn save_all(&mut self) -> bool {
         self.apply_buffers();
-        let saved_source = self.save_source();
-        let Some(project) = &self.project else { return saved_source };
+        if !self.save_source() {
+            return false;
+        }
+        let Some(project) = &self.project else { return true };
+        if self.saved_project.as_ref() == Some(&project.file) {
+            return true;
+        }
         match project.save() {
-            Ok(()) => saved_source,
+            Ok(()) => {
+                self.saved_project = Some(project.file.clone());
+                true
+            }
             Err(e) => {
                 self.fail(tf("Could not save the project: {error}", &[("error", &e.to_string())]));
                 false
@@ -431,13 +449,16 @@ impl AcademicApp {
     /// Opens what was asked for, once TeX has been checked. One project is open at a time, so
     /// of several paths the last one wins and the others are noted.
     fn open_pending(&mut self) {
-        if self.pending.is_empty() || self.env.is_none() || self.running.is_some() {
+        if self.pending.is_empty() || self.env.is_none() || self.running.is_some() || self.moving_data() {
             return;
         }
         let mut paths = std::mem::take(&mut self.pending);
         let Some(last) = paths.pop() else { return };
         for p in paths {
             self.note(tf("Not opened (one project at a time): {path}", &[("path", &p.display().to_string())]));
+        }
+        if !self.prepare_project_switch() {
+            return;
         }
         match launch::classify(&last) {
             Ok(Request::Project(dir)) => match Project::open(&dir) {
@@ -465,12 +486,12 @@ impl AcademicApp {
             return;
         };
         let name = launch::project_name(manuscript, &local_now().strftime("%Y%m%d-%H%M%S").to_string());
-        let project = match Project::create(&self.workspace.join(name), &tpl, PublicationMetadata::sample()) {
+        let mut project = match Project::create(&self.workspace.join(name), &tpl, PublicationMetadata::sample()) {
             Ok(p) => p,
             Err(e) => return self.fail(tf("Could not create the project: {error}", &[("error", &e.to_string())])),
         };
         let result = match (kind, pandoc) {
-            (ManuscriptKind::Docx, Some(pandoc)) => PandocImporter { pandoc }.import(manuscript, &project, None),
+            (ManuscriptKind::Docx, Some(pandoc)) => PandocImporter { pandoc }.import(manuscript, &mut project, None),
             _ => project.import_manuscript(manuscript),
         };
         self.note(tf("New project from {template} around {path}.", &[("template", &tpl.manifest.name), ("path", &manuscript.display().to_string())]));
@@ -498,11 +519,11 @@ impl AcademicApp {
     }
 
     fn detect_tex(&mut self, ctx: &egui::Context) {
-        let bin = tex_setup::bin_dir(self.managed.as_ref());
+        let managed = self.managed.clone();
         let (tx, rx) = channel();
         let ctx = ctx.clone();
         let spawned = std::thread::Builder::new().name("psg-tex-detect".into()).spawn(move || {
-            let _ = tx.send(TexEnvironment::detect_with(bin.as_deref()));
+            let _ = tx.send(tex_setup::detect(managed.as_ref()));
             ctx.request_repaint();
         });
         match spawned {
@@ -529,7 +550,13 @@ impl AcademicApp {
                 ));
             } else if let Some(tool) = [&env.pdflatex, &env.latexmk, &env.biber].into_iter().find(|tool| tool.probe_error.is_some()) {
                 let detail = format!("{}: {}", tool.name, tool.probe_error.as_deref().unwrap_or_default());
-                self.fail(tf("Could not check the TeX installation: {error}", &[("error", &detail)]));
+                let message = tf("Could not check the TeX installation: {error}", &[("error", &detail)]);
+                if tool.name == "biber" && !self.tex_auto_started && self.biber_repair_needed(Some(&env)) {
+                    self.status = t("Repairing Biber…").into();
+                    self.note(message);
+                } else {
+                    self.fail(message);
+                }
             } else if installing {
                 self.status = t("Installing TeX for PSG Academic PDF…").into();
                 self.note(tf("TeX not found yet ({tools}); PSG Academic PDF installs its own.", &[("tools", &missing.join(", "))]));
@@ -560,7 +587,7 @@ impl AcademicApp {
         self.preview.poll(ctx);
     }
 
-    /// Install PSG's TeX if it isn't, or update it if a week has passed: once per run, by itself.
+    /// Install, repair or update PSG's TeX automatically, once per app run.
     fn start_tex_maintenance(&mut self, ctx: &egui::Context) {
         if self.tex_auto_started || self.tex_job.is_some() {
             return;
@@ -568,8 +595,12 @@ impl AcademicApp {
         let Some(tex) = &self.managed else { return };
         let job = if !tex.installed() {
             Job::Install
+        } else if self.biber_repair_needed(self.env.as_ref()) {
+            Job::RepairBiber
         } else if tex.update_due(psg_academic::managed::now_utc()) {
             Job::Update
+        } else if !tex.missing_fonts().is_empty() {
+            Job::Fonts
         } else {
             return;
         };
@@ -577,7 +608,14 @@ impl AcademicApp {
         self.start_tex_job(ctx, job);
     }
 
-    /// Start installing or updating PSG's TeX (Settings ▸ TeX installation, or by itself).
+    /// Only repair Biber from PSG's own TeX tree.
+    fn biber_repair_needed(&self, env: Option<&TexEnvironment>) -> bool {
+        let Some(env) = env.filter(|env| env.managed && env.biber.probe_error.is_some()) else { return false };
+        let Some(bin) = tex_setup::bin_dir(self.managed.as_ref()) else { return false };
+        env.biber.path.as_deref().and_then(Path::parent) == Some(bin.as_path())
+    }
+
+    /// Start installing, repairing or updating PSG's TeX.
     pub(crate) fn start_tex_job(&mut self, ctx: &egui::Context, job: Job) {
         if self.tex_job.is_some() || self.running.is_some() {
             return;
@@ -590,11 +628,18 @@ impl AcademicApp {
         match tex_setup::start(tex, job, move || repaint.request_repaint()) {
             Ok(rx) => {
                 self.tex_error = None;
-                let progress = if job == Job::Install { Progress::Looking } else { Progress::Updating };
+                let progress = match job {
+                    Job::Install => Progress::Looking,
+                    Job::Update => Progress::Updating,
+                    Job::RepairBiber => Progress::Packages,
+                    Job::Fonts => Progress::Fonts { done: 0, total: 0 },
+                };
                 self.tex_job = Some(TexJob { rx, job, progress });
                 self.note(match job {
                     Job::Install => t("Installing TeX for PSG Academic PDF…"),
                     Job::Update => t("Updating TeX…"),
+                    Job::RepairBiber => t("Repairing Biber…"),
+                    Job::Fonts => t("Downloading the Chinese and Japanese fonts…"),
                 });
             }
             Err(e) => self.fail(tf("Could not install TeX: {error}", &[("error", &e.to_string())])),
@@ -623,13 +668,19 @@ impl AcademicApp {
                 self.detect_tex(ctx);
             }
             Ok(tex_setup::Done::Updated) => {
-                self.note(t("TeX is up to date."));
+                self.note(match kind {
+                    Job::RepairBiber => t("Biber was reinstalled."),
+                    Job::Fonts => t("The Chinese and Japanese fonts are installed."),
+                    _ => t("TeX is up to date."),
+                });
                 self.detect_tex(ctx);
             }
             Err(e) => {
                 let text = match kind {
                     Job::Install => tf("Could not install TeX: {error}", &[("error", &e)]),
                     Job::Update => tf("Could not update TeX: {error}", &[("error", &e)]),
+                    Job::RepairBiber => tf("Could not repair Biber: {error}", &[("error", &e)]),
+                    Job::Fonts => tf("Could not download the Chinese and Japanese fonts: {error}", &[("error", &e)]),
                 };
                 self.tex_error = Some(text.clone());
                 if kind == Job::Install {
@@ -671,6 +722,7 @@ impl AcademicApp {
     }
 
     fn load_preview(&mut self, ctx: &egui::Context) {
+        self.synctex = None;
         let Some(project) = &self.project else { return };
         let pdf = project.pdf_path();
         match std::fs::read(&pdf) {
@@ -679,15 +731,32 @@ impl AcademicApp {
         }
     }
 
+    /// Save before reading the destination or creating a new project folder. On error, keep
+    /// the active project and its editor buffers available for another attempt.
+    fn prepare_project_switch(&mut self) -> bool {
+        if self.running.is_some() {
+            self.fail(t("Typesetting is already running."));
+            return false;
+        }
+        if self.moving_data() {
+            self.fail(t("Moving the data folder…"));
+            return false;
+        }
+        self.save_all()
+    }
+
+    fn moving_data(&self) -> bool {
+        matches!(self.relocation, data_folder::Relocation::Moving { .. })
+    }
+
     fn set_project(&mut self, project: Project) {
-        // The project being left keeps what was typed into it.
-        self.save_all();
         self.recent.add(&project.dir);
         self.buffers.keywords = project.file.metadata.keywords.join("; ");
         self.buffers.author_affiliations = project.file.metadata.authors.iter().map(|a| join_numbers(&a.affiliations)).collect();
         self.note(tf("Project: {path} (template {template})", &[("path", &project.dir.display().to_string()), ("template", &project.file.template)]));
         self.source = SourceEditor::default();
         self.source.load(&project.dir, &project.file.body);
+        self.saved_project = Some(project.file.clone());
         self.project = Some(project);
         self.report = None;
         self.history.clear();
@@ -713,9 +782,11 @@ impl AcademicApp {
             return true;
         }
         let result = if self.source.file == project.file.body {
-            project.write_body(&self.source.text).map_err(|e| e.to_string())
+            project.write_body(&self.source.text)
         } else {
-            psg_academic::paths::write_atomic(&project.dir.join(&self.source.file), self.source.text.as_bytes()).map_err(|e| e.to_string())
+            project
+                .invalidate_pdf()
+                .and_then(|()| psg_academic::paths::write_atomic(&project.dir.join(&self.source.file), self.source.text.as_bytes()))
         };
         match result {
             Ok(()) => {
@@ -725,7 +796,7 @@ impl AcademicApp {
                 true
             }
             Err(e) => {
-                self.fail(tf("Could not save {file}: {error}", &[("file", &self.source.file), ("error", &e)]));
+                self.fail(tf("Could not save {file}: {error}", &[("file", &self.source.file), ("error", &e.to_string())]));
                 false
             }
         }
@@ -754,12 +825,72 @@ impl AcademicApp {
         }
     }
 
-    /// The files the source editor offers: the body, then the bibliography files.
+    /// The files the source editor offers: the body, the main file, then the project's other
+    /// LaTeX and bibliography files.
     fn editable_files(&self) -> Vec<String> {
-        let Some(project) = &self.project else { return Vec::new() };
-        let mut files = vec![project.file.body.clone()];
-        files.extend(project.bib_files());
-        files
+        self.project.as_ref().map(Project::text_files).unwrap_or_default()
+    }
+
+    /// The PDF's SyncTeX, read now if it wasn't yet. A note says why when there is none.
+    fn sync_tex(&mut self) -> Option<&psg_academic::synctex::SyncTex> {
+        if self.synctex.is_none() {
+            let project = self.project.as_ref()?;
+            match psg_academic::synctex::SyncTex::read(&project.dir, &project.file.main) {
+                Ok(Some(s)) => self.synctex = Some(s),
+                Ok(None) => {
+                    self.note(t("Typeset the manuscript again to jump between the PDF and the source."));
+                    return None;
+                }
+                Err(e) => {
+                    self.fail(e.to_string());
+                    return None;
+                }
+            }
+        }
+        self.synctex.as_ref()
+    }
+
+    /// Show the source line that put what is at (`x`, `y`) PDF points on `page` (0-based).
+    fn show_source_at(&mut self, page: usize, x: f32, y: f32) {
+        let Some(found) = self.sync_tex().and_then(|s| s.source_at(page, x, y)) else { return };
+        let (file, line) = found;
+        if self.editable_files().contains(&file) {
+            self.go_to(&file, Some(line));
+        } else {
+            self.note(tf("That part of the PDF comes from {file}, line {n}.", &[("file", &file), ("n", &line.to_string())]));
+        }
+    }
+
+    /// Show the place in the PDF that the source editor's cursor line produced.
+    fn show_in_pdf(&mut self, ctx: &egui::Context) {
+        // A reopened project's PDF isn't rendered until asked for; start it so there is a page
+        // to show. The page and mark set below outlive the load.
+        if self.preview.pages.is_empty() && !self.preview.rendering {
+            self.load_preview(ctx);
+        }
+        let (file, line) = (self.source.file.clone(), self.source.cursor_line());
+        let Some((page, y)) = self.sync_tex().and_then(|s| s.page_of(&file, line)) else {
+            self.note(tf("Line {n} of {file} is not in the PDF yet; typeset to update it.", &[("n", &line.to_string()), ("file", &file)]));
+            return;
+        };
+        self.preview.navigation.go_to(page);
+        self.preview.navigation.jump = Some(page);
+        self.preview.mark = Some((page, y));
+        if self.source_view == SourceView::Editor {
+            self.source_view = SourceView::Split;
+        }
+    }
+
+    /// Make the new file `name` and show it in the source editor.
+    fn create_source_file(&mut self, name: &str) {
+        let Some(project) = &self.project else { return };
+        match project.create_text_file(name) {
+            Ok(()) => {
+                self.note(tf("Made {file}.", &[("file", name)]));
+                self.go_to(name, None);
+            }
+            Err(e) => self.fail(e.to_string()),
+        }
     }
 
     /// Copy the text buffers into the metadata.
@@ -777,6 +908,9 @@ impl AcademicApp {
             self.fail(t("No template is available."));
             return;
         };
+        if !self.prepare_project_switch() {
+            return;
+        }
         let name = format!("{}-{}", tpl.manifest.id, local_now().strftime("%Y%m%d-%H%M%S"));
         let dir = self.workspace.join(name);
         match Project::create(&dir, &tpl, PublicationMetadata::sample()) {
@@ -790,16 +924,35 @@ impl AcademicApp {
     }
 
     fn new_project_in_folder(&mut self) {
-        let Some(tpl) = self.templates.get(self.selected_template).cloned() else { return };
-        let Some(dir) = rfd::FileDialog::new().set_title(t("Choose an empty folder for the project")).pick_folder() else { return };
-        match Project::create(&dir, &tpl, PublicationMetadata::sample()) {
-            Ok(p) => self.set_project(p),
-            Err(e) => self.fail(tf("Could not create the project: {error}", &[("error", &e.to_string())])),
+        self.choose_folder(data_folder::FolderUse::NewProject);
+    }
+
+    fn create_project_in_folder(&mut self, folder: &std::path::Path) -> bool {
+        let Some(tpl) = self.templates.get(self.selected_template).cloned() else { return false };
+        if !self.prepare_project_switch() {
+            return false;
+        }
+        let name = format!("{}-{}", tpl.manifest.id, local_now().strftime("%Y%m%d-%H%M%S"));
+        let result = new_project_location(folder, &name)
+            .map_err(|e| e.to_string())
+            .and_then(|dir| Project::create(&dir, &tpl, PublicationMetadata::sample()).map_err(|e| e.to_string()));
+        match result {
+            Ok(p) => {
+                self.set_project(p);
+                true
+            }
+            Err(e) => {
+                self.fail(tf("Could not create the project: {error}", &[("error", &e)]));
+                false
+            }
         }
     }
 
     fn open_project(&mut self) {
         let Some(dir) = rfd::FileDialog::new().set_title(t("Open a PSG Academic PDF project folder")).pick_folder() else { return };
+        if !self.prepare_project_switch() {
+            return;
+        }
         match Project::open(&dir) {
             Ok(p) => {
                 self.status = tf("Opened {path}.", &[("path", &p.dir.display().to_string())]);
@@ -810,22 +963,53 @@ impl AcademicApp {
     }
 
     fn import_manuscript(&mut self) {
-        let Some(project) = &self.project else { return };
+        if self.project.is_none() {
+            return;
+        }
         let Some(path) = rfd::FileDialog::new().set_title(t("Import the manuscript body (LaTeX)")).add_filter("LaTeX", &["tex"]).pick_file() else {
             return;
         };
+        // What was typed is saved first, so the import starts from it.
+        if !self.save_all() {
+            return;
+        }
+        let Some(project) = &self.project else { return };
         let result = project.import_manuscript(&path);
+        self.reload_after_import();
         self.after_import(result);
     }
 
+    /// Show what an import into the open project changed: the body in the editor, and the
+    /// metadata it may have filled in (title, authors, abstract, keywords).
+    fn reload_after_import(&mut self) {
+        let Some(project) = &self.project else { return };
+        self.buffers.keywords = project.file.metadata.keywords.join("; ");
+        self.buffers.author_affiliations = project.file.metadata.authors.iter().map(|a| join_numbers(&a.affiliations)).collect();
+        self.saved_project = Some(project.file.clone());
+        if self.source.file == project.file.body {
+            let dir = project.dir.clone();
+            let body = project.file.body.clone();
+            self.source.load(&dir, &body);
+        }
+        self.refresh_checks();
+    }
+
     fn import_docx(&mut self) {
-        let (Some(project), Some(pandoc)) = (&self.project, self.env.as_ref().and_then(|e| e.pandoc.path.clone())) else { return };
+        let Some(pandoc) = self.env.as_ref().and_then(|e| e.pandoc.path.clone()) else { return };
+        if self.project.is_none() {
+            return;
+        }
         let Some(path) =
             rfd::FileDialog::new().set_title(t("Import a Word manuscript (experimental, via Pandoc)")).add_filter("Word", &["docx"]).pick_file()
         else {
             return;
         };
+        if !self.save_all() {
+            return;
+        }
+        let Some(project) = self.project.as_mut() else { return };
         let result = PandocImporter { pandoc }.import(&path, project, None);
+        self.reload_after_import();
         self.after_import(result);
     }
 
@@ -876,8 +1060,7 @@ impl AcademicApp {
         if self.running.is_some() {
             return;
         }
-        self.apply_buffers();
-        if !self.save_source() {
+        if !self.save_all() {
             return;
         }
         self.refresh_checks();
@@ -889,10 +1072,6 @@ impl AcademicApp {
             self.fail(t("Open or create a project, and wait for the TeX check, before compiling."));
             return;
         };
-        if let Err(e) = project.save() {
-            self.fail(tf("Could not save the project: {error}", &[("error", &e.to_string())]));
-            return;
-        }
         let cancel = Arc::new(AtomicBool::new(false));
         let (tx, rx) = channel();
         let flag = cancel.clone();
@@ -916,12 +1095,20 @@ impl AcademicApp {
     }
 
     fn export(&mut self) {
+        if !self.check_export() {
+            return;
+        }
         let Some(project) = &self.project else { return };
         let suggested = suggested_file_name(&project.file.metadata);
         let Some(dest) = rfd::FileDialog::new().set_title(t("Export the PDF")).add_filter("PDF", &["pdf"]).set_file_name(suggested).save_file()
         else {
             return;
         };
+        // The native dialog may have been open while another program changed the source files.
+        if !self.check_export() {
+            return;
+        }
+        let Some(project) = &self.project else { return };
         let result = project.export_pdf(&dest);
         match result {
             Ok(()) => {
@@ -934,6 +1121,9 @@ impl AcademicApp {
     }
 
     fn open_in_psg_pdf(&mut self) {
+        if !self.check_export() {
+            return;
+        }
         let Some(project) = &self.project else { return };
         let pdf = project.pdf_path();
         match crate::psg_pdf::open(&pdf) {
@@ -1206,8 +1396,11 @@ impl eframe::App for AcademicApp {
         self.poll_relocation(&ctx);
         self.open_pending();
         // A ready update waits while a compilation runs.
-        if self.updates.frame(&ctx, self.running.is_none()) || quit {
-            self.save_all();
+        let restart = self.updates.frame(&ctx, self.running.is_none() && !self.moving_data());
+        if ctx.input(|i| i.viewport().close_requested()) && (self.moving_data() || !self.save_all()) {
+            ctx.send_viewport_cmd(egui::ViewportCommand::CancelClose);
+        }
+        if (restart || quit) && !self.moving_data() && self.save_all() {
             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
         }
         if self.running.is_some() || self.preview.rendering || self.env_rx.is_some() || self.tex_job.is_some() {
@@ -1222,6 +1415,7 @@ impl eframe::App for AcademicApp {
         self.status_bar(ui);
         self.nav(ui);
         self.central(ui);
+        self.folder_dialog(&ctx);
         self.notices.show(&ctx);
         self.remember_layout(&ctx);
     }
@@ -1236,9 +1430,49 @@ impl eframe::App for AcademicApp {
     }
 }
 
+/// An empty picked folder can be the project itself. In a workspace with existing files, create
+/// a separate project folder to keep those files out of the manuscript and compilation.
+fn new_project_location(folder: &std::path::Path, name: &str) -> std::io::Result<PathBuf> {
+    if std::fs::read_dir(folder)?.next().transpose()?.is_some() { Ok(folder.join(name)) } else { Ok(folder.to_path_buf()) }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_nonempty_selected_folder_can_hold_a_new_project() {
+        let dir = tempfile::tempdir().unwrap();
+        assert_eq!(new_project_location(dir.path(), "article").unwrap(), dir.path());
+        let existing = dir.path().join("existing.txt");
+        std::fs::write(&existing, "notes").unwrap();
+        let location = new_project_location(dir.path(), "article").unwrap();
+        assert_eq!(location, dir.path().join("article"));
+        let project = Project::create(&location, &Template::builtin().remove(0), PublicationMetadata::sample()).unwrap();
+        assert_eq!(Project::open(&location).unwrap().dir, project.dir);
+        assert_eq!(std::fs::read_to_string(existing).unwrap(), "notes");
+    }
+
+    #[test]
+    fn a_failed_save_prevents_leaving_the_active_draft() {
+        let dir = tempfile::tempdir().unwrap();
+        let data = DataDir::resolve(None, Some(dir.path().join("data")));
+        let mut app = AcademicApp::new(&egui::Context::default(), data, Vec::new());
+        let article = dir.path().join("article");
+        let project = Project::create(&article, &Template::builtin().remove(0), PublicationMetadata::sample()).unwrap();
+        let body = article.join(&project.file.body);
+        app.set_project(project);
+        app.source.text = "unsaved edits".into();
+        std::fs::remove_file(&body).unwrap();
+        std::fs::create_dir(&body).unwrap();
+        assert!(!app.prepare_project_switch());
+        assert_eq!(app.project.as_ref().unwrap().dir, article);
+        assert_eq!(app.source.text, "unsaved edits");
+        assert!(app.source.dirty());
+        std::fs::remove_dir(&body).unwrap();
+        assert!(app.prepare_project_switch());
+        assert_eq!(std::fs::read_to_string(body).unwrap(), "unsaved edits");
+    }
 
     #[test]
     fn suggested_names_are_safe() {

@@ -11,7 +11,7 @@
 //! reinstalls. When the chosen folder can't be used (a disconnected drive), the home folder is
 //! used for that run and the Activity log says why; the choice itself is kept.
 
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 
 /// The file whose presence beside the exe switches portable mode on.
 pub const PORTABLE_MARKER: &str = "portable.txt";
@@ -19,6 +19,8 @@ pub const PORTABLE_MARKER: &str = "portable.txt";
 pub const PORTABLE_DIR: &str = "PSGAcademicPDFData";
 /// In the home folder: the full path of the data folder the person chose, on one line.
 pub const LOCATION_FILE: &str = "data-location.txt";
+/// The workspace choice, stored with the rest of the settings.
+pub const WORKSPACE_FILE: &str = "workspace-location.txt";
 
 /// The data folder and how it was chosen.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -35,7 +37,50 @@ pub struct DataDir {
 impl DataDir {
     /// Where projects are created.
     pub fn projects(&self) -> PathBuf {
-        self.root.join("projects")
+        self.chosen_workspace().filter(|path| path.is_dir()).unwrap_or_else(|| self.root.join("projects"))
+    }
+
+    pub fn chosen_workspace(&self) -> Option<PathBuf> {
+        let text = std::fs::read_to_string(self.root.join(WORKSPACE_FILE)).ok()?;
+        let path = PathBuf::from(text.trim_end_matches(['\r', '\n']));
+        if path.is_absolute() {
+            Some(path)
+        } else if !path.as_os_str().is_empty() && path.components().all(|part| matches!(part, Component::CurDir | Component::Normal(_))) {
+            Some(self.root.join(path))
+        } else {
+            None
+        }
+    }
+
+    pub fn remember_workspace(&self, folder: Option<&Path>) -> std::io::Result<()> {
+        let location = self.root.join(WORKSPACE_FILE);
+        let Some(folder) = folder else {
+            return match std::fs::remove_file(&location) {
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
+                result => result,
+            };
+        };
+        if !folder.is_absolute() || !folder.is_dir() {
+            return Err(std::io::Error::new(std::io::ErrorKind::InvalidInput, "the workspace must be an existing folder"));
+        }
+        // A workspace inside the data folder follows it when the data folder is moved.
+        let path = folder
+            .strip_prefix(&self.root)
+            .ok()
+            .filter(|path| path.components().all(|part| matches!(part, Component::CurDir | Component::Normal(_))))
+            .unwrap_or(folder);
+        let path = if path.as_os_str().is_empty() { Path::new(".") } else { path };
+        let text = path.to_str().ok_or_else(|| std::io::Error::new(std::io::ErrorKind::InvalidInput, "the folder path is not Unicode"))?;
+        if text.contains(['\r', '\n']) {
+            return Err(std::io::Error::new(std::io::ErrorKind::InvalidInput, "the folder path contains a line break"));
+        }
+        // The selected folder must allow creating project directories. Check before changing
+        // the saved choice so a read-only drive leaves the working location selected.
+        let probe = folder.join(format!(".psg-workspace-check-{}", std::process::id()));
+        std::fs::create_dir(&probe)?;
+        std::fs::remove_dir(&probe)?;
+        std::fs::create_dir_all(&self.root)?;
+        psg_academic::paths::write_atomic(&location, format!("{text}\n").as_bytes()).map_err(|e| std::io::Error::other(e.to_string()))
     }
 
     /// Whether the person chose this folder (rather than it being the default).
@@ -123,6 +168,23 @@ pub fn remember(home: &Path, root: &Path) -> std::io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn an_existing_workspace_is_remembered_and_can_be_reset() {
+        let dir = tempfile::tempdir().unwrap();
+        let workspace = dir.path().join("Manuscripts");
+        std::fs::create_dir(&workspace).unwrap();
+        std::fs::write(workspace.join("notes.txt"), "keep this").unwrap();
+        let root = dir.path().join("data");
+        let data = DataDir::resolve(None, Some(root.clone()));
+        data.remember_workspace(Some(&workspace)).unwrap();
+        assert_eq!(DataDir::resolve(None, Some(root.clone())).projects(), workspace);
+        assert!(data.remember_workspace(Some(&workspace.join("missing"))).is_err());
+        assert_eq!(data.projects(), workspace);
+        data.remember_workspace(None).unwrap();
+        assert_eq!(data.projects(), root.join("projects"));
+        assert_eq!(std::fs::read_to_string(workspace.join("notes.txt")).unwrap(), "keep this");
+    }
 
     #[test]
     fn without_the_marker_the_user_folder_is_used() {

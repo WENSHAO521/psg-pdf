@@ -24,6 +24,15 @@ pub const PROJECT_FILE: &str = "psg-project.toml";
 /// The largest manuscript, bibliography or figure imported (bytes).
 pub const MAX_IMPORT: u64 = 64 * 1024 * 1024;
 /// File types that may be imported next to the manuscript.
+/// The kinds of text file the editor offers and can make.
+pub const TEXT_SOURCES: &[&str] = &["tex", "cls", "sty", "bib", "bst", "bbx", "cbx", "lbx", "cfg", "def", "ltx"];
+/// The most files the editor lists.
+const MAX_LISTED: usize = 500;
+
+fn is_text_source(name: &str) -> bool {
+    name.rsplit_once('.').is_some_and(|(stem, ext)| !stem.is_empty() && TEXT_SOURCES.contains(&ext.to_ascii_lowercase().as_str()))
+}
+
 pub const ASSET_EXTENSIONS: &[&str] = &["bib", "png", "jpg", "jpeg", "pdf", "eps", "tex", "csv"];
 
 /// Typesetting settings saved with the project.
@@ -50,6 +59,9 @@ pub struct ProjectFile {
     pub body: String,
     pub metadata_file: String,
     pub uses_biber: bool,
+    /// The template's engine. Projects from before XeLaTeX templates have none: pdfLaTeX.
+    #[serde(default)]
+    pub engine: crate::Engine,
     #[serde(default)]
     pub settings: Settings,
     #[serde(default)]
@@ -83,6 +95,7 @@ impl Project {
                 body: m.body.clone(),
                 metadata_file: m.metadata.clone(),
                 uses_biber: m.uses_biber(),
+                engine: m.engine(),
                 settings: Settings::default(),
                 metadata,
             },
@@ -125,8 +138,121 @@ impl Project {
     pub fn import_manuscript(&self, source: &Path) -> Result<String, Error> {
         let text = read_import_text(source)?;
         let (body, note) = extract_body(&text);
-        write_atomic(&self.dir.join(&self.file.body), body.as_bytes())?;
+        self.write_body(&body)?;
         Ok(format!("Imported {} as {}{note}", source.display(), self.file.body))
+    }
+
+    /// Use the front matter read from a Word manuscript as the article's metadata. What the
+    /// manuscript gives replaces what the project has; the sample article's own title, authors,
+    /// abstract and keywords never survive next to an imported manuscript. The journal's fields
+    /// (name, volume, DOI, dates) are not in a manuscript and stay as they are. Saves the project
+    /// and rewrites the metadata file. Returns what was taken, for the log.
+    pub fn apply_front_matter(&mut self, front: &crate::docx::WordFrontMatter) -> Result<Vec<String>, Error> {
+        let sample = PublicationMetadata::sample();
+        let m = &mut self.file.metadata;
+        let mut taken = Vec::new();
+        let mut take = |field: &str, found: bool, is_sample: bool| {
+            if found {
+                taken.push(field.to_owned());
+            }
+            found || is_sample
+        };
+        if take("title", !front.title.is_empty(), m.title == sample.title) {
+            m.title = if front.subtitle.is_empty() { front.title.clone() } else { format!("{}: {}", front.title, front.subtitle) };
+            m.short_title.clear();
+        }
+        if take("authors", !front.authors.is_empty(), m.authors == sample.authors) {
+            m.authors = front
+                .authors
+                .iter()
+                .map(|a| crate::metadata::Author {
+                    name: a.name.clone(),
+                    affiliations: a.affiliations.clone(),
+                    corresponding: a.corresponding,
+                    ..crate::metadata::Author::default()
+                })
+                .collect();
+        }
+        if take("affiliations", !front.affiliations.is_empty(), m.affiliations == sample.affiliations) {
+            m.affiliations.clone_from(&front.affiliations);
+        }
+        // An author numbered past the affiliations Word listed would only be a warning; drop it.
+        let count = m.affiliations.len();
+        for a in &mut m.authors {
+            a.affiliations.retain(|&i| i >= 1 && i <= count);
+        }
+        if take("abstract", !front.abstract_text.is_empty(), m.abstract_text == sample.abstract_text) {
+            m.abstract_text.clone_from(&front.abstract_text);
+        }
+        if take("keywords", !front.keywords.is_empty(), m.keywords == sample.keywords) {
+            m.keywords.clone_from(&front.keywords);
+        }
+        if !front.language.is_empty() && front.language != m.language {
+            let english = PublicationMetadata::default();
+            let localized = |lang: &str| match lang {
+                "zh-hant" => ("研究論文", "本文依創用 CC 姓名標示 4.0 國際授權條款（CC BY 4.0）發布。"),
+                "zh-hans" => ("研究论文", "本文依据知识共享署名 4.0 国际许可协议（CC BY 4.0）发布。"),
+                "ja" => ("研究論文", "本論文はクリエイティブ・コモンズ 表示 4.0 国際ライセンス（CC BY 4.0）の下で公開されています。"),
+                _ => (english.article_type.as_str(), english.licence.as_str()),
+            };
+            // Only the defaults follow the language; what someone typed stays.
+            let defaults: Vec<(&str, &str)> = ["en", "zh-hant", "zh-hans", "ja"].into_iter().map(localized).collect();
+            let (article_type, licence) = localized(&front.language);
+            if defaults.iter().any(|(t, _)| *t == m.article_type) {
+                m.article_type = article_type.to_owned();
+            }
+            if defaults.iter().any(|(_, l)| *l == m.licence) {
+                m.licence = licence.to_owned();
+            }
+            m.language.clone_from(&front.language);
+            taken.push(format!("language ({})", front.language));
+        }
+        if m.title.trim().is_empty() {
+            // The title is required to compile; say where to put it rather than fail later.
+            m.title = "Untitled".to_owned();
+        }
+        self.save()?;
+        self.write_metadata()?;
+        Ok(taken)
+    }
+
+    /// A pdfLaTeX template given a Chinese or Japanese manuscript can't typeset it: switch the
+    /// project to XeLaTeX and load xeCJK (with the Noto CJK faces PSG Academic PDF installs)
+    /// right after `\documentclass` in the main file. Returns what was done, or `None` when
+    /// nothing needed to change.
+    pub fn adapt_engine_to_text(&mut self) -> Result<Option<String>, Error> {
+        if self.file.engine != crate::Engine::Pdflatex {
+            return Ok(None);
+        }
+        let body = self.read_body()?;
+        let m = &self.file.metadata;
+        let cjk = |t: &str| t.chars().any(|c| matches!(c as u32, 0x3040..=0x30FF | 0x3400..=0x4DBF | 0x4E00..=0x9FFF | 0xF900..=0xFAFF));
+        if !(cjk(&body)
+            || cjk(&m.title)
+            || cjk(&m.abstract_text)
+            || m.authors.iter().any(|a| cjk(&a.name))
+            || m.affiliations.iter().any(|a| cjk(a))
+            || m.keywords.iter().any(|k| cjk(k)))
+        {
+            return Ok(None);
+        }
+        let path = self.dir.join(&self.file.main);
+        let text = std::fs::read_to_string(&path).map_err(|e| Error::io(&path, e))?;
+        let masked = crate::template_import::mask_comments(&text);
+        let Some(class) = crate::template_import::find_call(&masked, "documentclass", 0, 1) else { return Ok(None) };
+        let mut patched = text.clone();
+        if !patched.is_char_boundary(class.end) {
+            return Ok(None);
+        }
+        patched.insert_str(class.end, crate::template_import::XECJK_FOR_PDFLATEX);
+        self.invalidate_pdf()?;
+        write_atomic(&path, patched.as_bytes())?;
+        self.file.engine = crate::Engine::Xelatex;
+        self.save()?;
+        Ok(Some(format!(
+            "The manuscript has Chinese or Japanese text, which pdfLaTeX can't set: {} now loads xeCJK and the project is typeset with XeLaTeX.",
+            self.file.main
+        )))
     }
 
     /// Copy a bibliography, figure or other supporting file into the project under a safe name.
@@ -143,6 +269,7 @@ impl Project {
             return Err(Error::Project(format!("{name} would replace one of the template's own files; rename it first")));
         }
         let bytes = read_import(source)?;
+        self.invalidate_pdf()?;
         write_atomic(&self.dir.join(&name), &bytes)?;
         Ok(name)
     }
@@ -153,13 +280,24 @@ impl Project {
             timeout: Duration::from_secs(self.file.settings.timeout_secs),
             force: self.file.settings.force_rebuild,
             needs_biber: self.file.uses_biber,
+            engine: self.file.engine,
         }
     }
 
     /// Write the metadata and compile.
     pub fn compile(&self, env: &TexEnvironment, cancel: Option<&Arc<AtomicBool>>) -> Result<CompileReport, Error> {
+        self.invalidate_pdf()?;
+        let inputs = crate::project_revision::sources(self).ok();
         self.write_metadata()?;
-        compile::compile(env, &self.dir, &self.compile_options(), cancel)
+        let report = compile::compile(env, &self.dir, &self.compile_options(), cancel)?;
+        if report.outcome == compile::Outcome::Succeeded
+            && report.errors().next().is_none()
+            && let Some(inputs) = inputs
+            && let Err(e) = crate::project_revision::record(self, inputs)
+        {
+            log::warn!("could not verify the current PDF for {}: {e}", self.dir.display());
+        }
+        Ok(report)
     }
 
     /// The manuscript body (the file an import replaces), as text.
@@ -172,7 +310,67 @@ impl Project {
         if text.len() as u64 > MAX_IMPORT {
             return Err(Error::Project(format!("the body is larger than {} MB", MAX_IMPORT / 1024 / 1024)));
         }
+        self.invalidate_pdf()?;
         write_atomic(&self.dir.join(&self.file.body), text.as_bytes())
+    }
+
+    /// The text files a person may edit, by path in the project folder: the body, the main file,
+    /// then the other LaTeX and bibliography files (classes, styles, included chapters), sorted.
+    /// The metadata file is left out (the metadata form writes it), and so are hidden folders and
+    /// what TeX generates. Subfolders are looked at up to [`crate::paths::MAX_FOLDERS`] deep.
+    pub fn text_files(&self) -> Vec<String> {
+        let mut found = Vec::new();
+        let mut stack = vec![(self.dir.clone(), String::new(), 0usize)];
+        let mut looked = 0usize;
+        while let Some((dir, prefix, depth)) = stack.pop() {
+            let Ok(list) = std::fs::read_dir(&dir) else { continue };
+            for e in list.flatten() {
+                looked += 1;
+                if looked > MAX_LISTED * 4 || found.len() >= MAX_LISTED {
+                    break;
+                }
+                let Ok(name) = e.file_name().into_string() else { continue };
+                if crate::paths::safe_relative_name(&name).is_none() || name.starts_with('.') {
+                    continue;
+                }
+                let path = format!("{prefix}{name}");
+                // A link is not followed: it could lead out of the project.
+                let Ok(kind) = e.file_type() else { continue };
+                if kind.is_dir() {
+                    if depth < crate::paths::MAX_FOLDERS && !matches!(name.as_str(), "media" | "build" | "out" | "_minted") {
+                        stack.push((e.path(), format!("{path}/"), depth + 1));
+                    }
+                } else if kind.is_file() && is_text_source(&name) && path != self.file.metadata_file {
+                    found.push(path);
+                }
+            }
+        }
+        found.sort();
+        let mut out = vec![self.file.body.clone(), self.file.main.clone()];
+        out.dedup();
+        out.extend(found.into_iter().filter(|f| *f != self.file.body && *f != self.file.main));
+        out
+    }
+
+    /// Make a new, empty text file `name` (a path in the project folder) for the editor. Refused
+    /// when the name is unsafe, the kind of file is not one the editor edits, or it exists.
+    pub fn create_text_file(&self, name: &str) -> Result<(), Error> {
+        let name = name.trim();
+        let ok = crate::paths::safe_relative_path(name).is_some() && name.rsplit('/').next().is_some_and(is_text_source);
+        if !ok {
+            return Err(Error::Project(format!(
+                "\"{name}\" can't be made here: use a name like chapter2.tex or styles/journal.sty, with one of the extensions {}",
+                TEXT_SOURCES.join(", ")
+            )));
+        }
+        let path = self.dir.join(name);
+        if path.exists() {
+            return Err(Error::Project(format!("{name} already exists")));
+        }
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent).map_err(|e| Error::io(parent, e))?;
+        }
+        write_atomic(&path, b"")
     }
 
     /// The `.bib` files in the project folder, by name.
@@ -232,7 +430,7 @@ impl Project {
         let mut out = Vec::new();
         match self.read_body() {
             Ok(body) => {
-                for f in crate::scripts::scan(&body, &self.file.body, true) {
+                for f in crate::scripts::scan(&body, &self.file.body, true).into_iter().filter(|f| !self.file.engine.sets(f.script)) {
                     out.push(Diagnostic { severity: f.severity(), file: Some(self.file.body.clone()), line: f.line, message: f.summary() });
                 }
             }
@@ -250,7 +448,7 @@ impl Project {
         fields.extend(m.affiliations.iter().enumerate().map(|(i, a)| (format!("affiliation {}", i + 1), a.as_str())));
         let mut seen = std::collections::HashSet::new();
         for (field, value) in fields {
-            for f in crate::scripts::scan(value, &format!("metadata: {field}"), false) {
+            for f in crate::scripts::scan(value, &format!("metadata: {field}"), false).into_iter().filter(|f| !self.file.engine.sets(f.script)) {
                 // One finding per script and field name (keywords and authors come in lists).
                 if seen.insert((f.script, field.clone())) {
                     out.push(Diagnostic { severity: f.severity(), file: None, line: None, message: f.message() });
@@ -266,6 +464,16 @@ impl Project {
     /// The compiled PDF, if there is one.
     pub fn pdf_path(&self) -> PathBuf {
         self.dir.join(format!("{}.pdf", self.file.main.trim_end_matches(".tex")))
+    }
+
+    /// Whether the PDF belongs to the current saved inputs of a successful compilation.
+    pub fn pdf_is_current(&self) -> bool {
+        crate::project_revision::is_current(self)
+    }
+
+    /// Remove the certification before changing inputs outside the project methods.
+    pub fn invalidate_pdf(&self) -> Result<(), Error> {
+        crate::project_revision::forget(self)
     }
 
     /// Copy the compiled PDF to `dest` (atomically).
@@ -331,6 +539,27 @@ pub fn extract_body(text: &str) -> (String, String) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_editor_lists_every_source_file_and_makes_new_ones() {
+        let root = tempfile::tempdir().unwrap();
+        let p = Project::create(&root.path().join("p"), &Template::builtin().remove(0), PublicationMetadata::sample()).unwrap();
+        p.create_text_file("chapters/intro.tex").unwrap();
+        std::fs::write(p.dir.join("main.aux"), "x").unwrap();
+        std::fs::create_dir_all(p.dir.join(".hidden")).unwrap();
+        std::fs::write(p.dir.join(".hidden/x.tex"), "x").unwrap();
+        let files = p.text_files();
+        assert_eq!(files.first(), Some(&p.file.body));
+        assert_eq!(files.get(1), Some(&p.file.main));
+        assert!(files.contains(&"psg-article.cls".to_owned()) && files.contains(&"references.bib".to_owned()), "{files:?}");
+        assert!(files.contains(&"chapters/intro.tex".to_owned()));
+        assert!(!files.contains(&p.file.metadata_file), "the metadata form writes it");
+        assert!(!files.iter().any(|f| f.ends_with(".aux") || f.starts_with(".hidden")), "{files:?}");
+        // Refused: an existing file, a path out of the project, a kind of file the editor doesn't edit.
+        assert!(p.create_text_file("chapters/intro.tex").is_err());
+        assert!(p.create_text_file("../x.tex").is_err());
+        assert!(p.create_text_file("run.sh").is_err());
+    }
 
     #[allow(clippy::unwrap_used)]
     fn new_project() -> (tempfile::TempDir, Project) {
@@ -400,6 +629,9 @@ mod tests {
         assert!(p.preflight().iter().all(|d| d.severity != crate::Severity::Error), "the sample project is clean: {:?}", p.preflight());
         p.write_body("Intro.\n\n张三 argues \\parencite{nobody2020}.\n").unwrap();
         p.file.metadata.title = "论文 Title".into();
+        assert_eq!(p.file.engine, crate::Engine::Xelatex, "the PSG templates set Chinese with XeLaTeX");
+        assert!(!p.preflight().iter().any(|d| d.to_string().contains("Chinese")), "XeLaTeX sets Chinese: {:?}", p.preflight());
+        p.file.engine = crate::Engine::Pdflatex;
         let found = p.preflight();
         let text: Vec<String> = found.iter().map(ToString::to_string).collect();
         assert!(text.iter().any(|t| t.starts_with("body.tex:3: error: 2 characters in Chinese")), "{text:?}");
@@ -408,6 +640,65 @@ mod tests {
         assert_eq!(p.read_body().unwrap(), "Intro.\n\n张三 argues \\parencite{nobody2020}.\n");
         let (entries, _) = p.bibliography();
         assert!(!entries.is_empty() && entries.iter().all(|(f, _)| f == "references.bib"));
+    }
+
+    #[test]
+    fn word_front_matter_replaces_the_sample_article() {
+        use crate::docx::{WordAuthor, WordFrontMatter};
+        let (_root, mut p) = new_project();
+        let front = WordFrontMatter {
+            title: "數位人文研究".into(),
+            authors: vec![WordAuthor { name: "王小明".into(), affiliations: vec![1, 3], corresponding: true }],
+            affiliations: vec!["國立臺灣大學".into()],
+            keywords: vec!["數位人文".into()],
+            language: "zh-hant".into(),
+            ..WordFrontMatter::default()
+        };
+        let taken = p.apply_front_matter(&front).unwrap();
+        assert_eq!(taken, ["title", "authors", "affiliations", "keywords", "language (zh-hant)"]);
+        let m = &p.file.metadata;
+        assert_eq!(m.title, "數位人文研究");
+        assert_eq!(m.authors.len(), 1);
+        assert_eq!(m.authors[0].affiliations, [1], "an affiliation Word did not list is dropped");
+        assert!(m.abstract_text.is_empty(), "the sample abstract must not stay next to an imported article");
+        assert_eq!(m.article_type, "研究論文");
+        assert!(m.licence.contains("CC BY 4.0") && m.licence.contains("創用"));
+        assert_eq!(m.journal, PublicationMetadata::sample().journal, "journal fields are not in a manuscript");
+        let written = std::fs::read_to_string(p.dir.join(&p.file.metadata_file)).unwrap();
+        assert!(written.contains("\\providecommand\\psgLanguage[1]{}\n") && written.contains("\\psgLanguage{zh-hant}"), "{written}");
+        assert!(written.contains("\\psgCorrespondence{}"), "no e-mail, no correspondence line");
+        assert_eq!(Project::open(&p.dir).unwrap().file.metadata, p.file.metadata);
+
+        // What someone typed stays when a later manuscript has no front matter.
+        p.file.metadata.abstract_text = "Typed by hand.".into();
+        p.apply_front_matter(&WordFrontMatter { language: "zh-hant".into(), ..WordFrontMatter::default() }).unwrap();
+        assert_eq!(p.file.metadata.abstract_text, "Typed by hand.");
+        assert_eq!(p.file.metadata.title, "數位人文研究");
+    }
+
+    #[test]
+    fn a_pdflatex_template_given_chinese_switches_to_xelatex() {
+        let root = tempfile::tempdir().unwrap();
+        let dir = root.path().join("t");
+        std::fs::create_dir(&dir).unwrap();
+        std::fs::write(dir.join("template.toml"), "id = \"x\"\nname = \"X\"\nengine = \"pdflatex\"\nbibliography = \"none\"\nmain = \"main.tex\"\nbody = \"body.tex\"\nmetadata = \"m.tex\"\nfiles = [\"main.tex\", \"body.tex\", \"m.tex\"]\n").unwrap();
+        std::fs::write(
+            dir.join("main.tex"),
+            "% \\documentclass{book}\n\\documentclass[11pt]{article}\n\\usepackage[T1]{fontenc}\n\\begin{document}\\input{body}\\end{document}\n",
+        )
+        .unwrap();
+        std::fs::write(dir.join("body.tex"), "").unwrap();
+        std::fs::write(dir.join("m.tex"), "").unwrap();
+        let t = Template::from_dir(&dir).unwrap();
+        let mut p = Project::create(&root.path().join("p"), &t, PublicationMetadata::sample()).unwrap();
+        assert_eq!(p.adapt_engine_to_text().unwrap(), None, "English stays with pdfLaTeX");
+        p.write_body("中文正文。\n").unwrap();
+        assert!(p.adapt_engine_to_text().unwrap().is_some());
+        assert_eq!(Project::open(&p.dir).unwrap().file.engine, crate::Engine::Xelatex);
+        let main = std::fs::read_to_string(p.dir.join("main.tex")).unwrap();
+        assert!(main.starts_with("% \\documentclass{book}\n\\documentclass[11pt]{article}\n%% Added by PSG Academic PDF"), "{main}");
+        assert!(main.contains("\\usepackage{xeCJK}\n"));
+        assert_eq!(p.adapt_engine_to_text().unwrap(), None, "done once");
     }
 
     #[test]

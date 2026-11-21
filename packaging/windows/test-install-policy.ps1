@@ -5,8 +5,8 @@
 param(
   [Parameter(Mandatory = $true)] [string] $OutputDirectory,
   [ValidateSet('x64','x86','arm64')] [string[]] $Architectures = @('x64','x86','arm64'),
-  # One policy per product: PSG PDF and PSG Academic PDF are separate MSIs.
-  [string[]] $Policies = @('install-policy.json', 'install-policy-academic.json')
+  # One policy per product (packaging/products.toml).
+  [string[]] $Policies = @('install-policy.json')
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest

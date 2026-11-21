@@ -11,19 +11,24 @@ apps/psg-academic-pdf      egui/eframe window + headless commands (cli.rs)
   ├── app.rs               project, template, metadata, settings, compile, preview, logs, export
   ├── preview.rs           renders the PDF with pdfcraft-render on a worker thread
   ├── tex_setup.rs         downloads and installs/updates PSG's own TeX in the background
-  └── cli.rs               check-tex · install-tex · update-tex · templates · new · compile
+  └── cli.rs               check-tex · install-tex · update-tex · repair-biber · install-fonts ·
+                           templates · add-template · new · check · compile · typeset
 crates/academic            (psg-academic, no UI, layer 4 in xtask/src/layers.rs)
   ├── managed.rs           PSG's own TeX (TinyTeX): layout, unpacking, tlmgr updates,
   │                        installing the packages a document is missing (academic-tex.md)
-  ├── tex.rs               finds pdflatex, latexmk, biber (PSG's TeX first, then the PATH), pandoc
+  ├── tex.rs               finds pdflatex, xelatex, latexmk, biber (PSG's TeX first, then the PATH), pandoc
+  ├── engine.rs            pdfLaTeX or XeLaTeX, and the latexmk options for each
   ├── process.rs           runs a program with a time limit, cancel flag, bounded capture,
   │                        and kills the whole process tree
   ├── compile.rs           the sandboxed latexmk command and CompileReport
   ├── diagnostics.rs       TeX .log and Biber .blg → errors/warnings with file and line
   ├── template.rs          template.toml manifests; built-in and on-disk templates
+  ├── template_import.rs   a journal's own template (.zip or folder) made into a template
   ├── metadata.rs          PublicationMetadata → psg-metadata.tex (every value escaped)
   ├── project.rs           project folder, manuscript/asset import, export
-  └── pandoc.rs            ManuscriptImporter trait; PandocImporter (DOCX, experimental)
+  ├── pandoc.rs            ManuscriptImporter trait; PandocImporter (DOCX through Pandoc's JSON)
+  ├── docx.rs              a Word manuscript's front matter, figures and tables from Pandoc's tree
+  └── typeset.rs           one step from a manuscript to a PDF, with a JSON report
 ```
 
 Both programs use the PdfCraft engine. PSG Academic PDF links `pdfcraft-render` for its preview.
@@ -145,14 +150,23 @@ Phase two:
   without `CRAFT_FONTS_DIR` shows boxes for them (release builds set it). Messages produced by
   TeX, and the generated details of the checks, stay in English; their hints are translated.
 
-Experimental:
+Phase five (automatic typesetting):
 
-- DOCX import through Pandoc (`--sandbox`). It converts text, headings, lists, tables, equations
-  and images. It does not map Word styles or Word citations.
+- **XeLaTeX** (`engine.rs`): the PSG templates set Chinese and Japanese with xeCJK and the Noto
+  CJK faces PSG Academic PDF downloads after its TeX (`managed.rs` `CJK_FONTS`, pinned by
+  SHA-256), found by file name through `OSFONTDIR` under kpathsea's paranoid setting. The
+  labels follow the article's language (`\psgLanguage`).
+- **Word import** (`pandoc.rs`, `docx.rs`): Pandoc reads the `.docx` into its JSON tree (sandboxed),
+  the title, authors, affiliations, abstract and keywords move into the metadata, captioned
+  pictures become numbered figures, tables take their captions, and typed heading numbers are
+  kept; Pandoc then writes the body. A pdfLaTeX template given Chinese or Japanese text is
+  switched to XeLaTeX with xeCJK (`Project::adapt_engine_to_text`).
+- **A journal's own template** (`template_import.rs`): a `.zip` or folder; see
+  [academic-guide.md](academic-guide.md#a-journals-own-template).
+- **`typeset`**: manuscript, template and a metadata file to a PDF in one command, with `--json`.
 
 Not implemented yet:
 
-- XeLaTeX/LuaLaTeX (CJK manuscripts); only pdfLaTeX is supported.
-- Journal-specific templates beyond the sample; template editing in the app.
+- LuaLaTeX; Word citations into BibLaTeX; template editing in the app.
 - JATS XML, Crossref deposit metadata, PDF/A output.
 - SyncTeX (clicking the PDF to reach the source, or the reverse).

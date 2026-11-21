@@ -7,6 +7,7 @@ use psg_academic::Author;
 use psg_desktop_ui::{Tone, layout, widgets};
 
 use super::{AcademicApp, ManuscriptTab, SourceView};
+use crate::clipboard::text_edit;
 use crate::i18n::{t, tf, tn};
 use crate::preview::{MAX_PREVIEW_PAGES, PageSlot};
 
@@ -84,16 +85,16 @@ impl AcademicApp {
             widgets::form_grid(ui, "article-grid", |ui| {
                 for (label, value) in [(t("Type"), &mut m.article_type), (t("Title"), &mut m.title), (t("Short title"), &mut m.short_title)] {
                     widgets::form_label(ui, label);
-                    ui.add(widgets::text_field(value, ""));
+                    text_edit(ui, widgets::text_field(value, ""));
                     ui.end_row();
                 }
                 widgets::form_label(ui, t("Keywords"));
-                ui.add(widgets::text_field(&mut self.buffers.keywords, t("Separate keywords with ; or ,")));
+                text_edit(ui, widgets::text_field(&mut self.buffers.keywords, t("Separate keywords with ; or ,")));
                 ui.end_row();
             });
             ui.add_space(psg_brand::space::S);
             widgets::form_label(ui, t("Abstract"));
-            ui.add(egui::TextEdit::multiline(&mut m.abstract_text).desired_rows(10).desired_width(f32::INFINITY));
+            text_edit(ui, egui::TextEdit::multiline(&mut m.abstract_text).desired_rows(10).desired_width(f32::INFINITY));
             let words = m.abstract_text.split_whitespace().count();
             widgets::muted(ui, tn(words, "{n} word", "{n} words", &[]));
         });
@@ -121,16 +122,16 @@ impl AcademicApp {
                     });
                     widgets::form_grid(ui, "author", |ui| {
                         widgets::form_label(ui, t("Name"));
-                        ui.add(widgets::text_field(&mut author.name, ""));
+                        text_edit(ui, widgets::text_field(&mut author.name, ""));
                         ui.end_row();
                         widgets::form_label(ui, t("Affiliations"));
-                        ui.add(widgets::text_field(aff, t("Affiliation numbers, e.g. 1, 2")));
+                        text_edit(ui, widgets::text_field(aff, t("Affiliation numbers, e.g. 1, 2")));
                         ui.end_row();
                         widgets::form_label(ui, t("ORCID iD"));
-                        ui.add(widgets::text_field(&mut author.orcid, "0000-0000-0000-0000"));
+                        text_edit(ui, widgets::text_field(&mut author.orcid, "0000-0000-0000-0000"));
                         ui.end_row();
                         widgets::form_label(ui, t("Email"));
-                        ui.add(widgets::text_field(&mut author.email, ""));
+                        text_edit(ui, widgets::text_field(&mut author.email, ""));
                         ui.end_row();
                         ui.label("");
                         ui.checkbox(&mut author.corresponding, t("Corresponding author"));
@@ -157,7 +158,8 @@ impl AcademicApp {
             for (i, a) in m.affiliations.iter_mut().enumerate() {
                 ui.horizontal(|ui| {
                     ui.label(egui::RichText::new(format!("{}", i + 1)).strong());
-                    ui.add(egui::TextEdit::singleline(a).desired_width(ui.available_width() - 40.0));
+                    let width = ui.available_width() - 40.0;
+                    text_edit(ui, egui::TextEdit::singleline(a).desired_width(width));
                     if ui.small_button("×").on_hover_text(t("Remove")).clicked() {
                         remove = Some(i);
                     }
@@ -191,7 +193,7 @@ impl AcademicApp {
                     (t("DOI"), &mut m.doi),
                 ] {
                     widgets::form_label(ui, label);
-                    ui.add(widgets::text_field(value, ""));
+                    text_edit(ui, widgets::text_field(value, ""));
                     ui.end_row();
                 }
             });
@@ -208,16 +210,16 @@ impl AcademicApp {
                     (t("Published"), &mut m.published),
                 ] {
                     widgets::form_label(ui, label);
-                    ui.add(widgets::text_field(value, "YYYY-MM-DD"));
+                    text_edit(ui, widgets::text_field(value, "YYYY-MM-DD"));
                     ui.end_row();
                 }
                 widgets::form_label(ui, t("Copyright"));
-                ui.add(widgets::text_field(&mut m.copyright, ""));
+                text_edit(ui, widgets::text_field(&mut m.copyright, ""));
                 ui.end_row();
             });
             ui.add_space(psg_brand::space::S);
             widgets::form_label(ui, t("Licence statement"));
-            ui.add(egui::TextEdit::multiline(&mut m.licence).desired_rows(3).desired_width(f32::INFINITY));
+            text_edit(ui, egui::TextEdit::multiline(&mut m.licence).desired_rows(3).desired_width(f32::INFINITY));
         });
     }
 
@@ -238,6 +240,12 @@ impl AcademicApp {
                 self.source.load(&dir, &file);
             }
             ui.checkbox(&mut self.show_outline, t("Outline"));
+            if widgets::button_enabled(ui, self.has_pdf(), widgets::ButtonKind::Secondary, t("Show in PDF"), "")
+                .on_hover_text(t("Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way."))
+                .clicked()
+            {
+                self.show_in_pdf(ui.ctx());
+            }
             if self.source.dirty() {
                 widgets::chip(ui, Tone::Warning, t("Unsaved"));
             }
@@ -310,8 +318,10 @@ impl AcademicApp {
                 picked = chosen;
             }
         }
-        if let Some(name) = picked {
-            self.go_to(&name, None);
+        match picked {
+            Some(crate::source::Request::Open(name)) => self.go_to(&name, None),
+            Some(crate::source::Request::Create(name)) => self.create_source_file(&name),
+            None => {}
         }
         if let Some(line) = jump {
             self.source.go_to(line);
@@ -325,7 +335,7 @@ impl AcademicApp {
             ui.add_space(psg_brand::space::S);
         }
         ui.horizontal(|ui| {
-            ui.add(widgets::text_field(&mut self.bib_filter, t("Filter by key, author or title")).desired_width(320.0));
+            text_edit(ui, widgets::text_field(&mut self.bib_filter, t("Filter by key, author or title")).desired_width(320.0));
             if widgets::secondary(ui, t("Check again")).clicked() {
                 self.refresh_checks();
             }
@@ -423,35 +433,109 @@ impl AcademicApp {
                         ),
                     );
                 }
+                let pages = self.preview.pages.len();
+                let navigation = &mut self.preview.navigation;
+                ui.horizontal_wrapped(|ui| {
+                    for (forward, label) in [(false, t("Back")), (true, t("Forward"))] {
+                        if ui.add_enabled(navigation.can_visit(forward), egui::Button::new(label)).clicked() {
+                            navigation.visit(forward);
+                        }
+                    }
+                    if ui.available_width() < 340.0 {
+                        ui.end_row();
+                    } else {
+                        ui.separator();
+                    }
+                    if ui.add_enabled(navigation.current > 0, egui::Button::new(t("Previous page"))).clicked() {
+                        navigation.go_to(navigation.current - 1);
+                    }
+                    ui.horizontal(|ui| {
+                        let mut page = navigation.current + 1;
+                        ui.label(t("Page"));
+                        if ui.add(egui::DragValue::new(&mut page).range(1..=pages).update_while_editing(false)).changed() {
+                            navigation.go_to(page - 1);
+                        }
+                        ui.label(format!("/ {pages}"));
+                    });
+                    if ui.add_enabled(navigation.current + 1 < pages, egui::Button::new(t("Next page"))).clicked() {
+                        navigation.go_to(navigation.current + 1);
+                    }
+                });
                 let ppp = ui.ctx().pixels_per_point();
                 let fit = self.fit_width;
-                egui::ScrollArea::both().id_salt("preview-scroll").auto_shrink([false, false]).show(ui, |ui| {
+                let (scale, mark) = (self.preview.scale.max(0.01), self.preview.mark);
+                let mut clicked: Option<(usize, f32, f32)> = None;
+                egui::ScrollArea::both().id_salt("preview-scroll").auto_shrink([false, false]).show_viewport(ui, |ui, viewport| {
+                    let jump = navigation.jump.take();
+                    let scrolled = navigation.scroll_offset.replace(viewport.top()).is_some_and(|before| before != viewport.top());
+                    let middle = ui.clip_rect().center().y;
+                    let mut nearest = (f32::INFINITY, navigation.current);
                     // Fit width: a page wider than the pane is drawn at the pane's width, so a
                     // narrow split shows whole lines instead of a page cut off on both sides.
                     let room = (ui.available_width() - 4.0).max(80.0);
                     ui.vertical_centered(|ui| {
                         for (i, page) in self.preview.pages.iter().enumerate() {
-                            match page {
+                            let rect = match page {
                                 PageSlot::Ready(texture, size) => {
                                     let natural = *size / ppp;
                                     let shown = if fit && natural.x > room { natural * (room / natural.x) } else { natural };
-                                    let resp = ui.add(egui::Image::new((texture.id(), shown)));
+                                    let resp = ui
+                                        .add(egui::Image::new((texture.id(), shown)).sense(egui::Sense::click()))
+                                        .on_hover_text(t("Double-click to show this place in the source"));
                                     ui.painter().rect_stroke(resp.rect, 0, egui::Stroke::new(1.0, p.border), egui::StrokeKind::Outside);
+                                    // The page's size in PDF points, to turn a place on it into points and back.
+                                    let points = *size / scale;
+                                    if resp.double_clicked()
+                                        && let Some(pos) = resp.interact_pointer_pos()
+                                        && resp.rect.width() > 0.0
+                                        && resp.rect.height() > 0.0
+                                    {
+                                        let at = (pos - resp.rect.min) / resp.rect.size() * points;
+                                        clicked = Some((i, at.x, at.y));
+                                    }
+                                    if let Some((page, y)) = mark
+                                        && page == i
+                                        && points.y > 0.0
+                                    {
+                                        let top = resp.rect.top() + (y / points.y) * resp.rect.height();
+                                        let band = egui::Rect::from_min_max(
+                                            egui::pos2(resp.rect.left(), top - 14.0),
+                                            egui::pos2(resp.rect.right(), top + 4.0),
+                                        );
+                                        ui.painter().rect_filled(band, 2, p.accent.gamma_multiply(0.18));
+                                    }
+                                    resp.rect
                                 }
-                                PageSlot::Pending => {
-                                    ui.add_sized([200.0, 280.0], egui::Spinner::new());
-                                }
+                                PageSlot::Pending => ui.add_sized([200.0, 280.0], egui::Spinner::new()).rect,
                                 PageSlot::Failed(e) => {
                                     ui.colored_label(
                                         ui.visuals().error_fg_color,
                                         tf("Page {n}: {error}", &[("n", &(i + 1).to_string()), ("error", e)]),
-                                    );
+                                    )
+                                    .rect
+                                }
+                            };
+                            if jump == Some(i) {
+                                ui.scroll_to_rect_animation(rect, Some(egui::Align::Min), egui::style::ScrollAnimation::none());
+                            } else if scrolled && jump.is_none() {
+                                let distance = (rect.top() - middle).max(middle - rect.bottom()).max(0.0);
+                                if distance < nearest.0 {
+                                    nearest = (distance, i);
                                 }
                             }
                             ui.add_space(psg_brand::space::M);
                         }
                     });
+                    if jump.is_some() {
+                        // The next offset is from this jump, rather than from scrolling.
+                        navigation.scroll_offset = None;
+                    } else if scrolled {
+                        navigation.current = nearest.1;
+                    }
                 });
+                if let Some((page, x, y)) = clicked {
+                    self.show_source_at(page, x, y);
+                }
             });
     }
 }

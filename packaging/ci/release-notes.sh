@@ -5,9 +5,8 @@
 #   packaging/ci/release-notes.sh <tag> <folder with the release files>
 #   packaging/ci/release-notes.sh --title <tag> <folder>   the release's title, one line
 #
-# Titles read "PSG PDF & PSG Academic PDF 0.19.0" for a stable release and
-# "PSG PDF & PSG Academic PDF 0.19.0 Beta 3" for a beta. release-files.sh has already validated
-# the downloads for all three platforms in both channels.
+# Titles read "PSG PDF 0.19.0" for a stable release and "PSG PDF 0.19.0 Beta 3" for a beta.
+# release-files.sh has already validated the downloads for all three platforms in both channels.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 title_only=false
@@ -34,7 +33,7 @@ for product in "${products[@]}"; do
   tagline[$product]="$(cargo xtask products get "$product" tagline 2>/dev/null)"
 done
 
-title="PSG PDF & PSG Academic PDF $shown"
+title="PSG PDF $shown"
 if $title_only; then
   echo "$title"
   exit 0
@@ -52,13 +51,13 @@ echo "# $title"
 echo
 if $beta; then
   echo "> [!NOTE]"
-  echo "> **Beta.** A test build of the \`beta\` branch, not a stable release. Both apps show"
-  echo "> **Beta** beside their name. Use it to try what is coming; keep the stable release for"
+  echo "> **Beta.** A test build of the \`beta\` branch, not a stable release. The app shows"
+  echo "> **Beta** beside its name. Use it to try what is coming; keep the stable release for"
   echo "> work that matters."
   echo
 fi
-echo "Two independent desktop applications from Panorama Scholarly Group. Install either or both:"
-echo "each has its own installer, updates and uninstaller, and neither needs the other."
+echo "A desktop application from Panorama Scholarly Group for reading, marking up, signing and"
+echo "organizing PDFs."
 echo
 for product in "${products[@]}"; do
   s="${stem[$product]}"
@@ -75,8 +74,8 @@ for product in "${products[@]}"; do
   echo "SHA-256 checksums: \`SHA256SUMS-$s.txt\`"
   echo
 done
-echo "PSG Academic PDF typesets with the TeX installation already on your computer (pdfLaTeX,"
-echo "latexmk and Biber); see the [PSG Academic PDF guide](https://github.com/$REPO/blob/$TAG/docs/academic-guide.md)."
+echo "PSG Academic PDF is retired: it is no longer released or updated. Copies already installed"
+echo "keep working as they are."
 echo
 if $beta; then
   echo "## Changes since the last release"
@@ -95,6 +94,5 @@ echo "list. Whether this build was code-signed is shown in the release workflow'
 echo
 echo "## Coming from the PSG PDF Suite (0.18)"
 echo
-echo "The new PSG PDF replaces the suite and keeps your settings. If you used PSG Academic PDF,"
-echo "install it as well: your projects stay where they were. On Windows, install PSG PDF first;"
-echo "PSG Academic PDF's installer asks for that while the suite is still installed."
+echo "The new PSG PDF replaces the suite and keeps your settings. The suite's copy of PSG Academic"
+echo "PDF is removed with it; your Academic projects stay where they were."

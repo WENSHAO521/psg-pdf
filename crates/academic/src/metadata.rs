@@ -48,6 +48,9 @@ pub struct PublicationMetadata {
     pub published: String,
     pub licence: String,
     pub copyright: String,
+    /// The article's language: `en` (or empty), `zh-hant`, `zh-hans` or `ja`. The templates
+    /// label the title block, figures, tables and references in it.
+    pub language: String,
 }
 
 impl Default for PublicationMetadata {
@@ -76,6 +79,7 @@ impl Default for PublicationMetadata {
             licence: "This article is distributed under the terms of the Creative Commons Attribution 4.0 International licence (CC BY 4.0)."
                 .to_owned(),
             copyright: String::new(),
+            language: String::new(),
         }
     }
 }
@@ -116,6 +120,37 @@ impl PublicationMetadata {
             copyright: "© 2026 The Authors".into(),
             ..Self::default()
         }
+    }
+
+    /// Set the fields that `text` (TOML, or JSON when it starts with `{`) names, leaving the
+    /// others as they are: a journal's volume, DOI and dates for an article, say. Authors are a
+    /// list of tables (`name`, `affiliations`, `orcid`, `email`, `corresponding`). Returns the
+    /// fields set. A field that doesn't exist is refused with the ones that do.
+    pub fn overlay(&mut self, text: &str) -> Result<Vec<String>, String> {
+        let given: serde_json::Value = if text.trim_start().starts_with('{') {
+            serde_json::from_str(text).map_err(|e| format!("not valid JSON: {e}"))?
+        } else {
+            let table: toml::Table = toml::from_str(text).map_err(|e| format!("not valid TOML: {e}"))?;
+            serde_json::to_value(table).map_err(|e| e.to_string())?
+        };
+        let serde_json::Value::Object(given) = given else { return Err("expected a table of fields".into()) };
+        let mut current = serde_json::to_value(&*self).map_err(|e| e.to_string())?;
+        let serde_json::Value::Object(fields) = &mut current else { return Err("the metadata is not a table".into()) };
+        let mut set = Vec::new();
+        for (key, value) in given {
+            if !fields.contains_key(&key) {
+                let mut known: Vec<&String> = fields.keys().collect();
+                known.sort();
+                return Err(format!(
+                    "\"{key}\" is not a metadata field; the fields are {}",
+                    known.iter().map(|k| k.as_str()).collect::<Vec<_>>().join(", ")
+                ));
+            }
+            fields.insert(key.clone(), value);
+            set.push(key);
+        }
+        *self = serde_json::from_value(current).map_err(|e| format!("a field has the wrong kind of value: {e}"))?;
+        Ok(set)
     }
 
     /// Check the metadata. Blocking issues make the generated file unusable; the others are
@@ -184,6 +219,13 @@ impl PublicationMetadata {
     /// The `psg-metadata.tex` file for the templates' `\psg…` setters. Every value is escaped.
     pub fn to_latex(&self) -> String {
         let mut out = String::from("% Publication metadata written by PSG Academic PDF. Edit it in the app: changes here are overwritten.\n");
+        if !self.language.trim().is_empty() {
+            // A template written before languages existed ignores it.
+            out.push_str("\\providecommand\\psgLanguage[1]{}\n");
+        }
+        // The authors and affiliations as lists, for templates that set each one with its own
+        // command (authblk's \author[1]{…} and \affil[1]{…}); others ignore them.
+        out.push_str("\\providecommand\\psgAuthorList[1]{}\\providecommand\\psgAffiliationList[1]{}\n");
         let mut set = |macro_name: &str, value: String| {
             out.push('\\');
             out.push_str(macro_name);
@@ -201,19 +243,36 @@ impl PublicationMetadata {
         set("psgArticleNumber", escape(&self.article_number));
         set("psgDOI", escape_url_part(self.doi.trim()));
         set("psgArticleType", escape(&self.article_type));
-        set("psgTitle", escape(&self.title));
+        set("psgTitle", escape_math(&self.title));
         set("psgShortTitle", escape(&self.short_title));
         set("psgAuthors", self.author_line());
         set("psgAffiliations", self.affiliation_block());
+        set("psgAuthorList", self.author_list());
+        set(
+            "psgAffiliationList",
+            self.affiliations
+                .iter()
+                .take(MAX_LIST)
+                .enumerate()
+                .map(|(i, a)| format!("\\psgAffiliationItem{{{}}}{{{}}}", i + 1, escape(a)))
+                .collect::<String>(),
+        );
         set("psgCorrespondence", self.correspondence());
-        set("psgAbstract", escape_paragraphs(&self.abstract_text));
-        set("psgKeywords", self.keywords.iter().take(MAX_LIST).map(|k| escape(k)).filter(|k| !k.is_empty()).collect::<Vec<_>>().join("; "));
+        set("psgAbstract", escape_paragraphs_math(&self.abstract_text));
+        let keyword_separator = if self.is_cjk() { "；" } else { "; " };
+        set(
+            "psgKeywords",
+            self.keywords.iter().take(MAX_LIST).map(|k| escape(k)).filter(|k| !k.is_empty()).collect::<Vec<_>>().join(keyword_separator),
+        );
         set("psgReceived", escape(&self.received));
         set("psgRevised", escape(&self.revised));
         set("psgAccepted", escape(&self.accepted));
         set("psgPublished", escape(&self.published));
         set("psgLicence", escape(&self.licence));
         set("psgCopyright", escape(&self.copyright));
+        if !self.language.trim().is_empty() {
+            set("psgLanguage", escape(self.language.trim()));
+        }
         // PDF document information: plain text, no markup.
         set("psgPdfTitle", escape(&self.title));
         set("psgPdfAuthor", self.named_authors().map(escape).collect::<Vec<_>>().join(", "));
@@ -244,6 +303,9 @@ impl PublicationMetadata {
                 s
             })
             .collect();
+        if self.is_cjk() {
+            return authors.join("、");
+        }
         match authors.len() {
             0 => String::new(),
             1 => authors.concat(),
@@ -252,6 +314,23 @@ impl PublicationMetadata {
                 format!("{} and {}", head.join(", "), last.concat())
             }
         }
+    }
+
+    /// `\psgAuthorItem{name}{1,2,*}` for each author.
+    fn author_list(&self) -> String {
+        self.authors
+            .iter()
+            .take(MAX_LIST)
+            .filter(|a| !a.name.trim().is_empty())
+            .map(|a| {
+                let mut marks: Vec<String> =
+                    a.affiliations.iter().filter(|&&i| i >= 1 && i <= self.affiliations.len()).map(usize::to_string).collect();
+                if a.corresponding {
+                    marks.push("*".into());
+                }
+                format!("\\psgAuthorItem{{{}}}{{{}}}", escape(a.name.trim()), escape(&marks.join(",")))
+            })
+            .collect()
     }
 
     fn affiliation_block(&self) -> String {
@@ -267,7 +346,18 @@ impl PublicationMetadata {
     fn correspondence(&self) -> String {
         let emails: Vec<String> =
             self.authors.iter().filter(|a| a.corresponding && !a.email.trim().is_empty()).map(|a| escape(a.email.trim())).collect();
-        if emails.is_empty() { String::new() } else { format!("\\psgAffMark{{*}}Corresponding author: {}", emails.join(", ")) }
+        let label = match self.language.trim() {
+            "zh-hant" => "通訊作者：",
+            "zh-hans" => "通讯作者：",
+            "ja" => "責任著者：",
+            _ => "Corresponding author: ",
+        };
+        if emails.is_empty() { String::new() } else { format!("\\psgAffMark{{*}}{label}{}", emails.join(", ")) }
+    }
+
+    /// Whether the article is in Chinese or Japanese, which list names with 、 instead of "and".
+    fn is_cjk(&self) -> bool {
+        matches!(self.language.trim(), "zh-hant" | "zh-hans" | "ja")
     }
 }
 
@@ -364,10 +454,74 @@ pub fn escape(text: &str) -> String {
     out.trim().to_owned()
 }
 
+/// The most math one field may carry through as TeX, in bytes.
+const MAX_MATH: usize = 4096;
+
+/// [`escape`], except that `\(…\)` stays inline math: what a Word equation in a title or an
+/// abstract becomes ([`crate::docx`]). Math whose braces don't balance, or that would end the
+/// group it sits in, is escaped as text like everything else.
+pub fn escape_math(text: &str) -> String {
+    let mut out = String::new();
+    let mut rest = text;
+    let mut math_left = MAX_MATH;
+    while let Some(start) = rest.find("\\(") {
+        let (before, from) = rest.split_at(start);
+        let body = from.get(2..).unwrap_or_default();
+        let Some(end) = body.find("\\)") else { break };
+        let inner = body.get(..end).unwrap_or_default();
+        push_text(&mut out, before);
+        if math_left >= inner.len() && balanced(inner) {
+            math_left -= inner.len();
+            out.push_str("\\(");
+            out.extend(inner.chars().filter(|c| !c.is_control()));
+            out.push_str("\\)");
+        } else {
+            push_text(&mut out, from.get(..end + 4).unwrap_or_default());
+        }
+        rest = body.get(end + 2..).unwrap_or_default();
+    }
+    push_text(&mut out, rest);
+    out.trim().to_owned()
+}
+
+/// Escaped text, keeping one space where the text began or ended with one.
+fn push_text(out: &mut String, text: &str) {
+    if text.starts_with(char::is_whitespace) && !out.ends_with(' ') {
+        out.push(' ');
+    }
+    out.push_str(&escape(text));
+    if text.ends_with(char::is_whitespace) && !text.trim().is_empty() {
+        out.push(' ');
+    }
+}
+
+/// Whether TeX math `inner` keeps its braces balanced and starts no paragraph or other math.
+fn balanced(inner: &str) -> bool {
+    let mut depth: usize = 0;
+    for c in inner.chars() {
+        match c {
+            '{' => depth += 1,
+            '}' => match depth.checked_sub(1) {
+                Some(d) => depth = d,
+                None => return false,
+            },
+            '$' | '%' | '#' => return false,
+            _ => {}
+        }
+    }
+    depth == 0 && !inner.contains("\\par") && !inner.contains("\\(") && !inner.contains("\\[") && !inner.contains("\\end")
+}
+
 /// [`escape`], keeping blank-line paragraph breaks as `\par`.
 pub fn escape_paragraphs(text: &str) -> String {
     let normalized = text.replace("\r\n", "\n");
     normalized.split("\n\n").map(escape).filter(|p| !p.is_empty()).collect::<Vec<_>>().join("\\par ")
+}
+
+/// [`escape_paragraphs`] with [`escape_math`]'s inline math.
+fn escape_paragraphs_math(text: &str) -> String {
+    let normalized = text.replace("\r\n", "\n");
+    normalized.split("\n\n").map(escape_math).filter(|p| !p.is_empty()).collect::<Vec<_>>().join("\\par ")
 }
 
 /// A page range: digits and letters as typed, with a hyphen or en dash between them written as `--`.
@@ -400,6 +554,45 @@ fn escape_url_part(doi: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn math_stays_math_only_when_it_is_whole() {
+        assert_eq!(escape_math("Fit \\(\\alpha_1\\) now"), "Fit \\(\\alpha_1\\) now");
+        // Unbalanced braces, or math that would end its group, are text.
+        assert_eq!(escape_math("a \\(x}\\) b"), "a \\textbackslash{}(x\\}\\textbackslash{}) b");
+        assert!(!escape_math("\\(\\end{document}\\)").contains("\\end{"));
+        // Outside math, everything is escaped as before.
+        assert_eq!(escape_math("50% & $5"), escape("50% & $5"));
+        assert_eq!(escape_math("no end \\(x"), escape("no end \\(x"));
+    }
+
+    #[test]
+    fn overlay_sets_only_the_fields_given() {
+        let mut m = PublicationMetadata::sample();
+        let set = m.overlay("volume = \"12\"\ndoi = \"10.1234/x.5\"\n[[authors]]\nname = \"Ann\"\naffiliations = [1]\n").unwrap();
+        assert_eq!(set, ["authors", "doi", "volume"]);
+        assert_eq!((m.volume.as_str(), m.doi.as_str(), m.authors.len()), ("12", "10.1234/x.5", 1));
+        assert_eq!(m.journal, PublicationMetadata::sample().journal);
+        m.overlay("{\"issue\": \"3\"}").unwrap();
+        assert_eq!(m.issue, "3");
+        let err = m.overlay("jornal = \"x\"").unwrap_err();
+        assert!(err.contains("\"jornal\" is not a metadata field") && err.contains("journal"), "{err}");
+        assert!(m.overlay("volume = 12").is_err(), "a number is not text");
+        assert_eq!(m.issue, "3", "a refused overlay changes nothing");
+    }
+
+    #[test]
+    fn chinese_articles_list_authors_with_the_enumeration_comma() {
+        let mut m = PublicationMetadata::sample();
+        m.language = "zh-hans".into();
+        m.authors[0].name = "张三".into();
+        m.authors[1].name = "李四".into();
+        let latex = m.to_latex();
+        assert!(latex.contains("\\psgAuthors{张三\\psgAffMark{1,*}、李四\\psgAffMark{2}}"), "{latex}");
+        assert!(latex.contains("通讯作者：alex@example.org"));
+        assert!(latex.contains("\\psgKeywords{template；typesetting；pdfLaTeX}"), "{latex}");
+        assert!(!PublicationMetadata::sample().to_latex().contains("psgLanguage"), "English writes no language");
+    }
 
     #[test]
     fn escape_neutralises_tex_commands() {

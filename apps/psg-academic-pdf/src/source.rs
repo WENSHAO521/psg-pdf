@@ -1,7 +1,8 @@
 //! The source editor: the manuscript body and the bibliography files, side by side with the PDF.
 //!
-//! Only the files a person is meant to change are offered (the template's body file and the
-//! project's `.bib` files); the template's class and main file stay as the journal set them.
+//! Every LaTeX and bibliography file of the project is offered (the body first, then the main
+//! file, the class, the `.bib` files and any chapter), and new ones can be made; only the
+//! metadata file, which the metadata form writes, is left out. LaTeX is coloured as it is typed.
 //! Lines with a problem are marked in the gutter, and a problem's "Go to line" puts the cursor on
 //! its line and scrolls to it.
 
@@ -25,6 +26,20 @@ pub struct SourceEditor {
     /// A line (1-based) to put the cursor on at the next frame.
     jump: Option<u32>,
     pub error: Option<String>,
+    /// The name typed for a new file.
+    pub new_file: String,
+    /// The coloured layout of the text last drawn, kept while the text doesn't change.
+    highlighted: Option<(u64, Arc<LayoutJob>)>,
+    /// Where the cursor was at the last frame, as a character index.
+    cursor: usize,
+}
+
+/// What the editor asks of the app, besides editing.
+pub enum Request {
+    /// Show this file.
+    Open(String),
+    /// Make this new file and show it.
+    Create(String),
 }
 
 impl SourceEditor {
@@ -60,21 +75,33 @@ impl SourceEditor {
         self.saved.clone_from(&self.text);
     }
 
+    /// The line (1-based) the cursor is on.
+    pub fn cursor_line(&self) -> u32 {
+        let newlines = self.text.chars().take(self.cursor).filter(|c| *c == '\n').count();
+        u32::try_from(newlines).unwrap_or(u32::MAX).saturating_add(1)
+    }
+
     /// Put the cursor on `line` (1-based) at the next frame.
     pub fn go_to(&mut self, line: u32) {
         self.jump = Some(line.max(1));
     }
 
     /// Draw the editor. `marked` are the lines with a problem, `files` the ones that can be shown.
-    /// Returns the file chosen in the file list, if another one was picked.
-    pub fn show(&mut self, ui: &mut egui::Ui, files: &[String], marked: &[u32]) -> Option<String> {
+    /// Returns what was asked: another file from the list, or a new file.
+    pub fn show(&mut self, ui: &mut egui::Ui, files: &[String], marked: &[u32]) -> Option<Request> {
         let mut picked = None;
-        ui.horizontal(|ui| {
+        ui.horizontal_wrapped(|ui| {
             for f in files {
                 let label = if *f == self.file && self.dirty() { format!("{f} •") } else { f.clone() };
                 if ui.selectable_label(*f == self.file, label).clicked() && *f != self.file {
-                    picked = Some(f.clone());
+                    picked = Some(Request::Open(f.clone()));
                 }
+            }
+            ui.separator();
+            let field = ui.add(egui::TextEdit::singleline(&mut self.new_file).desired_width(140.0).hint_text("chapter2.tex"));
+            let entered = field.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter));
+            if (ui.button(crate::i18n::t("New file")).clicked() || entered) && !self.new_file.trim().is_empty() {
+                picked = Some(Request::Create(std::mem::take(&mut self.new_file).trim().to_owned()));
             }
         });
         if let Some(e) = &self.error {
@@ -99,12 +126,23 @@ impl SourceEditor {
                     gutter.append(&format!("{}{n:>5}\n", if bad { "●" } else { " " }), 0.0, egui::TextFormat::simple(font.clone(), color));
                 }
                 ui.label(gutter);
+                let colors = Colors::for_visuals(ui.visuals(), text_color);
+                let mut cache = self.highlighted.take();
                 let mut layouter = |ui: &egui::Ui, buf: &dyn TextBuffer, _wrap: f32| -> Arc<egui::Galley> {
-                    // No wrapping, so editor lines stay level with the gutter's numbers.
-                    let job = LayoutJob::simple(buf.as_str().to_owned(), font.clone(), text_color, f32::INFINITY);
-                    ui.fonts_mut(|f| f.layout_job(job))
+                    let text = buf.as_str();
+                    let key = text_key(text, &colors);
+                    let job = match &cache {
+                        Some((k, job)) if *k == key => Arc::clone(job),
+                        _ => {
+                            let job = Arc::new(highlight(text, &font, &colors));
+                            cache = Some((key, Arc::clone(&job)));
+                            job
+                        }
+                    };
+                    ui.fonts_mut(|f| f.layout_job((*job).clone()))
                 };
-                let response = ui.add(
+                let response = crate::clipboard::text_edit(
+                    ui,
                     egui::TextEdit::multiline(&mut self.text)
                         .id(id)
                         .code_editor()
@@ -113,6 +151,10 @@ impl SourceEditor {
                         .lock_focus(true)
                         .layouter(&mut layouter),
                 );
+                self.highlighted = cache;
+                if let Some(range) = egui::TextEdit::load_state(ui.ctx(), id).and_then(|s| s.cursor.char_range()) {
+                    self.cursor = range.primary.index.into();
+                }
                 if let Some(line) = self.jump.take() {
                     let index = char_index_of_line(&self.text, line);
                     if let Some(mut state) = egui::TextEdit::load_state(ui.ctx(), id) {
@@ -125,6 +167,155 @@ impl SourceEditor {
         });
         picked
     }
+}
+
+/// The colours of LaTeX source.
+#[derive(Hash)]
+struct Colors {
+    text: egui::Color32,
+    command: egui::Color32,
+    comment: egui::Color32,
+    math: egui::Color32,
+    brace: egui::Color32,
+}
+
+impl Colors {
+    fn for_visuals(v: &egui::Visuals, text: egui::Color32) -> Colors {
+        let (command, math) = if v.dark_mode {
+            (egui::Color32::from_rgb(0x8c, 0xb4, 0xff), egui::Color32::from_rgb(0x7f, 0xd1, 0x9a))
+        } else {
+            (egui::Color32::from_rgb(0x1f, 0x4f, 0xb8), egui::Color32::from_rgb(0x1d, 0x7a, 0x3e))
+        };
+        Colors { text, command, comment: v.weak_text_color(), math, brace: v.hyperlink_color }
+    }
+}
+
+/// Text longer than this is shown without colours, so typing stays quick.
+const MAX_HIGHLIGHT: usize = 2 * 1024 * 1024;
+
+/// What the highlighted layout depends on: the text and the theme's colours, so switching
+/// between light and dark lays it out again.
+fn text_key(text: &str, colors: &Colors) -> u64 {
+    use std::hash::{Hash, Hasher};
+    let mut h = std::collections::hash_map::DefaultHasher::new();
+    text.hash(&mut h);
+    colors.hash(&mut h);
+    h.finish()
+}
+
+/// What a stretch of LaTeX is, for its colour.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum Kind {
+    Text,
+    Command,
+    Comment,
+    Math,
+    Brace,
+}
+
+/// The LaTeX in `text` cut into coloured stretches: commands (`\section`, `@article` in a
+/// `.bib`), comments, inline and display math, and braces. Never wraps, so lines stay level
+/// with the gutter's numbers.
+fn highlight(text: &str, font: &FontId, colors: &Colors) -> LayoutJob {
+    let mut job = LayoutJob { wrap: egui::text::TextWrapping { max_width: f32::INFINITY, ..Default::default() }, ..Default::default() };
+    let color = |k: Kind| match k {
+        Kind::Text => colors.text,
+        Kind::Command => colors.command,
+        Kind::Comment => colors.comment,
+        Kind::Math => colors.math,
+        Kind::Brace => colors.brace,
+    };
+    if text.len() > MAX_HIGHLIGHT {
+        job.append(text, 0.0, egui::TextFormat::simple(font.clone(), colors.text));
+        return job;
+    }
+    for (start, end, kind) in spans(text) {
+        if let Some(piece) = text.get(start..end) {
+            job.append(piece, 0.0, egui::TextFormat::simple(font.clone(), color(kind)));
+        }
+    }
+    job
+}
+
+/// The stretches of [`highlight`], as byte ranges that cover the whole text.
+fn spans(text: &str) -> Vec<(usize, usize, Kind)> {
+    let bytes = text.as_bytes();
+    let mut out: Vec<(usize, usize, Kind)> = Vec::new();
+    let mut push = |start: usize, end: usize, kind: Kind| {
+        if end <= start {
+            return;
+        }
+        match out.last_mut() {
+            Some(last) if last.2 == kind && last.1 == start => last.1 = end,
+            _ => out.push((start, end, kind)),
+        }
+    };
+    let mut i = 0;
+    let mut math: Option<&[u8]> = None;
+    while i < bytes.len() {
+        let Some(&b) = bytes.get(i) else { break };
+        let rest = text.get(i..).unwrap_or_default();
+        let in_math = math.is_some();
+        let base = if in_math { Kind::Math } else { Kind::Text };
+        match b {
+            b'%' => {
+                let end = rest.find('\n').map_or(bytes.len(), |n| i + n);
+                push(i, end, Kind::Comment);
+                i = end;
+            }
+            b'\\' => {
+                let mut end = i + 1;
+                while bytes.get(end).is_some_and(u8::is_ascii_alphabetic) {
+                    end += 1;
+                }
+                if end == i + 1 {
+                    // A control symbol: \\, \%, \$, \(, \[ …
+                    end = (i + 1 + rest.get(1..).and_then(|r| r.chars().next()).map_or(0, char::len_utf8)).min(bytes.len());
+                    let sym = bytes.get(i + 1..end).unwrap_or_default();
+                    match (math, sym) {
+                        (None, b"(") => math = Some(b"\\)"),
+                        (None, b"[") => math = Some(b"\\]"),
+                        (Some(close), _) if close.get(1..) == Some(sym) && close.first() == Some(&b'\\') => math = None,
+                        _ => {}
+                    }
+                    push(i, end, if math.is_some() || in_math { Kind::Math } else { Kind::Command });
+                } else {
+                    push(i, end, if in_math { Kind::Math } else { Kind::Command });
+                }
+                i = end;
+            }
+            b'@' if !in_math && (i == 0 || bytes.get(i - 1) == Some(&b'\n')) => {
+                let mut end = i + 1;
+                while bytes.get(end).is_some_and(u8::is_ascii_alphabetic) {
+                    end += 1;
+                }
+                push(i, end, Kind::Command);
+                i = end;
+            }
+            b'$' => {
+                let double = bytes.get(i + 1) == Some(&b'$');
+                let len = if double { 2 } else { 1 };
+                let close: &[u8] = if double { b"$$" } else { b"$" };
+                match math {
+                    Some(c) if c == close => math = None,
+                    None => math = Some(close),
+                    _ => {}
+                }
+                push(i, i + len, Kind::Math);
+                i += len;
+            }
+            b'{' | b'}' if !in_math => {
+                push(i, i + 1, Kind::Brace);
+                i += 1;
+            }
+            _ => {
+                let len = rest.chars().next().map_or(1, char::len_utf8);
+                push(i, i + len, base);
+                i += len;
+            }
+        }
+    }
+    out
 }
 
 /// The character index where `line` (1-based) starts; the end of the text past the last line.
@@ -143,6 +334,33 @@ pub fn char_index_of_line(text: &str, line: u32) -> usize {
 #[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_theme_change_lays_the_colours_out_again() {
+        let light = Colors::for_visuals(&egui::Visuals::light(), egui::Color32::BLACK);
+        let dark = Colors::for_visuals(&egui::Visuals::dark(), egui::Color32::WHITE);
+        assert_ne!(text_key("\\section{A}", &light), text_key("\\section{A}", &dark));
+        assert_eq!(text_key("x", &light), text_key("x", &light));
+    }
+
+    #[test]
+    fn latex_is_coloured_by_kind() {
+        let text = "\\section{Intro} 50\\% $x^2$ % note\n@article{a,\n中文 \\(y\\)";
+        let kinds: Vec<(&str, Kind)> = spans(text).into_iter().map(|(a, b, k)| (&text[a..b], k)).collect();
+        assert!(kinds.contains(&("\\section", Kind::Command)), "{kinds:?}");
+        assert!(kinds.contains(&("{", Kind::Brace)));
+        assert!(kinds.contains(&("\\%", Kind::Command)), "an escaped percent sign is not a comment");
+        assert!(kinds.contains(&("$x^2$", Kind::Math)), "{kinds:?}");
+        assert!(kinds.contains(&("% note", Kind::Comment)));
+        assert!(kinds.contains(&("@article", Kind::Command)));
+        assert!(kinds.contains(&("\\(y\\)", Kind::Math)), "{kinds:?}");
+        // The stretches cover the text exactly, and cut only at character boundaries.
+        assert_eq!(kinds.iter().map(|(t, _)| *t).collect::<String>(), text);
+        // An unfinished command at the end, or a lone backslash, is safe.
+        for t in ["\\", "x\\", "$", "%", "\\中"] {
+            assert_eq!(spans(t).iter().map(|(a, b, _)| &t[*a..*b]).collect::<String>(), t);
+        }
+    }
 
     #[test]
     fn line_starts_count_characters_not_bytes() {

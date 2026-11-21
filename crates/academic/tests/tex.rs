@@ -45,6 +45,40 @@ fn the_sample_template_compiles_to_a_pdf() {
 }
 
 #[test]
+fn export_tracks_the_revision_produced_by_latexmk() {
+    let env = TexEnvironment::detect();
+    let missing = env.missing(false);
+    if !missing.is_empty() {
+        assert!(!required(), "PSG_ACADEMIC_TEX_REQUIRED=1 but {} not installed", missing.join(", "));
+        return;
+    }
+    let root = tempfile::tempdir().unwrap();
+    let mut project = sample_project(root.path());
+    project.file.uses_biber = false;
+    project.save().unwrap();
+    std::fs::write(
+        project.dir.join(&project.file.main),
+        format!("\\documentclass{{article}}\n\\begin{{document}}\n\\input{{{}}}\n\\end{{document}}", project.file.body),
+    )
+    .unwrap();
+    project.write_body("The first revision.").unwrap();
+    let report = project.compile(&env, None).unwrap();
+    assert_eq!(report.outcome, Outcome::Succeeded, "{}", report.output);
+    assert!(Project::open(&project.dir).unwrap().pdf_is_current());
+
+    project.write_body("The second and longer revision.").unwrap();
+    assert!(!project.pdf_is_current());
+    let report = project.compile(&env, None).unwrap();
+    assert_eq!(report.outcome, Outcome::Succeeded, "{}", report.output);
+    assert!(project.pdf_is_current());
+
+    let mut edited = Project::open(&project.dir).unwrap();
+    edited.file.metadata.title.clear();
+    assert!(edited.compile(&env, None).is_err());
+    assert!(!project.pdf_is_current(), "a rejected recompile must leave the old PDF uncertified");
+}
+
+#[test]
 fn an_error_is_reported_with_its_file_and_line() {
     let Some(env) = tex() else { return };
     let root = tempfile::tempdir().unwrap();
@@ -132,8 +166,8 @@ fn an_imported_word_manuscript_compiles() {
     assert!(made.success());
     for template in Template::builtin() {
         let id = template.manifest.id.clone();
-        let project = Project::create(&root.path().join(&id), &template, PublicationMetadata::sample()).unwrap();
-        let note = PandocImporter { pandoc: pandoc.clone() }.import(&src.join("manuscript.docx"), &project, None).unwrap();
+        let mut project = Project::create(&root.path().join(&id), &template, PublicationMetadata::sample()).unwrap();
+        let note = PandocImporter { pandoc: pandoc.clone() }.import(&src.join("manuscript.docx"), &mut project, None).unwrap();
         assert!(!note.contains("To fix before compiling"), "{id}: {note}");
         let report = project.compile(&env, None).unwrap();
         assert_eq!(report.outcome, Outcome::Succeeded, "{id}: {}\n{:?}", report.output, report.diagnostics);
@@ -188,4 +222,54 @@ fn tiny_png() -> Vec<u8> {
     chunk(&mut png, b"IDAT", &z);
     chunk(&mut png, b"IEND", &[]);
     png
+}
+
+#[test]
+fn the_pdf_and_the_source_point_at_each_other() {
+    let Some(env) = tex() else { return };
+    let root = tempfile::tempdir().unwrap();
+    let project = sample_project(root.path());
+    let report = project.compile(&env, None).unwrap();
+    assert_eq!(report.outcome, Outcome::Succeeded, "{}", report.output);
+    let sync = psg_academic::synctex::SyncTex::read(&project.dir, &project.file.main).unwrap().expect("TeX wrote SyncTeX");
+    let body = std::fs::read_to_string(project.dir.join(&project.file.body)).unwrap();
+    // A line of running text in the body.
+    let line = body.lines().position(|l| l.len() > 40 && !l.starts_with(['\\', '%'])).unwrap() + 1;
+    let line = u32::try_from(line).unwrap();
+    let (page, y) = sync.page_of(&project.file.body, line).unwrap();
+    let (file, found) = sync.source_at(page, 200.0, y).unwrap();
+    assert_eq!(file, project.file.body);
+    assert!(found.abs_diff(line) <= 2, "line {line} came back as {found}");
+}
+
+/// latexmk runs nothing when its last run failed and no file it tracks has changed, and exits with
+/// an error: a package installed into the TeX tree after a "not found" failure is such a change,
+/// so the old error came back from the old log (PSG Academic PDF said a package was installed,
+/// then "failed in 0.8 s"). A compile after a failure must really run TeX again.
+#[test]
+fn a_compile_after_a_failure_runs_tex_again() {
+    let env = TexEnvironment::detect();
+    let missing = env.missing(false);
+    if !missing.is_empty() {
+        assert!(!required(), "PSG_ACADEMIC_TEX_REQUIRED=1 but {} not installed", missing.join(", "));
+        return;
+    }
+    let root = tempfile::tempdir().unwrap();
+    let mut project = sample_project(root.path());
+    project.file.uses_biber = false;
+    project.file.engine = psg_academic::Engine::Pdflatex;
+    project.save().unwrap();
+    std::fs::write(
+        project.dir.join(&project.file.main),
+        "\\documentclass{article}\n\\usepackage{psg-no-such-package}\n\\begin{document}\nText.\n\\end{document}\n",
+    )
+    .unwrap();
+    let first = project.compile(&env, None).unwrap();
+    assert_eq!(first.outcome, Outcome::Failed, "{}", first.output);
+    let log = project.dir.join("main.log");
+    std::fs::remove_file(&log).unwrap();
+    let second = project.compile(&env, None).unwrap();
+    assert_eq!(second.outcome, Outcome::Failed, "{}", second.output);
+    assert!(log.is_file(), "TeX ran again and wrote a new log:\n{}", second.output);
+    assert!(second.errors().any(|d| d.message.contains("psg-no-such-package")), "{:?}", second.diagnostics);
 }

@@ -16,10 +16,18 @@ use psg_academic::managed::{self, ManagedTex, Step};
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Progress {
     Looking,
-    Downloading { done: u64, total: u64 },
+    Downloading {
+        done: u64,
+        total: u64,
+    },
     Unpacking,
     Packages,
     Updating,
+    /// Downloading the Chinese and Japanese fonts (`managed::CJK_FONTS`).
+    Fonts {
+        done: u64,
+        total: u64,
+    },
 }
 
 /// What a job did.
@@ -40,6 +48,9 @@ pub enum Event {
 pub enum Job {
     Install,
     Update,
+    RepairBiber,
+    /// Download the CJK fonts that are missing.
+    Fonts,
 }
 
 /// Run `job` on its own thread; events arrive on the receiver, and `wake` is called after each.
@@ -54,6 +65,11 @@ pub fn start(tex: ManagedTex, job: Job, wake: impl Fn() + Send + 'static) -> std
         let result = match job {
             Job::Install => install(&tex, &mut progress).map(Done::Installed),
             Job::Update => update(&tex, &mut progress),
+            Job::Fonts => install_fonts(&tex, &mut progress).map(|()| Done::Updated),
+            Job::RepairBiber => {
+                progress(Progress::Packages);
+                tex.reinstall_biber().map(|()| Done::Updated).map_err(|e| e.to_string())
+            }
         };
         send(&tx, Event::Finished(result));
     })?;
@@ -101,7 +117,35 @@ pub fn install(tex: &ManagedTex, progress: &mut dyn FnMut(Progress)) -> Result<S
     });
     let _ = std::fs::remove_file(&dest);
     result.map_err(|e| e.to_string())?;
+    install_fonts(tex, progress)?;
     Ok(release.tag)
+}
+
+/// Download the Chinese and Japanese fonts the XeLaTeX templates use that aren't there yet,
+/// each checked against its pinned SHA-256 before it is moved into place.
+pub fn install_fonts(tex: &ManagedTex, progress: &mut dyn FnMut(Progress)) -> Result<(), String> {
+    let missing = tex.missing_fonts();
+    if missing.is_empty() {
+        return Ok(());
+    }
+    let total: u64 = missing.iter().map(|f| f.size).sum();
+    let http = http()?;
+    let stop = Stop::default();
+    let dir = tex.fonts_dir();
+    let mut before = 0;
+    for font in missing {
+        let partial = tex.downloads().join(font.file);
+        http.download(&font.url(), &partial, font.size, font.sha256, &stop, &mut |t| {
+            let (Transfer::Bytes { done, .. } | Transfer::Reconnecting { done, .. }) = t;
+            progress(Progress::Fonts { done: before + done, total });
+        })?;
+        std::fs::create_dir_all(&dir).map_err(|e| format!("couldn't create {} ({e})", dir.display()))?;
+        std::fs::rename(&partial, dir.join(font.file))
+            .or_else(|_| std::fs::copy(&partial, dir.join(font.file)).map(|_| ()).and_then(|()| std::fs::remove_file(&partial)))
+            .map_err(|e| format!("couldn't put {} in {} ({e})", font.file, dir.display()))?;
+        before += font.size;
+    }
+    Ok(())
 }
 
 fn tinytex_asset<'a>(release: &'a Release, name: &str) -> Option<&'a Asset> {
@@ -114,7 +158,7 @@ fn tinytex_asset<'a>(release: &'a Release, name: &str) -> Option<&'a Asset> {
 pub fn update(tex: &ManagedTex, progress: &mut dyn FnMut(Progress)) -> Result<Done, String> {
     progress(Progress::Updating);
     match tex.update().map_err(|e| e.to_string())? {
-        true => Ok(Done::Updated),
+        true => install_fonts(tex, progress).map(|()| Done::Updated),
         false => {
             log::info!("TeX Live has a new yearly release; reinstalling PSG's TeX");
             install(tex, progress).map(Done::Installed)
@@ -125,6 +169,13 @@ pub fn update(tex: &ManagedTex, progress: &mut dyn FnMut(Progress)) -> Result<Do
 /// The folder for PSG's TeX in this run: inside the portable data folder in portable mode.
 pub fn managed_for(data_root: &Path, portable: bool) -> Option<ManagedTex> {
     ManagedTex::default_for(portable.then_some(data_root))
+}
+
+/// The TeX programs, PSG's own first, with the folder of PSG's CJK fonts for XeLaTeX.
+pub fn detect(tex: Option<&ManagedTex>) -> psg_academic::TexEnvironment {
+    let mut env = psg_academic::TexEnvironment::detect_with(bin_dir(tex).as_deref());
+    env.font_dirs.extend(tex.map(ManagedTex::fonts_dir).filter(|d| d.is_dir()));
+    env
 }
 
 /// The managed programs folder, if installed.
