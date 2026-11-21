@@ -192,11 +192,25 @@ fn describe(cmd: &Command) -> String {
 /// Compile `opts.main` in `project`. Errors are for things that stop the run from starting (no
 /// TeX, no main file); a run that fails, times out or is cancelled returns a report saying so.
 pub fn compile(env: &TexEnvironment, project: &Path, opts: &CompileOptions, cancel: Option<&Arc<AtomicBool>>) -> Result<CompileReport, Error> {
+    let timeout = opts.timeout.clamp(MIN_TIMEOUT, MAX_TIMEOUT);
     let cmd = command(env, project, opts)?;
-    let command = describe(&cmd);
-    log::info!("compiling in {}: {command}", project.display());
-    let run = process::run(cmd, opts.timeout.clamp(MIN_TIMEOUT, MAX_TIMEOUT), cancel)
-        .map_err(|e| Error::Compile(format!("could not start latexmk: {e}")))?;
+    let mut described = describe(&cmd);
+    log::info!("compiling in {}: {described}", project.display());
+    let mut run = process::run(cmd, timeout, cancel).map_err(|e| Error::Compile(format!("could not start latexmk: {e}")))?;
+    if !opts.force && !run.timed_out && !run.cancelled && !run.success() && refused_after_earlier_error(&run.stdout, &run.stderr) {
+        // latexmk didn't run TeX: the last run failed and no file it tracks has changed since. A
+        // package installed into the TeX tree in the meantime (`managed::compile_completing`) or
+        // a font that arrived is such a change it can't see, so the old error would be reported
+        // again from the old log. Run everything once more.
+        let forced = CompileOptions { force: true, ..opts.clone() };
+        let cmd = command(env, project, &forced)?;
+        described = describe(&cmd);
+        log::info!("latexmk kept an earlier failure; compiling again in {}: {described}", project.display());
+        let earlier = run.elapsed;
+        run = process::run(cmd, timeout.saturating_sub(earlier).max(MIN_TIMEOUT), cancel)
+            .map_err(|e| Error::Compile(format!("could not start latexmk: {e}")))?;
+        run.elapsed = run.elapsed.saturating_add(earlier);
+    }
     let stem = opts.main.trim_end_matches(".tex");
     let tex_log = read_text(&project.join(format!("{stem}.log")));
     let mut diagnostics = tex_log.as_deref().map(diagnostics::parse_tex_log).unwrap_or_default();
@@ -226,12 +240,19 @@ pub fn compile(env: &TexEnvironment, project: &Path, opts: &CompileOptions, canc
     Ok(CompileReport {
         outcome,
         pdf: (outcome == Outcome::Succeeded).then_some(pdf_path),
-        command,
+        command: described,
         output,
         tex_log,
         diagnostics,
         elapsed: run.elapsed,
     })
+}
+
+/// Whether latexmk refused to run TeX because its previous run in this folder failed and nothing
+/// it tracks has changed: it then prints this and exits with an error, leaving the old log.
+fn refused_after_earlier_error(stdout: &str, stderr: &str) -> bool {
+    const REFUSAL: &str = "gave an error in previous invocation of latexmk";
+    stdout.contains(REFUSAL) || stderr.contains(REFUSAL)
 }
 
 fn read_text(path: &Path) -> Option<String> {
@@ -310,5 +331,17 @@ mod tests {
             other => panic!("{other:?}"),
         }
         assert!(command(&env, dir.path(), &CompileOptions { needs_biber: false, ..CompileOptions::default() }).is_ok());
+    }
+
+    #[test]
+    fn latexmk_keeping_an_earlier_failure_is_recognised() {
+        let stdout = "Latexmk: Nothing to do for 'main.tex'.\nLatexmk: All targets (main.pdf) are up-to-date\n";
+        let stderr = "Collected error summary (may duplicate other messages):\n  pdflatex: gave an error in previous invocation of latexmk.\n";
+        assert!(refused_after_earlier_error(stdout, stderr));
+        assert!(refused_after_earlier_error(stderr, ""));
+        assert!(!refused_after_earlier_error(
+            "! LaTeX Error: File `caption.sty' not found.",
+            "Latexmk: Errors, so I did not complete making targets"
+        ));
     }
 }

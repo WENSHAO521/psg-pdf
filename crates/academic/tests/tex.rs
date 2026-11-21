@@ -241,3 +241,35 @@ fn the_pdf_and_the_source_point_at_each_other() {
     assert_eq!(file, project.file.body);
     assert!(found.abs_diff(line) <= 2, "line {line} came back as {found}");
 }
+
+/// latexmk runs nothing when its last run failed and no file it tracks has changed, and exits with
+/// an error: a package installed into the TeX tree after a "not found" failure is such a change,
+/// so the old error came back from the old log (PSG Academic PDF said a package was installed,
+/// then "failed in 0.8 s"). A compile after a failure must really run TeX again.
+#[test]
+fn a_compile_after_a_failure_runs_tex_again() {
+    let env = TexEnvironment::detect();
+    let missing = env.missing(false);
+    if !missing.is_empty() {
+        assert!(!required(), "PSG_ACADEMIC_TEX_REQUIRED=1 but {} not installed", missing.join(", "));
+        return;
+    }
+    let root = tempfile::tempdir().unwrap();
+    let mut project = sample_project(root.path());
+    project.file.uses_biber = false;
+    project.file.engine = psg_academic::Engine::Pdflatex;
+    project.save().unwrap();
+    std::fs::write(
+        project.dir.join(&project.file.main),
+        "\\documentclass{article}\n\\usepackage{psg-no-such-package}\n\\begin{document}\nText.\n\\end{document}\n",
+    )
+    .unwrap();
+    let first = project.compile(&env, None).unwrap();
+    assert_eq!(first.outcome, Outcome::Failed, "{}", first.output);
+    let log = project.dir.join("main.log");
+    std::fs::remove_file(&log).unwrap();
+    let second = project.compile(&env, None).unwrap();
+    assert_eq!(second.outcome, Outcome::Failed, "{}", second.output);
+    assert!(log.is_file(), "TeX ran again and wrote a new log:\n{}", second.output);
+    assert!(second.errors().any(|d| d.message.contains("psg-no-such-package")), "{:?}", second.diagnostics);
+}
