@@ -16,7 +16,7 @@ sha256 = "cd7032ea33b71427f188e34ffb4aee9d6868a57fd196037c5c8b2be03a2a0352"
 [[document]]
 source = "NOTICE"
 destination = "NOTICE"
-sha256 = "cac61418fbe24cb2971a0921e82d1174d2549bff43e144fe7a513661f3936d78"
+sha256 = "3e0ea1653308567da6d7781afda79367facdc7f1c1c18b98e9a0eb78a3e8f2b2"
 
 [[document]]
 source = "vendor/craft-docx/LICENSE-MIT"
@@ -206,3 +206,9 @@ crate = "icu_segmenter_data"
 path = "data/segmenter_dictionary_extended_v1.rs.data"
 licence = "Unicode-3.0"
 documents = ["licenses/ICU4X-LICENSE.txt"]
+
+[[document]]
+source = "templates/academic/sciflow-source/LICENSE.txt"
+licences = ["MIT"]
+destination = "templates/academic/sciflow-source/LICENSE.txt"
+sha256 = "e013f921185abfc4c8af5c106ad9987337a89df84293fe4009190c3095f12948"
