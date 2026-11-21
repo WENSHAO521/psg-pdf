@@ -143,6 +143,8 @@ section { border-top: 1px solid var(--rule); padding-block: clamp(56px, 8vw, 112
 .alts a { color: var(--ink); }
 .dl-foot { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-top: 24px; font-size: 14px; color: var(--muted); }
 .dl-foot a { color: var(--accent); }
+.notice .body { max-width: 68ch; }
+.notice .body p { color: var(--muted); margin-top: 12px; }
 .build { margin-top: 48px; border-top: 1px solid var(--rule); }
 .build summary { cursor: pointer; padding: 16px 0; font-weight: 600; }
 .tabs { display: flex; flex-wrap: wrap; gap: 4px 8px; border-bottom: 1px solid var(--edge); }
@@ -351,6 +353,18 @@ footer .fine { display: flex; justify-content: space-between; gap: 8px 16px; fle
 <span class="p">$ </span>./target/release/psg-pdf sample.pdf</pre>
       <pre role="tabpanel" tabindex="0" id="b-test" aria-labelledby="t-test" hidden><span class="p">$ </span>cargo test -p psg-pdf</pre>
     </details>
+  </div>
+</section>
+
+<section class="notice" id="academic" aria-labelledby="academic-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="academic-title" data-zh="PSG Academic PDF 停止提供">PSG Academic PDF has been withdrawn</h2>
+    </div>
+    <div class="body">
+      <p data-zh="PSG Academic PDF 是我們的期刊論文自動排版工具，現已停止提供。要依任何一家期刊的模板，把稿件排成可直接出版的版面，並讓每一張表格、圖片與每一條參考文獻都完全符合該刊的格式，所需的打磨程度超出了我們目前能夠穩定達到的水準。與其推出一款達不到我們標準的工具，我們選擇集中力量做好 PSG PDF。">PSG Academic PDF, our automated typesetting tool for journal articles, has been withdrawn. Turning a manuscript into publication-ready pages from any journal’s template, with every table, figure and reference matching that journal’s house style, takes a level of refinement we could not yet deliver reliably. Rather than offer a tool that falls short of our standards, we are concentrating on PSG PDF.</p>
+      <p data-zh="已安裝的 PSG Academic PDF 仍可繼續使用，但不再提供更新，你的專案檔案也會照常保留在電腦上。學術出版方面，我們計畫日後以另一款產品重新推出。">Copies already installed keep working but no longer receive updates, and your projects stay on your computer. We plan to return to scholarly publishing with a separate product in the future.</p>
+    </div>
   </div>
 </section>
 
