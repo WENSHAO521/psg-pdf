@@ -24,6 +24,15 @@ pub const PROJECT_FILE: &str = "psg-project.toml";
 /// The largest manuscript, bibliography or figure imported (bytes).
 pub const MAX_IMPORT: u64 = 64 * 1024 * 1024;
 /// File types that may be imported next to the manuscript.
+/// The kinds of text file the editor offers and can make.
+pub const TEXT_SOURCES: &[&str] = &["tex", "cls", "sty", "bib", "bst", "bbx", "cbx", "lbx", "cfg", "def", "ltx"];
+/// The most files the editor lists.
+const MAX_LISTED: usize = 500;
+
+fn is_text_source(name: &str) -> bool {
+    name.rsplit_once('.').is_some_and(|(stem, ext)| !stem.is_empty() && TEXT_SOURCES.contains(&ext.to_ascii_lowercase().as_str()))
+}
+
 pub const ASSET_EXTENSIONS: &[&str] = &["bib", "png", "jpg", "jpeg", "pdf", "eps", "tex", "csv"];
 
 /// Typesetting settings saved with the project.
@@ -305,6 +314,65 @@ impl Project {
         write_atomic(&self.dir.join(&self.file.body), text.as_bytes())
     }
 
+    /// The text files a person may edit, by path in the project folder: the body, the main file,
+    /// then the other LaTeX and bibliography files (classes, styles, included chapters), sorted.
+    /// The metadata file is left out (the metadata form writes it), and so are hidden folders and
+    /// what TeX generates. Subfolders are looked at up to [`crate::paths::MAX_FOLDERS`] deep.
+    pub fn text_files(&self) -> Vec<String> {
+        let mut found = Vec::new();
+        let mut stack = vec![(self.dir.clone(), String::new(), 0usize)];
+        let mut looked = 0usize;
+        while let Some((dir, prefix, depth)) = stack.pop() {
+            let Ok(list) = std::fs::read_dir(&dir) else { continue };
+            for e in list.flatten() {
+                looked += 1;
+                if looked > MAX_LISTED * 4 || found.len() >= MAX_LISTED {
+                    break;
+                }
+                let Ok(name) = e.file_name().into_string() else { continue };
+                if crate::paths::safe_relative_name(&name).is_none() || name.starts_with('.') {
+                    continue;
+                }
+                let path = format!("{prefix}{name}");
+                // A link is not followed: it could lead out of the project.
+                let Ok(kind) = e.file_type() else { continue };
+                if kind.is_dir() {
+                    if depth < crate::paths::MAX_FOLDERS && !matches!(name.as_str(), "media" | "build" | "out" | "_minted") {
+                        stack.push((e.path(), format!("{path}/"), depth + 1));
+                    }
+                } else if kind.is_file() && is_text_source(&name) && path != self.file.metadata_file {
+                    found.push(path);
+                }
+            }
+        }
+        found.sort();
+        let mut out = vec![self.file.body.clone(), self.file.main.clone()];
+        out.dedup();
+        out.extend(found.into_iter().filter(|f| *f != self.file.body && *f != self.file.main));
+        out
+    }
+
+    /// Make a new, empty text file `name` (a path in the project folder) for the editor. Refused
+    /// when the name is unsafe, the kind of file is not one the editor edits, or it exists.
+    pub fn create_text_file(&self, name: &str) -> Result<(), Error> {
+        let name = name.trim();
+        let ok = crate::paths::safe_relative_path(name).is_some() && name.rsplit('/').next().is_some_and(is_text_source);
+        if !ok {
+            return Err(Error::Project(format!(
+                "\"{name}\" can't be made here: use a name like chapter2.tex or styles/journal.sty, with one of the extensions {}",
+                TEXT_SOURCES.join(", ")
+            )));
+        }
+        let path = self.dir.join(name);
+        if path.exists() {
+            return Err(Error::Project(format!("{name} already exists")));
+        }
+        if let Some(parent) = path.parent() {
+            std::fs::create_dir_all(parent).map_err(|e| Error::io(parent, e))?;
+        }
+        write_atomic(&path, b"")
+    }
+
     /// The `.bib` files in the project folder, by name.
     pub fn bib_files(&self) -> Vec<String> {
         let mut names: Vec<String> = std::fs::read_dir(&self.dir)
@@ -471,6 +539,27 @@ pub fn extract_body(text: &str) -> (String, String) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_editor_lists_every_source_file_and_makes_new_ones() {
+        let root = tempfile::tempdir().unwrap();
+        let p = Project::create(&root.path().join("p"), &Template::builtin().remove(0), PublicationMetadata::sample()).unwrap();
+        p.create_text_file("chapters/intro.tex").unwrap();
+        std::fs::write(p.dir.join("main.aux"), "x").unwrap();
+        std::fs::create_dir_all(p.dir.join(".hidden")).unwrap();
+        std::fs::write(p.dir.join(".hidden/x.tex"), "x").unwrap();
+        let files = p.text_files();
+        assert_eq!(files.first(), Some(&p.file.body));
+        assert_eq!(files.get(1), Some(&p.file.main));
+        assert!(files.contains(&"psg-article.cls".to_owned()) && files.contains(&"references.bib".to_owned()), "{files:?}");
+        assert!(files.contains(&"chapters/intro.tex".to_owned()));
+        assert!(!files.contains(&p.file.metadata_file), "the metadata form writes it");
+        assert!(!files.iter().any(|f| f.ends_with(".aux") || f.starts_with(".hidden")), "{files:?}");
+        // Refused: an existing file, a path out of the project, a kind of file the editor doesn't edit.
+        assert!(p.create_text_file("chapters/intro.tex").is_err());
+        assert!(p.create_text_file("../x.tex").is_err());
+        assert!(p.create_text_file("run.sh").is_err());
+    }
 
     #[allow(clippy::unwrap_used)]
     fn new_project() -> (tempfile::TempDir, Project) {

@@ -89,6 +89,12 @@ pub struct Preview {
     pub total_pages: usize,
     pub rendering: bool,
     pub error: Option<String>,
+    /// Device pixels per PDF point the pages were drawn at: a page's size in points is its
+    /// size in pixels divided by this.
+    pub scale: f32,
+    /// A place to point out, from the source editor's "Show in PDF": the page and the height on
+    /// it in PDF points from the top.
+    pub mark: Option<(usize, f32)>,
     rx: Option<Receiver<Message>>,
     generation: u64,
 }
@@ -103,6 +109,7 @@ impl Preview {
         let navigation = std::mem::take(&mut self.navigation);
         self.clear();
         self.navigation = navigation;
+        self.scale = scale;
         let (tx, rx) = channel();
         self.rx = Some(rx);
         self.rendering = true;

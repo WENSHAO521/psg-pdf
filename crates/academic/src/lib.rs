@@ -30,6 +30,7 @@ pub mod bib;
 pub const fn mark(english: &'static str) -> &'static str {
     english
 }
+pub mod citations;
 pub mod compile;
 pub mod diagnostics;
 pub mod docx;
@@ -42,6 +43,7 @@ pub mod process;
 pub mod project;
 mod project_revision;
 pub mod scripts;
+pub mod synctex;
 pub mod template;
 pub mod template_import;
 pub mod tex;

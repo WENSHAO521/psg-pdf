@@ -9,6 +9,8 @@
 //! psg-academic-pdf new <dir> [--template <id>]
 //! psg-academic-pdf check <dir>
 //! psg-academic-pdf compile <dir> [--out <file.pdf>] [--timeout <seconds>] [--manuscript <file.tex|file.docx>]
+//! psg-academic-pdf source-at <dir> --page <n> --x <pt> --y <pt> [--json]
+//! psg-academic-pdf page-of <dir> --file <file.tex> --line <n> [--json]
 //! ```
 
 use std::path::PathBuf;
@@ -118,6 +120,12 @@ Commands:
                                  templates can't set, the bibliography); exit 1 on an error
   compile <dir> [--manuscript <file.tex|file.docx>] [--timeout <seconds>] [--out <file.pdf>]
                                  typeset the project in <dir> and optionally export the PDF
+  source-at <dir> --page <n> --x <pt> --y <pt> [--json]
+                                 the source file and line that put what is at that point of
+                                 the PDF (page from 1, points from the page's top-left corner)
+  page-of <dir> --file <file.tex> --line <n> [--json]
+                                 the page (from 1) and height in points where that line of the
+                                 source is in the PDF; both need a typeset project
   -h, --help                     print this and exit
   --version                      print the version and exit";
 
@@ -144,6 +152,8 @@ pub fn run(args: &[String]) -> Option<i32> {
         "new" => report(new(rest)),
         "check" => check(rest),
         "compile" => report(compile(rest)),
+        "source-at" => report(source_at(rest)),
+        "page-of" => report(page_of(rest)),
         _ => return None,
     })
 }
@@ -373,6 +383,52 @@ fn compile(args: &[String]) -> Result<(), String> {
     Ok(())
 }
 
+/// The SyncTeX data of the typeset project named first in `args`.
+fn synctex_of(args: &[String], cmd: &str) -> Result<psg_academic::synctex::SyncTex, String> {
+    let dir = args.first().filter(|a| !a.starts_with("--")).ok_or_else(|| format!("{cmd}: name the project folder"))?;
+    let project = Project::open(&PathBuf::from(dir)).map_err(|e| e.to_string())?;
+    psg_academic::synctex::SyncTex::read(&project.dir, &project.file.main)
+        .map_err(|e| e.to_string())?
+        .ok_or_else(|| format!("{cmd}: the project has no SyncTeX data yet; compile it first"))
+}
+
+/// A number flag, or a usage error that says which and why.
+fn number<T: std::str::FromStr>(args: &[String], cmd: &str, name: &str) -> Result<T, String> {
+    let v = flag(args, name).ok_or_else(|| format!("{cmd}: {name} is needed"))?;
+    v.parse().map_err(|_| format!("{cmd}: {name} takes a number, not \"{v}\""))
+}
+
+fn source_at(args: &[String]) -> Result<(), String> {
+    let page: usize = number(args, "source-at", "--page")?;
+    let x: f32 = number(args, "source-at", "--x")?;
+    let y: f32 = number(args, "source-at", "--y")?;
+    if page == 0 || !x.is_finite() || !y.is_finite() {
+        return Err("source-at: pages count from 1 and points must be finite".into());
+    }
+    let sync = synctex_of(args, "source-at")?;
+    let (file, line) = sync.source_at(page - 1, x, y).ok_or_else(|| format!("source-at: nothing from the project's sources is on page {page}"))?;
+    if args.iter().any(|a| a == "--json") {
+        say(&serde_json::json!({ "file": file, "line": line }).to_string());
+    } else {
+        say(&format!("{file}:{line}"));
+    }
+    Ok(())
+}
+
+fn page_of(args: &[String]) -> Result<(), String> {
+    let file = flag(args, "--file").ok_or("page-of: --file is needed")?;
+    let line: u32 = number(args, "page-of", "--line")?;
+    let sync = synctex_of(args, "page-of")?;
+    let (page, y) = sync.page_of(file, line).ok_or_else(|| format!("page-of: nothing from {file} is in the PDF; compile the project first"))?;
+    let page = page.saturating_add(1);
+    if args.iter().any(|a| a == "--json") {
+        say(&serde_json::json!({ "page": page, "y": y }).to_string());
+    } else {
+        say(&format!("page {page}, {y:.1} pt from the top"));
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 #[allow(clippy::unwrap_used)]
 mod tests {
@@ -387,5 +443,25 @@ mod tests {
         std::fs::write(dir.join("body.tex"), "张三 김철수\n").unwrap();
         assert_eq!(super::run(&["check".into(), dir_arg]), Some(1));
         assert_eq!(super::run(&["check".into()]), Some(2));
+    }
+
+    #[test]
+    fn the_pdf_and_source_lookups_run_headless() {
+        let root = tempfile::tempdir().unwrap();
+        let dir = root.path().join("p");
+        let d = dir.display().to_string();
+        let run = |args: &[&str]| super::run(&args.iter().map(|a| (*a).to_owned()).collect::<Vec<_>>());
+        assert_eq!(run(&["new", &d]), Some(0));
+        // Before the first compilation there is nothing to look up.
+        assert_eq!(run(&["page-of", &d, "--file", "body.tex", "--line", "1"]), Some(1));
+        let project = psg_academic::Project::open(&dir).unwrap();
+        let stem = project.file.main.trim_end_matches(".tex").to_owned();
+        let text = format!("Input:1:{}/./body.tex\n{{1\nx1,3:6578176,6578176\n}}1\n", dir.display());
+        std::fs::write(dir.join(format!("{stem}.synctex")), text).unwrap();
+        assert_eq!(run(&["page-of", &d, "--file", "body.tex", "--line", "3", "--json"]), Some(0));
+        assert_eq!(run(&["source-at", &d, "--page", "1", "--x", "100", "--y", "100"]), Some(0));
+        assert_eq!(run(&["source-at", &d, "--page", "2", "--x", "100", "--y", "100"]), Some(1));
+        assert_eq!(run(&["source-at", &d, "--page", "0", "--x", "1", "--y", "1"]), Some(1));
+        assert_eq!(run(&["page-of", &d, "--file", "body.tex", "--line", "x"]), Some(1));
     }
 }

@@ -410,3 +410,11 @@
 	Added the template {name} from {path}.	{path}에서 템플릿 {name}을(를) 추가했습니다.
 	Added the template {name}. Check what was found before using it:	템플릿 {name}을(를) 추가했습니다. 사용하기 전에 찾은 내용을 확인하세요:
 	Could not add the template: {error}	템플릿을 추가하지 못했습니다: {error}
+	New file	새 파일
+	Made {file}.	{file}을(를) 만들었습니다.
+	Show in PDF	PDF에서 보기
+	Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way.	커서가 있는 줄이 PDF의 어디에 있는지 보여 줍니다. PDF를 두 번 클릭하면 반대로 이동합니다.
+	Double-click to show this place in the source	두 번 클릭하여 원본에서 이 위치 보기
+	Typeset the manuscript again to jump between the PDF and the source.	PDF와 원본 사이를 이동하려면 원고를 다시 조판하세요.
+	That part of the PDF comes from {file}, line {n}.	PDF의 이 부분은 {file}의 {n}번째 줄에서 왔습니다.
+	Line {n} of {file} is not in the PDF yet; typeset to update it.	{file}의 {n}번째 줄은 아직 PDF에 없습니다. 조판하여 업데이트하세요.

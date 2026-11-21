@@ -22,7 +22,7 @@ pub fn safe_relative_name(name: &str) -> Option<&str> {
 }
 
 /// The deepest folder a template's file may be in.
-const MAX_FOLDERS: usize = 4;
+pub const MAX_FOLDERS: usize = 4;
 
 /// `path` if it is a relative path of [`safe_relative_name`] parts joined with `/`, at most
 /// [`MAX_FOLDERS`] folders deep: a template's `figures/logo.pdf`.

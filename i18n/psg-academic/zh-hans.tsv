@@ -410,3 +410,11 @@
 	Added the template {name} from {path}.	已从 {path} 添加模板 {name}。
 	Added the template {name}. Check what was found before using it:	已添加模板 {name}。使用前请确认找到的内容：
 	Could not add the template: {error}	无法添加模板：{error}
+	New file	新建文件
+	Made {file}.	已新建 {file}。
+	Show in PDF	在 PDF 中显示
+	Show where the line with the cursor is in the PDF. Double-click the PDF to go the other way.	显示光标所在行在 PDF 中的位置。双击 PDF 可反向跳转。
+	Double-click to show this place in the source	双击以在源码中显示此处
+	Typeset the manuscript again to jump between the PDF and the source.	请重新排版稿件，以便在 PDF 与源码之间跳转。
+	That part of the PDF comes from {file}, line {n}.	PDF 的这部分来自 {file} 第 {n} 行。
+	Line {n} of {file} is not in the PDF yet; typeset to update it.	{file} 第 {n} 行尚未出现在 PDF 中；请排版以更新。
