@@ -2770,10 +2770,10 @@ fn the_accessible_window_has_the_window_title_as_its_name() {
     assert_eq!(name(&h), Some(h.state().window_title.clone()));
 }
 
-/// The navigation rail has Undo and Redo beside the page buttons: disabled with nothing to take
+/// The hotbar has Undo and Redo after the quick tools: disabled with nothing to take
 /// back, and taking an edit back and forward again when clicked.
 #[test]
-fn the_rail_undoes_and_redoes() {
+fn the_hotbar_undoes_and_redoes() {
     let mut h = harness();
     h.run_steps(2);
     let pages = |h: &Harness<'static, PdfCraftApp>| {
@@ -2786,8 +2786,8 @@ fn the_rail_undoes_and_redoes() {
     assert_eq!(pages(&h), 1);
     h.get_by_label_contains("Undo (").click();
     h.run_steps(3);
-    assert_eq!(pages(&h), 2, "the rail's Undo took the deletion back");
+    assert_eq!(pages(&h), 2, "the hotbar's Undo took the deletion back");
     h.get_by_label_contains("Redo (").click();
     h.run_steps(3);
-    assert_eq!(pages(&h), 1, "the rail's Redo made it again");
+    assert_eq!(pages(&h), 1, "the hotbar's Redo made it again");
 }
