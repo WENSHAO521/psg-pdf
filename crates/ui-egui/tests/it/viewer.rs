@@ -2769,3 +2769,25 @@ fn the_accessible_window_has_the_window_title_as_its_name() {
     assert_eq!(name(&h).as_deref(), Some("Quarterly report • — PSG PDF"));
     assert_eq!(name(&h), Some(h.state().window_title.clone()));
 }
+
+/// The navigation rail has Undo and Redo beside the page buttons: disabled with nothing to take
+/// back, and taking an edit back and forward again when clicked.
+#[test]
+fn the_rail_undoes_and_redoes() {
+    let mut h = harness();
+    h.run_steps(2);
+    let pages = |h: &Harness<'static, PdfCraftApp>| {
+        let s = h.state();
+        s.session.get(s.views[1].id).unwrap().info.pages.len()
+    };
+    assert!(h.query_by(|n| n.label().is_some_and(|l| l.starts_with("Undo (")) && n.is_disabled()).is_some(), "nothing to undo yet");
+    h.state_mut().apply_edit(pdfcraft_engine::Edit::DeletePages { pages: vec![0] });
+    h.run_steps(2);
+    assert_eq!(pages(&h), 1);
+    h.get_by_label_contains("Undo (").click();
+    h.run_steps(3);
+    assert_eq!(pages(&h), 2, "the rail's Undo took the deletion back");
+    h.get_by_label_contains("Redo (").click();
+    h.run_steps(3);
+    assert_eq!(pages(&h), 1, "the rail's Redo made it again");
+}

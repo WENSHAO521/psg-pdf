@@ -862,8 +862,12 @@ pub fn right_rail(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
         items.push(item(RightPanel::Accessibility, "accessibility", "Accessibility Checker", None));
     }
     items.push(item(RightPanel::Tags, "tag", "Tags", None));
+    // Undo and Redo as the Edit menu has them, judged before `view` is borrowed.
+    let can = |id: &str| pdfcraft_engine::commands::command(id).is_some_and(|spec| app.command_enabled(spec));
+    let (can_undo, can_redo) = (can("edit.undo"), can("edit.redo"));
     let view = &mut app.views[index];
     let mut page_display = None;
+    let mut history_command = None;
     let rail = Rail::new(egui::Id::unique("rail"))
         .edge(app.side_panels.rail_edge())
         .width(49.0)
@@ -941,6 +945,22 @@ pub fn right_rail(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
                     }
                 }
                 ui.add_space(6.0);
+                // Undo and Redo side by side, like zoom out and in; they run once `view` is free.
+                ui.horizontal(|ui| {
+                    ui.spacing_mut().item_spacing.x = 0.0;
+                    let side = (ui.available_width() / 2.0).floor();
+                    for (id, icon, label, why, enabled) in [
+                        ("edit.undo", "undo-2", tl!("Undo"), tl!("Nothing to undo"), can_undo),
+                        ("edit.redo", "redo-2", tl!("Redo"), tl!("Nothing to redo"), can_redo),
+                    ] {
+                        let tip = format!("{label} ({})", crate::commands::command_shortcut_label(ui.ctx(), id));
+                        let resp = ui.add_enabled_ui(enabled, |ui| icons::button(ui, icon, side, false, &tip)).inner.on_disabled_hover_text(why);
+                        if resp.clicked() {
+                            history_command = Some(id);
+                        }
+                    }
+                });
+                ui.add_space(4.0);
                 if icons::button(ui, "chevron-down", 30.0, false, tl!("Next page")).clicked() {
                     view.step_page(true);
                 }
@@ -1003,7 +1023,7 @@ pub fn right_rail(app: &mut PdfCraftApp, ui: &mut egui::Ui) {
         Some(RailRequest::Close(_)) => app.choose_right_panel(None),
         _ => {}
     }
-    if let Some(id) = page_display {
+    if let Some(id) = page_display.or(history_command) {
         app.execute(id);
     }
 }
