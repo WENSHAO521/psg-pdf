@@ -59,12 +59,17 @@ impl Tool {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TexEnvironment {
     pub pdflatex: Tool,
+    /// For templates typeset with XeLaTeX ([`crate::Engine::Xelatex`]).
+    pub xelatex: Tool,
     pub latexmk: Tool,
     pub biber: Tool,
     /// Optional: converts DOCX manuscripts (see [`crate::pandoc`]).
     pub pandoc: Tool,
     /// pdflatex is PSG's own TeX ([`crate::managed`]), not one found on the `PATH`.
     pub managed: bool,
+    /// Folders XeLaTeX looks in for fonts by file name: the CJK fonts PSG installs
+    /// ([`crate::managed::ManagedTex::fonts_dir`]). Set by the caller.
+    pub font_dirs: Vec<PathBuf>,
 }
 
 impl TexEnvironment {
@@ -94,11 +99,22 @@ impl TexEnvironment {
     pub fn detect_in(search_path: Option<&OsStr>, with_versions: bool) -> Self {
         Self {
             pdflatex: Tool::locate("pdflatex", search_path, with_versions),
+            xelatex: Tool::locate("xelatex", search_path, with_versions),
             latexmk: Tool::locate("latexmk", search_path, with_versions),
             biber: Tool::locate("biber", search_path, with_versions),
             pandoc: Tool::locate("pandoc", search_path, with_versions),
             managed: false,
+            font_dirs: Vec::new(),
         }
+    }
+
+    /// [`Self::missing`] for typesetting with `engine`.
+    pub fn missing_for(&self, engine: crate::Engine, needs_biber: bool) -> Vec<&'static str> {
+        let mut missing = self.missing(needs_biber);
+        if engine == crate::Engine::Xelatex && !self.xelatex.found() {
+            missing.insert(0, self.xelatex.name);
+        }
+        missing
     }
 
     /// The required programs that were missing or failed their version check.

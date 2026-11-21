@@ -1,9 +1,11 @@
 //! DOCX import through Pandoc: the interface reserved for later phases, with a first,
 //! experimental implementation.
 //!
-//! Status: experimental. It converts the body text, headings, lists, tables, equations and
-//! images Pandoc understands; it does not map Word styles to the journal's, nor read Word
-//! citations into BibLaTeX. The app offers it only when `pandoc` is installed.
+//! Pandoc reads the Word file into its document tree, [`crate::docx`] takes the title, authors,
+//! affiliations, abstract and keywords out of it into the project's metadata and turns captioned
+//! pictures and tables into numbered figures and tables, and Pandoc writes the rest as the body.
+//! Word citations are not read into BibLaTeX yet. The app offers it only when `pandoc` is
+//! installed.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -11,10 +13,10 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::time::Duration;
 
-use crate::Error;
 use crate::paths::write_atomic;
 use crate::process;
 use crate::project::{MAX_IMPORT, Project};
+use crate::{Engine, Error};
 
 /// The time limit for one conversion.
 pub const TIMEOUT: Duration = Duration::from_secs(120);
@@ -47,8 +49,9 @@ pub trait ManuscriptImporter {
     fn name(&self) -> &str;
     /// The file extensions it reads, lowercase without the dot.
     fn extensions(&self) -> &[&str];
-    /// Convert `source` into `project`'s body file. Returns a note for the log.
-    fn import(&self, source: &Path, project: &Project, cancel: Option<&Arc<AtomicBool>>) -> Result<String, Error>;
+    /// Convert `source` into `project`'s body file, and take the article's front matter into its
+    /// metadata where the manuscript has it. Returns a note for the log.
+    fn import(&self, source: &Path, project: &mut Project, cancel: Option<&Arc<AtomicBool>>) -> Result<String, Error>;
 }
 
 /// [`ManuscriptImporter`] for `.docx`, running the local `pandoc`.
@@ -60,6 +63,10 @@ pub struct PandocImporter {
 const DOCX_COPY: &str = "manuscript-source.docx";
 /// What Pandoc writes; moved to the body file once it succeeds.
 const CONVERTED: &str = "manuscript-from-docx.tex";
+/// Pandoc's document tree of the manuscript, between reading and writing.
+const TREE: &str = "manuscript-from-docx.json";
+/// The largest document tree read back (bytes); the pictures are files beside it, not in it.
+const MAX_TREE: u64 = 256 * 1024 * 1024;
 
 impl ManuscriptImporter for PandocImporter {
     fn name(&self) -> &str {
@@ -70,7 +77,7 @@ impl ManuscriptImporter for PandocImporter {
         &["docx"]
     }
 
-    fn import(&self, source: &Path, project: &Project, cancel: Option<&Arc<AtomicBool>>) -> Result<String, Error> {
+    fn import(&self, source: &Path, project: &mut Project, cancel: Option<&Arc<AtomicBool>>) -> Result<String, Error> {
         let meta = std::fs::metadata(source).map_err(|e| Error::io(source, e))?;
         if !meta.is_file() || meta.len() > MAX_IMPORT {
             return Err(Error::Project(format!("{} is not a file of at most {} MB", source.display(), MAX_IMPORT / 1024 / 1024)));
@@ -87,10 +94,56 @@ impl ManuscriptImporter for PandocImporter {
         }
         project.invalidate_pdf()?;
         write_atomic(&project.dir.join(DOCX_COPY), &bytes)?;
+        // Read the manuscript into Pandoc's document tree, with its pictures extracted to media/.
+        let read = self.pandoc(project, &["--from=docx", "--to=json", "--extract-media=media", "-o", TREE, DOCX_COPY], source, cancel)?;
+        let tree_path = project.dir.join(TREE);
+        let mut doc = read_tree(&tree_path)?;
+        let (front, changes) = crate::docx::restructure(&mut doc);
+        let tree = serde_json::to_vec(&doc).map_err(|e| Error::Project(format!("could not write the document tree: {e}")))?;
+        write_atomic(&tree_path, &tree)?;
+        drop(doc);
+        // Write the body as LaTeX.
+        let write = self.pandoc(project, &["--from=json", "--to=latex", "--wrap=preserve", "-o", CONVERTED, TREE], source, cancel)?;
+        let converted = project.dir.join(CONVERTED);
+        let body = std::fs::read(&converted).map_err(|e| Error::io(&converted, e))?;
+        write_atomic(&project.dir.join(&project.file.body), &body)?;
+        let _ = std::fs::remove_file(&converted);
+        let _ = std::fs::remove_file(&tree_path);
+        let taken = project.apply_front_matter(&front)?;
+        let adapted = project.adapt_engine_to_text()?;
+        let warnings = read.saturating_add(write);
+        let mut note = format!(
+            "Converted {} with Pandoc into {} ({warnings} warning line(s)): {} figure(s) and {} table(s) with captions; figures are in media/.",
+            source.display(),
+            project.file.body,
+            changes.figures,
+            changes.tables
+        );
+        if changes.typed_heading_numbers > 0 {
+            note.push_str(&format!(" {} heading(s) keep the numbers typed in Word.", changes.typed_heading_numbers));
+        }
+        if !taken.is_empty() {
+            note.push_str(&format!(" From the manuscript's front matter: {}.", taken.join(", ")));
+        }
+        if let Some(adapted) = adapted {
+            note.push(' ');
+            note.push_str(&adapted);
+        }
+        for problem in review_converted(&String::from_utf8_lossy(&body), &project.dir, project.file.engine) {
+            note.push_str("\nTo fix before compiling: ");
+            note.push_str(&problem);
+        }
+        Ok(note)
+    }
+}
+
+impl PandocImporter {
+    /// Run Pandoc sandboxed in the project with `args`. Returns the number of warning lines.
+    fn pandoc(&self, project: &Project, args: &[&str], source: &Path, cancel: Option<&Arc<AtomicBool>>) -> Result<usize, Error> {
         let mut cmd = Command::new(&self.pandoc);
         cmd.current_dir(&project.dir);
         // --sandbox: readers and writers may only touch the files named here (Pandoc ≥ 2.15).
-        cmd.args(["--sandbox", "--from=docx", "--to=latex", "--wrap=preserve", "--extract-media=media", "-o", CONVERTED, DOCX_COPY]);
+        cmd.arg("--sandbox").args(args);
         let run = process::run(cmd, TIMEOUT, cancel).map_err(|e| Error::Compile(format!("could not start pandoc: {e}")))?;
         if !run.success() {
             let why = if run.timed_out {
@@ -104,19 +157,19 @@ impl ManuscriptImporter for PandocImporter {
             };
             return Err(Error::Project(format!("Pandoc could not convert {}: {why}", source.display())));
         }
-        let converted = project.dir.join(CONVERTED);
-        let body = std::fs::read(&converted).map_err(|e| Error::io(&converted, e))?;
-        write_atomic(&project.dir.join(&project.file.body), &body)?;
-        let _ = std::fs::remove_file(&converted);
-        let warnings = run.stderr.lines().filter(|l| !l.trim().is_empty()).count();
-        let mut note =
-            format!("Converted {} with Pandoc into {} ({warnings} warning line(s)); figures are in media/.", source.display(), project.file.body);
-        for problem in review_converted(&String::from_utf8_lossy(&body), &project.dir) {
-            note.push_str("\nTo fix before compiling: ");
-            note.push_str(&problem);
-        }
-        Ok(note)
+        Ok(run.stderr.lines().filter(|l| !l.trim().is_empty()).count())
     }
+}
+
+/// Read Pandoc's JSON document tree. serde_json refuses nesting deeper than 128 levels, which
+/// bounds every later walk.
+fn read_tree(path: &Path) -> Result<serde_json::Value, Error> {
+    let len = std::fs::metadata(path).map_err(|e| Error::io(path, e))?.len();
+    if len > MAX_TREE {
+        return Err(Error::Project(format!("the converted manuscript is larger than {} MB", MAX_TREE / 1024 / 1024)));
+    }
+    let bytes = std::fs::read(path).map_err(|e| Error::io(path, e))?;
+    serde_json::from_slice(&bytes).map_err(|e| Error::Project(format!("could not read Pandoc's document tree: {e}")))
 }
 
 /// Image formats pdfLaTeX's graphicx includes.
@@ -137,15 +190,30 @@ fn pdflatex_can_set(c: char) -> bool {
         | 0x20AC | 0x2122)
 }
 
-/// What a converted body holds that pdfLaTeX can't typeset as it is, each as a sentence saying
-/// what to do: characters the fonts have no glyph for, and figures in formats pdfLaTeX can't
-/// include (Word's EMF and WMF drawings, TIFF scans). `project_dir` holds Pandoc's `media/`.
-pub fn review_converted(body: &str, project_dir: &Path) -> Vec<String> {
+/// Whether XeLaTeX, with the templates' Latin Modern and the Noto CJK faces, typesets `c`: what
+/// pdfLaTeX sets, and Chinese and Japanese with their punctuation and full-width forms.
+fn xelatex_can_set(c: char) -> bool {
+    pdflatex_can_set(c)
+        || matches!(c as u32,
+            0xB7 | 0x2025 | 0x2027 | 0x2E80..=0x2FDF | 0x3000..=0x303F | 0x3040..=0x30FF | 0x31F0..=0x31FF
+            | 0x3400..=0x4DBF | 0x4E00..=0x9FFF | 0xF900..=0xFAFF | 0xFE30..=0xFE4F | 0xFF00..=0xFFEF
+            | 0x20000..=0x2FA1F)
+}
+
+/// What a converted body holds that the template's engine can't typeset as it is, each as a
+/// sentence saying what to do: characters the fonts have no glyph for, and figures in formats
+/// the engine can't include (Word's EMF and WMF drawings, TIFF scans). `project_dir` holds
+/// Pandoc's `media/`.
+pub fn review_converted(body: &str, project_dir: &Path, engine: Engine) -> Vec<String> {
+    let can_set = match engine {
+        Engine::Pdflatex => pdflatex_can_set,
+        Engine::Xelatex => xelatex_can_set,
+    };
     let mut out = Vec::new();
     let mut chars: Vec<(char, usize)> = Vec::new();
     let mut more = 0usize;
     for (n, line) in body.lines().enumerate() {
-        for c in line.chars().filter(|c| !pdflatex_can_set(*c)) {
+        for c in line.chars().filter(|c| !can_set(*c)) {
             if chars.iter().any(|(seen, _)| *seen == c) {
                 continue;
             }
@@ -160,7 +228,8 @@ pub fn review_converted(body: &str, project_dir: &Path) -> Vec<String> {
         let list: Vec<String> = chars.iter().map(|(c, line)| format!("{c} (U+{:04X}, line {line})", *c as u32)).collect();
         let more = if more > 0 { format!(" and {more} more") } else { String::new() };
         out.push(format!(
-            "pdfLaTeX's fonts have no glyph for {}{more}. Replace them, or write them as LaTeX commands (Greek letters as $\\alpha$ …).",
+            "{}'s fonts have no glyph for {}{more}. Replace them, or write them as LaTeX commands (Greek letters as $\\alpha$ …).",
+            engine.title(),
             list.join(", ")
         ));
     }
@@ -183,7 +252,10 @@ pub fn review_converted(body: &str, project_dir: &Path) -> Vec<String> {
             let ext = path.extension().and_then(|e| e.to_str()).map(str::to_ascii_lowercase).unwrap_or_default();
             if !PDFLATEX_IMAGES.contains(&ext.as_str()) {
                 let shown = path.strip_prefix(project_dir).unwrap_or(&path).display().to_string();
-                out.push(format!("{shown}: pdfLaTeX can't include .{ext} images; convert it to PDF or PNG and keep the same name and folder."));
+                out.push(format!(
+                    "{shown}: {} can't include .{ext} images; convert it to PDF or PNG and keep the same name and folder.",
+                    engine.title()
+                ));
             }
         }
     }
@@ -200,19 +272,23 @@ mod tests {
     fn what_pdflatex_cannot_set_is_named_with_its_line() {
         let dir = tempfile::tempdir().unwrap();
         let body = "caf\u{e9} \u{2014} \u{201c}fine\u{201d}\n\u{3b1} and \u{4e2d}\u{6587}\n\u{3b1} again\n";
-        let problems = review_converted(body, dir.path());
+        let problems = review_converted(body, dir.path(), Engine::Pdflatex);
         assert_eq!(problems.len(), 1, "{problems:?}");
         assert!(problems[0].contains("\u{3b1} (U+03B1, line 2)"), "{}", problems[0]);
         assert!(problems[0].contains("U+4E2D") && problems[0].contains("U+6587"));
         assert!(!problems[0].contains("U+00E9"), "Latin-1 is fine");
-        assert!(review_converted("plain ASCII, na\u{ef}ve r\u{e9}sum\u{e9}\n", dir.path()).is_empty());
+        let xe = review_converted(body, dir.path(), Engine::Xelatex);
+        assert_eq!(xe.len(), 1, "{xe:?}");
+        assert!(xe[0].starts_with("XeLaTeX's fonts") && xe[0].contains("U+03B1") && !xe[0].contains("U+4E2D"), "{}", xe[0]);
+        assert!(review_converted("中文，「引號」與全形！\n", dir.path(), Engine::Xelatex).is_empty());
+        assert!(review_converted("plain ASCII, na\u{ef}ve r\u{e9}sum\u{e9}\n", dir.path(), Engine::Pdflatex).is_empty());
     }
 
     #[test]
     fn many_characters_are_summarised() {
         let dir = tempfile::tempdir().unwrap();
         let body: String = ('\u{4e00}'..='\u{4e20}').collect();
-        let problems = review_converted(&body, dir.path());
+        let problems = review_converted(&body, dir.path(), Engine::Pdflatex);
         assert!(problems[0].contains(&format!(" and {} more", 0x21 - MAX_CHARACTERS)), "{}", problems[0]);
     }
 
@@ -224,7 +300,7 @@ mod tests {
         for f in ["image1.png", "image2.emf", "image3.JPG", "scan.tiff"] {
             std::fs::write(media.join(f), "x").unwrap();
         }
-        let mut problems = review_converted("", dir.path());
+        let mut problems = review_converted("", dir.path(), Engine::Pdflatex);
         problems.sort();
         assert_eq!(problems.len(), 2, "{problems:?}");
         assert!(problems[0].contains("image2.emf") && problems[0].contains(".emf"));
@@ -245,10 +321,10 @@ mod tests {
     #[test]
     fn a_non_docx_file_is_refused_before_running_pandoc() {
         let root = tempfile::tempdir().unwrap();
-        let p = Project::create(&root.path().join("p"), &Template::builtin().remove(0), PublicationMetadata::sample()).unwrap();
+        let mut p = Project::create(&root.path().join("p"), &Template::builtin().remove(0), PublicationMetadata::sample()).unwrap();
         let src = root.path().join("x.docx");
         std::fs::write(&src, "plain text").unwrap();
         let importer = PandocImporter { pandoc: PathBuf::from("/nonexistent/pandoc") };
-        assert!(importer.import(&src, &p, None).is_err());
+        assert!(importer.import(&src, &mut p, None).is_err());
     }
 }

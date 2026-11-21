@@ -2,8 +2,8 @@
 //!
 //! PSG Academic PDF typesets *accepted* articles for publication: a journal template, the
 //! publication metadata and the author's manuscript go in, a PDF comes out. Everything runs on
-//! this machine with the local TeX installation (pdfLaTeX through latexmk, with BibLaTeX and
-//! Biber); nothing is uploaded.
+//! this machine with the local TeX installation (XeLaTeX or pdfLaTeX through latexmk, with
+//! BibLaTeX and Biber); nothing is uploaded.
 //!
 //! - [`managed`] installs, updates and completes PSG's own TeX (TinyTeX), so nobody installs TeX.
 //! - [`tex`] finds pdflatex, latexmk, biber and pandoc.
@@ -12,7 +12,10 @@
 //! - [`template`] reads journal templates; [`metadata`] writes the metadata file they read.
 //! - [`bib`] checks the bibliography against the citations; [`scripts`] finds text the
 //!   pdfLaTeX templates can't set (Chinese, Japanese, Korean, …) and says what to do.
-//! - [`project`] keeps it together in one directory; [`pandoc`] is the (experimental) DOCX import.
+//! - [`project`] keeps it together in one directory; [`pandoc`] and [`docx`] import a Word
+//!   manuscript with its front matter, figures and tables.
+//! - [`template_import`] adds a journal's own template; [`typeset`] goes from a manuscript to a
+//!   PDF in one step.
 //!
 //! This crate has no user interface; the app is `apps/psg-academic-pdf`.
 
@@ -29,6 +32,8 @@ pub const fn mark(english: &'static str) -> &'static str {
 }
 pub mod compile;
 pub mod diagnostics;
+pub mod docx;
+pub mod engine;
 pub mod managed;
 pub mod metadata;
 pub mod pandoc;
@@ -38,12 +43,15 @@ pub mod project;
 mod project_revision;
 pub mod scripts;
 pub mod template;
+pub mod template_import;
 pub mod tex;
+pub mod typeset;
 
 use std::path::Path;
 
 pub use compile::{CompileOptions, CompileReport, Outcome};
 pub use diagnostics::{Diagnostic, Severity};
+pub use engine::Engine;
 pub use metadata::{Author, PublicationMetadata};
 pub use project::Project;
 pub use template::Template;

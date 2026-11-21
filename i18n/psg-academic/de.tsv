@@ -44,7 +44,6 @@
 	Check Again	Erneut prüfen
 	Check again	Erneut prüfen
 	Check and export the finished PDF	Fertiges PDF prüfen und exportieren
-	Check compatibility	Kompatibilität prüfen
 	Check for updates…	Nach Updates suchen…
 	Check the finished article and save the PDF where it is needed.	Fertigen Artikel prüfen und das PDF dort speichern, wo es gebraucht wird.
 	Checking TeX…	TeX wird geprüft…
@@ -54,7 +53,6 @@
 	Close	Schließen
 	Close {app}	{app} schließen
 	Close {app} to finish	{app} schließen, um abzuschließen
-	Coming later	Folgt später
 	Compilation started.	Kompilierung gestartet.
 	Compile output	Kompilierausgabe
 	Copyright	Copyright
@@ -120,7 +118,6 @@
 	Import a manuscript or create a project from a template to start.	Zum Start ein Manuskript importieren oder ein Projekt aus einer Vorlage anlegen.
 	Import failed: {error}	Import fehlgeschlagen: {error}
 	Import manuscript…	Manuskript importieren…
-	Import template (.zip)…	Vorlage importieren (.zip)…
 	Import the manuscript body (LaTeX)	Manuskripttext importieren (LaTeX)
 	Install Pandoc to import .docx (experimental)	Installieren Sie Pandoc, um .docx zu importieren (experimentell)
 	Install TeX	TeX installieren
@@ -199,7 +196,6 @@
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF ist nicht installiert, daher wurde das PDF im Standardbetrachter geöffnet. PSG PDF gibt es als eigenen Download.
 	Page {n}: {error}	Seite {n}: {error}
 	Pages	Seiten
-	Planned for a later version; not available yet.	Für eine spätere Version geplant; noch nicht verfügbar.
 	Portable mode: settings and projects are kept in {path}.	Portabler Modus: Einstellungen und Projekte liegen in {path}.
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	„Automatisch setzen“ setzt das Manuskript; das PDF erscheint hier.
 	Preview	Vorschau
@@ -412,3 +408,13 @@
 	Repairing Biber…	Biber wird repariert…
 	Biber was reinstalled.	Biber wurde neu installiert.
 	Could not repair Biber: {error}	Biber konnte nicht repariert werden: {error}
+	Could not download the Chinese and Japanese fonts: {error}	Die chinesischen und japanischen Schriften konnten nicht heruntergeladen werden: {error}
+	Downloading the Chinese and Japanese fonts: {done} of {total} MB	Chinesische und japanische Schriften werden heruntergeladen: {done} von {total} MB
+	Downloading the Chinese and Japanese fonts…	Chinesische und japanische Schriften werden heruntergeladen…
+	The Chinese and Japanese fonts are installed.	Die chinesischen und japanischen Schriften sind installiert.
+	A journal's LaTeX template as the journal hands it out	Die LaTeX-Vorlage einer Zeitschrift, so wie sie sie herausgibt
+	Add a template (.zip)…	Vorlage hinzufügen (.zip)…
+	Add a template folder…	Vorlagenordner hinzufügen…
+	Added the template {name} from {path}.	Vorlage {name} aus {path} hinzugefügt.
+	Added the template {name}. Check what was found before using it:	Vorlage {name} hinzugefügt. Prüfen Sie vor der Verwendung, was gefunden wurde:
+	Could not add the template: {error}	Die Vorlage konnte nicht hinzugefügt werden: {error}

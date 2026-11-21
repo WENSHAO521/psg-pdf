@@ -50,6 +50,9 @@ pub struct ProjectFile {
     pub body: String,
     pub metadata_file: String,
     pub uses_biber: bool,
+    /// The template's engine. Projects from before XeLaTeX templates have none: pdfLaTeX.
+    #[serde(default)]
+    pub engine: crate::Engine,
     #[serde(default)]
     pub settings: Settings,
     #[serde(default)]
@@ -83,6 +86,7 @@ impl Project {
                 body: m.body.clone(),
                 metadata_file: m.metadata.clone(),
                 uses_biber: m.uses_biber(),
+                engine: m.engine(),
                 settings: Settings::default(),
                 metadata,
             },
@@ -129,6 +133,119 @@ impl Project {
         Ok(format!("Imported {} as {}{note}", source.display(), self.file.body))
     }
 
+    /// Use the front matter read from a Word manuscript as the article's metadata. What the
+    /// manuscript gives replaces what the project has; the sample article's own title, authors,
+    /// abstract and keywords never survive next to an imported manuscript. The journal's fields
+    /// (name, volume, DOI, dates) are not in a manuscript and stay as they are. Saves the project
+    /// and rewrites the metadata file. Returns what was taken, for the log.
+    pub fn apply_front_matter(&mut self, front: &crate::docx::WordFrontMatter) -> Result<Vec<String>, Error> {
+        let sample = PublicationMetadata::sample();
+        let m = &mut self.file.metadata;
+        let mut taken = Vec::new();
+        let mut take = |field: &str, found: bool, is_sample: bool| {
+            if found {
+                taken.push(field.to_owned());
+            }
+            found || is_sample
+        };
+        if take("title", !front.title.is_empty(), m.title == sample.title) {
+            m.title = if front.subtitle.is_empty() { front.title.clone() } else { format!("{}: {}", front.title, front.subtitle) };
+            m.short_title.clear();
+        }
+        if take("authors", !front.authors.is_empty(), m.authors == sample.authors) {
+            m.authors = front
+                .authors
+                .iter()
+                .map(|a| crate::metadata::Author {
+                    name: a.name.clone(),
+                    affiliations: a.affiliations.clone(),
+                    corresponding: a.corresponding,
+                    ..crate::metadata::Author::default()
+                })
+                .collect();
+        }
+        if take("affiliations", !front.affiliations.is_empty(), m.affiliations == sample.affiliations) {
+            m.affiliations.clone_from(&front.affiliations);
+        }
+        // An author numbered past the affiliations Word listed would only be a warning; drop it.
+        let count = m.affiliations.len();
+        for a in &mut m.authors {
+            a.affiliations.retain(|&i| i >= 1 && i <= count);
+        }
+        if take("abstract", !front.abstract_text.is_empty(), m.abstract_text == sample.abstract_text) {
+            m.abstract_text.clone_from(&front.abstract_text);
+        }
+        if take("keywords", !front.keywords.is_empty(), m.keywords == sample.keywords) {
+            m.keywords.clone_from(&front.keywords);
+        }
+        if !front.language.is_empty() && front.language != m.language {
+            let english = PublicationMetadata::default();
+            let localized = |lang: &str| match lang {
+                "zh-hant" => ("研究論文", "本文依創用 CC 姓名標示 4.0 國際授權條款（CC BY 4.0）發布。"),
+                "zh-hans" => ("研究论文", "本文依据知识共享署名 4.0 国际许可协议（CC BY 4.0）发布。"),
+                "ja" => ("研究論文", "本論文はクリエイティブ・コモンズ 表示 4.0 国際ライセンス（CC BY 4.0）の下で公開されています。"),
+                _ => (english.article_type.as_str(), english.licence.as_str()),
+            };
+            // Only the defaults follow the language; what someone typed stays.
+            let defaults: Vec<(&str, &str)> = ["en", "zh-hant", "zh-hans", "ja"].into_iter().map(localized).collect();
+            let (article_type, licence) = localized(&front.language);
+            if defaults.iter().any(|(t, _)| *t == m.article_type) {
+                m.article_type = article_type.to_owned();
+            }
+            if defaults.iter().any(|(_, l)| *l == m.licence) {
+                m.licence = licence.to_owned();
+            }
+            m.language.clone_from(&front.language);
+            taken.push(format!("language ({})", front.language));
+        }
+        if m.title.trim().is_empty() {
+            // The title is required to compile; say where to put it rather than fail later.
+            m.title = "Untitled".to_owned();
+        }
+        self.save()?;
+        self.write_metadata()?;
+        Ok(taken)
+    }
+
+    /// A pdfLaTeX template given a Chinese or Japanese manuscript can't typeset it: switch the
+    /// project to XeLaTeX and load xeCJK (with the Noto CJK faces PSG Academic PDF installs)
+    /// right after `\documentclass` in the main file. Returns what was done, or `None` when
+    /// nothing needed to change.
+    pub fn adapt_engine_to_text(&mut self) -> Result<Option<String>, Error> {
+        if self.file.engine != crate::Engine::Pdflatex {
+            return Ok(None);
+        }
+        let body = self.read_body()?;
+        let m = &self.file.metadata;
+        let cjk = |t: &str| t.chars().any(|c| matches!(c as u32, 0x3040..=0x30FF | 0x3400..=0x4DBF | 0x4E00..=0x9FFF | 0xF900..=0xFAFF));
+        if !(cjk(&body)
+            || cjk(&m.title)
+            || cjk(&m.abstract_text)
+            || m.authors.iter().any(|a| cjk(&a.name))
+            || m.affiliations.iter().any(|a| cjk(a))
+            || m.keywords.iter().any(|k| cjk(k)))
+        {
+            return Ok(None);
+        }
+        let path = self.dir.join(&self.file.main);
+        let text = std::fs::read_to_string(&path).map_err(|e| Error::io(&path, e))?;
+        let masked = crate::template_import::mask_comments(&text);
+        let Some(class) = crate::template_import::find_call(&masked, "documentclass", 0, 1) else { return Ok(None) };
+        let mut patched = text.clone();
+        if !patched.is_char_boundary(class.end) {
+            return Ok(None);
+        }
+        patched.insert_str(class.end, crate::template_import::XECJK_FOR_PDFLATEX);
+        self.invalidate_pdf()?;
+        write_atomic(&path, patched.as_bytes())?;
+        self.file.engine = crate::Engine::Xelatex;
+        self.save()?;
+        Ok(Some(format!(
+            "The manuscript has Chinese or Japanese text, which pdfLaTeX can't set: {} now loads xeCJK and the project is typeset with XeLaTeX.",
+            self.file.main
+        )))
+    }
+
     /// Copy a bibliography, figure or other supporting file into the project under a safe name.
     /// Returns the name it got (what `\includegraphics` or `\addbibresource` should use).
     pub fn import_asset(&self, source: &Path) -> Result<String, Error> {
@@ -154,6 +271,7 @@ impl Project {
             timeout: Duration::from_secs(self.file.settings.timeout_secs),
             force: self.file.settings.force_rebuild,
             needs_biber: self.file.uses_biber,
+            engine: self.file.engine,
         }
     }
 
@@ -244,7 +362,7 @@ impl Project {
         let mut out = Vec::new();
         match self.read_body() {
             Ok(body) => {
-                for f in crate::scripts::scan(&body, &self.file.body, true) {
+                for f in crate::scripts::scan(&body, &self.file.body, true).into_iter().filter(|f| !self.file.engine.sets(f.script)) {
                     out.push(Diagnostic { severity: f.severity(), file: Some(self.file.body.clone()), line: f.line, message: f.summary() });
                 }
             }
@@ -262,7 +380,7 @@ impl Project {
         fields.extend(m.affiliations.iter().enumerate().map(|(i, a)| (format!("affiliation {}", i + 1), a.as_str())));
         let mut seen = std::collections::HashSet::new();
         for (field, value) in fields {
-            for f in crate::scripts::scan(value, &format!("metadata: {field}"), false) {
+            for f in crate::scripts::scan(value, &format!("metadata: {field}"), false).into_iter().filter(|f| !self.file.engine.sets(f.script)) {
                 // One finding per script and field name (keywords and authors come in lists).
                 if seen.insert((f.script, field.clone())) {
                     out.push(Diagnostic { severity: f.severity(), file: None, line: None, message: f.message() });
@@ -422,6 +540,9 @@ mod tests {
         assert!(p.preflight().iter().all(|d| d.severity != crate::Severity::Error), "the sample project is clean: {:?}", p.preflight());
         p.write_body("Intro.\n\n张三 argues \\parencite{nobody2020}.\n").unwrap();
         p.file.metadata.title = "论文 Title".into();
+        assert_eq!(p.file.engine, crate::Engine::Xelatex, "the PSG templates set Chinese with XeLaTeX");
+        assert!(!p.preflight().iter().any(|d| d.to_string().contains("Chinese")), "XeLaTeX sets Chinese: {:?}", p.preflight());
+        p.file.engine = crate::Engine::Pdflatex;
         let found = p.preflight();
         let text: Vec<String> = found.iter().map(ToString::to_string).collect();
         assert!(text.iter().any(|t| t.starts_with("body.tex:3: error: 2 characters in Chinese")), "{text:?}");
@@ -430,6 +551,65 @@ mod tests {
         assert_eq!(p.read_body().unwrap(), "Intro.\n\n张三 argues \\parencite{nobody2020}.\n");
         let (entries, _) = p.bibliography();
         assert!(!entries.is_empty() && entries.iter().all(|(f, _)| f == "references.bib"));
+    }
+
+    #[test]
+    fn word_front_matter_replaces_the_sample_article() {
+        use crate::docx::{WordAuthor, WordFrontMatter};
+        let (_root, mut p) = new_project();
+        let front = WordFrontMatter {
+            title: "數位人文研究".into(),
+            authors: vec![WordAuthor { name: "王小明".into(), affiliations: vec![1, 3], corresponding: true }],
+            affiliations: vec!["國立臺灣大學".into()],
+            keywords: vec!["數位人文".into()],
+            language: "zh-hant".into(),
+            ..WordFrontMatter::default()
+        };
+        let taken = p.apply_front_matter(&front).unwrap();
+        assert_eq!(taken, ["title", "authors", "affiliations", "keywords", "language (zh-hant)"]);
+        let m = &p.file.metadata;
+        assert_eq!(m.title, "數位人文研究");
+        assert_eq!(m.authors.len(), 1);
+        assert_eq!(m.authors[0].affiliations, [1], "an affiliation Word did not list is dropped");
+        assert!(m.abstract_text.is_empty(), "the sample abstract must not stay next to an imported article");
+        assert_eq!(m.article_type, "研究論文");
+        assert!(m.licence.contains("CC BY 4.0") && m.licence.contains("創用"));
+        assert_eq!(m.journal, PublicationMetadata::sample().journal, "journal fields are not in a manuscript");
+        let written = std::fs::read_to_string(p.dir.join(&p.file.metadata_file)).unwrap();
+        assert!(written.contains("\\providecommand\\psgLanguage[1]{}\n") && written.contains("\\psgLanguage{zh-hant}"), "{written}");
+        assert!(written.contains("\\psgCorrespondence{}"), "no e-mail, no correspondence line");
+        assert_eq!(Project::open(&p.dir).unwrap().file.metadata, p.file.metadata);
+
+        // What someone typed stays when a later manuscript has no front matter.
+        p.file.metadata.abstract_text = "Typed by hand.".into();
+        p.apply_front_matter(&WordFrontMatter { language: "zh-hant".into(), ..WordFrontMatter::default() }).unwrap();
+        assert_eq!(p.file.metadata.abstract_text, "Typed by hand.");
+        assert_eq!(p.file.metadata.title, "數位人文研究");
+    }
+
+    #[test]
+    fn a_pdflatex_template_given_chinese_switches_to_xelatex() {
+        let root = tempfile::tempdir().unwrap();
+        let dir = root.path().join("t");
+        std::fs::create_dir(&dir).unwrap();
+        std::fs::write(dir.join("template.toml"), "id = \"x\"\nname = \"X\"\nengine = \"pdflatex\"\nbibliography = \"none\"\nmain = \"main.tex\"\nbody = \"body.tex\"\nmetadata = \"m.tex\"\nfiles = [\"main.tex\", \"body.tex\", \"m.tex\"]\n").unwrap();
+        std::fs::write(
+            dir.join("main.tex"),
+            "% \\documentclass{book}\n\\documentclass[11pt]{article}\n\\usepackage[T1]{fontenc}\n\\begin{document}\\input{body}\\end{document}\n",
+        )
+        .unwrap();
+        std::fs::write(dir.join("body.tex"), "").unwrap();
+        std::fs::write(dir.join("m.tex"), "").unwrap();
+        let t = Template::from_dir(&dir).unwrap();
+        let mut p = Project::create(&root.path().join("p"), &t, PublicationMetadata::sample()).unwrap();
+        assert_eq!(p.adapt_engine_to_text().unwrap(), None, "English stays with pdfLaTeX");
+        p.write_body("中文正文。\n").unwrap();
+        assert!(p.adapt_engine_to_text().unwrap().is_some());
+        assert_eq!(Project::open(&p.dir).unwrap().file.engine, crate::Engine::Xelatex);
+        let main = std::fs::read_to_string(p.dir.join("main.tex")).unwrap();
+        assert!(main.starts_with("% \\documentclass{book}\n\\documentclass[11pt]{article}\n%% Added by PSG Academic PDF"), "{main}");
+        assert!(main.contains("\\usepackage{xeCJK}\n"));
+        assert_eq!(p.adapt_engine_to_text().unwrap(), None, "done once");
     }
 
     #[test]

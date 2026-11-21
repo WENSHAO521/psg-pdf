@@ -50,7 +50,7 @@ pub const APP_NAME: &str = crate::theme::PRODUCT.name();
 /// The organisation that publishes it.
 pub const PUBLISHER: &str = psg_brand::PUBLISHER;
 
-fn local_now() -> jiff::ZonedDateTime {
+pub(crate) fn local_now() -> jiff::ZonedDateTime {
     psg_academic::managed::now_utc().to_zoned_datetime(jiff::tz::TimeZone::system())
 }
 
@@ -181,6 +181,8 @@ pub struct AcademicApp {
     tex_error: Option<String>,
     templates: Vec<Template>,
     template_problems: Vec<String>,
+    /// What the last template added was found to have: its name, what was found, what to check.
+    template_added: Option<(String, Vec<String>, Vec<String>)>,
     selected_template: usize,
     workspace: PathBuf,
     folder_choice: Option<data_folder::FolderChoice>,
@@ -234,7 +236,7 @@ pub struct AcademicApp {
 
 impl AcademicApp {
     pub fn new(ctx: &egui::Context, data: DataDir, paths: Vec<PathBuf>) -> Self {
-        let (templates, template_problems) = template::discover(&template::default_template_dirs());
+        let (templates, template_problems) = template::discover(&crate::cli::template_dirs(&data.root));
         let workspace = data.projects();
         let language_file = data.root.join("language.txt");
         let chosen = std::fs::read_to_string(&language_file).unwrap_or_default();
@@ -255,6 +257,7 @@ impl AcademicApp {
             tex_error: None,
             templates,
             template_problems,
+            template_added: None,
             selected_template: 0,
             workspace,
             folder_choice: None,
@@ -480,12 +483,12 @@ impl AcademicApp {
             return;
         };
         let name = launch::project_name(manuscript, &local_now().strftime("%Y%m%d-%H%M%S").to_string());
-        let project = match Project::create(&self.workspace.join(name), &tpl, PublicationMetadata::sample()) {
+        let mut project = match Project::create(&self.workspace.join(name), &tpl, PublicationMetadata::sample()) {
             Ok(p) => p,
             Err(e) => return self.fail(tf("Could not create the project: {error}", &[("error", &e.to_string())])),
         };
         let result = match (kind, pandoc) {
-            (ManuscriptKind::Docx, Some(pandoc)) => PandocImporter { pandoc }.import(manuscript, &project, None),
+            (ManuscriptKind::Docx, Some(pandoc)) => PandocImporter { pandoc }.import(manuscript, &mut project, None),
             _ => project.import_manuscript(manuscript),
         };
         self.note(tf("New project from {template} around {path}.", &[("template", &tpl.manifest.name), ("path", &manuscript.display().to_string())]));
@@ -513,11 +516,11 @@ impl AcademicApp {
     }
 
     fn detect_tex(&mut self, ctx: &egui::Context) {
-        let bin = tex_setup::bin_dir(self.managed.as_ref());
+        let managed = self.managed.clone();
         let (tx, rx) = channel();
         let ctx = ctx.clone();
         let spawned = std::thread::Builder::new().name("psg-tex-detect".into()).spawn(move || {
-            let _ = tx.send(TexEnvironment::detect_with(bin.as_deref()));
+            let _ = tx.send(tex_setup::detect(managed.as_ref()));
             ctx.request_repaint();
         });
         match spawned {
@@ -593,6 +596,8 @@ impl AcademicApp {
             Job::RepairBiber
         } else if tex.update_due(psg_academic::managed::now_utc()) {
             Job::Update
+        } else if !tex.missing_fonts().is_empty() {
+            Job::Fonts
         } else {
             return;
         };
@@ -624,12 +629,14 @@ impl AcademicApp {
                     Job::Install => Progress::Looking,
                     Job::Update => Progress::Updating,
                     Job::RepairBiber => Progress::Packages,
+                    Job::Fonts => Progress::Fonts { done: 0, total: 0 },
                 };
                 self.tex_job = Some(TexJob { rx, job, progress });
                 self.note(match job {
                     Job::Install => t("Installing TeX for PSG Academic PDF…"),
                     Job::Update => t("Updating TeX…"),
                     Job::RepairBiber => t("Repairing Biber…"),
+                    Job::Fonts => t("Downloading the Chinese and Japanese fonts…"),
                 });
             }
             Err(e) => self.fail(tf("Could not install TeX: {error}", &[("error", &e.to_string())])),
@@ -658,7 +665,11 @@ impl AcademicApp {
                 self.detect_tex(ctx);
             }
             Ok(tex_setup::Done::Updated) => {
-                self.note(if kind == Job::RepairBiber { t("Biber was reinstalled.") } else { t("TeX is up to date.") });
+                self.note(match kind {
+                    Job::RepairBiber => t("Biber was reinstalled."),
+                    Job::Fonts => t("The Chinese and Japanese fonts are installed."),
+                    _ => t("TeX is up to date."),
+                });
                 self.detect_tex(ctx);
             }
             Err(e) => {
@@ -666,6 +677,7 @@ impl AcademicApp {
                     Job::Install => tf("Could not install TeX: {error}", &[("error", &e)]),
                     Job::Update => tf("Could not update TeX: {error}", &[("error", &e)]),
                     Job::RepairBiber => tf("Could not repair Biber: {error}", &[("error", &e)]),
+                    Job::Fonts => tf("Could not download the Chinese and Japanese fonts: {error}", &[("error", &e)]),
                 };
                 self.tex_error = Some(text.clone());
                 if kind == Job::Install {
@@ -887,22 +899,53 @@ impl AcademicApp {
     }
 
     fn import_manuscript(&mut self) {
-        let Some(project) = &self.project else { return };
+        if self.project.is_none() {
+            return;
+        }
         let Some(path) = rfd::FileDialog::new().set_title(t("Import the manuscript body (LaTeX)")).add_filter("LaTeX", &["tex"]).pick_file() else {
             return;
         };
+        // What was typed is saved first, so the import starts from it.
+        if !self.save_all() {
+            return;
+        }
+        let Some(project) = &self.project else { return };
         let result = project.import_manuscript(&path);
+        self.reload_after_import();
         self.after_import(result);
     }
 
+    /// Show what an import into the open project changed: the body in the editor, and the
+    /// metadata it may have filled in (title, authors, abstract, keywords).
+    fn reload_after_import(&mut self) {
+        let Some(project) = &self.project else { return };
+        self.buffers.keywords = project.file.metadata.keywords.join("; ");
+        self.buffers.author_affiliations = project.file.metadata.authors.iter().map(|a| join_numbers(&a.affiliations)).collect();
+        self.saved_project = Some(project.file.clone());
+        if self.source.file == project.file.body {
+            let dir = project.dir.clone();
+            let body = project.file.body.clone();
+            self.source.load(&dir, &body);
+        }
+        self.refresh_checks();
+    }
+
     fn import_docx(&mut self) {
-        let (Some(project), Some(pandoc)) = (&self.project, self.env.as_ref().and_then(|e| e.pandoc.path.clone())) else { return };
+        let Some(pandoc) = self.env.as_ref().and_then(|e| e.pandoc.path.clone()) else { return };
+        if self.project.is_none() {
+            return;
+        }
         let Some(path) =
             rfd::FileDialog::new().set_title(t("Import a Word manuscript (experimental, via Pandoc)")).add_filter("Word", &["docx"]).pick_file()
         else {
             return;
         };
+        if !self.save_all() {
+            return;
+        }
+        let Some(project) = self.project.as_mut() else { return };
         let result = PandocImporter { pandoc }.import(&path, project, None);
+        self.reload_after_import();
         self.after_import(result);
     }
 

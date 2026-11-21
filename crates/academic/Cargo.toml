@@ -17,6 +17,12 @@ log = { workspace = true }
 jiff = { workspace = true }
 # Template manifests and saved projects are TOML; the same major version xtask and ui-egui use.
 toml = "1"
+# Word import restructures Pandoc's JSON document tree (figures, tables, front matter).
+serde_json = { workspace = true }
+# Templates people add arrive as .zip files (MIT; the version and features craft-update uses).
+zip = { version = "9", default-features = false, features = ["deflate-flate2"] }
+# Chooses the zlib backend for zip's deflate, as the workspace does.
+flate2 = { workspace = true }
 
 [dev-dependencies]
 tempfile = "3.27"

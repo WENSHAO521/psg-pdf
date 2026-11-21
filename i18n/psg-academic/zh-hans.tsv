@@ -44,7 +44,6 @@
 	Check Again	重新检查
 	Check again	重新检查
 	Check and export the finished PDF	检查并导出完成的 PDF
-	Check compatibility	检查兼容性
 	Check for updates…	检查更新…
 	Check the finished article and save the PDF where it is needed.	检查完成的文章，并把 PDF 保存到需要的位置。
 	Checking TeX…	正在检查 TeX…
@@ -54,7 +53,6 @@
 	Close	关闭
 	Close {app}	关闭 {app}
 	Close {app} to finish	关闭 {app} 以完成
-	Coming later	后续版本提供
 	Compilation started.	已开始编译。
 	Compile output	编译输出
 	Copyright	版权
@@ -120,7 +118,6 @@
 	Import a manuscript or create a project from a template to start.	导入稿件或从模板新建项目即可开始。
 	Import failed: {error}	导入失败：{error}
 	Import manuscript…	导入稿件…
-	Import template (.zip)…	导入模板（.zip）…
 	Import the manuscript body (LaTeX)	导入稿件正文（LaTeX）
 	Install Pandoc to import .docx (experimental)	安装 Pandoc 后可导入 .docx（实验功能）
 	Install TeX	安装 TeX
@@ -199,7 +196,6 @@
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	未安装 PSG PDF，因此已在默认阅读器中打开 PDF。PSG PDF 需要单独下载。
 	Page {n}: {error}	第 {n} 页：{error}
 	Pages	页码
-	Planned for a later version; not available yet.	计划在后续版本提供，目前尚不可用。
 	Portable mode: settings and projects are kept in {path}.	便携模式：设置和项目保存在 {path}。
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	点击“自动排版”排版稿件，PDF 会显示在这里。
 	Preview	预览
@@ -404,3 +400,13 @@
 	Repairing Biber…	正在修复 Biber…
 	Biber was reinstalled.	已重新安装 Biber。
 	Could not repair Biber: {error}	无法修复 Biber：{error}
+	Could not download the Chinese and Japanese fonts: {error}	无法下载中日文字体：{error}
+	Downloading the Chinese and Japanese fonts: {done} of {total} MB	正在下载中日文字体：{done} / {total} MB
+	Downloading the Chinese and Japanese fonts…	正在下载中日文字体…
+	The Chinese and Japanese fonts are installed.	中日文字体已安装。
+	A journal's LaTeX template as the journal hands it out	期刊提供的 LaTeX 模板原档
+	Add a template (.zip)…	添加模板（.zip）…
+	Add a template folder…	添加模板文件夹…
+	Added the template {name} from {path}.	已从 {path} 添加模板 {name}。
+	Added the template {name}. Check what was found before using it:	已添加模板 {name}。使用前请确认找到的内容：
+	Could not add the template: {error}	无法添加模板：{error}

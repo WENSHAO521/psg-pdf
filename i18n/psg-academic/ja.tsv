@@ -44,7 +44,6 @@
 	Check Again	もう一度確認
 	Check again	再確認
 	Check and export the finished PDF	完成した PDF を確認して書き出す
-	Check compatibility	互換性を確認
 	Check for updates…	アップデートを確認…
 	Check the finished article and save the PDF where it is needed.	完成した論文を確認し、PDF を必要な場所に保存します。
 	Checking TeX…	TeX を確認中…
@@ -54,7 +53,6 @@
 	Close	閉じる
 	Close {app}	{app} を閉じる
 	Close {app} to finish	{app} を閉じて完了
-	Coming later	今後対応予定
 	Compilation started.	コンパイルを開始しました。
 	Compile output	コンパイル出力
 	Copyright	著作権
@@ -120,7 +118,6 @@
 	Import a manuscript or create a project from a template to start.	原稿を読み込むか、テンプレートからプロジェクトを作成して始めましょう。
 	Import failed: {error}	読み込みに失敗しました: {error}
 	Import manuscript…	原稿を読み込む…
-	Import template (.zip)…	テンプレートを読み込む（.zip）…
 	Import the manuscript body (LaTeX)	原稿本文を読み込む（LaTeX）
 	Install Pandoc to import .docx (experimental)	Pandoc をインストールすると .docx を読み込めます（試験的機能）
 	Install TeX	TeX をインストール
@@ -199,7 +196,6 @@
 	PSG PDF isn't installed, so the PDF opened in the default viewer. PSG PDF is a separate download.	PSG PDF がインストールされていないため、既定のビューアーで PDF を開きました。PSG PDF は別途ダウンロードできます。
 	Page {n}: {error}	{n} ページ: {error}
 	Pages	ページ
-	Planned for a later version; not available yet.	今後のバージョンで対応予定です。まだ使えません。
 	Portable mode: settings and projects are kept in {path}.	ポータブルモード: 設定とプロジェクトは {path} に保存されます。
 	Press Auto Typeset to typeset the manuscript; the PDF appears here.	「自動組版」を押すと原稿が組版され、PDF がここに表示されます。
 	Preview	プレビュー
@@ -404,3 +400,13 @@
 	Repairing Biber…	Biber を修復しています…
 	Biber was reinstalled.	Biber を再インストールしました。
 	Could not repair Biber: {error}	Biber を修復できませんでした: {error}
+	Could not download the Chinese and Japanese fonts: {error}	中国語・日本語フォントをダウンロードできませんでした: {error}
+	Downloading the Chinese and Japanese fonts: {done} of {total} MB	中国語・日本語フォントをダウンロード中: {done} / {total} MB
+	Downloading the Chinese and Japanese fonts…	中国語・日本語フォントをダウンロード中…
+	The Chinese and Japanese fonts are installed.	中国語・日本語フォントをインストールしました。
+	A journal's LaTeX template as the journal hands it out	ジャーナルが配布する LaTeX テンプレートそのまま
+	Add a template (.zip)…	テンプレートを追加 (.zip)…
+	Add a template folder…	テンプレートフォルダーを追加…
+	Added the template {name} from {path}.	{path} からテンプレート {name} を追加しました。
+	Added the template {name}. Check what was found before using it:	テンプレート {name} を追加しました。使う前に、見つかった内容を確認してください:
+	Could not add the template: {error}	テンプレートを追加できませんでした: {error}
