@@ -310,7 +310,7 @@ Every asset PSG PDF includes, bundles or uses to build its published material, w
 | `templates/academic/psg-humanities/template.toml` | PSG Humanities and Social Sciences Article template: template.toml | PSG PDF contributors | MIT OR Apache-2.0 | Contributor-original (templates/academic/README.md) | Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects |
 | `docs/images/psg/psg-pdf.svg` | PSG PDF app icon (website copy) | PSG PDF contributors | MIT OR Apache-2.0 | Contributor-original, a copy of assets/app-icon/psg-pdf.svg, rendered from assets/brand/psg-logo-master.svg | Logo and favicon on the product website (docs/index.html, GitHub Pages) |
 | `docs/images/psg/psg-academic-pdf.svg` | PSG Academic PDF app icon (website copy) | PSG PDF contributors | MIT OR Apache-2.0 | Contributor-original, a copy of assets/app-icon-academic/psg-academic-pdf.svg, rendered from assets/brand/psg-logo-master.svg | Logo on the product website (docs/index.html, GitHub Pages) |
-| `docs/images/psg/social-preview.png` | PSG social preview card (1280x640) | PSG PDF contributors | MIT OR Apache-2.0 | Contributor-original, rendered with Chromium from the two app icons and text set in Inter (OFL-1.1) | Open Graph image of the product website and the repository's social preview |
+| `docs/images/psg/social-preview.png` | PSG social preview card (1280x640) | PSG PDF contributors | MIT OR Apache-2.0 | Contributor-original, rendered with Chromium from the PSG PDF app icon and text set in Inter (OFL-1.1) | Open Graph image of the product website and the repository's social preview |
 
 ## Compiled in through dependencies (7)
 
