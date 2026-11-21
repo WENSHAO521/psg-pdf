@@ -1,13 +1,43 @@
 # Changelog
 
-Changes to PSG PDF and PSG Academic PDF, two independent products released at the same time
-(until 0.18, together as the PSG PDF Suite). Each section is written by
+Changes to PSG PDF, and until 0.20.2 also to PSG Academic PDF, which is now retired (until 0.18
+the two shipped together as the PSG PDF Suite). Each section is written by
 `cargo xtask changelog release` from the Conventional Commits since the previous release, and may
 be reworded by hand before the release commit. See docs/releasing.md.
 
 History before the line below belongs to PdfCraft, the project both products are based on.
 
 <!-- changelog-base: d2916decb3d948b7e404ee839d7542692bf18d92 -->
+
+## v0.20.3 (2026-11-21)
+
+**PSG Academic PDF is retired.** From this release on, releases contain PSG PDF only. Installed
+copies of PSG Academic PDF keep working but no longer receive updates (6e0cd7023).
+
+**Features**
+
+- **pdf** keep pictures in RTF and flag white redaction covers (93d124c05)
+- **pdf** Undo and Redo buttons on the floating toolbar (31a4d9391)
+
+**Bug Fixes**
+
+- **pdf** don't report text drawn on a white box as hidden under it (8de299bfc)
+- **platform** confine staging names; private temp dirs for tests and macOS signing (#5923) (aa45913da)
+- **fonts** a CMap's codespace ranges are at most four bytes and listed once (#6075) (06a49201a)
+- **fonts** the licence policy reads name-table records one at a time within a total allowance (#7044) (00cb44d08)
+- **render** resolve TrueType glyphs across Unicode/UCS-4 cmaps, post v2.0 aliases, and truncated FontFlags (#2159) (#2980) (b08d7b1ce)
+- **forms** name detected check boxes from the nearer neighbouring label (#2943) (#2953) (696b10543)
+- **ui** mirror the macOS title bar when the traffic lights are on the right (RTL system languages) (58ebb9896)
+- **ui** Edit ▸ Copy and Paste are enabled for selected comments (#7123) (4a25c833b)
+- **edit** preserve source fonts in mixed-script paragraphs (164ef1fc9)
+- **xfa** render lines without width as vertical and without height as horizontal (500afb748)
+- **sign** a change to a field a signature locks invalidates it (#6757) (4d1ba421d)
+- **redact** redact an XObject or font whose /Subtype is a reference (#6750) (81cfa57d1)
+- **sign** an unlisted body or an entry that leads nowhere is no permitted change (#6754) (bf24b805b)
+- **forms** draw field text the field font cannot hold from the bundled face instead of ? (bfc6a4f25)
+- **xfdf** bound field text, look up names, guard tab cells, protect fields (#5937) (cf9909b4d)
+- **packaging** keep the macOS signing keychain until packaging signs with it (904b021ee)
+- **sign** copy a widget named many times in a locked field once (535a5c8b9)
 
 ## v0.20.2 (2026-11-19)
 
