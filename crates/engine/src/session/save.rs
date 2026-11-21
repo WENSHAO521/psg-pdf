@@ -65,12 +65,16 @@ impl Session {
     /// so the next save appends only newer edits. Undo history is kept.
     pub fn mark_saved(&mut self, id: DocId, bytes: Arc<Vec<u8>>, path: Option<String>) -> Result<(), EditError> {
         let doc = self.doc_mut(id)?;
+        let mut renumbered = false;
         if let Some(editor) = doc.editor.as_mut() {
             // An encrypted file needs the password it is protected with now (the owner
             // password when known, so saving never downgrades this session's rights).
             let keys = editor.keys.clone();
             // The saved file carries no Password-field values (#3943, #3944); the open document keeps them.
             let typed = pdfcraft_forms::password_values(&editor.cos);
+            // An incremental save keeps the old byte prefix and its object identities; a rewrite
+            // renumbers objects, so layer choices are carried over by name (#7411).
+            renumbered = !(bytes.starts_with(editor.saved.as_slice()) || bytes.starts_with(editor.cos.bytes().as_slice()));
             editor.cos =
                 pdfcraft_cos::Document::open_with_password(bytes.clone(), keys.reopen.as_deref()).map_err(|e| EditError::Reopen(e.to_string()))?;
             pdfcraft_forms::restore_password_values(&mut editor.cos, &typed).map_err(|e| EditError::Reopen(e.to_string()))?;
@@ -88,7 +92,8 @@ impl Session {
         }
         doc.dirty = false;
         doc.generation += 1;
-        Self::refresh(doc).inspect_err(|_| Self::show_released(doc))
+        let refreshed = if renumbered { Self::refresh_renumbered(doc) } else { Self::refresh(doc) };
+        refreshed.inspect_err(|_| Self::show_released(doc))
     }
 
     /// Enter the permissions (owner) password of a document opened with its user password,

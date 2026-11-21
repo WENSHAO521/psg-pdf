@@ -395,3 +395,12 @@
 	Browse…	参照…
 	Use this folder	このフォルダーを使用
 	Enter an existing folder path.	既存のフォルダーのパスを入力してください。
+	Copy TeX diagnostics	TeX の診断情報をコピー
+	TeX diagnostics copied.	TeX の診断情報をコピーしました。
+	Cut	切り取り
+	Copy	コピー
+	Paste	貼り付け
+	Repair Biber	Biber を修復
+	Repairing Biber…	Biber を修復しています…
+	Biber was reinstalled.	Biber を再インストールしました。
+	Could not repair Biber: {error}	Biber を修復できませんでした: {error}

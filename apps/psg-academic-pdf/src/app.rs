@@ -13,7 +13,7 @@
 //! is open, so egui's own widgets are used here.
 #![allow(clippy::disallowed_methods, clippy::disallowed_types)]
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, channel};
@@ -544,7 +544,13 @@ impl AcademicApp {
                 ));
             } else if let Some(tool) = [&env.pdflatex, &env.latexmk, &env.biber].into_iter().find(|tool| tool.probe_error.is_some()) {
                 let detail = format!("{}: {}", tool.name, tool.probe_error.as_deref().unwrap_or_default());
-                self.fail(tf("Could not check the TeX installation: {error}", &[("error", &detail)]));
+                let message = tf("Could not check the TeX installation: {error}", &[("error", &detail)]);
+                if tool.name == "biber" && !self.tex_auto_started && self.biber_repair_needed(Some(&env)) {
+                    self.status = t("Repairing Biber…").into();
+                    self.note(message);
+                } else {
+                    self.fail(message);
+                }
             } else if installing {
                 self.status = t("Installing TeX for PSG Academic PDF…").into();
                 self.note(tf("TeX not found yet ({tools}); PSG Academic PDF installs its own.", &[("tools", &missing.join(", "))]));
@@ -583,6 +589,8 @@ impl AcademicApp {
         let Some(tex) = &self.managed else { return };
         let job = if !tex.installed() {
             Job::Install
+        } else if self.biber_repair_needed(self.env.as_ref()) {
+            Job::RepairBiber
         } else if tex.update_due(psg_academic::managed::now_utc()) {
             Job::Update
         } else {
@@ -592,7 +600,14 @@ impl AcademicApp {
         self.start_tex_job(ctx, job);
     }
 
-    /// Start installing or updating PSG's TeX (Settings ▸ TeX installation, or by itself).
+    /// Only repair Biber from PSG's own TeX tree.
+    fn biber_repair_needed(&self, env: Option<&TexEnvironment>) -> bool {
+        let Some(env) = env.filter(|env| env.managed && env.biber.probe_error.is_some()) else { return false };
+        let Some(bin) = tex_setup::bin_dir(self.managed.as_ref()) else { return false };
+        env.biber.path.as_deref().and_then(Path::parent) == Some(bin.as_path())
+    }
+
+    /// Start installing, repairing or updating PSG's TeX.
     pub(crate) fn start_tex_job(&mut self, ctx: &egui::Context, job: Job) {
         if self.tex_job.is_some() || self.running.is_some() {
             return;
@@ -605,11 +620,16 @@ impl AcademicApp {
         match tex_setup::start(tex, job, move || repaint.request_repaint()) {
             Ok(rx) => {
                 self.tex_error = None;
-                let progress = if job == Job::Install { Progress::Looking } else { Progress::Updating };
+                let progress = match job {
+                    Job::Install => Progress::Looking,
+                    Job::Update => Progress::Updating,
+                    Job::RepairBiber => Progress::Packages,
+                };
                 self.tex_job = Some(TexJob { rx, job, progress });
                 self.note(match job {
                     Job::Install => t("Installing TeX for PSG Academic PDF…"),
                     Job::Update => t("Updating TeX…"),
+                    Job::RepairBiber => t("Repairing Biber…"),
                 });
             }
             Err(e) => self.fail(tf("Could not install TeX: {error}", &[("error", &e.to_string())])),
@@ -638,13 +658,14 @@ impl AcademicApp {
                 self.detect_tex(ctx);
             }
             Ok(tex_setup::Done::Updated) => {
-                self.note(t("TeX is up to date."));
+                self.note(if kind == Job::RepairBiber { t("Biber was reinstalled.") } else { t("TeX is up to date.") });
                 self.detect_tex(ctx);
             }
             Err(e) => {
                 let text = match kind {
                     Job::Install => tf("Could not install TeX: {error}", &[("error", &e)]),
                     Job::Update => tf("Could not update TeX: {error}", &[("error", &e)]),
+                    Job::RepairBiber => tf("Could not repair Biber: {error}", &[("error", &e)]),
                 };
                 self.tex_error = Some(text.clone());
                 if kind == Job::Install {

@@ -403,3 +403,8 @@
 	The selected pages have different presentation settings. Applying sets the same values on all of them.	所選頁面的簡報設定不同。套用後，所有選取的頁面將使用相同設定。
 	The document changed while the dialog was open, so nothing was changed.	對話框開啟期間文件已變更，因此未套用任何設定。
 	Exported to {path}. Content was omitted on pages {pages}.	已匯出至 {path}。第 {pages} 頁的部分內容未匯出。
+	Esc leaves full screen	按 Esc 離開全螢幕
+	Full screen fills the screen with one page at a time	全螢幕時一次顯示一頁並填滿螢幕
+	Turn off so that only Ctrl+L (⌘L on macOS) leaves full screen, as for a kiosk display.	關閉後只有 Ctrl+L（macOS 上為 ⌘L）能離開全螢幕，適合展示用的螢幕。
+	Turn off to keep the page display, such as continuous scrolling, in full screen.	關閉後全螢幕時保留原本的頁面顯示方式，例如連續捲動。
+	locked field	鎖定的欄位

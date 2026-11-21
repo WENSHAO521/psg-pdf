@@ -1223,7 +1223,7 @@ pub fn tools() -> Vec<ToolDef> {
         t(
             "page_set_box",
             "Set page boxes / crop",
-            "Set a page box (crop by default; also trim, bleed, art, media) on pages: either margins in points from the media box [left, bottom, right, top], or an absolute rect in points from the top-left of the displayed page. Omit both to reset the box to its default. Undoable.",
+            "Set a page box (crop by default; also trim, bleed, art, media) on pages: either margins from the media box [left, bottom, right, top] in default user-space units of the unrotated page (not points when the page has /UserUnit), or an absolute rect in points from the top-left of the displayed page. Omit both to reset the box to its default. Undoable.",
         )
         .cmd("page.boxes")
         .with(schema(
@@ -1756,6 +1756,7 @@ pub fn tools() -> Vec<ToolDef> {
                     "aligns": { "type": "array", "maxItems": 4096, "items": { "type": "string", "enum": ["left", "center", "right", "justify", "inherit"] }, "description": "Each paragraph's (line's) own alignment, by index; inherit (or legacy null) follows align." },
                     "underline": { "type": "boolean" },
                     "line_spacing": { "type": "number", "description": "Multiple of the font size (1.2 is ordinary)." },
+                    "paragraph_spacing": { "type": "number", "description": "Points between paragraphs (a line break in text starts one), beyond the line spacing; unset, half the size for a paragraph the page did not have (rows it had keep their space); 0 is none." },
                     "dx": { "type": "number", "description": "Paragraph only: move right by this many points (negative: left)." },
                     "dy": { "type": "number", "description": "Paragraph only: move up by this many points (negative: down)." },
                     "width": { "type": "number", "description": "Paragraph only: rewrap to this width in points (dragging the box's edge)." },

@@ -138,9 +138,23 @@ pub(super) fn is_current(project: &Project) -> bool {
                 input.path.components().all(|c| matches!(c, Component::Normal(_)))
                     && FileState::read(&project.dir.join(&input.path)).is_ok_and(|state| state == input.state)
             })
+            && no_new_inputs(project, &stamp.inputs)
     } else {
         false
     }
+}
+
+/// Whether every input in the project now was there when the PDF was typeset. A file added later
+/// can change the result without changing a recorded one (`\\InputIfFileExists`, a figure or a
+/// bibliography found on the search path). A new PDF is left out: exporting writes PDFs into the
+/// project, and an exported copy must not make the result stale.
+fn no_new_inputs(project: &Project, recorded: &[Input]) -> bool {
+    sources(project).is_ok_and(|now| {
+        now.iter().all(|input| {
+            input.path.extension().is_some_and(|ext| ext.eq_ignore_ascii_case("pdf"))
+                || recorded.binary_search_by(|r| r.path.cmp(&input.path)).is_ok()
+        })
+    })
 }
 
 #[cfg(test)]
@@ -169,5 +183,22 @@ mod tests {
         record(&project, inputs).unwrap();
         forget(&project).unwrap();
         assert!(!project.pdf_is_current(), "a failed new compilation must not certify the old on-disk PDF");
+    }
+
+    #[test]
+    fn an_input_added_after_typesetting_makes_the_pdf_stale() {
+        let dir = tempfile::tempdir().unwrap();
+        let project = Project::create(dir.path(), &Template::builtin().remove(0), PublicationMetadata::sample()).unwrap();
+        fs::write(project.pdf_path(), b"%PDF-1.7").unwrap();
+        record(&project, sources(&project).unwrap()).unwrap();
+        assert!(project.pdf_is_current());
+        // `\InputIfFileExists{revision.tex}` typesets nothing until the file appears.
+        fs::write(dir.path().join("revision.tex"), b"Revised.").unwrap();
+        assert!(!project.pdf_is_current(), "a new input can change what the manuscript typesets");
+        fs::remove_file(dir.path().join("revision.tex")).unwrap();
+        assert!(project.pdf_is_current());
+        fs::create_dir(dir.path().join("figures")).unwrap();
+        fs::write(dir.path().join("figures").join("plot.png"), b"png").unwrap();
+        assert!(!project.pdf_is_current(), "a figure added in a folder is an input too");
     }
 }

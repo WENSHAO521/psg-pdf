@@ -40,6 +40,7 @@ pub enum Event {
 pub enum Job {
     Install,
     Update,
+    RepairBiber,
 }
 
 /// Run `job` on its own thread; events arrive on the receiver, and `wake` is called after each.
@@ -54,6 +55,10 @@ pub fn start(tex: ManagedTex, job: Job, wake: impl Fn() + Send + 'static) -> std
         let result = match job {
             Job::Install => install(&tex, &mut progress).map(Done::Installed),
             Job::Update => update(&tex, &mut progress),
+            Job::RepairBiber => {
+                progress(Progress::Packages);
+                tex.reinstall_biber().map(|()| Done::Updated).map_err(|e| e.to_string())
+            }
         };
         send(&tx, Event::Finished(result));
     })?;

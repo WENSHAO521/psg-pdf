@@ -104,7 +104,8 @@ impl SourceEditor {
                     let job = LayoutJob::simple(buf.as_str().to_owned(), font.clone(), text_color, f32::INFINITY);
                     ui.fonts_mut(|f| f.layout_job(job))
                 };
-                let response = ui.add(
+                let response = crate::clipboard::text_edit(
+                    ui,
                     egui::TextEdit::multiline(&mut self.text)
                         .id(id)
                         .code_editor()

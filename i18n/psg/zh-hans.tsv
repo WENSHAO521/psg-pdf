@@ -401,3 +401,8 @@
 	The selected pages have different presentation settings. Applying sets the same values on all of them.	所选页面的演示设置不同。应用后，所有选中的页面将使用相同设置。
 	The document changed while the dialog was open, so nothing was changed.	对话框打开期间文档已更改，因此未应用任何更改。
 	Exported to {path}. Content was omitted on pages {pages}.	已导出到 {path}。第 {pages} 页的部分内容未导出。
+	Esc leaves full screen	按 Esc 退出全屏
+	Full screen fills the screen with one page at a time	全屏时一次显示一页并填满屏幕
+	Turn off so that only Ctrl+L (⌘L on macOS) leaves full screen, as for a kiosk display.	关闭后只有 Ctrl+L（macOS 上为 ⌘L）能退出全屏，适合展示用的显示器。
+	Turn off to keep the page display, such as continuous scrolling, in full screen.	关闭后全屏时保留原来的页面显示方式，例如连续滚动。
+	locked field	锁定的字段

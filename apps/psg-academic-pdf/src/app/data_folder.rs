@@ -81,7 +81,7 @@ impl AcademicApp {
             widgets::section_header(ui, title);
             ui.label(t("Folder path"));
             ui.horizontal_wrapped(|ui| {
-                ui.add(egui::TextEdit::singleline(&mut choice.path).desired_width(365.0));
+                crate::clipboard::text_edit(ui, egui::TextEdit::singleline(&mut choice.path).desired_width(365.0));
                 if widgets::secondary(ui, t("Browse…")).clicked() {
                     let directory = Path::new(&choice.path);
                     let dialog = rfd::FileDialog::new().set_title(title);

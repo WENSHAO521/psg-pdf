@@ -395,3 +395,12 @@
 	Browse…	瀏覽…
 	Use this folder	使用此資料夾
 	Enter an existing folder path.	請輸入現有資料夾的路徑。
+	Copy TeX diagnostics	複製 TeX 診斷
+	TeX diagnostics copied.	已複製 TeX 診斷。
+	Cut	剪下
+	Copy	複製
+	Paste	貼上
+	Repair Biber	修復 Biber
+	Repairing Biber…	正在修復 Biber…
+	Biber was reinstalled.	已重新安裝 Biber。
+	Could not repair Biber: {error}	無法修復 Biber：{error}

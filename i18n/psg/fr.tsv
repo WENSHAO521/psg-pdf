@@ -261,3 +261,8 @@
 	The selected pages have different presentation settings. Applying sets the same values on all of them.	Les pages sélectionnées ont des réglages de présentation différents. L’application donne les mêmes valeurs à toutes ces pages.
 	The document changed while the dialog was open, so nothing was changed.	Le document a changé pendant que la boîte de dialogue était ouverte. Aucune modification n’a été appliquée.
 	Exported to {path}. Content was omitted on pages {pages}.	Exporté vers {path}. Du contenu a été omis sur les pages {pages}.
+	Esc leaves full screen	Échap quitte le plein écran
+	Full screen fills the screen with one page at a time	Le plein écran affiche une page à la fois sur tout l’écran
+	Turn off so that only Ctrl+L (⌘L on macOS) leaves full screen, as for a kiosk display.	Désactivez pour que seul Ctrl+L (⌘L sur macOS) quitte le plein écran, comme pour une borne d’affichage.
+	Turn off to keep the page display, such as continuous scrolling, in full screen.	Désactivez pour garder l’affichage des pages, par exemple le défilement continu, en plein écran.
+	locked field	champ verrouillé

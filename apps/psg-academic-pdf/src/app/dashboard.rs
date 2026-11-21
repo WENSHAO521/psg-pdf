@@ -3,6 +3,9 @@
 //! one it summarises the project, its last run and its problems. The TeX installation is always
 //! shown, since nothing typesets without it.
 
+use std::fmt::Write as _;
+
+use psg_academic::tex::TexEnvironment;
 use psg_desktop_ui::{Tone, widgets};
 
 use super::{AcademicApp, Page};
@@ -232,12 +235,24 @@ impl AcademicApp {
                             ui.label(tool.name);
                         });
                         match (&tool.path, &tool.probe_error) {
-                            (Some(path), Some(error)) => ui
-                                .add(
-                                    egui::Label::new(egui::RichText::new(error.lines().next().unwrap_or(error)).color(ui.visuals().error_fg_color))
+                            (Some(path), Some(error)) => {
+                                let details = format!("{}\n{error}", path.display());
+                                let response = ui
+                                    .add(
+                                        egui::Label::new(
+                                            egui::RichText::new(error.lines().next().unwrap_or(error)).color(ui.visuals().error_fg_color),
+                                        )
                                         .truncate(),
-                                )
-                                .on_hover_text(format!("{}\n{error}", path.display())),
+                                    )
+                                    .on_hover_text(&details);
+                                response.context_menu(|ui| {
+                                    if ui.button(t("Copy")).clicked() {
+                                        ui.copy_text(details);
+                                        ui.close();
+                                    }
+                                });
+                                response
+                            }
                             // Version lines can be long; they end in "…" rather than widening the card.
                             (Some(p), None) => ui
                                 .add(egui::Label::new(tool.version.clone().unwrap_or_else(|| t("found").into())).truncate())
@@ -261,7 +276,9 @@ impl AcademicApp {
                     (tf("Downloading TeX: {done} of {total} MB", &[("done", &mb(done)), ("total", &mb(total))]), fraction)
                 }
                 Progress::Unpacking => (t("Unpacking TeX…").to_owned(), None),
-                Progress::Packages => (t("Adding the packages the templates use…").to_owned(), None),
+                Progress::Packages => {
+                    (if job.job == Job::RepairBiber { t("Repairing Biber…") } else { t("Adding the packages the templates use…") }.to_owned(), None)
+                }
                 Progress::Updating => (t("Updating TeX…").to_owned(), None),
             };
             ui.horizontal(|ui| {
@@ -276,22 +293,28 @@ impl AcademicApp {
             ui.colored_label(ui.visuals().error_fg_color, error.as_str());
         }
         ui.add_space(psg_brand::space::S);
-        ui.horizontal(|ui| {
+        ui.horizontal_wrapped(|ui| {
             let idle = self.env_rx.is_none() && self.tex_job.is_none();
             if widgets::button_enabled(ui, idle, widgets::ButtonKind::Secondary, t("Check again"), "").clicked() {
                 let ctx = ui.ctx().clone();
                 self.env = None;
                 self.detect_tex(&ctx);
             }
+            if tex_diagnostics_button(ui, self.env.as_ref(), self.tex_error.as_deref()).clicked() {
+                self.notices.push(Tone::Success, t("TeX diagnostics copied."), ui.input(|i| i.time));
+            }
             let Some(tex) = &self.managed else { return };
             let installed = tex.installed();
             let free = idle && self.running.is_none();
             if installed {
-                if widgets::button_enabled(ui, free, widgets::ButtonKind::Secondary, t("Update TeX now"), t("Wait for the current task to finish."))
-                    .clicked()
+                let hint = t("Wait for the current task to finish.");
+                if widgets::button_enabled(ui, free, widgets::ButtonKind::Secondary, t("Update TeX now"), hint).clicked() {
+                    self.start_tex_job(ui.ctx(), Job::Update);
+                }
+                if self.biber_repair_needed(self.env.as_ref())
+                    && widgets::button_enabled(ui, free, widgets::ButtonKind::Secondary, t("Repair Biber"), hint).clicked()
                 {
-                    let ctx = ui.ctx().clone();
-                    self.start_tex_job(&ctx, Job::Update);
+                    self.start_tex_job(ui.ctx(), Job::RepairBiber);
                 }
             } else if widgets::button_enabled(ui, free, widgets::ButtonKind::Primary, t("Install TeX"), t("Wait for the current task to finish."))
                 .clicked()
@@ -322,5 +345,63 @@ impl AcademicApp {
         };
         widgets::muted(ui, text);
         ui.add_space(psg_brand::space::XS);
+    }
+}
+
+fn tex_diagnostics_button(ui: &mut egui::Ui, env: Option<&TexEnvironment>, setup_error: Option<&str>) -> egui::Response {
+    let button = widgets::button_enabled(ui, env.is_some() || setup_error.is_some(), widgets::ButtonKind::Secondary, t("Copy TeX diagnostics"), "");
+    if button.clicked() {
+        let mut report = String::new();
+        if let Some(env) = env {
+            for tool in [&env.pdflatex, &env.latexmk, &env.biber, &env.pandoc] {
+                let status = tool
+                    .probe_error
+                    .as_deref()
+                    .or(tool.version.as_deref())
+                    .unwrap_or_else(|| if tool.path.is_some() { t("found") } else { t("not found") });
+                let _ = writeln!(report, "{}: {status}", tool.name);
+                if let Some(path) = &tool.path {
+                    let _ = writeln!(report, "  {}", path.display());
+                }
+            }
+        }
+        if let Some(error) = setup_error {
+            let _ = writeln!(report, "{error}");
+        }
+        ui.copy_text(report);
+    }
+    button
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn copy_button_sends_the_full_tex_diagnostic_to_the_clipboard() {
+        let ctx = egui::Context::default();
+        let mut env = TexEnvironment::detect_in(None, false);
+        env.biber.path = Some("biber.exe".into());
+        env.biber.probe_error = Some("Version check timed out\nBiber did not finish starting".into());
+        let mut pos = egui::Pos2::ZERO;
+        let output = ctx.run_ui(egui::RawInput::default(), |ui| {
+            pos = tex_diagnostics_button(ui, Some(&env), Some("Update failed")).rect.center();
+        });
+        output.drop_without_applying_deltas();
+        for pressed in [true, false] {
+            let event = egui::Event::PointerButton { pos, button: egui::PointerButton::Primary, pressed, modifiers: egui::Modifiers::NONE };
+            let input = egui::RawInput { events: vec![egui::Event::PointerMoved(pos), event], ..Default::default() };
+            let output = ctx.run_ui(input, |ui| {
+                tex_diagnostics_button(ui, Some(&env), Some("Update failed"));
+            });
+            if !pressed {
+                assert!(output.platform_output.commands.iter().any(|command| {
+                    matches!(command, egui::OutputCommand::CopyText(text)
+                        if text.contains("biber: Version check timed out\nBiber did not finish starting\n  biber.exe\n")
+                            && text.contains("Update failed"))
+                }));
+            }
+            output.drop_without_applying_deltas();
+        }
     }
 }

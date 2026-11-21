@@ -360,3 +360,8 @@
 	The selected pages have different presentation settings. Applying sets the same values on all of them.	선택한 페이지의 프레젠테이션 설정이 서로 다릅니다. 적용하면 모든 페이지에 같은 값이 설정됩니다.
 	The document changed while the dialog was open, so nothing was changed.	대화 상자가 열린 동안 문서가 바뀌어 변경 사항을 적용하지 않았습니다.
 	Exported to {path}. Content was omitted on pages {pages}.	{path}(으)로 내보냈습니다. {pages} 페이지의 일부 콘텐츠가 누락되었습니다.
+	Esc leaves full screen	Esc로 전체 화면 종료
+	Full screen fills the screen with one page at a time	전체 화면에서 한 번에 한 페이지를 화면 가득 표시
+	Turn off so that only Ctrl+L (⌘L on macOS) leaves full screen, as for a kiosk display.	끄면 Ctrl+L(macOS에서는 ⌘L)로만 전체 화면을 종료합니다. 키오스크 화면에 알맞습니다.
+	Turn off to keep the page display, such as continuous scrolling, in full screen.	끄면 전체 화면에서도 연속 스크롤 같은 페이지 표시 방식을 유지합니다.
+	locked field	잠긴 필드
