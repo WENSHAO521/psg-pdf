@@ -113,6 +113,25 @@ impl ManuscriptImporter for PandocImporter {
         let _ = std::fs::remove_file(&tree_path);
         let taken = project.apply_front_matter(&front)?;
         let adapted = project.adapt_engine_to_text()?;
+        // pdfLaTeX has no glyph for Greek letters, Unicode subscripts or math signs that Word
+        // types as plain characters: write them as the LaTeX commands that draw them.
+        // Web addresses typed as plain text in Word (a reference list's, often) may break after
+        // a slash or dot, so they don't run into the margin.
+        let (text, urls) = breakable_urls(&String::from_utf8_lossy(&body));
+        let mut body = body;
+        if urls > 0 {
+            write_atomic(&project.dir.join(&project.file.body), text.as_bytes())?;
+            body = text.into_bytes();
+        }
+        let mut spelled = 0usize;
+        if project.file.engine == Engine::Pdflatex {
+            let (text, count) = spell_for_pdflatex(&String::from_utf8_lossy(&body));
+            if count > 0 {
+                write_atomic(&project.dir.join(&project.file.body), text.as_bytes())?;
+                body = text.into_bytes();
+                spelled = count;
+            }
+        }
         let warnings = read.saturating_add(write);
         let mut note = format!(
             "Converted {} with Pandoc into {} ({warnings} warning line(s)): {} figure(s) and {} table(s) with captions; figures are in media/.",
@@ -134,6 +153,11 @@ impl ManuscriptImporter for PandocImporter {
         if let Some(adapted) = adapted {
             note.push(' ');
             note.push_str(&adapted);
+        }
+        if spelled > 0 {
+            note.push_str(&format!(
+                " {spelled} Greek letter(s), subscript(s) or math sign(s) pdfLaTeX's fonts lack were written as LaTeX commands (\u{3c4} as \\tau, for example)."
+            ));
         }
         for problem in review_converted(&String::from_utf8_lossy(&body), &project.dir, project.file.engine) {
             note.push_str("\nTo fix before compiling: ");
@@ -318,6 +342,260 @@ fn xelatex_can_set(c: char) -> bool {
             | 0x20000..=0x2FA1F)
 }
 
+/// The LaTeX for a character pdfLaTeX has no glyph for and Word often types as plain text:
+/// Greek letters, Unicode subscripts and superscripts, and common math signs. Each works in
+/// text and in math (`\ensuremath`, `\textsubscript`).
+fn pdflatex_spelling(c: char) -> Option<&'static str> {
+    Some(match c {
+        'α' => r"\ensuremath{\alpha}",
+        'β' => r"\ensuremath{\beta}",
+        'γ' => r"\ensuremath{\gamma}",
+        'δ' => r"\ensuremath{\delta}",
+        'ε' => r"\ensuremath{\varepsilon}",
+        'ϵ' => r"\ensuremath{\epsilon}",
+        'ζ' => r"\ensuremath{\zeta}",
+        'η' => r"\ensuremath{\eta}",
+        'θ' => r"\ensuremath{\theta}",
+        'ϑ' => r"\ensuremath{\vartheta}",
+        'ι' => r"\ensuremath{\iota}",
+        'κ' => r"\ensuremath{\kappa}",
+        'λ' => r"\ensuremath{\lambda}",
+        'μ' => r"\ensuremath{\mu}",
+        'ν' => r"\ensuremath{\nu}",
+        'ξ' => r"\ensuremath{\xi}",
+        'ο' => r"\ensuremath{o}",
+        'π' => r"\ensuremath{\pi}",
+        'ϖ' => r"\ensuremath{\varpi}",
+        'ρ' => r"\ensuremath{\rho}",
+        'ϱ' => r"\ensuremath{\varrho}",
+        'σ' => r"\ensuremath{\sigma}",
+        'ς' => r"\ensuremath{\varsigma}",
+        'τ' => r"\ensuremath{\tau}",
+        'υ' => r"\ensuremath{\upsilon}",
+        'φ' => r"\ensuremath{\varphi}",
+        'ϕ' => r"\ensuremath{\phi}",
+        'χ' => r"\ensuremath{\chi}",
+        'ψ' => r"\ensuremath{\psi}",
+        'ω' => r"\ensuremath{\omega}",
+        'Γ' => r"\ensuremath{\Gamma}",
+        'Δ' => r"\ensuremath{\Delta}",
+        'Θ' => r"\ensuremath{\Theta}",
+        'Λ' => r"\ensuremath{\Lambda}",
+        'Ξ' => r"\ensuremath{\Xi}",
+        'Π' => r"\ensuremath{\Pi}",
+        'Σ' => r"\ensuremath{\Sigma}",
+        'Υ' => r"\ensuremath{\Upsilon}",
+        'Φ' => r"\ensuremath{\Phi}",
+        'Ψ' => r"\ensuremath{\Psi}",
+        'Ω' => r"\ensuremath{\Omega}",
+        'Α' => "A",
+        'Β' => "B",
+        'Ε' => "E",
+        'Ζ' => "Z",
+        'Η' => "H",
+        'Ι' => "I",
+        'Κ' => "K",
+        'Μ' => "M",
+        'Ν' => "N",
+        'Ο' => "O",
+        'Ρ' => "P",
+        'Τ' => "T",
+        'Χ' => "X",
+        '₀' => r"\textsubscript{0}",
+        '₁' => r"\textsubscript{1}",
+        '₂' => r"\textsubscript{2}",
+        '₃' => r"\textsubscript{3}",
+        '₄' => r"\textsubscript{4}",
+        '₅' => r"\textsubscript{5}",
+        '₆' => r"\textsubscript{6}",
+        '₇' => r"\textsubscript{7}",
+        '₈' => r"\textsubscript{8}",
+        '₉' => r"\textsubscript{9}",
+        '₊' => r"\textsubscript{+}",
+        '₋' => r"\textsubscript{\ensuremath{-}}",
+        '₌' => r"\textsubscript{=}",
+        '₍' => r"\textsubscript{(}",
+        '₎' => r"\textsubscript{)}",
+        'ₐ' => r"\textsubscript{a}",
+        'ₑ' => r"\textsubscript{e}",
+        'ₒ' => r"\textsubscript{o}",
+        'ₓ' => r"\textsubscript{x}",
+        'ₕ' => r"\textsubscript{h}",
+        'ₖ' => r"\textsubscript{k}",
+        'ₗ' => r"\textsubscript{l}",
+        'ₘ' => r"\textsubscript{m}",
+        'ₙ' => r"\textsubscript{n}",
+        'ₚ' => r"\textsubscript{p}",
+        'ₛ' => r"\textsubscript{s}",
+        'ₜ' => r"\textsubscript{t}",
+        'ᵢ' => r"\textsubscript{i}",
+        'ⱼ' => r"\textsubscript{j}",
+        'ᵣ' => r"\textsubscript{r}",
+        'ᵤ' => r"\textsubscript{u}",
+        'ᵥ' => r"\textsubscript{v}",
+        '⁰' => r"\textsuperscript{0}",
+        'ⁱ' => r"\textsuperscript{i}",
+        '⁴' => r"\textsuperscript{4}",
+        '⁵' => r"\textsuperscript{5}",
+        '⁶' => r"\textsuperscript{6}",
+        '⁷' => r"\textsuperscript{7}",
+        '⁸' => r"\textsuperscript{8}",
+        '⁹' => r"\textsuperscript{9}",
+        '⁺' => r"\textsuperscript{+}",
+        '⁻' => r"\textsuperscript{\ensuremath{-}}",
+        '⁼' => r"\textsuperscript{=}",
+        '⁽' => r"\textsuperscript{(}",
+        '⁾' => r"\textsuperscript{)}",
+        'ⁿ' => r"\textsuperscript{n}",
+        '−' => r"\ensuremath{-}",
+        '∓' => r"\ensuremath{\mp}",
+        '≤' => r"\ensuremath{\leq}",
+        '≥' => r"\ensuremath{\geq}",
+        '≠' => r"\ensuremath{\neq}",
+        '≈' => r"\ensuremath{\approx}",
+        '≡' => r"\ensuremath{\equiv}",
+        '∼' => r"\ensuremath{\sim}",
+        '∝' => r"\ensuremath{\propto}",
+        '∞' => r"\ensuremath{\infty}",
+        '∑' => r"\ensuremath{\sum}",
+        '∏' => r"\ensuremath{\prod}",
+        '∫' => r"\ensuremath{\int}",
+        '√' => r"\ensuremath{\surd}",
+        '∂' => r"\ensuremath{\partial}",
+        '∇' => r"\ensuremath{\nabla}",
+        '∈' => r"\ensuremath{\in}",
+        '∉' => r"\ensuremath{\notin}",
+        '⊂' => r"\ensuremath{\subset}",
+        '⊆' => r"\ensuremath{\subseteq}",
+        '∩' => r"\ensuremath{\cap}",
+        '∪' => r"\ensuremath{\cup}",
+        '∀' => r"\ensuremath{\forall}",
+        '∃' => r"\ensuremath{\exists}",
+        '∅' => r"\ensuremath{\emptyset}",
+        '∘' => r"\ensuremath{\circ}",
+        '∙' => r"\ensuremath{\cdot}",
+        '⋅' => r"\ensuremath{\cdot}",
+        '→' => r"\ensuremath{\rightarrow}",
+        '←' => r"\ensuremath{\leftarrow}",
+        '↔' => r"\ensuremath{\leftrightarrow}",
+        '⇒' => r"\ensuremath{\Rightarrow}",
+        '⇔' => r"\ensuremath{\Leftrightarrow}",
+        '′' => r"\ensuremath{'}",
+        '″' => r"\ensuremath{''}",
+        '‐' | '‑' => "-",
+        '‒' => "--",
+        '\u{2009}' | '\u{202F}' => r"\,",
+        '\u{2002}' => r"\enspace{}",
+        '\u{2003}' => r"\quad{}",
+        '\u{200B}' => "",
+        _ => return None,
+    })
+}
+
+/// Lines of a converted body inside these environments are left as they are: their text is
+/// printed character for character.
+const VERBATIM: &[&str] = &["verbatim", "Verbatim", "Highlighting", "lstlisting"];
+
+/// `body` with every character [`pdflatex_spelling`] knows written as its LaTeX, outside
+/// verbatim environments, and how many were replaced.
+pub fn spell_for_pdflatex(body: &str) -> (String, usize) {
+    let mut out = String::with_capacity(body.len());
+    let mut count = 0usize;
+    let mut verbatim: Option<&str> = None;
+    for line in body.split_inclusive('\n') {
+        if let Some(env) = verbatim {
+            if line.contains(&format!("\\end{{{env}}}")) {
+                verbatim = None;
+            }
+            out.push_str(line);
+            continue;
+        }
+        if let Some(env) = VERBATIM.iter().find(|env| line.contains(&format!("\\begin{{{env}}}"))) {
+            if !line.contains(&format!("\\end{{{env}}}")) {
+                verbatim = Some(env);
+            }
+            out.push_str(line);
+            continue;
+        }
+        for c in line.chars() {
+            match pdflatex_spelling(c) {
+                Some(latex) => {
+                    out.push_str(latex);
+                    count = count.saturating_add(1);
+                }
+                None => out.push(c),
+            }
+        }
+    }
+    (out, count)
+}
+
+/// Where a plain web address may break: after these, unless they end it.
+const URL_BREAKS: &[char] = &['/', '.', '-', '?', '=', '&'];
+/// The longest web address made breakable (bytes); a longer token is left as it is.
+const MAX_URL: usize = 2048;
+
+/// `body` with `\allowbreak{}` after each slash, dot, hyphen, `?`, `=` and `&` of the web
+/// addresses typed as plain text (`http://…`, `https://…`, `www.…` after a space, a line start or
+/// an opening parenthesis), outside verbatim environments; links Pandoc wrote as `\url` or
+/// `\href`, whose address follows a brace, are left to them. Returns how many were changed.
+pub fn breakable_urls(body: &str) -> (String, usize) {
+    let mut out = String::with_capacity(body.len());
+    let mut count = 0usize;
+    let mut verbatim: Option<&str> = None;
+    for line in body.split_inclusive('\n') {
+        if let Some(env) = verbatim {
+            if line.contains(&format!("\\end{{{env}}}")) {
+                verbatim = None;
+            }
+            out.push_str(line);
+            continue;
+        }
+        if let Some(env) = VERBATIM.iter().find(|env| line.contains(&format!("\\begin{{{env}}}"))) {
+            if !line.contains(&format!("\\end{{{env}}}")) {
+                verbatim = Some(env);
+            }
+            out.push_str(line);
+            continue;
+        }
+        let mut rest = line;
+        let mut prev: Option<char> = None;
+        while !rest.is_empty() {
+            let starts = matches!(prev, None | Some(' ' | '\t' | '(' | '[' | '\u{a0}'))
+                && ["https://", "http://", "www."].iter().any(|p| rest.get(..p.len()).is_some_and(|h| h.eq_ignore_ascii_case(p)));
+            if starts {
+                let end = rest.find(|c: char| c.is_whitespace() || c == '}').unwrap_or(rest.len());
+                let token = rest.get(..end).unwrap_or(rest);
+                if token.len() <= MAX_URL {
+                    // Not after the last character, nor between the slashes of "://".
+                    let trimmed = token.trim_end_matches(['.', ',', ';', ':', ')']);
+                    let mut chars = trimmed.char_indices().peekable();
+                    while let Some((i, c)) = chars.next() {
+                        out.push(c);
+                        let at_end = chars.peek().is_none();
+                        let scheme = trimmed.get(..i.saturating_add(1)).is_some_and(|t| t.ends_with(":/"));
+                        if URL_BREAKS.contains(&c) && !at_end && !scheme {
+                            out.push_str("\\allowbreak{}");
+                        }
+                    }
+                    out.push_str(token.get(trimmed.len()..).unwrap_or(""));
+                    count = count.saturating_add(1);
+                } else {
+                    out.push_str(token);
+                }
+                prev = token.chars().next_back();
+                rest = rest.get(end..).unwrap_or("");
+                continue;
+            }
+            let Some(c) = rest.chars().next() else { break };
+            out.push(c);
+            prev = Some(c);
+            rest = rest.get(c.len_utf8()..).unwrap_or("");
+        }
+    }
+    (out, count)
+}
+
 /// What a converted body holds that the template's engine can't typeset as it is, each as a
 /// sentence saying what to do: characters the fonts have no glyph for, and figures in formats
 /// the engine can't include (Word's EMF and WMF drawings, TIFF scans). `project_dir` holds
@@ -408,6 +686,41 @@ mod tests {
     }
     use crate::metadata::PublicationMetadata;
     use crate::template::Template;
+
+    #[test]
+    fn plain_web_addresses_may_break_but_links_are_left() {
+        let body =
+            "Retrieved from https://a.org/x-y/z\\_w.html.\n\\url{https://b.org/p} and \\href{https://c.org/q}{https://c.org/q} (www.d.org/e)\n";
+        let (out, count) = breakable_urls(body);
+        assert_eq!(count, 2, "{out}");
+        assert!(
+            out.starts_with(
+                "Retrieved from https://\\allowbreak{}a.\\allowbreak{}org/\\allowbreak{}x-\\allowbreak{}y/\\allowbreak{}z\\_w.\\allowbreak{}html.\n"
+            ),
+            "{out}"
+        );
+        assert!(out.contains("\\url{https://b.org/p} and \\href{https://c.org/q}{https://c.org/q}"), "{out}");
+        assert!(out.contains("(www.\\allowbreak{}d.\\allowbreak{}org/\\allowbreak{}e)"), "{out}");
+    }
+
+    #[test]
+    fn word_greek_letters_and_subscripts_are_spelled_for_pdflatex() {
+        let body =
+            "the threshold \u{3c4}\u{2c7c} and b\u{2c7c}(s), x\u{2080} \u{2264} 1\n\\begin{verbatim}\n\u{3c4} stays\n\\end{verbatim}\n\u{4e2d}\n";
+        let (spelled, count) = spell_for_pdflatex(body);
+        assert_eq!(count, 5);
+        assert!(
+            spelled.starts_with(
+                "the threshold \\ensuremath{\\tau}\\textsubscript{j} and b\\textsubscript{j}(s), x\\textsubscript{0} \\ensuremath{\\leq} 1\n"
+            ),
+            "{spelled}"
+        );
+        assert!(spelled.contains("\n\u{3c4} stays\n"), "verbatim is printed as typed");
+        assert!(spelled.ends_with("\u{4e2d}\n"), "what has no spelling is left for the review to name");
+        let dir = tempfile::tempdir().unwrap();
+        let problems = review_converted(&spelled, dir.path(), Engine::Pdflatex);
+        assert!(problems.iter().all(|p| !p.contains("U+2264") && !p.contains("U+2C7C")), "{problems:?}");
+    }
 
     #[test]
     fn what_pdflatex_cannot_set_is_named_with_its_line() {

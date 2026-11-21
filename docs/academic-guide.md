@@ -141,6 +141,19 @@ template again. A pdfLaTeX template given a Chinese or Japanese manuscript is ty
 and `xeCJK` instead, and a `ctex` or `xeCJK` template that names no Chinese font uses the Noto CJK
 faces, so the same document looks the same on every computer.
 
+A journal often hands out the last article it published as its template. The volume, issue, year,
+first page and DOI that template types (as `\documentclass` options such as `volume=2,
+firstpage=43`, or as `\doi{…}`, `\volume{…}` and the like) become the new project's metadata, and
+the metadata writes them back from then on: set this article's in the metadata form, or with
+`typeset --metadata`, and the typeset report names those still left from the template. The PDF's
+title, authors and keywords always come from the metadata, never from the template's own
+`\hypersetup`.
+
+A Word manuscript's Greek letters, Unicode subscripts and superscripts and math signs typed as plain
+text (`τⱼ`, `x₀`, `≤`) are written as the LaTeX commands that draw them when the template uses
+pdfLaTeX, whose fonts have no glyph for them. Web addresses typed as plain text may break after a
+slash or dot, so a reference list's long links stay inside the margin.
+
 ## Languages
 
 The interface is in English, Simplified Chinese, Traditional Chinese, Japanese, Korean and

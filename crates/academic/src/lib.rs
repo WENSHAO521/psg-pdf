@@ -21,6 +21,7 @@
 
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::unimplemented, clippy::todo, clippy::unreachable)]
 
+pub mod article_values;
 pub mod bib;
 
 /// Marks a sentence the apps show in the interface language (the hints under a diagnostic, the

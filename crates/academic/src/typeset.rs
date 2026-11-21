@@ -120,6 +120,25 @@ pub fn typeset(req: &Request, env: &TexEnvironment, tex: Option<&ManagedTex>, pa
             Err(e) => return report.fail("metadata", e, started),
         }
     }
+    // The template's own volume, issue, pages and DOI are the last article's: say which ones
+    // this article still has, unless a metadata file set them.
+    let main = project.dir.join(&project.file.main);
+    if let Ok(text) = std::fs::read_to_string(&main) {
+        let kept: Vec<String> = crate::article_values::find(&text)
+            .into_iter()
+            .filter(|f| !report.metadata_set.iter().any(|set| set == f.field.key()))
+            .filter_map(|f| {
+                let typed = text.get(f.from..f.to)?.trim();
+                Some(format!("{} {typed}", f.field.label()))
+            })
+            .collect();
+        if !kept.is_empty() {
+            report.import.push(format!(
+                "Still the template's own, from the article it was made from: {}. Set this article's in the metadata (volume, issue, year, pages, doi).",
+                kept.join(", ")
+            ));
+        }
+    }
     report.engine = project.file.engine.title().to_owned();
     if let Some(secs) = req.timeout_secs {
         project.file.settings.timeout_secs = secs;

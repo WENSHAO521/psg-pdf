@@ -418,9 +418,9 @@ fn skip_space(masked: &str, mut at: usize) -> usize {
 /// mandatory ones (each the range inside the braces).
 #[derive(Debug, Clone)]
 pub(crate) struct Call {
-    start: usize,
+    pub(crate) start: usize,
     pub(crate) end: usize,
-    optional: Vec<(usize, usize)>,
+    pub(crate) optional: Vec<(usize, usize)>,
     pub(crate) mandatory: Vec<(usize, usize)>,
 }
 
@@ -450,7 +450,7 @@ pub(crate) fn find_call(masked: &str, name: &str, from: usize, args: usize) -> O
 }
 
 /// Every call of `\name` in `from..to`.
-fn calls(masked: &str, name: &str, from: usize, to: usize, args: usize) -> Vec<Call> {
+pub(crate) fn calls(masked: &str, name: &str, from: usize, to: usize, args: usize) -> Vec<Call> {
     let mut out = Vec::new();
     let mut at = from;
     while let Some(call) = find_call(masked, name, at, args) {
@@ -531,6 +531,9 @@ const SETTERS: &[&str] = &[
 /// it themselves. Loading a package the template already loaded does nothing.
 const PANDOC_SUPPORT: &str = "\\RequirePackage{graphicx,longtable,booktabs,array,calc,amsmath,amssymb}\n\\providecommand{\\tightlist}{\\setlength{\\itemsep}{0pt}\\setlength{\\parskip}{0pt}}\n\\providecommand{\\passthrough}[1]{#1}\n\\providecommand{\\pandocbounded}[1]{\\resizebox{\\ifdim\\width>\\linewidth\\linewidth\\else\\width\\fi}{!}{#1}}\n\\AtBeginDocument{\\providecommand{\\hypertarget}[2]{#2}\\providecommand{\\href}[2]{#2}\\providecommand{\\url}[1]{\\texttt{#1}}}\n";
 
+/// The document information hyperref writes, from the metadata, once the preamble has run.
+const PDF_INFO: &str = "\\AtBeginDocument{\\@ifpackageloaded{hyperref}{\\hypersetup{pdftitle={\\psgmetaPdfTitle},pdfauthor={\\psgmetaPdfAuthor},pdfkeywords={\\psgmetaPdfKeywords}}}{}}\n";
+
 /// `\psgLanguage{zh-hant}` (and zh-hans, ja) for a template that isn't PSG's own.
 const LANGUAGE_NAMES: &str = "\\def\\psgmeta@names#1#2#3#4{\\AtBeginDocument{\\def\\abstractname{#1}\\def\\figurename{#2}\\def\\tablename{#3}\\def\\refname{#4}\\def\\bibname{#4}}\\def\\Authand{、}\\def\\Authands{、}}\n\\def\\psgmeta@zhhant{zh-hant}\\def\\psgmeta@zhhans{zh-hans}\\def\\psgmeta@ja{ja}\n\\def\\psgLanguage#1{\\def\\psgmetaLanguage{#1}\\edef\\psgmeta@lang{#1}%\n  \\ifx\\psgmeta@lang\\psgmeta@zhhant\\psgmeta@names{摘要}{圖}{表}{參考文獻}\\fi\n  \\ifx\\psgmeta@lang\\psgmeta@zhhans\\psgmeta@names{摘要}{图}{表}{参考文献}\\fi\n  \\ifx\\psgmeta@lang\\psgmeta@ja\\psgmeta@names{要旨}{図}{表}{参考文献}\\fi}\n";
 
@@ -591,6 +594,9 @@ fn metadata_block(authblk: bool, cjk_fonts: bool) -> String {
         );
     }
     out.push_str("\\input{psg-metadata}\n\\psgmeta@ifempty\\psgmetaShortTitle{\\let\\psgmetaShortTitle\\psgmetaTitle}{}\n");
+    // The PDF's title, authors and keywords are this article's: a template's own \hypersetup
+    // names the article it was made from, and runs earlier.
+    out.push_str(PDF_INFO);
     if authblk {
         // authblk's \author and \affil are called here, once the metadata is read.
         out.push_str("\\psgmetaAuthorCommands\n");
@@ -951,6 +957,19 @@ Sample text 50\% of the time.
 \bibliography{refs}
 \end{document}
 ";
+
+    #[test]
+    fn the_pdf_names_this_articles_authors_not_the_templates() {
+        let main = ARTICLE.replace("\\usepackage{amsmath}", "\\usepackage{hyperref}\n\\hypersetup{pdfauthor={Ann Author, Bob Writer}}");
+        let a = analyse(&main, "body").unwrap();
+        let input = a.main.find("\\input{psg-metadata}").unwrap();
+        let info = a.main.find("pdfauthor={\\psgmetaPdfAuthor}").unwrap();
+        assert!(info > input && info < a.main.find("\\begin{document}").unwrap(), "{}", a.main);
+        assert!(
+            a.main[info..].starts_with("pdfauthor={\\psgmetaPdfAuthor},pdfkeywords"),
+            "set after the template's own, at the start of the document"
+        );
+    }
 
     #[test]
     fn a_plain_article_template_is_understood() {

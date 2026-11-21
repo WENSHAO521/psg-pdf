@@ -87,6 +87,13 @@ impl Project {
         }
         template.materialize(dir)?;
         let m = &template.manifest;
+        // A journal's template types the last article's volume, issue, pages and DOI: they are
+        // where this article's metadata starts, and the metadata writes them from now on.
+        let mut metadata = metadata;
+        let main = dir.join(&m.main);
+        if let Ok(text) = std::fs::read_to_string(&main) {
+            crate::article_values::take(&text, &mut metadata);
+        }
         let project = Project {
             dir: dir.to_path_buf(),
             file: ProjectFile {
@@ -129,7 +136,14 @@ impl Project {
         if let Some(issue) = self.file.metadata.validate().into_iter().find(|i| i.blocking) {
             return Err(Error::Metadata(format!("{}: {}", issue.field, issue.message)));
         }
-        write_atomic(&self.dir.join(&self.file.metadata_file), self.file.metadata.to_latex().as_bytes())
+        write_atomic(&self.dir.join(&self.file.metadata_file), self.file.metadata.to_latex().as_bytes())?;
+        // The volume, issue, first page and DOI the template types itself take the metadata's.
+        let main = self.dir.join(&self.file.main);
+        let text = std::fs::read_to_string(&main).map_err(|e| Error::io(&main, e))?;
+        if let Some(patched) = crate::article_values::write(&text, &self.file.metadata) {
+            write_atomic(&main, patched.as_bytes())?;
+        }
+        Ok(())
     }
 
     /// Use the LaTeX manuscript at `source` as the article body. A complete document is cut down
