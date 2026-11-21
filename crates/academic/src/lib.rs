@@ -14,7 +14,8 @@
 //!   pdfLaTeX templates can't set (Chinese, Japanese, Korean, …) and says what to do.
 //! - [`project`] keeps it together in one directory; [`pandoc`] and [`docx`] import a Word
 //!   manuscript with its front matter, figures and tables.
-//! - [`template_import`] adds a journal's own template; [`typeset`] goes from a manuscript to a
+//! - [`template_import`] adds a journal's own template (LaTeX, or a SciFlow configuration that
+//!   [`sciflow`] converts); [`typeset`] goes from a manuscript to a
 //!   PDF in one step.
 //!
 //! This crate has no user interface; the app is `apps/psg-academic-pdf`.
@@ -42,6 +43,7 @@ pub mod paths;
 pub mod process;
 pub mod project;
 mod project_revision;
+pub mod sciflow;
 pub mod scripts;
 pub mod synctex;
 pub mod template;

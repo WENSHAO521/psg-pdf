@@ -1,0 +1,13 @@
+# PSG Academic PDF template manifest, written by the SciFlow converter (crate::sciflow) from
+# templates/academic/sciflow-source/generic-journal-toc. Don't edit it: change the converter and write it again.
+id = "sciflow-report"
+name = "SciFlow Report with Contents"
+description = "Converted from SciFlow's generic-journal-toc template: A4, single-sided, 11 pt sans-serif, apa citations, table of contents. XeLaTeX with Chinese and Japanese, BibLaTeX with Biber."
+version = "1.0.0"
+licence = "MIT OR Apache-2.0; SciFlow configuration MIT (SciFlow GmbH)"
+engine = "xelatex"
+bibliography = "biber"
+main = "main.tex"
+body = "body.tex"
+metadata = "psg-metadata.tex"
+files = ["main.tex", "psg-article.cls", "body.tex", "references.bib", "psg-metadata.tex"]

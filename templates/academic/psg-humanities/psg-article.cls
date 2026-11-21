@@ -3,16 +3,25 @@
 %% Typeset with XeLaTeX (Chinese and Japanese through xeCJK) or pdfLaTeX (Western text only);
 %% the bibliography uses BibLaTeX with the Biber backend.
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{psg-article}[2026/11/20 v1.3.0 PSG research article]
+\ProvidesClass{psg-article}[2026/11/21 v1.4.0 PSG research article]
 
 %% Options. `authoryear`: author-year citations (Humanities and Social Sciences template) instead
-%% of numbered ones.
+%% of numbered ones. `10pt` (the default), `11pt`, `12pt`: the text size. `oneside`: the same
+%% header on every page instead of facing pages. A main file may also define
+%% \psgbiblatexoptions before \documentclass (`style=apa`) to load BibLaTeX with another style,
+%% as the templates converted from SciFlow configurations do.
 \newif\ifpsg@authoryear
+\def\psg@size{10pt}
+\def\psg@sides{twoside}
 \DeclareOption{authoryear}{\psg@authoryeartrue}
+\DeclareOption{10pt}{\def\psg@size{10pt}}
+\DeclareOption{11pt}{\def\psg@size{11pt}}
+\DeclareOption{12pt}{\def\psg@size{12pt}}
+\DeclareOption{oneside}{\def\psg@sides{oneside}}
 \DeclareOption*{\ClassWarning{psg-article}{Unknown option `\CurrentOption' ignored}}
 \ProcessOptions\relax
 
-\LoadClass[10pt,a4paper,twoside]{article}
+\edef\psg@next{\noexpand\LoadClass[\psg@size,a4paper,\psg@sides]{article}}\psg@next
 
 %% Fonts. XeLaTeX: Latin Modern through fontspec, and for Chinese and Japanese the Noto CJK faces
 %% PSG Academic PDF installs (OFL-1.1), found by file name: Noto Serif TC for running text with
@@ -65,11 +74,13 @@
 
 %% Bibliography: BibLaTeX with Biber.
 \RequirePackage{csquotes}
-\ifpsg@authoryear
-  \RequirePackage[backend=biber,style=authoryear-comp,maxcitenames=2,maxbibnames=10,uniquelist=false,dashed=false]{biblatex}
-\else
-  \RequirePackage[backend=biber,style=numeric-comp,sorting=none,maxbibnames=10]{biblatex}
-\fi
+\@ifundefined{psgbiblatexoptions}{%
+  \ifpsg@authoryear
+    \RequirePackage[backend=biber,style=authoryear-comp,maxcitenames=2,maxbibnames=10,uniquelist=false,dashed=false]{biblatex}
+  \else
+    \RequirePackage[backend=biber,style=numeric-comp,sorting=none,maxbibnames=10]{biblatex}
+  \fi}{%
+  \edef\psg@next{\noexpand\RequirePackage[backend=biber,\psgbiblatexoptions]{biblatex}}\psg@next}
 
 \RequirePackage[hidelinks,unicode]{hyperref}
 

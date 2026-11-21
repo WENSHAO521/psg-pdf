@@ -24,6 +24,7 @@ crates/academic            (psg-academic, no UI, layer 4 in xtask/src/layers.rs)
   ├── diagnostics.rs       TeX .log and Biber .blg → errors/warnings with file and line
   ├── template.rs          template.toml manifests; built-in and on-disk templates
   ├── template_import.rs   a journal's own template (.zip or folder) made into a template
+  ├── sciflow.rs           a SciFlow template configuration (configuration.sfo.yml) made into one
   ├── metadata.rs          PublicationMetadata → psg-metadata.tex (every value escaped)
   ├── project.rs           project folder, manuscript/asset import, export
   ├── pandoc.rs            ManuscriptImporter trait; PandocImporter (DOCX through Pandoc's JSON)
@@ -163,6 +164,10 @@ Phase five (automatic typesetting):
   switched to XeLaTeX with xeCJK (`Project::adapt_engine_to_text`).
 - **A journal's own template** (`template_import.rs`): a `.zip` or folder; see
   [academic-guide.md](academic-guide.md#a-journals-own-template).
+- **SciFlow templates** (`sciflow.rs`): a SciFlow `configuration.sfo.yml` becomes a template on the
+  PSG class (page, margins, sides, text size and face, citation style, contents, theme colour);
+  three of SciFlow's generic templates are built in. See
+  [academic-guide.md](academic-guide.md#sciflow-templates).
 - **`typeset`**: manuscript, template and a metadata file to a PDF in one command, with `--json`.
 
 Not implemented yet:

@@ -135,12 +135,43 @@ const PSG_HUMANITIES: &[(&str, &str)] = &[
     ("psg-metadata.tex", include_str!("../../../templates/academic/psg-humanities/psg-metadata.tex")),
 ];
 
+/// Templates converted from SciFlow's generic templates (`crate::sciflow`); the SciFlow
+/// configurations they come from are in `templates/academic/sciflow-source/`.
+macro_rules! sciflow_builtin {
+    ($dir:literal) => {
+        &[
+            ("template.toml", include_str!(concat!("../../../templates/academic/", $dir, "/template.toml"))),
+            ("main.tex", include_str!(concat!("../../../templates/academic/", $dir, "/main.tex"))),
+            ("psg-article.cls", include_str!(concat!("../../../templates/academic/", $dir, "/psg-article.cls"))),
+            ("body.tex", include_str!(concat!("../../../templates/academic/", $dir, "/body.tex"))),
+            ("references.bib", include_str!(concat!("../../../templates/academic/", $dir, "/references.bib"))),
+            ("psg-metadata.tex", include_str!(concat!("../../../templates/academic/", $dir, "/psg-metadata.tex"))),
+        ]
+    };
+}
+const SCIFLOW_JOURNAL: &[(&str, &str)] = sciflow_builtin!("sciflow-journal");
+const SCIFLOW_REPORT: &[(&str, &str)] = sciflow_builtin!("sciflow-report");
+const SCIFLOW_MONOGRAPH: &[(&str, &str)] = sciflow_builtin!("sciflow-monograph");
+
+/// The built-in templates converted from SciFlow: (template id, SciFlow source folder, name).
+pub const SCIFLOW_BUILTINS: &[(&str, &str, &str)] = &[
+    ("sciflow-journal", "generic-journal", "SciFlow Journal Article"),
+    ("sciflow-report", "generic-journal-toc", "SciFlow Report with Contents"),
+    ("sciflow-monograph", "generic-monograph", "SciFlow Monograph"),
+];
+
+/// The PSG article's class, sample body and sample bibliography, which templates built on the
+/// PSG class (those converted from SciFlow) share.
+pub fn psg_article_support() -> impl Iterator<Item = (&'static str, &'static str)> {
+    PSG_ARTICLE.iter().copied().filter(|(n, _)| matches!(*n, "psg-article.cls" | "body.tex" | "references.bib"))
+}
+
 impl Template {
     /// The templates compiled into the program.
     pub fn builtin() -> Vec<Template> {
         let mut out = Vec::new();
         // One entry per built-in template; more are added here.
-        let builtins: &[&'static [(&'static str, &'static str)]] = &[PSG_ARTICLE, PSG_HUMANITIES];
+        let builtins: &[&'static [(&'static str, &'static str)]] = &[PSG_ARTICLE, PSG_HUMANITIES, SCIFLOW_JOURNAL, SCIFLOW_REPORT, SCIFLOW_MONOGRAPH];
         for &files in builtins {
             let manifest = files.iter().find(|(n, _)| *n == MANIFEST).map(|(_, t)| Manifest::parse(t));
             match manifest {
@@ -257,7 +288,7 @@ mod tests {
     fn the_builtin_templates_are_valid() {
         let t = Template::builtin();
         let ids: Vec<&str> = t.iter().map(|t| t.manifest.id.as_str()).collect();
-        assert_eq!(ids, ["psg-article", "psg-humanities"]);
+        assert_eq!(ids, ["psg-article", "psg-humanities", "sciflow-journal", "sciflow-report", "sciflow-monograph"]);
         assert!(t.iter().all(|t| t.manifest.uses_biber()));
     }
 
@@ -289,6 +320,33 @@ mod tests {
         }
     }
 
+    /// The built-in SciFlow templates are what the converter writes from their SciFlow sources.
+    /// After changing the converter or the PSG article's files, run this test with
+    /// `PSG_WRITE_SCIFLOW_TEMPLATES=1` to write them again.
+    #[test]
+    fn the_sciflow_templates_are_what_the_converter_writes() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../templates/academic");
+        let write = std::env::var_os("PSG_WRITE_SCIFLOW_TEMPLATES").is_some();
+        for (id, source, name) in SCIFLOW_BUILTINS {
+            let src = root.join("sciflow-source").join(source);
+            let config = std::fs::read_to_string(src.join(crate::sciflow::CONFIGURATION)).unwrap();
+            let schema = std::fs::read_to_string(src.join(crate::sciflow::DATA_SCHEMA)).ok();
+            let converted = crate::sciflow::convert(&config, schema.as_deref()).unwrap();
+            let mut files: Vec<(String, Vec<u8>)> = crate::template_import::sciflow_files(&converted.layout);
+            let manifest = crate::sciflow::builtin_manifest(id, name, source, &converted.layout);
+            files.push((MANIFEST.to_owned(), manifest.into_bytes()));
+            let dir = root.join(id);
+            for (file, bytes) in files {
+                if write {
+                    std::fs::create_dir_all(&dir).unwrap();
+                    std::fs::write(dir.join(&file), &bytes).unwrap();
+                } else {
+                    assert_eq!(std::fs::read(dir.join(&file)).unwrap(), bytes, "{id}/{file}: run this test with PSG_WRITE_SCIFLOW_TEMPLATES=1");
+                }
+            }
+        }
+    }
+
     #[test]
     fn manifests_with_unsafe_names_are_refused() {
         let base = "id = \"x\"\nname = \"X\"\nmain = \"main.tex\"\nbody = \"body.tex\"\nmetadata = \"m.tex\"\n";
@@ -314,7 +372,7 @@ mod tests {
         std::fs::write(bad.join(MANIFEST), "id = \"bad\"\n").unwrap();
         let (templates, problems) = discover(&[root.path().to_path_buf()]);
         let ids: Vec<&str> = templates.iter().map(|t| t.manifest.id.as_str()).collect();
-        assert_eq!(ids, vec!["psg-article", "psg-humanities", "good"]);
+        assert_eq!(ids, vec!["psg-article", "psg-humanities", "sciflow-journal", "sciflow-report", "sciflow-monograph", "good"]);
         assert_eq!(problems.len(), 1);
     }
 }

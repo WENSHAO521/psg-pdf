@@ -58,7 +58,7 @@ the window, the current draft stays open so the save can be retried.
 
 1. Choose a journal template in the **Template Library** (**PSG Research Article**, numbered
    citations, or **PSG Humanities and Social Sciences Article**, author-year citations and
-   footnotes), then **Import manuscript…** or **New project** on the Dashboard. Opening a `.tex`
+   footnotes, or one of the three converted from SciFlow, below), then **Import manuscript…** or **New project** on the Dashboard. Opening a `.tex`
    or `.docx` file with PSG Academic PDF (double-click, Open with, or a drop on the window) starts
    a new project around it from the selected template. This creates a project folder from the
    template, filled with sample metadata.
@@ -140,6 +140,27 @@ the list of things to check), since TeX can't be relied on to read them: rename 
 template again. A pdfLaTeX template given a Chinese or Japanese manuscript is typeset with XeLaTeX
 and `xeCJK` instead, and a `ctex` or `xeCJK` template that names no Chinese font uses the Noto CJK
 faces, so the same document looks the same on every computer.
+
+## SciFlow templates
+
+SciFlow, an open-source (MIT) publishing platform, describes a journal's PDF in a template
+configuration, `configuration.sfo.yml`, instead of LaTeX. PSG Academic PDF reads one and writes a
+template on the PSG class from it, so Word manuscripts are typeset with it in one step like any
+other template: the page size and margins, single- or double-sided pages, the text size, a
+sans-serif or serif face, widows and orphans, the citation style (its Zotero/CSL id mapped to the
+closest BibLaTeX style: `apa`, `ieee`, `chicago-note-bibliography`, `modern-language-association`,
+`vancouver`, `american-chemical-society`, `nature`; others to numbered or author-year citations),
+the table of contents, the journal name and article type, and the theme colour from
+`metaData.schema.yml`. SciFlow's HTML, EPUB and reader settings, Handlebars headers and footers,
+custom CSS and logos are left out, and each one left out is listed after adding the template.
+
+Three of SciFlow's generic templates come built in: **SciFlow Journal Article** (A4, single-sided,
+11 pt sans-serif, APA), **SciFlow Report with Contents** (the same, with a two-level table of
+contents) and **SciFlow Monograph** (17 × 24 cm, double-sided, contents on its own page). To add
+another, use **Add a template (.zip)…** or **Add a template folder…** (or `add-template`) on a
+SciFlow template folder: when it has no LaTeX main file but has a `configuration.sfo.yml`, the
+configuration is converted. The citation style can be changed afterwards in the template's
+`main.tex` (`\psgbiblatexoptions`).
 
 ## Languages
 

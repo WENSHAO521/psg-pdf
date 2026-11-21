@@ -1,0 +1,684 @@
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/configuration/configuration.schema.json
+kind: Configuration
+ui:
+  showTo: []
+spec:
+  slug: generic-monograph
+  title: "Monograph template"
+  publisher: Unicorn University
+  type: thesis
+  hidden: false
+  description: "Template for Monographs"
+  language: de-DE
+  languageAlternatives:
+    - en-US
+
+  citationStyle:
+    id: apa
+  citationStyleAlternative: []
+
+  labels:
+    - html
+    - epub
+    - princexml
+    - reader
+    - bitsxml
+
+  assets:
+    # - id: coverpage
+    #   type: hbs
+    #   path: ./assets/coverpage.hbs
+    #   inline: true
+    - id: logo
+      type: logo
+      path: tpl/generic-monograph/assets/logo.jpeg
+      dimensions:
+        width: 372px
+        height: 200px
+    - id: headers-and-footers
+      type: hbs
+      path: ./assets/headers-and-footers.hbs
+      inline: true
+    - id: headers-and-footers-html
+      type: hbs
+      path: ./assets/headers-and-footers-html.hbs
+      inline: true
+    - id: front-headers-and-footers
+      type: hbs
+      path: ./assets/front-headers-and-footers.hbs
+      inline: true
+  variantGroups:
+    - name: page-sizes
+      title: Page Sizes
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/page/page.schema.json
+# Set up the page for the PDF output only
+kind: Page
+ui:
+  showTo:
+     - editor
+runners:
+  - princexml
+spec:
+  placements:
+    - cover
+    - front
+    - body
+    - back
+  page:
+    pdfLayout: two-page-right
+    bodyPadding: 0mm
+    pageBreaks:
+      beforeChapter: recto
+    font:
+      family: Noto Sans, Noto SansMath, Noto Color Emoji, sans-serif
+      size: 11pt
+    size: 17cm 24cm
+    margins:
+      inner: 25mm
+      outer: 20mm
+      top: 17mm
+      bottom: 20mm
+    handling: double-sided
+  typesetting:
+    widows: 2
+    orphans: 3
+    indent: 0mm
+    lineHeight: 1.2
+    paragraphSpacing: 6pt
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/typography/typography.schema.json
+kind: Typography
+ui:
+  showTo:
+    - editor
+spec:
+  front:
+    margin: 1rem
+    h1:
+      fontSize: 1.2rem
+  h1:
+    fontSize: 1.5rem
+    numbering:
+      suffix: "."
+  h2:
+    fontSize: 1.25rem
+  h3:
+    fontSize: 1rem
+  h4:
+    fontSize: 1rem
+  h5:
+    fontSize: 1rem
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/google-font/google-font.schema.json
+kind: GoogleFont
+ui:
+  showTo:
+    - editor
+spec:
+  api:
+    url: >-
+      https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Noto+Sans+Arabic:wght@300;400;700&family=Noto+Sans+Math&family=Noto+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Noto+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/html-page/html-page.schema.json
+# Set up the HTML page for the HTML output
+kind: HtmlPage
+ui:
+  showTo:
+    - editor
+runners:
+  - html
+spec:
+  page:
+    hyphens: manual
+    font:
+      family: Noto Sans, Noto SansMath, Noto Color Emoji, sans-serif
+      size: 10pt
+      lineHeight: 14pt
+  indent: 0mm
+  paragraphSpacing: 2mm
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/headers-and-footers/headers-and-footers.schema.json
+# Set up the headers and footers for the HTML output (positioned in the beginning of configurations to appear first)
+kind: HeadersAndFooters
+ui:
+  showTo: []
+runners:
+  - html
+page: cover
+spec:
+  template:
+    fileId: headers-and-footers-html
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/monograph-title/monograph-title.schema.json
+kind: MonographTitle
+ui:
+  showTo: []
+page: cover
+runners:
+  - princexml
+spec:
+  typography:
+    paragraph:
+      fontSize: 12pt
+      fontFamily: Noto Serif, serif
+      fontWeight: lighter
+    h1:
+      fontSize: 24pt
+      fontWeight: bold
+      fontFamily: Noto Serif, serif
+    h2:
+      fontSize: 16pt
+      fontWeight: normal
+      fontFamily: Noto Serif, serif
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/headers-and-footers/headers-and-footers.schema.json
+# Set up the headers and footers for the PDF output
+kind: HeadersAndFooters
+ui:
+  showTo: []
+metadata:
+  name: for-front
+runners:
+  - princexml
+page: front
+spec:
+  pageCounter:
+    style: lower-roman
+    reset: after
+  typography:
+    firstPage:
+      header:
+        height: 25mm
+    header:
+      fontSize: 9pt
+      height: 25mm
+    footer:
+      fontSize: 9pt
+      height: 20mm
+  template:
+    fileId: headers-and-footers
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/headers-and-footers/headers-and-footers.schema.json
+# Set up the headers and footers for the PDF output
+kind: HeadersAndFooters
+ui:
+  showTo: []
+metadata:
+  name: for-body
+runners:
+  - princexml
+page: body
+spec:
+  pageCounter:
+    style: decimal
+    reset: before
+  formatting:
+    authorNames:
+      preset: authorsEtAlLastNameCaps
+  typography:
+    firstPage:
+      header:
+        height: 25mm
+    header:
+      fontSize: 9pt
+      height: 25mm
+    footer:
+      fontSize: 9pt
+      height: 20mm
+  template:
+    fileId: headers-and-footers
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/headers-and-footers/headers-and-footers.schema.json
+# Set up the headers and footers for the PDF output
+kind: HeadersAndFooters
+ui:
+  showTo: []
+metadata:
+  name: for-back
+runners:
+  - princexml
+page: back
+spec:
+  pageCounter:
+    style: decimal
+  typography:
+    firstPage:
+      header:
+        height: 25mm
+    header:
+      fontSize: 9pt
+      height: 25mm
+    footer:
+      fontSize: 9pt
+      height: 20mm
+  template:
+    fileId: headers-and-footers
+---
+kind: ContentHole
+# the content hole moves all chapters created in the document to this position (so the toc is after them)
+ui:
+  showTo: []
+metadata:
+  name: content-hole-for-front
+page: front
+spec: {}
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/table-of-contents/table-of-contents.schema.json
+kind: TableOfContents
+spec:
+  depth: 5
+  breaks:
+    keepLastLeafItemsTogether: 1
+translations:
+  de-DE:
+    label: Inhaltsverzeichnis
+  en-US:
+    label: Table of Contents
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/listings/listings.schema.json
+kind: Listings
+runners:
+  - princexml
+  - html
+  - epub
+spec:
+  individualPage: each-listing-recto
+  environments:
+    image:
+      threshold: 2
+      toc: true
+    table:
+      threshold: 2
+      toc: true
+translations:
+  de-DE:
+    title: Verzeichnisse
+    environments:
+      image:
+        listingLabel: Abbildungsverzeichnis
+      table:
+        listingLabel: Tabellenverzeichnis
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/content/content.schema.json
+# Set up the content of the publication when creating a new document
+kind: Content
+ui:
+  showTo: []
+spec:
+  parts:
+    - role: coverpage
+      type: free
+      placement: cover
+      schema: free
+      locale: de-DE
+      label: Fakultätstitelblatt Seite 1
+      numbering: none
+      document:
+        type: json
+        content: > 
+          {"type":"doc","content":[{"type":"placeHolder","attrs":{"id":"vgg931sgisrv","type":"spacer","label":"Logo"}},{"type":"paragraph","attrs":{"id":"battm5w30w65","text-align":"center","class":"h1"}},{"type":"paragraph","attrs":{"id":"zr6vem4czxra","text-align":"center","class":"h1"},"content":[{"type":"text","marks":[{"type":"strong"}],"text":"Titel der vorliegenden"}]},{"type":"paragraph","attrs":{"id":"zewfgv9dm6di","text-align":"center","class":"h1"},"content":[{"type":"text","marks":[{"type":"strong"}],"text":"Veröffentlichung"}]},{"type":"paragraph","attrs":{"id":"lvsu5mzlj7xd"}},{"type":"placeHolder","attrs":{"id":"lbuxox0ff02u","type":"spacer","label":"Logo"}},{"type":"paragraph","attrs":{"id":"p2gmxg0rv6wb"}},{"type":"paragraph","attrs":{"id":"kvsee45dwjh8"}},{"type":"paragraph","attrs":{"id":"wcnn23qdg2pb"}},{"type":"paragraph","attrs":{"id":"s25d62crkh4z","text-align":"center"},"content":[{"type":"text","text":"Fachbereich Theologie"}]},{"type":"paragraph","attrs":{"id":"uklayuu6crye","text-align":"center"},"content":[{"type":"text","text":"der Unicorn University"}]},{"type":"paragraph","attrs":{"id":"xuh5kgtwjggg"}},{"type":"placeHolder","attrs":{"id":"p23jzzc850es","type":"spacer","label":"Logo"}},{"type":"paragraph","attrs":{"id":"s2tx94xfh8p4"}},{"type":"paragraph","attrs":{"id":"lbqxzv2w65ap"}},{"type":"paragraph","attrs":{"id":"euekg34u9elq","text-align":"center"},"content":[{"type":"text","text":"zur Erlangung des Doktorgrades Dr. phil."}]},{"type":"paragraph","attrs":{"id":"vx9sl18mn66p"}},{"type":"placeHolder","attrs":{"id":"mdtjzmyfzxs8","type":"spacer","label":"Logo"}},{"type":"paragraph","attrs":{"id":"zo1ls0m67est"}},{"type":"paragraph","attrs":{"id":"v9ct0jrlb20u","text-align":"center"},"content":[{"type":"text","text":"vorgelegt von"}]},{"type":"paragraph","attrs":{"id":"u20ck2a7qyfm"}},{"type":"placeHolder","attrs":{"id":"q8dov0f98yh2","type":"spacer","label":"Logo"}},{"type":"paragraph","attrs":{"id":"deh5jzgb1gk"}},{"type":"paragraph","attrs":{"id":"jbc3r049dyud","text-align":"center"},"content":[{"type":"text","marks":[{"type":"strong"}],"text":"Name der Autor*in"}]},{"type":"paragraph","attrs":{"id":"ekzstr2x0k1f","text-align":"center"},"content":[{"type":"text","text":"aus Herkunftsstad"}]},{"type":"placeHolder","attrs":{"id":"ch2l3gnyfvnj","type":"spacer","label":"Logo"}},{"type":"paragraph","attrs":{"id":"bsaly908vlo"}}]}
+
+    - role: coverpage
+      type: free
+      placement: cover
+      schema: free
+      locale: de-DE
+      label: Fakultätstitelblatt Seite 2
+      numbering: none
+      pageBreak: []
+      document:
+        type: json
+        content: > 
+          {"type":"doc","content":[{"type":"placeHolder","attrs":{"id":"uiyp7xgqeue","type":"spacer","label":"Logo"}},{"type":"paragraph","attrs":{"id":"qdjrkpzeko2d"}},{"type":"paragraph","attrs":{"id":"n9cyz101d2wc","text-align":"left"},"content":[{"type":"text","text":"Als Dissertation genehmigt von der Fakultät für Ingenieurwissenschaften der Unicorn University."}]},{"type":"placeHolder","attrs":{"id":"ah8nmcqq7ojl","type":"spacer","label":"Logo"}},{"type":"paragraph","attrs":{"id":"qxvtysi69ms"}},{"type":"figure","attrs":{"id":"gtcds6ox9wm","src":null,"alt":null,"type":"table","orientation":"portrait","scale-width":1},"content":[{"type":"table","attrs":{"id":"tyvsr8hplsg"},"content":[{"type":"table_row","attrs":{"breakAfter":null,"id":"dg11q7xsu2pb"},"content":[{"type":"table_cell","attrs":{"colspan":1,"rowspan":1,"colwidth":[378],"background":null},"content":[{"type":"paragraph","attrs":{"id":"hdryw1maanna"},"content":[{"type":"text","text":"Tag der mündlichen Prüfung:"}]}]},{"type":"table_cell","attrs":{"colspan":1,"rowspan":1,"colwidth":[515],"background":null},"content":[{"type":"paragraph","attrs":{"id":"m0qc5pznayex"},"content":[{"type":"text","text":"DD.MM.YYYY"}]}]}]},{"type":"table_row","attrs":{"breakAfter":null,"id":"jlkm4sr1e8pp"},"content":[{"type":"table_cell","attrs":{"colspan":1,"rowspan":1,"colwidth":[378],"background":null},"content":[{"type":"paragraph","attrs":{"id":"o392hqw1g4e"},"content":[{"type":"text","text":"Gutachter:"}]}]},{"type":"table_cell","attrs":{"colspan":1,"rowspan":1,"colwidth":[515],"background":null},"content":[{"type":"paragraph","attrs":{"id":"iqp9yx5cbitp"},"content":[{"type":"text","text":"Prof. Dr. Vorname Nachname"}]},{"type":"paragraph","attrs":{"id":"uwtises515sa"},"content":[{"type":"text","text":"Dr. Vorname Nachname"}]}]}]}]},{"type":"caption","content":[{"type":"paragraph","attrs":{"id":"zjzj5owyo9kg"}}]}]},{"type":"placeHolder","attrs":{"id":"qbqfn0siw8us","type":"spacer","label":"Logo"}},{"type":"paragraph","attrs":{"id":"zxj42d0q07u"}},{"type":"placeHolder","attrs":{"id":"gf29khztu29p","type":"spacer","label":"Logo"}},{"type":"paragraph","attrs":{"id":"ibdb7xp3awg7"}}]}
+
+    - role: preface
+      type: chapter
+      placement: front
+      locale: de-DE
+      numbering: none
+      skipToc: true
+      document:
+        type: pandoc-markdown
+        content: > 
+          # Widmung
+
+          (sofern benötigt)
+
+    - role: preface
+      type: chapter
+      placement: front
+      locale: de-DE
+      numbering: none
+      skipToc: true
+      document:
+        type: pandoc-markdown
+        content: > 
+          # Vorwort
+
+          ..
+
+    - type: chapter
+      placement: front
+      locale: de-DE
+      numbering: none
+      skipToc: true
+      document:
+        type: pandoc-markdown
+        content: > 
+          # Abkürzungsverzeichnis / Symbolverzeichnis
+
+          Platz für manuelle Verzeichnisse wie z.B. Abkürzungsverzeichnisse, Symbolverzeichnisse o.ä. Das Inhaltsverzeichnis, Bild- und Tabellenverzeichnis werden automatisch beim Export erstellt.
+
+
+    - type: chapter
+      placement: body
+      numbering: decimal
+      document:
+        type: pandoc-markdown
+        content: >
+          # Kapitel
+
+          Die benötigten Kapitel können hier eingefügt werden durch Klick auf das Plus-Zeichen unter dem Kapitel.          
+
+    - type: bibliography
+      placement: body
+      numbering: none
+      document:
+        type: pandoc-markdown
+        content: >
+          # Literaturverzeichnis
+
+    - type: appendix
+      placement: back
+      numbering: none
+      document:
+        type: pandoc-markdown
+        content: >
+          # Anhang 
+
+          (sofern benötigt)
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/page-offset/page-offset.schema.json
+kind: PageOffset
+metadata:
+  name: for-front
+page: front
+runners:
+  - princexml
+spec:
+  offset: 1
+  offsetKey: book-meta.fpage
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/environment/environment.schema.json
+# Set up the environment for the PDF and HTML output
+kind: Environment
+ui:
+  showTo:
+    - editor
+spec:
+  environments:
+    image:
+      labelSuffix: ":"
+      align:
+        content: center
+        caption: justify
+      floats:
+        placement: top
+        deferPage: none
+        modifier: unless-fit
+    table:
+      labelSuffix: ":"
+      theme: table2
+      lineHeight: 1.2
+      fontSize: 11pt
+      align:
+        content: center
+        caption: justify
+      captionSide: above
+      floats:
+        # optimize for white space
+        placement: snap
+        modifier: unless-fit # do not snap if it fits into the normal page flow
+    equation:
+      margin: 1rem 0 1rem 5mm
+      align:
+        content: start
+  allowCustomLabels: true
+  typography:
+    label:
+      fontWeight: normal
+      marginRight: 0.125rem
+    caption:
+      marginY: 0.5rem
+      fontSize: 9pt
+  renderCaptionsInline: true
+translations:
+  de-DE:
+    environments:
+      image:
+        label: Bild
+        referenceLabel: Bild
+      table:
+        label: Tabelle
+        referenceLabel: Tabelle
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/footnote/footnote.schema.json
+# Set up the footnotes for the HTML output
+kind: Footnote
+ui:
+  showTo: []
+runners:
+  - html
+spec: 
+  mode: endnote
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/footnote/footnote.schema.json
+# Set up the footnotes for the PDF output
+kind: Footnote
+ui:
+  showTo:
+    - editor
+runners:
+  - princexml
+spec: 
+  footnote:
+    margin: "0"
+  policy: keep-with-line
+  fontSize: 9pt
+  textAlign: justify
+  lineHeight: 1.2
+  breakInside: auto
+  marker:
+    align: super
+    suffix: " "
+    fontSize: 7pt
+    spaceAfter: 0rem
+  separatorStyle: clipped-line
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/variant/variant.schema.json
+kind: Variant
+ui:
+  showTo: []
+metadata:
+    title: A5
+    description: |-
+      Sets the export up for A5
+    group: page-sizes
+spec:
+  patches:
+    - type: default
+      patch:
+        - op: replace
+          path: /properties/page/properties/size/default
+          value: A5
+        - op: replace
+          path: /properties/page/properties/font/properties/size/default
+          value: 10pt
+        - op: replace
+          path: /properties/page/properties/margins/properties/inner/default
+          value: 23mm
+        - op: replace
+          path: /properties/page/properties/margins/properties/outer/default
+          value: 18mm
+      target:
+        kind: Page
+    - type: default
+      target:
+        kind: Typography
+      patch:
+        - op: replace
+          path: /properties/blockquote/properties/fontSize/default
+          value: 9pt
+        - op: replace
+          path: /properties/h5/properties/fontSize/default
+          value: 10pt
+    - type: default
+      target:
+        kind: HeadersAndFooters
+        metadata:
+          name: for-front
+      patch: 
+      - op: replace
+        path: /properties/typography/properties/header/properties/height/default
+        value: 23mm
+    - type: default
+      target:
+        kind: HeadersAndFooters
+        metadata:
+          name: for-body
+      patch:
+      - op: replace
+        path: /properties/typography/properties/header/properties/height/default
+        value: 23mm
+    - type: default
+      target:
+        kind: HeadersAndFooters
+        metadata:
+          name: for-back
+      patch:
+      - op: replace
+        path: /properties/typography/properties/header/properties/height/default
+        value: 23mm
+    - type: default
+      target:
+        kind: Environment
+      patch:
+      - op: replace
+        path: /properties/environments/properties/table/properties/fontSize/default
+        value: 10pt
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/settings/settings.schema.json
+# Define the settings exposed in the UI
+kind: Settings
+ui:
+  showTo: []
+spec:
+  quickSettings:
+    components:
+      - component:
+          name: Environment
+          options:
+            - path: environments.image.label
+              description: Label (e.g. Bild, Figure, Abbildung)
+            - path: environments.image.referenceLabel
+              description: Label to be used in cross references (e.g. see fig. 1, see abb. 1, )
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/epub-page/epub-page.schema.json
+kind: EpubPage
+ui:
+  showTo:
+    - editor
+runners:
+  - epub
+spec:
+  toc:
+    depth: 5
+  page:
+    font:
+      family: Noto Sans, Noto SansMath, Noto Color Emoji, sans-serif
+      size: 11pt
+      lineHeight: 1.4
+  transformImages:
+    format: JPEG
+    quality: 80
+    dpi: 72
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/reader/reader.schema.json
+kind: Reader
+ui:
+  showTo:
+    - editor
+spec:
+  display:
+    showToc: false
+    showDca: false
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/book-meta/book-meta.schema.json
+kind: BookMeta
+ui:
+  showTo:
+    - editor
+spec: {}
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/static/static.schema.json
+kind: Static
+ui:
+  showTo: []
+runners:
+  - reader
+metadata:
+  name: reader-copyright-dca
+  reader:
+    position: dca
+spec:
+  dom: >
+    <section class='col-12' role='region' aria-roledescription='Copyright and permissions'>
+      <h1 class='h2 m0' id='copyright-title'>Copyright and permissions</h1>
+      <p class="mt0">
+        Copyright ©
+        <span>
+          {{#if (getMetaData 'PermissionsMeta.copyrightYear')}}
+            <span aria-label='Copyright Year'>
+              {{getMetaData 'PermissionsMeta.copyrightYear'}}
+            </span>
+          {{/if}}
+          {{#if (getMetaData 'PermissionsMeta.copyrightHolder')}}
+            <span aria-label='Copyright Holder'>
+              {{getMetaData 'PermissionsMeta.copyrightHolder'}}.
+            </span>
+          {{/if}}
+          {{#if (getMetaData 'PermissionsMeta.copyrightStatement')}}
+            <span aria-label='Copyright Statement'>
+              {{getMetaData 'PermissionsMeta.copyrightStatement'}}
+            </span>
+          {{/if}}
+        </span>
+      </p>
+
+      <p>
+        {{#if (getMetaData 'PermissionsMeta.licenseP')}}
+          <span aria-label='License information'>
+            {{getMetaData 'PermissionsMeta.licenseP'}}
+          </span>
+        {{/if}}
+
+        {{#if (getMetaData 'PermissionsMeta.licenseType')}}
+          License type:
+          <strong aria-label='License Type'>{{getMetaData 'PermissionsMeta.licenseType'}}</strong>
+        {{/if}}
+      </p>
+
+      {{#if (getMetaData 'PermissionsMeta.licenseLink')}}
+        <p>
+          <a
+            href='{{getMetaData "PermissionsMeta.licenseLink"}}'
+            target='_blank'
+            rel='noopener'
+            aria-label='View full license'
+          >
+            View License
+          </a>
+        </p>
+      {{/if}}
+    </section>

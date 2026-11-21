@@ -1,0 +1,27 @@
+% Main file of the "Report" template, converted by PSG Academic PDF from a SciFlow
+% template configuration (configuration.sfo.yml). PSG Academic PDF regenerates psg-metadata.tex
+% from the publication metadata and replaces body.tex with the imported manuscript.
+% Citation style: style=apa (SciFlow/CSL id "apa").
+\def\psgbiblatexoptions{style=apa}
+\documentclass[11pt,oneside]{psg-article}
+\geometry{a4paper,inner=25mm,outer=18mm,top=25mm,bottom=25mm,twoside=false}
+% The running headers are as wide as the new text block.
+\setlength\headwidth{\textwidth}
+% A sans-serif text face; Chinese and Japanese follow with Noto Sans CJK.
+\renewcommand\familydefault{\sfdefault}
+\widowpenalty=10000
+\clubpenalty=10000
+\definecolor{psgaccent}{HTML}{000000}
+\setcounter{tocdepth}{2}
+\AtBeginDocument{\renewcommand*\contentsname{Agenda}}
+\input{psg-metadata}
+\addbibresource{references.bib}
+
+\begin{document}
+\psgmaketitle
+\tableofcontents
+\bigskip
+\input{body}
+
+\printbibliography
+\end{document}

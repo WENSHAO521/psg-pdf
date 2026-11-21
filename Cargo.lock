@@ -255,6 +255,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "arraydeque"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7d902e3d592a523def97af8f317b08ce16b7ab854c1985a0c671e6f15cebc236"
+
+[[package]]
 name = "arrayref"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2711,6 +2717,15 @@ dependencies = [
  "allocator-api2",
  "equivalent",
  "foldhash 0.2.0",
+]
+
+[[package]]
+name = "hashlink"
+version = "0.12.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a596f1b20ed2cc5ecac41a164aaebc7258057060f06c0cf7a2ba3991ee7990fb"
+dependencies = [
+ "hashbrown 0.17.1",
 ]
 
 [[package]]
@@ -5286,6 +5301,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "toml",
+ "yaml-rust2",
  "zip",
 ]
 
@@ -8109,6 +8125,16 @@ dependencies = [
  "serde_json",
  "sha2 0.11.1",
  "toml",
+]
+
+[[package]]
+name = "yaml-rust2"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "51116dbba776d98164abefb78751ac42ef64549b3865869be4bc9f020c8e3291"
+dependencies = [
+ "arraydeque",
+ "hashlink",
 ]
 
 [[package]]

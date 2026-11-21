@@ -107,7 +107,8 @@ Commands:
   add-template <file.zip|folder> [--name <name>]
                                  add a journal's own LaTeX template: finds its main file,
                                  the article's text and where the title, authors, abstract
-                                 and keywords go, and says what it found
+                                 and keywords go, and says what it found; a SciFlow
+                                 template (configuration.sfo.yml) is converted to one
   typeset <manuscript.docx|.tex> --out <file.pdf> [--template <id>] [--metadata <file>]
           [--project <dir>] [--timeout <seconds>] [--json]
                                  one step from a manuscript to a PDF: a new project from the

@@ -1,0 +1,7 @@
+title: "Monograph Settings"
+description: This data is needed for a final publication
+type: object
+# this file could contain schemas that are needed for this specific template and are not met by the meta data provided by BookMeta (which comes with a standardized schema)
+properties:
+    comment:
+        type: string

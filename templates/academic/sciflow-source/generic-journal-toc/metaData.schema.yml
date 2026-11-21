@@ -1,0 +1,11 @@
+type: object
+title: Custom data
+description: Data that is just needed for the generic journal example
+_ui_icon: dataset
+_readme: Templates can take on custom data that may be unique to the targeted publication. All other data like DOI, copyrights and others should remain in the standard meta data settings so they can automatically be used in meta data.
+properties:
+    themeColor:
+        type: string
+        title: Theme color
+        description: The main color used in the template (must be a hex value)
+        default: "#000000"

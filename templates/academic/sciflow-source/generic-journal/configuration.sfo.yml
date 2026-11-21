@@ -1,0 +1,501 @@
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/configuration/configuration.schema.json
+kind: Configuration
+spec:
+  title: Journal Article
+  description: >-
+    A generic journal template
+  type: journal
+  readme: >
+    # About
+
+    This template will provide a basic one column PDF export with a choice of
+    citation styles.
+
+  # @see https://docs.sciflow.org/template/configuration for more documentation on the configuration
+
+  # any Zotero style is supported, you can pick one from here https://www.zotero.org/styles
+  citationStyle:
+    # this will be pre-selected if none is needed
+    id: apa
+  citationStyleAlternative:
+    # this will be selectable after the default
+    - id: american-medical-association
+    - id: american-chemical-society
+    - id: chicago-note-bibliography-16th-edition
+    - id: elsevier-harvard
+    - id: ieee
+    - id: vancouver
+    - id: modern-language-association
+
+  # the labels will determine what export options are available
+  labels:
+    - princexml
+    - jatsxml
+    - reader
+    - html
+    - epub
+    - pagedjs
+    - ojsxml
+    #- bitsxml
+
+  assets:
+    - id: logo
+      type: logo
+      # this can be picked up in the headers and footers using the image helper
+      # the path starts with tpl/ which let's the template serve the logo during export
+      path: tpl/generic-journal/assets/unicorn-journal-logo-wide.jpg
+      dimensions:
+        # we use the actual dimensions here and then scale down in the handlebars templates
+        width: 1173px
+        height: 586px
+    # all hbs files used in the template need to be listed here
+    - id: headers-and-footers
+      type: hbs
+      path: ./assets/headers-and-footers.hbs
+      inline: true
+    - id: headers-and-footers-pagedjs
+      type: hbs
+      path: ./assets/headers-and-footers-pagedjs.hbs
+      inline: true
+    - id: asset-styles
+      type: asset
+      path: ./styles.scss
+      inline: true
+# determines to whom this will be shown in the UI: [] means do not show it and a developer should change the yaml
+ui:
+  showTo: []
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/page/page.schema.json
+kind: Page
+runners:
+  - princexml
+  - pagedjs
+metadata:
+  name: PDF-Page
+  title: PDF appearance
+# determines to whom this will be shown in the UI: [] means do not show it
+ui:
+  showTo:
+    - author
+    - editor
+spec:
+  page:
+    font:
+      # all fonts used must be configured in Kind:Fonts or Kind:GoogleFonts
+      family: Noto Sans, Noto SansMath, Noto Color Emoji, sans-serif
+      size: 11pt
+    size: A4
+    margins:
+      inner: 25mm
+      outer: 18mm
+    handling: single-sided
+  typesetting:
+    widows: 2
+    orphans: 3
+  customStyles: []
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/html-page/html-page.schema.json
+kind: HtmlPage
+runners:
+  - html
+ui:
+  showTo:
+    - editor
+spec:
+  page:
+    font:
+      # all fonts used must be configured in Kind:Fonts or Kind:GoogleFonts
+      family: Noto Sans, Noto SansMath, Noto Color Emoji, sans-serif
+      size: 10pt
+      lineHeight: 14pt
+  indent: 0mm
+  paragraphSpacing: 2mm
+  customStyles:
+    - css: |
+        section[data-level="1"] { margin-bottom: 1rem; }
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/epub-page/epub-page.schema.json
+kind: EpubPage
+ui:
+  showTo:
+    - editor
+runners:
+  - epub
+spec:
+  page:
+    font:
+      family: Noto Sans, Noto SansMath, Noto Color Emoji, sans-serif
+      size: 11pt
+      lineHeight: 1.4
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/headers-and-footers/headers-and-footers.schema.json
+kind: HeadersAndFooters
+page: cover
+runners:
+  - princexml
+ui:
+  showTo: []
+spec:
+  template:
+    fileId: headers-and-footers
+  overridePlacement: all
+  formatting:
+    authorNames:
+      preset: authorsEtAlCaps
+  typography:
+    firstPage:
+      header:
+        # we want to make more room for meta data and the logo on the first page
+        height: 32mm
+    header:
+      fontSize: 0.83rem
+    footer:
+      fontSize: 0.83rem
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/headers-and-footers/headers-and-footers.schema.json
+kind: HeadersAndFooters
+page: cover
+ui:
+  showTo: []
+runners:
+  # custom implementation just for pagedjs since it does not have all the features princexml has
+  - pagedjs
+spec:
+  template:
+    fileId: headers-and-footers-pagedjs
+  overridePlacement: all
+  typography:
+    header:
+      fontSize: 0.83rem
+    footer:
+      fontSize: 0.83rem
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/journal-title/journal-title.schema.json
+kind: JournalTitle
+runners:
+  - princexml
+  - pagedjs
+  - html
+ui:
+  showTo:
+    - editor
+page: cover
+metadata:
+  title: Title section
+spec:
+  singleAffiliationIndex: true
+  typography:
+    title:
+      fontSize: 2.25rem
+      lineHeight: 1.1
+    authors:
+      fontSize: 1.45rem
+  formatting:
+    authorNames:
+      preset: authorsEtAlCaps
+---
+# yaml-language-server: $schema=https://transform.development.svc.sciflow.net/template/configuration/TableOfContents.json
+kind: TableOfContents
+page: cover
+runners:
+  - princexml
+spec:
+  h1:
+    fontWeight: normal
+  depth: 4
+translations:
+  en-US:
+    label: Table of contents
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/footnote/footnote.schema.json
+kind: Footnote
+ui:
+  showTo:
+    - editor
+runners:
+  - princexml
+  - pagedjs
+spec:
+  style: inside
+  fontSize: 8pt
+  footnote:
+    margin: '0 0 0.125rem 0'
+  margin:
+    top: '0.1rem'
+  separatorStyle: line
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/typography/typography.schema.json
+kind: Typography
+ui:
+  showTo:
+    - editor
+spec:
+  defaultNumberingStyle: none
+  front:
+    margin: 1rem
+    h1:
+      inline: true
+      marginBottom: 0pt
+      fontSize: 1rem
+  h1:
+    # we use rem values instead of pt to keep the typography relative to the export format (kind: Page for PDF, kind:Epub/HtmlPage etc) which specify the base font size in pt
+    fontSize: 1.5rem # means at 12pt base font size 12pt * 1.5rem = 18pt
+    numbering:
+      suffix: '.'
+  h2:
+    fontSize: 1.25rem
+  h3:
+    fontSize: 1rem
+  h4:
+    fontSize: 1rem
+  h5:
+    fontSize: 1rem
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/google-font/google-font.schema.json
+kind: GoogleFont
+ui:
+  showTo:
+    - editor
+spec:
+  api:
+    url: >-
+      https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Noto+Sans+Arabic:wght@300;400;700&family=Noto+Sans+Math&family=Noto+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Noto+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/environment/environment.schema.json
+kind: Environment
+ui:
+  showTo:
+    - editor
+spec:
+  environments:
+    image:
+      align:
+        content: center
+        caption: start
+      floats:
+        placement: bottom # prefers figures floated to the bottom
+        modifier: unless-fit # makes figure floats optimize white space
+    table:
+      theme: table1
+      align:
+        content: center
+        caption: start
+# use translations to overrwrite the standard translations
+translations:
+  de-DE:
+    environments:
+      image:
+        label: Abbildung
+        referenceLabel: abb.
+      table:
+        label: Tabelle
+        referenceLabel: tab.
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/paragraph-numbering/paragraph-numbering.schema.json
+kind: ParagraphNumbering
+page: body
+ui:
+  showTo:
+    - editor
+spec: {}
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/article-meta/article-meta.schema.json
+kind: ArticleMeta
+spec:
+  articleType: Original article
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/journal-meta/journal-meta.schema.json
+kind: JournalMeta
+spec:
+  name: Demo journal
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/permissions-meta/permissions-meta.schema.json
+kind: PermissionsMeta
+ui:
+  showTo:
+    - editor
+spec:
+  copyrightYear: 2025
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/reader/reader.schema.json
+kind: Reader
+spec: {}
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/static/static.schema.json
+kind: Static
+ui:
+  showTo: []
+runners:
+  - reader
+metadata:
+  name: reader-about-dca
+  reader:
+    position: dca
+spec:
+  dom: >
+    <section class='col-12' role='region' aria-roledescription='Custom meta data'>
+      <h1 class='h2 m0' id='custom-meta-data'>Open Source Academic Publishing Suite Demo</h1>
+      <div class="flex justify-around">
+        <div class="p1">{{{image 'logo' (get 'JournalMeta:name') 0.1}}}</div>
+        <p class="pl1">This the meta data section for reader on the Unicorn Demo Journal for the Open Source Academic Publishing Suite</p>
+      </div>
+    </section>
+---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/static/static.schema.json
+kind: Static
+ui:
+  showTo: []
+runners:
+  - reader
+metadata:
+  name: reader-copyright-dca
+  reader:
+    position: dca
+spec:
+  dom: >
+    <section class='col-12' role='region' aria-roledescription='Copyright and permissions'>
+      <h1 class='h2 m0' id='copyright-title'>Copyright and permissions</h1>
+      <p class="mt0">
+        Copyright ©
+        <span>
+          {{#if (getMetaData 'PermissionsMeta.copyrightYear')}}
+            <span aria-label='Copyright Year'>
+              {{getMetaData 'PermissionsMeta.copyrightYear'}}
+            </span>
+          {{/if}}
+          {{#if (getMetaData 'PermissionsMeta.copyrightHolder')}}
+            <span aria-label='Copyright Holder'>
+              {{getMetaData 'PermissionsMeta.copyrightHolder'}}.
+            </span>
+          {{/if}}
+          {{#if (getMetaData 'PermissionsMeta.copyrightStatement')}}
+            <span aria-label='Copyright Statement'>
+              {{getMetaData 'PermissionsMeta.copyrightStatement'}}
+            </span>
+          {{/if}}
+        </span>
+      </p>
+
+      <p>
+        {{#if (getMetaData 'PermissionsMeta.licenseP')}}
+          <span aria-label='License information'>
+            {{getMetaData 'PermissionsMeta.licenseP'}}
+          </span>
+        {{/if}}
+
+        {{#if (getMetaData 'PermissionsMeta.licenseType')}}
+          License type:
+          <strong aria-label='License Type'>{{getMetaData 'PermissionsMeta.licenseType'}}</strong>
+        {{/if}}
+      </p>
+
+      {{#if (getMetaData 'PermissionsMeta.licenseLink')}}
+        <p>
+          <a
+            href='{{getMetaData "PermissionsMeta.licenseLink"}}'
+            target='_blank'
+            rel='noopener'
+            aria-label='View full license'
+          >
+            View License
+          </a>
+        </p>
+      {{/if}}
+    </section>
+---
+# kind: Numbering
+# spec:
+#   headings:
+#     cover:
+#       levels:
+#         - listStyleType: none
+#     front:
+#       levels:
+#         - listStyleType: none
+#     body:
+#       levels:
+#         - listStyleType: upper-alpha
+#           suffix: .
+#           numberingScope: full
+#         - listStyleType: upper-roman
+#           suffix: .
+#           numberingScope: current-level
+#         - listStyleType: decimal
+#           suffix: .
+#           numberingScope: current-level
+#         - listStyleType: lower-alpha
+#           suffix: .
+#           numberingScope: current-level
+#         - listStyleType: none
+#           numberingScope: full
+# ---
+# yaml-language-server: $schema=https://cdn.sciflow.net/schema/2026.1/export/components/static/static.schema.json
+kind: Static
+ui:
+  showTo: []
+runners:
+  - reader
+metadata:
+  name: reader-journal-article-metadata
+  reader:
+    position: header
+spec:
+  # you can use basscss to easily style the handlebars template
+  dom: >
+    <div class='col-12 md-flex flex-wrap mt2' role='group'>
+      <div class='flex flex-column journal-meta__column pr2 xs-col-12' role='group' aria-label='Journal Metadata Information' aria-labelledby='journal-title journal-shortname'>
+        {{#if (getMetaData 'JournalMeta.name')}}
+          {{{image 'logo' (get 'JournalMeta:name') 0.2}}}
+        {{/if}}
+        {{#if (getMetaData 'JournalMeta.shortName')}}
+          <h2 id="journal-shortname" class='h3'>{{getMetaData 'JournalMeta.shortName'}}</h2>
+        {{/if}}
+      </div>
+      <div class='flex flex-column journal-meta__column py2 xs-col-12 md-ml-auto' role='group' aria-label='Article Metadata'>
+        {{#if (getMetaData 'ArticleMeta.articleType')}}
+          <div class='flex'>
+            <span class='label'>Type:&nbsp;</span>
+            <span class='value'>{{getMetaData 'ArticleMeta.articleType'}}</span>
+          </div>
+        {{/if}}
+        {{#if (getMetaData 'ArticleMeta.version')}}
+          <div class='flex'>
+            <span class='label'>Version: </span>
+            <span class='value'>{{getMetaData 'ArticleMeta.version'}}</span>
+          </div>
+        {{/if}}
+        {{#if (getMetaData 'ArticleMeta.issue')}}
+          <div>
+            <span class='label'>Issue: </span>
+            <span class='value'>{{getMetaData 'ArticleMeta.issue'}}</span>
+          </div>
+        {{/if}}
+        {{#if (getMetaData 'ArticleMeta.identifiers')}}
+          <div aria-label="Publisher">
+            {{#if (getMetaData 'ArticleMeta.identifiers.publisher')}}
+              <span class='label'>Publisher: </span>
+              <span class='value' aria-label='Publisher Id'>{{getMetaData 'ArticleMeta.identifiers.publisher'}}</span>
+            {{/if}}
+          </div>
+          {{#if (getMetaData 'ArticleMeta.identifiers.doi')}}
+            <div aria-label="DOI">
+              <a
+                href="https://doi.org/{{getMetaData 'ArticleMeta.identifiers.doi'}}"
+                class="value"
+                aria-label="DOI: {{getMetaData 'ArticleMeta.identifiers.doi'}}"
+              >
+                {{getMetaData 'ArticleMeta.identifiers.doi'}}
+              </a>
+            </div>
+          {{/if}}
+        {{/if}}
+      </div>
+    </div>
+---
+kind: Index
+page: back
+spec:
+  title: Index
+  renderMode: pageNumbers
+  columnCount: 2

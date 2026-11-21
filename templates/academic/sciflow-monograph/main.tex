@@ -1,0 +1,26 @@
+% Main file of the "Monograph template" template, converted by PSG Academic PDF from a SciFlow
+% template configuration (configuration.sfo.yml). PSG Academic PDF regenerates psg-metadata.tex
+% from the publication metadata and replaces body.tex with the imported manuscript.
+% Citation style: style=apa (SciFlow/CSL id "apa").
+\def\psgbiblatexoptions{style=apa}
+\documentclass[11pt]{psg-article}
+\geometry{paperwidth=170mm,paperheight=240mm,inner=25mm,outer=20mm,top=17mm,bottom=20mm}
+% The running headers are as wide as the new text block.
+\setlength\headwidth{\textwidth}
+% A sans-serif text face; Chinese and Japanese follow with Noto Sans CJK.
+\renewcommand\familydefault{\sfdefault}
+\widowpenalty=10000
+\clubpenalty=10000
+\setcounter{tocdepth}{5}
+\AtBeginDocument{\renewcommand*\contentsname{Table of Contents}}
+\input{psg-metadata}
+\addbibresource{references.bib}
+
+\begin{document}
+\psgmaketitle
+\tableofcontents
+\clearpage
+\input{body}
+
+\printbibliography
+\end{document}

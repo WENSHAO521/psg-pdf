@@ -67,3 +67,13 @@ quotations and compressed citation lists. Its copy of `psg-article.cls` must sta
 so a converted body compiles in any template built on it. A template with its own class must
 define them too.
 
+
+## Templates converted from SciFlow
+
+`sciflow-journal`, `sciflow-report` and `sciflow-monograph` are written by the SciFlow converter
+(`crates/academic/src/sciflow.rs`) from SciFlow's generic templates in `sciflow-source/`
+(`configuration.sfo.yml` and `metaData.schema.yml`, unmodified, MIT licensed by SciFlow GmbH; see
+`sciflow-source/LICENSE.txt`). They share the PSG article's class, sample body and bibliography.
+Don't edit them by hand: after changing the converter or those files, run
+`PSG_WRITE_SCIFLOW_TEMPLATES=1 cargo test -p psg-academic --lib sciflow_templates` to write them
+again; without it, that test checks they are up to date.

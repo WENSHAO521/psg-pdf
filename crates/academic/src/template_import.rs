@@ -56,12 +56,16 @@ pub fn import(source: &Path, store: &Path, name: Option<&str>) -> Result<Importe
     let mut warnings = Vec::new();
     let files = if source.is_dir() { read_folder(source, &mut warnings)? } else { read_zip(source, &mut warnings)? };
     let files = strip_common_folder(files);
-    let main = find_main(&files).ok_or_else(|| {
-        Error::Template(format!(
-            "{}: no .tex file with \\documentclass and \\begin{{document}} was found; a template needs its main file",
-            source.display()
-        ))
-    })?;
+    let Some(main) = find_main(&files) else {
+        if let Some(config) = find_sciflow(&files) {
+            return import_sciflow(source, store, name, &files, &config, warnings);
+        }
+        return Err(Error::Template(format!(
+            "{}: no .tex file with \\documentclass and \\begin{{document}} was found, and no SciFlow {}; a template needs its main file",
+            source.display(),
+            crate::sciflow::CONFIGURATION
+        )));
+    };
     // The main file's folder is the template's folder; files outside it are left out.
     let (main_dir, main_name) = match main.rsplit_once('/') {
         Some((dir, name)) => (format!("{dir}/"), name.to_owned()),
@@ -90,43 +94,51 @@ pub fn import(source: &Path, store: &Path, name: Option<&str>) -> Result<Importe
     warnings.extend(analysis.warnings.iter().cloned());
     found.insert(0, format!("Main file: {main_name}."));
 
-    // Write it to a fresh folder first, so a failure leaves the store as it was.
+    for (path, bytes) in &mut kept {
+        if *path == main_name {
+            *bytes = analysis.main.as_bytes().to_vec();
+        }
+    }
+    kept.push((body_name.to_owned(), analysis.body.as_bytes().to_vec()));
+    kept.push((METADATA_FILE.to_owned(), PublicationMetadata::sample().to_latex().into_bytes()));
+    let manifest = Manifest {
+        id,
+        name: display_name,
+        description: format!("Added from {}.", source.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default()),
+        version: String::new(),
+        licence: String::new(),
+        engine: analysis.engine.name().to_owned(),
+        bibliography: analysis.bibliography.to_owned(),
+        main: main_name,
+        body: body_name.to_owned(),
+        metadata: METADATA_FILE.to_owned(),
+        files: Vec::new(),
+    };
+    let (template, dir) = install(store, manifest, kept)?;
+    Ok(Imported { template, dir, found, warnings })
+}
+
+/// Write `files` and a manifest (its `files` filled in from them) to a fresh folder in `store`,
+/// then put it in place of any template with the same id, so a failure leaves the store as it was.
+fn install(store: &Path, mut manifest: Manifest, files: Vec<(String, Vec<u8>)>) -> Result<(Template, PathBuf), Error> {
+    let id = manifest.id.clone();
     std::fs::create_dir_all(store).map_err(|e| Error::io(store, e))?;
     let staging = store.join(format!(".adding-{id}-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&staging);
     let result = (|| {
-        let mut listed = Vec::new();
-        for (path, bytes) in &kept {
+        std::fs::create_dir_all(&staging).map_err(|e| Error::io(&staging, e))?;
+        let mut listed: Vec<String> = Vec::new();
+        for (path, bytes) in &files {
             let target = staging.join(path);
             if let Some(parent) = target.parent() {
                 std::fs::create_dir_all(parent).map_err(|e| Error::io(parent, e))?;
             }
-            let bytes = if *path == main_name { analysis.main.as_bytes() } else { bytes.as_slice() };
             write_atomic(&target, bytes)?;
-            listed.push(path.clone());
-        }
-        std::fs::create_dir_all(&staging).map_err(|e| Error::io(&staging, e))?;
-        write_atomic(&staging.join(body_name), analysis.body.as_bytes())?;
-        write_atomic(&staging.join(METADATA_FILE), PublicationMetadata::sample().to_latex().as_bytes())?;
-        for extra in [body_name, METADATA_FILE] {
-            if !listed.iter().any(|l| l == extra) {
-                listed.push(extra.to_owned());
+            if path != MANIFEST && !listed.contains(path) {
+                listed.push(path.clone());
             }
         }
-        listed.retain(|l| l != MANIFEST);
-        let manifest = Manifest {
-            id: id.clone(),
-            name: display_name.clone(),
-            description: format!("Added from {}.", source.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default()),
-            version: String::new(),
-            licence: String::new(),
-            engine: analysis.engine.name().to_owned(),
-            bibliography: analysis.bibliography.to_owned(),
-            main: main_name.clone(),
-            body: body_name.to_owned(),
-            metadata: METADATA_FILE.to_owned(),
-            files: listed,
-        };
+        manifest.files = listed;
         let text = toml::to_string_pretty(&manifest).map_err(|e| Error::Template(format!("could not write {MANIFEST}: {e}")))?;
         write_atomic(&staging.join(MANIFEST), format!("# Added by PSG Academic PDF; edit it to change what the template uses.\n{text}").as_bytes())?;
         Template::from_dir(&staging)
@@ -141,7 +153,65 @@ pub fn import(source: &Path, store: &Path, name: Option<&str>) -> Result<Importe
     }
     std::fs::rename(&staging, &dir).map_err(|e| Error::io(&dir, e))?;
     let template = Template::from_dir(&dir)?;
+    Ok((template, dir))
+}
+
+/// The shallowest SciFlow template configuration among `files`.
+fn find_sciflow(files: &[(String, Vec<u8>)]) -> Option<String> {
+    files
+        .iter()
+        .map(|(p, _)| p)
+        .filter(|p| p.rsplit('/').next() == Some(crate::sciflow::CONFIGURATION))
+        .min_by_key(|p| (p.matches('/').count(), p.len()))
+        .cloned()
+}
+
+/// Add a SciFlow template: its configuration becomes a template on the PSG class.
+fn import_sciflow(
+    source: &Path,
+    store: &Path,
+    name: Option<&str>,
+    files: &[(String, Vec<u8>)],
+    config: &str,
+    mut warnings: Vec<String>,
+) -> Result<Imported, Error> {
+    let folder = config.strip_suffix(crate::sciflow::CONFIGURATION).unwrap_or_default();
+    let read = |path: &str| files.iter().find(|(p, _)| p == path).and_then(|(_, b)| std::str::from_utf8(b).ok());
+    let text = read(config).ok_or_else(|| Error::Template(format!("{config}: not UTF-8 text")))?;
+    let schema = read(&format!("{folder}{}", crate::sciflow::DATA_SCHEMA));
+    let converted = crate::sciflow::convert(text, schema)?;
+    let display_name = name.map(str::trim).filter(|n| !n.is_empty()).map(str::to_owned).unwrap_or_else(|| converted.layout.title.clone());
+    let manifest = Manifest {
+        id: unreserved_id(template_id(&display_name)),
+        name: display_name,
+        description: format!(
+            "Converted from the SciFlow template configuration in {}.",
+            source.file_name().map(|n| n.to_string_lossy().into_owned()).unwrap_or_default()
+        ),
+        version: String::new(),
+        licence: String::new(),
+        engine: "xelatex".to_owned(),
+        bibliography: "biber".to_owned(),
+        main: "main.tex".to_owned(),
+        body: "body.tex".to_owned(),
+        metadata: METADATA_FILE.to_owned(),
+        files: Vec::new(),
+    };
+    let mut found = vec![format!("SciFlow configuration: {config}.")];
+    found.extend(converted.found);
+    warnings.extend(converted.warnings);
+    let (template, dir) = install(store, manifest, sciflow_files(&converted.layout))?;
     Ok(Imported { template, dir, found, warnings })
+}
+
+/// The files of a template converted from a SciFlow configuration: the generated main file and
+/// sample metadata, with the PSG class, sample body and bibliography of the built-in article.
+pub fn sciflow_files(layout: &crate::sciflow::Layout) -> Vec<(String, Vec<u8>)> {
+    let mut out: Vec<(String, Vec<u8>)> = layout.files().into_iter().map(|(n, t)| (n.to_owned(), t.into_bytes())).collect();
+    for (name, text) in crate::template::psg_article_support() {
+        out.push((name.to_owned(), text.as_bytes().to_vec()));
+    }
+    out
 }
 
 /// A template name from the file or folder name: `jfs-template.zip` → `jfs-template`.
@@ -929,6 +999,43 @@ fn line_of(text: &str, at: usize) -> usize {
 #[allow(clippy::unwrap_used)]
 mod tests {
     use super::*;
+
+    /// A SciFlow template folder (no LaTeX in it) is converted to a template on the PSG class.
+    #[test]
+    fn a_sciflow_template_folder_is_converted() {
+        let root = tempfile::tempdir().unwrap();
+        let src = root.path().join("unicorn").join("my-journal");
+        std::fs::create_dir_all(src.join("assets")).unwrap();
+        std::fs::write(
+            src.join(crate::sciflow::CONFIGURATION),
+            "kind: Configuration\nspec:\n  title: Unicorn Journal\n  citationStyle:\n    id: ieee\n---\nkind: Page\nspec:\n  page:\n    size: Letter\n    font: {size: 12pt, family: 'Noto Serif, serif'}\n    handling: double-sided\n---\nkind: JournalMeta\nspec:\n  name: Unicorn Journal\n",
+        )
+        .unwrap();
+        std::fs::write(src.join(crate::sciflow::DATA_SCHEMA), "properties:\n  themeColor:\n    default: '#336699'\n").unwrap();
+        std::fs::write(src.join("assets").join("headers.hbs"), "{{title}}").unwrap();
+        let store = root.path().join("store");
+        let added = import(&root.path().join("unicorn"), &store, None).unwrap();
+        assert_eq!(added.template.manifest.name, "Unicorn Journal");
+        assert_eq!(added.template.manifest.engine, "xelatex");
+        let main = std::fs::read_to_string(added.dir.join("main.tex")).unwrap();
+        assert!(main.contains("\\def\\psgbiblatexoptions{style=ieee}"), "{main}");
+        assert!(main.contains("\\documentclass[12pt]{psg-article}"), "{main}");
+        assert!(main.contains("letterpaper"), "{main}");
+        assert!(main.contains("{HTML}{336699}"), "{main}");
+        assert!(!main.contains("sfdefault"), "{main}");
+        let metadata = std::fs::read_to_string(added.dir.join(METADATA_FILE)).unwrap();
+        assert!(metadata.contains("Unicorn Journal"));
+        for f in ["psg-article.cls", "body.tex", "references.bib"] {
+            assert!(added.dir.join(f).is_file(), "{f}");
+        }
+        assert!(!added.dir.join("assets").exists(), "SciFlow's own files are not copied");
+        // A folder with neither LaTeX nor a SciFlow configuration says what it needs.
+        let empty = root.path().join("empty");
+        std::fs::create_dir(&empty).unwrap();
+        std::fs::write(empty.join("readme.txt"), "x").unwrap();
+        let e = import(&empty, &store, None).unwrap_err().to_string();
+        assert!(e.contains("configuration.sfo.yml"), "{e}");
+    }
 
     const ARTICLE: &str = r"\documentclass[11pt]{article}
 \usepackage{amsmath}
