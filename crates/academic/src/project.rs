@@ -301,8 +301,10 @@ impl Project {
     /// Write the metadata and compile.
     pub fn compile(&self, env: &TexEnvironment, cancel: Option<&Arc<AtomicBool>>) -> Result<CompileReport, Error> {
         self.invalidate_pdf()?;
-        let inputs = crate::project_revision::sources(self).ok();
+        // The metadata may rewrite the main file (the template's own volume, DOI …): the inputs
+        // this run certifies are the ones after that.
         self.write_metadata()?;
+        let inputs = crate::project_revision::sources(self).ok();
         let report = compile::compile(env, &self.dir, &self.compile_options(), cancel)?;
         if report.outcome == compile::Outcome::Succeeded
             && report.errors().next().is_none()

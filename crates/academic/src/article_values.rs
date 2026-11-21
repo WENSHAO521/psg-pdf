@@ -96,16 +96,20 @@ pub struct Found {
     pub to: usize,
 }
 
-/// The values the main file types before `\begin{document}`, in file order. Only plain values
-/// are taken: one with a brace, backslash or `#` is the template's own macro, not a number.
+/// The values the main file types before `\begin{document}`, in file order, empty ones too.
+/// Only plain values are taken: one with a brace, backslash or `#` is the template's own macro,
+/// not a number.
 pub fn find(main: &str) -> Vec<Found> {
     let masked = mask_comments(main);
     let begin = masked.find("\\begin{document}").unwrap_or(masked.len());
-    let plain = |v: &str| !v.trim().is_empty() && !v.contains(['{', '}', '\\', '#']);
+    // An empty value is found too, so a value the metadata cleared can be written again.
+    let plain = |v: &str| !v.contains(['{', '}', '\\', '#']);
     let mut out = Vec::new();
     if let Some(class) = find_call(&masked, "documentclass", 0, 1).filter(|c| c.start < begin) {
         for &(a, b) in &class.optional {
-            let Some(options) = main.get(a..b) else { continue };
+            // From the masked text, so a comment between options is no part of a key; its byte
+            // offsets are the main file's.
+            let Some(options) = masked.get(a..b) else { continue };
             let mut at = a;
             for item in options.split(',') {
                 let item_start = at;
@@ -142,7 +146,7 @@ pub fn find(main: &str) -> Vec<Found> {
 pub fn take(main: &str, metadata: &mut PublicationMetadata) -> Vec<(Field, String)> {
     let mut taken = Vec::new();
     for found in find(main) {
-        let Some(value) = main.get(found.from..found.to) else { continue };
+        let Some(value) = main.get(found.from..found.to).filter(|v| !v.trim().is_empty()) else { continue };
         found.field.set_in(value, metadata);
         taken.push((found.field, value.trim().to_owned()));
     }
@@ -207,6 +211,32 @@ mod tests {
         assert!(out.contains("% \\doi{10.1/commented}") && out.contains("\\doi{10.9/in-the-text}"), "comments and the text are left");
         m.volume = "3,draft".into();
         assert!(write(MAIN, &m).unwrap().contains("volume=2,"), "a value that would break the options is not written");
+    }
+
+    #[test]
+    fn a_cleared_value_can_be_set_again() {
+        let mut m = PublicationMetadata::sample();
+        take(MAIN, &mut m);
+        m.doi.clear();
+        let cleared = write(MAIN, &m).unwrap();
+        assert!(cleared.contains("\n\\doi{}\n"), "{cleared}");
+        let mut again = PublicationMetadata::sample();
+        take(&cleared, &mut again);
+        assert_eq!(again.doi, PublicationMetadata::sample().doi, "an empty value is not taken as the article's");
+        m.doi = "10.63802/afs.V3.I1.402".into();
+        assert!(write(&cleared, &m).unwrap().contains("\n\\doi{10.63802/afs.V3.I1.402}\n"));
+    }
+
+    #[test]
+    fn a_comment_between_class_options_is_no_part_of_a_key() {
+        let main = "\\documentclass[volume=2, % the previous volume\n  issue=3,\n]{cup-journal}\n\\begin{document}\n\\end{document}\n";
+        let fields: Vec<Field> = find(main).iter().map(|f| f.field).collect();
+        assert_eq!(fields, [Field::Volume, Field::Issue]);
+        let mut m = PublicationMetadata::sample();
+        take(main, &mut m);
+        m.issue = "5".into();
+        let out = write(main, &m).unwrap();
+        assert!(out.contains("volume=2, % the previous volume\n  issue=5,"), "{out}");
     }
 
     #[test]

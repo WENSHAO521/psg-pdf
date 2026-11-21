@@ -129,7 +129,7 @@ pub fn typeset(req: &Request, env: &TexEnvironment, tex: Option<&ManagedTex>, pa
             .filter(|f| !report.metadata_set.iter().any(|set| set == f.field.key()))
             .filter_map(|f| {
                 let typed = text.get(f.from..f.to)?.trim();
-                Some(format!("{} {typed}", f.field.label()))
+                (!typed.is_empty()).then(|| format!("{} {typed}", f.field.label()))
             })
             .collect();
         if !kept.is_empty() {
