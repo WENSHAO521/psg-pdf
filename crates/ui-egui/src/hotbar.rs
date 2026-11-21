@@ -206,7 +206,7 @@ fn tool_buttons(ui: &mut egui::Ui, app: &PdfCraftApp, tools: &[String], cell: f3
     }
 }
 
-/// Render core quick tools: Select, Hand, Comment groups, Edit text, and Fill & Sign.
+/// Render core quick tools: Select, Hand, Comment groups, Edit text, Fill & Sign, Undo and Redo.
 fn core_tool_buttons(ui: &mut egui::Ui, app: &mut PdfCraftApp, cell: f32, popup_align: egui::RectAlign, t: &Tokens) {
     if icons::button(ui, "mouse-pointer-2", cell, app.quick_tool == QuickTool::Select, tl!("Select (V)")).clicked() {
         app.quick_tool = QuickTool::Select;
@@ -345,6 +345,18 @@ fn core_tool_buttons(ui: &mut egui::Ui, app: &mut PdfCraftApp, cell: f32, popup_
             ui.close();
         }
     });
+    // Undo and Redo, as the Edit menu has them: greyed out with the reason when there is nothing
+    // to take back or make again.
+    for (id, icon, label, why) in
+        [("edit.undo", "undo-2", tl!("Undo"), tl!("Nothing to undo")), ("edit.redo", "redo-2", tl!("Redo"), tl!("Nothing to redo"))]
+    {
+        let enabled = command(id).is_some_and(|spec| app.command_enabled(spec));
+        let tip = format!("{label} ({})", crate::commands::command_shortcut_label(ui.ctx(), id));
+        let resp = ui.add_enabled_ui(enabled, |ui| icons::button(ui, icon, cell, false, &tip)).inner.on_disabled_hover_text(why);
+        if resp.clicked() {
+            app.execute(id);
+        }
+    }
 }
 
 fn controls_divider(ui: &mut egui::Ui, t: &Tokens, vertical: bool) {
@@ -970,7 +982,7 @@ mod tests {
             app.hotbar.position = [0.5, 0.5];
             app.hotbar.picker_open = true;
             let mut fonts = false;
-            let mut harness = Harness::builder().with_size(vec2(1000.0, 900.0)).with_accessibility_check(false).build_ui_state(
+            let mut harness = Harness::builder().with_size(vec2(1200.0, 900.0)).with_accessibility_check(false).build_ui_state(
                 move |ui, app: &mut PdfCraftApp| {
                     if !fonts {
                         ui.ctx().set_fonts(theme::font_definitions());
