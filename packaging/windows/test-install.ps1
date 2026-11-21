@@ -1,13 +1,11 @@
 <#
 .SYNOPSIS
-  Install, run and uninstall both PSG products' MSIs, as a user would (per machine, silently):
-  each on its own and side by side, uninstalling either leaves the other, and, given a 0.18.x
-  "PSG PDF Suite" MSI, the migration from it (docs/products.md, "Migrating from the suite").
+  Install, run and uninstall PSG PDF's MSI, as a user would (per machine, silently), and, given a
+  0.18.x "PSG PDF Suite" MSI, the migration from it (docs/products.md, "Migrating from the suite").
 .DESCRIPTION
   Changes the machine: run it on a throwaway VM or CI runner, as an administrator.
-  - PSG PDF continues the suite's UpgradeCode, so installing it replaces the suite.
-  - PSG Academic PDF refuses to install over the suite (it would leave two copies of itself), and
-    installs once PSG PDF has replaced it.
+  - PSG PDF continues the suite's UpgradeCode, so installing it replaces the suite, including the
+    suite's copy of PSG Academic PDF (a retired product).
 .EXAMPLE
   pwsh packaging/windows/test-install.ps1 -Dir dist/release -SuiteMsi suite/psg-pdf-0.18.1-beta.7-windows-x64.msi
 #>
@@ -28,9 +26,7 @@ function Find-Msi([string] $Stem) {
   return $msi.FullName
 }
 $PdfMsi = Find-Msi 'psg-pdf'
-$AcademicMsi = Find-Msi 'psg-academic-pdf'
 Write-Host "PSG PDF: $PdfMsi"
-Write-Host "PSG Academic PDF: $AcademicMsi"
 
 function Step([string] $What) { Write-Host ''; Write-Host "==> $What" }
 function Invoke-Msi([string] $Verb, [string] $Msi, [string] $Name) {
@@ -82,24 +78,9 @@ Install $PdfMsi 'psg-pdf'
 $pdfExe = Assert-Installed 'PSG PDF' 'psg-pdf.exe' @('--version')
 if (Get-AppPath 'psg-academic-pdf.exe') { throw 'PSG PDF installed psg-academic-pdf.exe' }
 
-Step 'PSG Academic PDF beside PSG PDF'
-Install $AcademicMsi 'psg-academic-pdf'
-$academicExe = Assert-Installed 'PSG Academic PDF' 'psg-academic-pdf.exe' @('--version', 'templates')
-if ((Split-Path $pdfExe) -eq (Split-Path $academicExe)) { throw 'both products were installed into one folder' }
-Assert-Installed 'PSG PDF' 'psg-pdf.exe' @('--version') | Out-Null
-
-Step 'Uninstalling PSG Academic PDF leaves PSG PDF'
-Uninstall $AcademicMsi 'psg-academic-pdf'
-Assert-Gone 'PSG Academic PDF' 'psg-academic-pdf.exe' $academicExe
-Assert-Installed 'PSG PDF' 'psg-pdf.exe' @('--version') | Out-Null
-
-Step 'Uninstalling PSG PDF leaves PSG Academic PDF'
-Install $AcademicMsi 'psg-academic-pdf'
+Step 'Uninstalling PSG PDF'
 Uninstall $PdfMsi 'psg-pdf'
 Assert-Gone 'PSG PDF' 'psg-pdf.exe' $pdfExe
-Assert-Installed 'PSG Academic PDF' 'psg-academic-pdf.exe' @('--version') | Out-Null
-Uninstall $AcademicMsi 'psg-academic-pdf'
-Assert-Gone 'PSG Academic PDF' 'psg-academic-pdf.exe' $academicExe
 
 if ($SuiteMsi) {
   Step "Migrating from the PSG PDF Suite ($SuiteMsi)"
@@ -110,22 +91,14 @@ if ($SuiteMsi) {
   if (-not $suiteAcademic) {
     $suiteAcademic = Join-Path (Split-Path (Get-AppPath 'psg-pdf.exe')) 'psg-academic-pdf.exe'
   }
-  # PSG Academic PDF first: it must refuse, not install a second copy beside the suite's.
-  $r = Invoke-Msi '/i' $AcademicMsi 'academic-over-suite'
-  if ($r.Code -ne 1603) { throw "PSG Academic PDF over the suite: expected the launch condition to stop it (1603), got $($r.Code)" }
-  if (-not (Select-String -LiteralPath $r.Log -Pattern 'PSG PDF Suite' -Quiet)) { throw 'the refusal does not name the suite' }
-  Write-Host '  PSG Academic PDF refused to install over the suite, as it should'
   # PSG PDF replaces the suite (major upgrade over the same UpgradeCode).
   Install $PdfMsi 'psg-pdf-over-suite'
   if (@(Get-Entries 'PSG PDF Suite').Count -ne 0) { throw 'the suite is still installed after PSG PDF replaced it' }
   if (Test-Path -LiteralPath $suiteAcademic) { throw "the suite's $suiteAcademic is still there" }
   $pdfExe = Assert-Installed 'PSG PDF' 'psg-pdf.exe' @('--version')
-  Install $AcademicMsi 'psg-academic-pdf-after-suite'
-  $academicExe = Assert-Installed 'PSG Academic PDF' 'psg-academic-pdf.exe' @('--version')
-  Uninstall $AcademicMsi 'psg-academic-pdf'
+  if (Get-AppPath 'psg-academic-pdf.exe') { throw "the suite's psg-academic-pdf.exe is still registered" }
   Uninstall $PdfMsi 'psg-pdf'
   Assert-Gone 'PSG PDF' 'psg-pdf.exe' $pdfExe
-  Assert-Gone 'PSG Academic PDF' 'psg-academic-pdf.exe' $academicExe
 }
 
 Write-Host ''

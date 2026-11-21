@@ -4,7 +4,7 @@
 
 Every asset PSG PDF includes, bundles or uses to build its published material, with its author, source and licence. The policy is in [AGENTS.md](AGENTS.md) §1. The machine-readable list, with the SHA-256 of every asset, is [ATTRIBUTION.toml](ATTRIBUTION.toml). Licence texts are kept beside the assets and summarised in [NOTICE](NOTICE).
 
-## In this repository (303)
+## In this repository (301)
 
 | Asset | Title | Author | Licence | Source | Used for |
 |---|---|---|---|---|---|
@@ -241,8 +241,6 @@ Every asset PSG PDF includes, bundles or uses to build its published material, w
 | `assets/brand/psg-logo-master.svg` | PSG logo master (PSG PDF and PSG Academic PDF) | PSG PDF contributors | MIT OR Apache-2.0 | Contributor-original | The one editable source of both product logos; packaging/psg-icons.py renders every platform icon from it (assets/brand/README.md) |
 | `assets/app-icon-academic/hicolor/24x24/apps/com.panoramascholarly.psgacademicpdf.png` | PSG Academic PDF app icon (com.panoramascholarly.psgacademicpdf.png) | PSG PDF contributors | MIT OR Apache-2.0 | Contributor-original, rendered from assets/brand/psg-logo-master.svg by packaging/psg-icons.py | PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py |
 | `assets/app-icon-academic/hicolor/512x512/apps/com.panoramascholarly.psgacademicpdf.png` | PSG Academic PDF app icon (com.panoramascholarly.psgacademicpdf.png) | PSG PDF contributors | MIT OR Apache-2.0 | Contributor-original, rendered from assets/brand/psg-logo-master.svg by packaging/psg-icons.py | PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py |
-| `packaging/macos/dmg/academic-background.svg` | PSG Academic PDF macOS DMG window background | PSG PDF contributors | MIT OR Apache-2.0 | Contributor-original, written by packaging/macos/dmg/generate.py; its text is outlined from Inter and JetBrains Mono (OFL-1.1, assets/fonts) | Finder window of the PSG Academic PDF macOS DMG; rendered to academic-background.tiff by packaging/macos/dmg/generate.py |
-| `packaging/macos/dmg/academic-background.tiff` | PSG Academic PDF macOS DMG window background (rendered) | PSG PDF contributors | MIT OR Apache-2.0 | Rendered from packaging/macos/dmg/academic-background.svg by packaging/macos/dmg/generate.py | 1x + 2x HiDPI 16-colour palette TIFF copied into the PSG Academic PDF macOS DMG by packaging/macos/package.sh; includes the free LittleCMS built-in sRGB profile |
 | `i18n/psg/de.tsv` | PSG PDF interface translation (de) | PSG PDF contributors | MIT OR Apache-2.0 | this repository (contributor-original, translated from the English interface text) | Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs |
 | `i18n/psg/es.tsv` | PSG PDF interface translation (es) | PSG PDF contributors | MIT OR Apache-2.0 | this repository (contributor-original, translated from the English interface text) | Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs |
 | `i18n/psg/fr.tsv` | PSG PDF interface translation (fr) | PSG PDF contributors | MIT OR Apache-2.0 | this repository (contributor-original, translated from the English interface text) | Interface strings PSG PDF adds to the craft-i18n catalog, appended at build time by crates/ui-egui/build.rs |

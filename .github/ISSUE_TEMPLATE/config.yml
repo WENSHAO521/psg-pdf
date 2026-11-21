@@ -5,4 +5,4 @@ contact_links:
     about: User guides, installers and migration from the PSG PDF Suite.
   - name: Downloads
     url: https://github.com/WENSHAO521/psg-pdf/releases
-    about: Every release of PSG PDF and PSG Academic PDF, with checksums.
+    about: Every release of PSG PDF, with checksums.

@@ -1,5 +1,5 @@
-# PSG PDF and PSG Academic PDF are two independent products built from one Rust workspace and
-# one shared PdfCraft engine. This file is the single source of each product's identity: every
+# The products built from this Rust workspace and its shared PdfCraft engine: PSG PDF (PSG Academic
+# PDF is retired, see the end of the file). This file is the single source of each product's identity: every
 # packaging script, installer source and the release workflow take their values from here or are
 # checked against it by `cargo xtask products check` (part of `cargo xtask ci`).
 #
@@ -18,8 +18,7 @@
 name = "PSG PDF Suite"
 # Every suite release is below this version; every independent release is at or above it.
 split_version = "0.19.0"
-# The suite MSI's UpgradeCode. PSG PDF continues it (its MSI replaces the suite);
-# PSG Academic PDF only detects it.
+# The suite MSI's UpgradeCode. PSG PDF continues it (its MSI replaces the suite).
 msi_upgrade_code = "C984AB08-3E67-48B7-8DC2-6F1428165299"
 # The suite's deb/rpm package name (PSG PDF continues it).
 linux_package = "psg-pdf"
@@ -66,33 +65,8 @@ mime_types = ["application/pdf"]
 # vX.Y.Z-beta.N from the beta branch (docs/releasing.md).
 update_channels = ["stable", "beta"]
 
-[[product]]
-id = "psg-academic-pdf"
-name = "PSG Academic PDF"
-tagline = "Typesetting accepted articles with pdfLaTeX"
-cargo_packages = ["psg-academic-pdf"]
-binaries = ["psg-academic-pdf"]
-app_id = "com.panoramascholarly.psgacademicpdf"
-asset_stem = "psg-academic-pdf"
-icon_dir = "assets/app-icon-academic"
-icon_name = "psg-academic-pdf"
-# Brand: academic purple, precise, elegant, publishing-minded.
-accent = "#5b2a78"
-msi_upgrade_code = "B43E2C11-55A0-457B-9A21-7582C52506D9"
-msi_source = "packaging/windows/psg-academic-pdf.wxs"
-install_policy = "packaging/windows/install-policy-academic.json"
-windows_folder = "PSG Academic PDF"
-windows_registry_key = "Software\\PSG Academic PDF"
-windows_progid = "PSGAcademicPDF.Manuscript"
-bundle_name = "PSG Academic PDF"
-info_plist = "packaging/macos/Info-academic.plist.in"
-dmg_volume = "PSG Academic PDF"
-dmg_layout = "packaging/macos/dmg/academic-layout.DS_Store"
-dmg_background = "packaging/macos/dmg/academic-background.tiff"
-linux_package = "psg-academic-pdf"
-nfpm = "packaging/linux/nfpm-academic.yaml"
-desktop_file = "packaging/linux/com.panoramascholarly.psgacademicpdf.desktop"
-# Manuscripts it opens: a LaTeX body or a Word manuscript start a new project around them.
-file_extensions = ["tex", "docx"]
-mime_types = ["text/x-tex", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"]
-update_channels = ["stable", "beta"]
+# PSG Academic PDF (psg-academic-pdf) was the second product until 2026-11: it is no longer built,
+# packaged or released, and installed copies get no more updates. Its identities stay reserved so
+# that no future product takes them over: app id com.panoramascholarly.psgacademicpdf, asset stem
+# psg-academic-pdf, MSI UpgradeCode B43E2C11-55A0-457B-9A21-7582C52506D9, Linux package
+# psg-academic-pdf, Windows folder and macOS bundle "PSG Academic PDF".

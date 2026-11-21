@@ -73,6 +73,3 @@ on latexmk's `PATH` and keeps every sandbox measure in [academic.md](academic.md
 
 - `cargo test -p psg-academic managed` covers the layout, unpacking a fake bundle, replacing a
   tree, the weekly schedule and the log and `tlmgr search` parsing.
-- `packaging/ci/academic-tex-smoke.sh <platform>` runs the real thing with a built program:
-  installs TinyTeX into a temporary folder, typesets the template with a package TinyTeX-1 lacks,
-  and updates. It needs the network.

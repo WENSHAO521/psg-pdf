@@ -30,7 +30,7 @@ crates/brand/               psg-brand: the PSG design system (names, colours, re
 assets/app-icon/            PSG PDF icons, generated from the master (packaging/psg-icons.py)
 assets/app-icon-academic/   PSG Academic PDF icons, generated from the master
 packaging/products.toml     each product's identity: ids, upgrade codes, packages, associations
-docs/products.md            the two products, their installers and migrating from the old suite
+docs/products.md            the products, their installers and migrating from the old suite
 docs/academic.md            PSG Academic PDF: architecture, security, templates
 ```
 

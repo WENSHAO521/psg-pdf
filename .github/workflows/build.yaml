@@ -1,13 +1,13 @@
 name: PSG PDF — Build & Release
 
-# The one workflow of this repository: every check, build, install test and release of the two
-# independent products PSG PDF and PSG Academic PDF (packaging/products.toml, docs/products.md).
+# The one workflow of this repository: every check, build, install test and release of PSG PDF
+# (packaging/products.toml, docs/products.md; PSG Academic PDF is retired and no longer built).
 # docs/ci.md describes it; packaging/ci/plan.sh decides what each run does:
 #
 #   Check    plan: product identities, changelog, git sources, then the shared gate (format,
-#            clippy, every test incl. TeX Live/Pandoc, cargo-deny, assets, layers, wasm)
-#   Build    one job per platform, building both products on one Cargo target directory
-#   Verify   on the same runner right after its build: install, side by side, uninstall, upgrade
+#            clippy, every test, cargo-deny, assets, layers, wasm)
+#   Build    one job per platform, building every product on one Cargo target directory
+#   Verify   on the same runner right after its build: install, uninstall, upgrade
 #            from the 0.18.x suite (Linux deb + rpm, Windows, macOS)
 #   Quality  SonarCloud, Nix, house rules, packaging lint, fuzzing, macOS tests
 #   Release  beta / stable release from what passed (packaging/release-tag.sh, docs/releasing.md)
@@ -128,29 +128,19 @@ jobs:
       os: ${{ needs.plan.outputs.mode == 'full' && '["ubuntu-24.04","windows-latest"]' || '["ubuntu-24.04"]' }}
       # Same craft-fonts commit as craft-fonts.rev (the release builds).
       craft-fonts-ref: b076417b5880bd4154bd22f00695b1d28c6bea83
-      # egui/winit/rfd, the independent oracles (crates/oracle), and PSG Academic PDF's TeX Live
-      # (XeLaTeX and xeCJK too, which the built-in templates typeset with; xeCJK needs ctexhook.sty
-      # from texlive-lang-chinese, and fonts-noto-cjk gives it the OFL Noto CJK faces the
-      # templates fall back to), latexmk, Biber and
-      # Pandoc (3.1.3 on Ubuntu 24.04, new enough for --sandbox), installed once here instead of
-      # in a job of their own.
+      # egui/winit/rfd and the independent oracles (crates/oracle). PSG Academic PDF is retired
+      # and no longer released, so its TeX Live and Pandoc tests skip (crates/academic/tests/tex.rs).
       packages: >-
         libxkbcommon-dev libwayland-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev
         libgtk-3-dev qpdf poppler-utils
-        texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
-        texlive-xetex texlive-lang-cjk texlive-lang-chinese fonts-noto-cjk
-        lmodern texlive-bibtex-extra latexmk biber pandoc
       # cargo-deny for the dependency and licence check of `cargo xtask ci`.
       tools: cargo-nextest@0.9.150,cargo-deny@0.20.2
-      # A missing oracle or TeX tool fails the job instead of printing a skip notice that reads
-      # as a pass.
+      # A missing oracle fails the job instead of printing a skip notice that reads as a pass.
       linux-env: |
         PDFCRAFT_ORACLES_REQUIRED=1
-        PSG_ACADEMIC_TEX_REQUIRED=1
       windows-env: PDFCRAFT_REQUIRE_WINRES=1
       command: |
         cargo xtask ci
-        packaging/ci/academic-smoke.sh
       # Windows checks what differs by platform: the build (with resources) and the tests.
       windows-command: |
         cargo clippy --workspace --all-targets --locked -- -D warnings
@@ -158,7 +148,7 @@ jobs:
 
   # ---- Build + Verify ------------------------------------------------------------------------
   build:
-    name: Build · ${{ matrix.platform }} (PSG PDF + PSG Academic PDF)
+    name: Build · ${{ matrix.platform }} (PSG PDF)
     needs: plan
     # Not after the gate: the builds take longest, and the release waits for both anyway.
     if: needs.plan.outputs.mode == 'full'
@@ -181,7 +171,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@686976e191b89faba57d3206551f0f330d8cb249 # stable
         with:
           targets: ${{ matrix.platform == 'macos-universal' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
-      # One cache per platform for both products (they share most of the workspace). Written
+      # One cache per platform for every product (they share most of the workspace). Written
       # only by beta and main, so pull requests read it without replacing it with their own.
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
         with:
@@ -220,9 +210,9 @@ jobs:
           APPLE_CERTIFICATE_PASSWORD: ${{ env.SIGN == 'true' && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
           KEYCHAIN_PASSWORD: ${{ env.SIGN == 'true' && secrets.KEYCHAIN_PASSWORD || '' }}
         run: packaging/macos/import-cert.sh
-      # Package both products, start their programs, and sort the files into one folder per
-      # product with its SHA-256 list (a file named after neither product fails the build).
-      - name: Build and package both products
+      # Package every product, start its programs, and sort the files into one folder per
+      # product with its SHA-256 list (a file named after no product fails the build).
+      - name: Build and package the products
         shell: bash
         env:
           APPLE_ID: ${{ env.SIGN == 'true' && secrets.APPLE_ID || '' }}
@@ -237,7 +227,7 @@ jobs:
           SIGNED: ${{ (env.SIGN == 'true' && ((runner.os == 'Windows' && secrets.WINDOWS_CERTIFICATE != '') || (runner.os == 'macOS' && secrets.APPLE_CERTIFICATE != '' && secrets.APPLE_ID != ''))) && '1' || '0' }}
         run: packaging/ci/verify-signatures.sh "${{ matrix.platform }}" "$SIGNED" ${{ matrix.products }}
       # Install, coexist, uninstall and migrate on this runner, as soon as its own build is done.
-      - name: Install tests (install, side by side, uninstall, upgrade from the suite)
+      - name: Install tests (install, uninstall, upgrade from the suite)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -250,13 +240,6 @@ jobs:
         with:
           name: psg-pdf-${{ matrix.platform }}
           path: dist/upload/psg-pdf/*
-          if-no-files-found: error
-          retention-days: 7
-      - name: Upload PSG Academic PDF
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: psg-academic-pdf-${{ matrix.platform }}
-          path: dist/upload/psg-academic-pdf/*
           if-no-files-found: error
           retention-days: 7
       # For looking into a failure: what was built, never published.
@@ -317,7 +300,7 @@ jobs:
           dotnet tool install --tool-path $tools wix --version 5.0.2
           if ($LASTEXITCODE -ne 0) { throw 'WiX installation failed.' }
           $env:PATH = "$tools;$env:PATH"
-          # One policy per product (PSG PDF, PSG Academic PDF); install every extension either uses.
+          # One policy per product (packaging/products.toml); install every extension they use.
           $extensions = @(Get-ChildItem packaging/windows/install-policy*.json | ForEach-Object { (Get-Content -Raw -LiteralPath $_.FullName | ConvertFrom-Json).extensions } | Sort-Object -Unique)
           foreach ($extension in $extensions) {
             & (Join-Path $tools 'wix.exe') extension add -g "WixToolset.$extension.wixext/5.0.2"
@@ -371,7 +354,7 @@ jobs:
   release:
     name: Release · ${{ needs.plan.outputs.tag }}
     needs: [plan, gate, build]
-    # Both release channels require both products to build and pass install tests on all
+    # Both release channels require every product to build and pass install tests on all
     # platforms. release-files.sh also checks that every platform's installers were uploaded.
     if: >-
       !cancelled() && needs.plan.outputs.tag != '' &&

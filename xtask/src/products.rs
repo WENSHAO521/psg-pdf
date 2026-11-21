@@ -1,8 +1,8 @@
-//! `cargo xtask products`: the two PSG products' identities (packaging/products.toml), and a check
+//! `cargo xtask products`: the PSG products' identities (packaging/products.toml), and a check
 //! that every installer source, metadata file and icon agrees with them.
 //!
-//! PSG PDF and PSG Academic PDF ship as independent products: their own installers, ids, install
-//! folders, file associations and update channels. A copy-paste slip between them (an upgrade
+//! Each PSG product ships independently: its own installers, ids, install folders, file
+//! associations and update channels. A copy-paste slip between them (an upgrade
 //! code reused, a desktop file naming the other app's icon) would make one installer upgrade or
 //! uninstall the other, so `check` runs in `cargo xtask ci`.
 
@@ -105,7 +105,7 @@ pub fn run(args: &[String]) -> anyhow::Result<()> {
     }
 }
 
-/// `{"include":[{"platform":…,"os":…,"products":"psg-pdf psg-academic-pdf"}, …]}` for
+/// `{"include":[{"platform":…,"os":…,"products":"psg-pdf"}, …]}` for
 /// `strategy.matrix`: one build job per platform, each building every product in turn on one
 /// shared Cargo target directory, so the engine they share is compiled once per platform. Each
 /// product is still packaged, checked and uploaded on its own (`.github/workflows/build.yaml`).
@@ -433,11 +433,20 @@ mod tests {
         }
     }
 
+    /// The manifest with a second product: a copy of the first under its own id, sharing the
+    /// first one's identities until a test changes them.
+    fn with_a_second_product(root: &Path) -> Manifest {
+        let mut m = load(root).unwrap();
+        let mut second = m.products[0].clone();
+        second.id = "psg-second".into();
+        m.products.push(second);
+        m
+    }
+
     #[test]
     fn a_shared_upgrade_code_is_caught() {
         let root = repo();
-        let mut m = load(&root).unwrap();
-        m.products[1].msi_upgrade_code = m.products[0].msi_upgrade_code.clone();
+        let m = with_a_second_product(&root);
         let problems = check(&root, &m);
         assert!(problems.iter().any(|p| p.contains("share msi_upgrade_code")), "{problems:#?}");
     }
@@ -445,8 +454,7 @@ mod tests {
     #[test]
     fn a_shared_package_name_is_caught() {
         let root = repo();
-        let mut m = load(&root).unwrap();
-        m.products[1].linux_package = m.products[0].linux_package.clone();
+        let m = with_a_second_product(&root);
         assert!(check(&root, &m).iter().any(|p| p.contains("share linux_package")));
     }
 
@@ -457,10 +465,12 @@ mod tests {
         let include = v["include"].as_array().unwrap();
         assert_eq!(include.len(), PLATFORMS.len());
         for leg in include {
-            assert_eq!(leg["products"].as_str().unwrap(), "psg-pdf psg-academic-pdf");
+            assert_eq!(leg["products"].as_str().unwrap(), "psg-pdf");
         }
-        assert_eq!(ids(&m), "psg-pdf psg-academic-pdf");
-        assert_eq!(get(&m, "psg-academic-pdf", "binaries").unwrap(), "psg-academic-pdf");
+        assert_eq!(ids(&m), "psg-pdf");
+        assert_eq!(get(&m, "psg-pdf", "binaries").unwrap(), "psg-pdf pdfcraft-cli");
+        // PSG Academic PDF is retired: no longer built or released.
+        assert!(get(&m, "psg-academic-pdf", "binaries").is_err());
         assert!(get(&m, "psg-pdf", "nope").is_err());
     }
 

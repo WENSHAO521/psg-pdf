@@ -7,7 +7,7 @@
 #>
 param(
   [Parameter(Mandatory = $true)] [string] $MsiPath,
-  # The product's policy: install-policy.json (PSG PDF) or install-policy-academic.json.
+  # The product's policy: install-policy.json for PSG PDF.
   [string] $PolicyPath = (Join-Path $PSScriptRoot 'install-policy.json')
 )
 $ErrorActionPreference = 'Stop'

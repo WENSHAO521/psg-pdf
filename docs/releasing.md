@@ -1,13 +1,14 @@
-# Releasing PSG PDF and PSG Academic PDF
+# Releasing PSG PDF
 
-PSG PDF and PSG Academic PDF are independent products ([products.md](products.md)) with
-separate installers. They are released at the same time, into the same GitHub release, on the rhythm
+PSG PDF ([products.md](products.md)) is released into GitHub releases on the rhythm
 panorama-secure-access uses: small pull requests into `beta`, a pre-release for every push to
 `beta`, and a stable release when `beta` is merged into `main` with a release commit.
 `.github/workflows/build.yaml` ("PSG PDF — Build & Release", the repository's only workflow,
-[ci.md](ci.md)) builds, checks and publishes both; nobody pushes a tag by hand:
+[ci.md](ci.md)) builds, checks and publishes it; nobody pushes a tag by hand. PSG Academic PDF
+is retired: it is no longer built or released.
 
-| Event | Packages both products on all platforms | Checks (identities, changelog, academic tests with TeX Live, smoke tests, signatures, checksums, install/uninstall, coexistence, suite migration) | Publishes |
+
+| Event | Packages every product on all platforms | Checks (identities, changelog, smoke tests, signatures, checksums, install/uninstall, suite migration) | Publishes |
 |---|---|---|---|
 | Pull request | only with the `full-ci` label or changes to `packaging/`, the workflow or the app icons; then kept as run artifacts for 7 days, unsigned | the quick checks always; the rest with the builds | nothing |
 | Push to `beta` | yes, signed when the secrets exist | yes | pre-release `vX.Y.Z-beta.N` |
@@ -15,7 +16,7 @@ panorama-secure-access uses: small pull requests into `beta`, a pre-release for 
 | Manual run (`full`, `release-check`) | yes, unsigned | yes | nothing |
 
 Beta and stable releases require the identity and changelog checks, the gate (`cargo xtask ci` on
-Linux and Windows, with the academic TeX tests), and both products' install tests on Windows,
+Linux and Windows), and the install tests on Windows,
 macOS and Linux. SonarCloud, Nix, house rules, packaging lint, fuzzing and the
 macOS tests are jobs of the same workflow ([ci.md](ci.md#triggers) says when each runs).
 
@@ -35,7 +36,7 @@ macOS tests are jobs of the same workflow ([ci.md](ci.md#triggers) says when eac
 | `main` | `vX.Y.Z` (latest) | `CHANGELOG.md` has a `## vX.Y.Z` section and `vX.Y.Z` isn't tagged yet; otherwise nothing |
 
 The publish job checks every file against the SHA-256 written where it was built, creates the tag
-on the pushed commit, uploads both products' installers with `SHA256SUMS.txt` (read by the in-app
+on the pushed commit, uploads the installers with `SHA256SUMS.txt` (read by the in-app
 updaters) and one `SHA256SUMS-<product>.txt` per product, and writes the notes, with each product's
 downloads under its own heading: for a beta the changes since the last release, for a
 stable release its `CHANGELOG.md` section.
@@ -44,8 +45,7 @@ If a platform build or install test fails or is cancelled, publication waits for
 with installers for all three platforms.
 
 Release titles follow the PSG brand guide ([brand.md](brand.md#release-badge)):
-`PSG PDF & PSG Academic PDF 0.19.0` for a stable release, `PSG PDF & PSG Academic PDF 0.19.0 Beta 3`
-for a beta. `packaging/ci/release-notes.sh`
+`PSG PDF 0.19.0` for a stable release, `PSG PDF 0.19.0 Beta 3` for a beta. `packaging/ci/release-notes.sh`
 writes the title (`--title`) and the notes: one section per product with its icon, tagline and a
 download table per platform, then the changes, checksums and the suite migration note.
 
@@ -53,13 +53,13 @@ download table per platform, then the changes, checksums and the suite migration
 
 The changelog is built from [Conventional Commits](https://www.conventionalcommits.org/):
 `type(scope): description`, where `type` is `feat`, `fix`, `perf`, `revert`, `docs`, `style`,
-`refactor`, `test`, `build`, `ci` or `chore`, and the scope names the area (`academic`, `pdf`,
+`refactor`, `test`, `build`, `ci` or `chore`, and the scope names the area (`pdf`, `cli`,
 `macos`, `windows`, `linux`, `release`, …). Write the description as the user-facing change.
 
 ```text
-fix(academic): Show the Biber error when a citation key is missing
+fix(pdf): Keep the page position after undoing a rotation
 
-Changelog: The compile log names the missing citation key
+Changelog: Undoing a page rotation keeps your place in the document
 ```
 
 - `feat`, `fix`, `perf` and `revert` go into the changelog; other types only with a trailer.
@@ -98,15 +98,14 @@ headings are `## vX.Y.Z (YYYY-MM-DD)`, newest first.
 
 | Platform | Artifacts | Built on |
 |---|---|---|
-| macOS 11+ (universal: Apple silicon + Intel) | `psg-pdf-<v>-macos-universal.dmg`, `pdfcraft-cli-<v>-macos-universal.zip`; `psg-academic-pdf-<v>-macos-universal.dmg` | `macos-latest` |
-| Windows 10+ x64 | `psg-pdf-<v>-windows-x64.msi`, `psg-pdf-<v>-windows-x64-portable.zip`; `psg-academic-pdf-<v>-windows-x64.msi`, `psg-academic-pdf-<v>-windows-x64-portable.zip` | `windows-latest` |
-| Linux x86_64 | `psg-pdf-<v>-linux-x86_64.{deb,rpm,AppImage,tar.gz}`, `pdfcraft-cli-<v>-linux-x86_64.tar.gz`; `psg-academic-pdf-<v>-linux-x86_64.{deb,rpm,AppImage,tar.gz}` | `ubuntu-22.04` |
+| macOS 11+ (universal: Apple silicon + Intel) | `psg-pdf-<v>-macos-universal.dmg`, `pdfcraft-cli-<v>-macos-universal.zip` | `macos-latest` |
+| Windows 10+ x64 | `psg-pdf-<v>-windows-x64.msi`, `psg-pdf-<v>-windows-x64-portable.zip` | `windows-latest` |
+| Linux x86_64 | `psg-pdf-<v>-linux-x86_64.{deb,rpm,AppImage,tar.gz}`, `pdfcraft-cli-<v>-linux-x86_64.tar.gz` | `ubuntu-22.04` |
 
-Each platform is one build job (`cargo xtask products matrix`) that builds both products in turn
+Each platform is one build job (`cargo xtask products matrix`) that builds every product in turn
 on one Cargo target directory (`packaging/ci/build-products.sh`); every file must be named after
 exactly one product, and each product gets its own artifact. On the same runner,
-`packaging/ci/verify-installs.sh` then installs both products' packages alone and side by side,
-uninstalls them one at a time, and on Windows and Linux (deb, and rpm in a Fedora container)
+`packaging/ci/verify-installs.sh` then installs, runs and uninstalls the packages, and on Windows and Linux (deb, and rpm in a Fedora container)
 migrates the last suite release (`LEGACY_SUITE_TAG` in the workflow) to the new packages
 (`packaging/<os>/test-install.*`, [products.md](products.md#migrating-from-the-suite)). The
 artifacts are uploaded only after that.
@@ -323,7 +322,7 @@ pipeline; `build.yaml` signs Windows with the `.pfx` secrets only.
 The packaging-lint job of `build.yaml` runs on changes to `packaging/`, the workflow and the app
 icons, and in every full run: actionlint, shellcheck, a PowerShell parse, xmllint (WiX, plist, MIME),
 `desktop-file-validate`, `appstreamcli validate`, and the MSI icon-id check. A pull request that
-changes packaging builds and install-tests both products' installers without publishing them.
+changes packaging builds and install-tests the installers without publishing them.
 Add the `full-ci` label to request the same checks on other pull requests.
 
 ## Scanner detections
