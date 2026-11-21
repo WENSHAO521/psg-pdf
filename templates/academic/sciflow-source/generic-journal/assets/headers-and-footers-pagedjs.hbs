@@ -1,0 +1,20 @@
+{{!-- pagedjs only: used when runners include pagedjs. PrinceXML uses headers-and-footers.hbs. --}}
+<div class="HeadersAndFooters {{getUniqueKey}}" dir="ltr">
+<style>
+    :root {
+        --journal-meta-title: "{{get 'JournalMeta:name'}}";
+    }
+    @page {
+        @top {
+            text-align: right;
+            content: var(--journal-meta-title) " / " counter(page);
+        }
+        @bottom {
+            font-size: 0.83rem;
+            text-align: center;
+            content: counter(page, decimal);
+        }
+    }
+</style>
+{{{image 'logo' (get 'JournalMeta:name') 0.2}}}
+</div>

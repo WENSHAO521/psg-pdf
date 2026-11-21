@@ -3649,7 +3649,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "030564b2036153493abdb2b3193ca5db6fb379d3ce1b2affd0459d43cb8d9433"
+sha256 = "c254e0b0af67e08736910790c4c1fa043d5df7a5bd3695958f192d4689f13f57"
 
 [[asset]]
 path = "templates/academic/psg-article/psg-metadata.tex"
@@ -3715,7 +3715,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "030564b2036153493abdb2b3193ca5db6fb379d3ce1b2affd0459d43cb8d9433"
+sha256 = "c254e0b0af67e08736910790c4c1fa043d5df7a5bd3695958f192d4689f13f57"
 
 [[asset]]
 path = "templates/academic/psg-humanities/psg-metadata.tex"
@@ -3804,7 +3804,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "fb5d128b9a1bc16f5167a8cd1b7bf1224c9aea33d70b058ae432edbd37e55e6c"
+sha256 = "00559807b6931ee82a562be3f37c32636d967b1c8d02c34ad4a932a0047ad55c"
 
 [[asset]]
 path = "templates/academic/sciflow-journal/psg-article.cls"
@@ -3815,7 +3815,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "030564b2036153493abdb2b3193ca5db6fb379d3ce1b2affd0459d43cb8d9433"
+sha256 = "c254e0b0af67e08736910790c4c1fa043d5df7a5bd3695958f192d4689f13f57"
 
 [[asset]]
 path = "templates/academic/sciflow-journal/psg-metadata.tex"
@@ -3870,7 +3870,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "032de30d0f192db9d8ec5e58a0c78892e8e219ad10426fa315dcb89002325037"
+sha256 = "d1740be08843f63842a3d935337b37f77357e6c2cac1992cf045ede079aeaa18"
 
 [[asset]]
 path = "templates/academic/sciflow-report/psg-article.cls"
@@ -3881,7 +3881,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "030564b2036153493abdb2b3193ca5db6fb379d3ce1b2affd0459d43cb8d9433"
+sha256 = "c254e0b0af67e08736910790c4c1fa043d5df7a5bd3695958f192d4689f13f57"
 
 [[asset]]
 path = "templates/academic/sciflow-report/psg-metadata.tex"
@@ -3936,7 +3936,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "a95fbf7cfcd0c2ec12bc656edfffdc0ab2361935f2c2af9449dc3561a6dc0ae6"
+sha256 = "8c434fb5dc7aa019cf342fd341721b2fcf3038b75815041fc56474e9a4079590"
 
 [[asset]]
 path = "templates/academic/sciflow-monograph/psg-article.cls"
@@ -3947,7 +3947,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "030564b2036153493abdb2b3193ca5db6fb379d3ce1b2affd0459d43cb8d9433"
+sha256 = "c254e0b0af67e08736910790c4c1fa043d5df7a5bd3695958f192d4689f13f57"
 
 [[asset]]
 path = "templates/academic/sciflow-monograph/psg-metadata.tex"
@@ -4047,3 +4047,91 @@ licence_file = "templates/academic/sciflow-source/LICENSE.txt"
 kind = "data"
 usage = "Source of the built-in SciFlow templates: crates/academic/src/sciflow.rs converts it, and a test checks the converted template is current. Not shipped"
 sha256 = "1d87b9bf6d4a4596037e582e396b2d46e00371bdf3f30bcf131859115c3fad31"
+
+[[asset]]
+path = "templates/academic/sciflow-source/generic-journal/assets/headers-and-footers-pagedjs.hbs"
+title = "SciFlow generic-journal template: assets/headers-and-footers-pagedjs.hbs"
+author = "SciFlow GmbH"
+source = "SciFlow Open Source (sfo) 3.0.0, templates/generic-journal/assets/headers-and-footers-pagedjs.hbs, from the development branch archive the project owner supplied (2026-11-21)"
+licence = "MIT"
+licence_file = "templates/academic/sciflow-source/LICENSE.txt"
+kind = "data"
+usage = "Source of the built-in SciFlow templates: crates/academic/src/sciflow.rs converts it, and a test checks the converted template is current. Not shipped"
+sha256 = "a74e38198c6ae5cb1a6268dc916fc21bfda38c156b438b31c14c7b83da3dc6ca"
+
+[[asset]]
+path = "templates/academic/sciflow-source/generic-journal/assets/headers-and-footers.hbs"
+title = "SciFlow generic-journal template: assets/headers-and-footers.hbs"
+author = "SciFlow GmbH"
+source = "SciFlow Open Source (sfo) 3.0.0, templates/generic-journal/assets/headers-and-footers.hbs, from the development branch archive the project owner supplied (2026-11-21)"
+licence = "MIT"
+licence_file = "templates/academic/sciflow-source/LICENSE.txt"
+kind = "data"
+usage = "Source of the built-in SciFlow templates: crates/academic/src/sciflow.rs converts it, and a test checks the converted template is current. Not shipped"
+sha256 = "44213be66879810c5c45da5c1b41272a6f455fe5af3cb33796347a7ec8196dab"
+
+[[asset]]
+path = "templates/academic/sciflow-source/generic-journal/styles.scss"
+title = "SciFlow generic-journal template: styles.scss"
+author = "SciFlow GmbH"
+source = "SciFlow Open Source (sfo) 3.0.0, templates/generic-journal/styles.scss, from the development branch archive the project owner supplied (2026-11-21)"
+licence = "MIT"
+licence_file = "templates/academic/sciflow-source/LICENSE.txt"
+kind = "data"
+usage = "Source of the built-in SciFlow templates: crates/academic/src/sciflow.rs converts it, and a test checks the converted template is current. Not shipped"
+sha256 = "f63849813d193eb951a9a8ea3bca764a2a6122a35629fa5d89d283335f8774b4"
+
+[[asset]]
+path = "templates/academic/sciflow-source/generic-journal-toc/assets/headers-and-footers-pagedjs.hbs"
+title = "SciFlow generic-journal-toc template: assets/headers-and-footers-pagedjs.hbs"
+author = "SciFlow GmbH"
+source = "SciFlow Open Source (sfo) 3.0.0, templates/generic-journal-toc/assets/headers-and-footers-pagedjs.hbs, from the development branch archive the project owner supplied (2026-11-21)"
+licence = "MIT"
+licence_file = "templates/academic/sciflow-source/LICENSE.txt"
+kind = "data"
+usage = "Source of the built-in SciFlow templates: crates/academic/src/sciflow.rs converts it, and a test checks the converted template is current. Not shipped"
+sha256 = "a74e38198c6ae5cb1a6268dc916fc21bfda38c156b438b31c14c7b83da3dc6ca"
+
+[[asset]]
+path = "templates/academic/sciflow-source/generic-journal-toc/assets/headers-and-footers.hbs"
+title = "SciFlow generic-journal-toc template: assets/headers-and-footers.hbs"
+author = "SciFlow GmbH"
+source = "SciFlow Open Source (sfo) 3.0.0, templates/generic-journal-toc/assets/headers-and-footers.hbs, from the development branch archive the project owner supplied (2026-11-21)"
+licence = "MIT"
+licence_file = "templates/academic/sciflow-source/LICENSE.txt"
+kind = "data"
+usage = "Source of the built-in SciFlow templates: crates/academic/src/sciflow.rs converts it, and a test checks the converted template is current. Not shipped"
+sha256 = "44213be66879810c5c45da5c1b41272a6f455fe5af3cb33796347a7ec8196dab"
+
+[[asset]]
+path = "templates/academic/sciflow-source/generic-journal-toc/styles.scss"
+title = "SciFlow generic-journal-toc template: styles.scss"
+author = "SciFlow GmbH"
+source = "SciFlow Open Source (sfo) 3.0.0, templates/generic-journal-toc/styles.scss, from the development branch archive the project owner supplied (2026-11-21)"
+licence = "MIT"
+licence_file = "templates/academic/sciflow-source/LICENSE.txt"
+kind = "data"
+usage = "Source of the built-in SciFlow templates: crates/academic/src/sciflow.rs converts it, and a test checks the converted template is current. Not shipped"
+sha256 = "f63849813d193eb951a9a8ea3bca764a2a6122a35629fa5d89d283335f8774b4"
+
+[[asset]]
+path = "templates/academic/sciflow-source/generic-monograph/assets/headers-and-footers-html.hbs"
+title = "SciFlow generic-monograph template: assets/headers-and-footers-html.hbs"
+author = "SciFlow GmbH"
+source = "SciFlow Open Source (sfo) 3.0.0, templates/generic-monograph/assets/headers-and-footers-html.hbs, from the development branch archive the project owner supplied (2026-11-21)"
+licence = "MIT"
+licence_file = "templates/academic/sciflow-source/LICENSE.txt"
+kind = "data"
+usage = "Source of the built-in SciFlow templates: crates/academic/src/sciflow.rs converts it, and a test checks the converted template is current. Not shipped"
+sha256 = "a292a57351dc04d24a6019942027df249f712c06d9d4e4384f9d8e93ab377173"
+
+[[asset]]
+path = "templates/academic/sciflow-source/generic-monograph/assets/headers-and-footers.hbs"
+title = "SciFlow generic-monograph template: assets/headers-and-footers.hbs"
+author = "SciFlow GmbH"
+source = "SciFlow Open Source (sfo) 3.0.0, templates/generic-monograph/assets/headers-and-footers.hbs, from the development branch archive the project owner supplied (2026-11-21)"
+licence = "MIT"
+licence_file = "templates/academic/sciflow-source/LICENSE.txt"
+kind = "data"
+usage = "Source of the built-in SciFlow templates: crates/academic/src/sciflow.rs converts it, and a test checks the converted template is current. Not shipped"
+sha256 = "a2648a49dcd121397b29606d97d1a530d99e10507051e173c50b77366e5ef9d1"

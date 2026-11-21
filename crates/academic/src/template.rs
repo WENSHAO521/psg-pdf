@@ -330,8 +330,8 @@ mod tests {
         for (id, source, name) in SCIFLOW_BUILTINS {
             let src = root.join("sciflow-source").join(source);
             let config = std::fs::read_to_string(src.join(crate::sciflow::CONFIGURATION)).unwrap();
-            let schema = std::fs::read_to_string(src.join(crate::sciflow::DATA_SCHEMA)).ok();
-            let converted = crate::sciflow::convert(&config, schema.as_deref()).unwrap();
+            let read = |path: &str| std::fs::read(src.join(path)).ok();
+            let converted = crate::sciflow::convert(&config, &read).unwrap();
             let mut files: Vec<(String, Vec<u8>)> = crate::template_import::sciflow_files(&converted.layout);
             let manifest = crate::sciflow::builtin_manifest(id, name, source, &converted.layout);
             files.push((MANIFEST.to_owned(), manifest.into_bytes()));

@@ -13,7 +13,25 @@
 \clubpenalty=10000
 \definecolor{psgaccent}{HTML}{000000}
 \setcounter{tocdepth}{2}
-\AtBeginDocument{\renewcommand*\contentsname{Agenda}}
+% The contents heading; a Chinese or Japanese article's language replaces it.
+\psgContentsName{Agenda}
+\makeatletter
+% Headers and footers from the SciFlow template's Handlebars file.
+\newcommand\psgsciflowlogo{}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\small {\psg@pdfauthor}}
+\fancyfoot[R]{\small \thepage}
+\fancypagestyle{psgfirst}{\fancyhf{}\renewcommand{\headrulewidth}{0pt}%
+\fancyhead[L]{\small \psgsciflowlogo{}}
+\fancyhead[R]{\small \psg@ifempty\psg@articletype{}{ {\psg@articletype} }}
+\fancyfoot[L]{\small \psg@ifempty\psg@volume{}{Volume {\psg@volume}} \psg@ifempty\psg@issue{}{\psg@ifempty\psg@volume{}{, }Issue {\psg@issue}} \psg@ifempty\psg@doi{}{DOI: {\psg@doi}}}
+}
+% Headings and links from the SciFlow template's typography and CSS.
+\renewcommand\section{\@startsection{section}{1}{\z@}{-3ex \@plus -1ex \@minus -.2ex}{1.5ex \@plus .2ex}{\normalfont\fontsize{16.5pt}{19.8pt}\selectfont\bfseries\color{psgaccent}}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-2.5ex \@plus -1ex \@minus -.2ex}{1ex \@plus .2ex}{\normalfont\fontsize{13.8pt}{16.5pt}\selectfont\bfseries\color{psgaccent}}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}{-2ex \@plus -1ex \@minus -.2ex}{0.8ex \@plus .2ex}{\normalfont\fontsize{11.0pt}{13.2pt}\selectfont\bfseries}}
+\makeatother
 \input{psg-metadata}
 \addbibresource{references.bib}
 

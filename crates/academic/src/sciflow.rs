@@ -21,6 +21,7 @@ use yaml_rust2::{Yaml, YamlLoader};
 
 use crate::Error;
 use crate::metadata::{PublicationMetadata, escape};
+use crate::sciflow_page::{Headers, Style};
 
 /// The configuration's file name in a SciFlow template folder.
 pub const CONFIGURATION: &str = "configuration.sfo.yml";
@@ -76,6 +77,12 @@ pub struct Layout {
     pub article_type: String,
     /// `RRGGBB`, from the template data's `themeColor`.
     pub accent: Option<String>,
+    /// The running headers and footers, from the template's Handlebars file.
+    pub headers: Option<Headers>,
+    /// Heading and link styles, from the Typography component and the CSS.
+    pub style: Style,
+    /// The logo's file name in the template (`logo.png`), when it has one.
+    pub logo_file: Option<String>,
 }
 
 /// A SciFlow configuration turned into PSG template files.
@@ -86,6 +93,34 @@ pub struct Converted {
     pub found: Vec<String>,
     /// What was left out or could not be used, one sentence each.
     pub warnings: Vec<String>,
+    /// The logo to store beside the template as `layout.logo_file`.
+    pub logo: Option<Vec<u8>>,
+}
+
+/// The largest logo taken (bytes).
+const MAX_LOGO: usize = 8 * 1024 * 1024;
+
+/// A template file named in the configuration (`./assets/x.hbs`, `tpl/<slug>/assets/logo.jpg`),
+/// relative to the configuration's folder.
+fn asset_path(path: &str) -> String {
+    let p = path.trim().trim_start_matches("./");
+    match p.strip_prefix("tpl/") {
+        Some(rest) => rest.split_once('/').map_or(rest, |(_, r)| r).to_owned(),
+        None => p.to_owned(),
+    }
+}
+
+/// The logo's file extension from its first bytes: only PNG, JPEG and PDF, which XeLaTeX reads.
+fn image_kind(bytes: &[u8]) -> Option<&'static str> {
+    if bytes.starts_with(b"\x89PNG\r\n\x1a\n") {
+        Some("png")
+    } else if bytes.starts_with(&[0xFF, 0xD8, 0xFF]) {
+        Some("jpg")
+    } else if bytes.starts_with(b"%PDF-") {
+        Some("pdf")
+    } else {
+        None
+    }
 }
 
 fn bad(why: impl Into<String>) -> Error {
@@ -233,9 +268,14 @@ const NOT_PDF: &[&str] =
 /// Components this converter reads.
 const USED: &[&str] = &["Configuration", "Page", "TableOfContents", "JournalMeta", "ArticleMeta", "Typography", "JournalTitle", "MonographTitle"];
 
-/// Read a SciFlow configuration and, when the template has one, the schema of its own data.
-pub fn convert(configuration: &str, data_schema: Option<&str>) -> Result<Converted, Error> {
+/// Read a SciFlow configuration. `read` gives the template's other files by their path relative
+/// to the configuration's folder (the data schema, the Handlebars headers and footers, the CSS,
+/// the logo), or `None`.
+pub fn convert(configuration: &str, read: &dyn Fn(&str) -> Option<Vec<u8>>) -> Result<Converted, Error> {
     let docs = load(configuration)?;
+    let read_text = |path: &str| read(path).filter(|b| b.len() <= crate::sciflow_page::MAX_FILE).and_then(|b| String::from_utf8(b).ok());
+    let data_schema = read_text(DATA_SCHEMA);
+    let data_schema = data_schema.as_deref();
     let mut found = Vec::new();
     let mut warnings = Vec::new();
     let config = find(&docs, "Configuration")
@@ -371,16 +411,8 @@ pub fn convert(configuration: &str, data_schema: Option<&str>) -> Result<Convert
         }
     }
 
-    // What is left out.
-    if config["assets"].as_vec().is_some_and(|a| a.iter().any(|x| x["type"].as_str() == Some("logo"))) {
-        warnings.push("The logo is left out: the PSG title block has no logo. Add one in main.tex if the journal needs it.".to_owned());
-    }
-    if docs.iter().any(|d| d["kind"].as_str() == Some("HeadersAndFooters")) {
-        warnings.push("SciFlow's Handlebars headers and footers are not used; the PSG running headers are.".to_owned());
-    }
-    if page.is_some_and(|p| p["customStyles"].as_vec().is_some_and(|v| !v.is_empty())) {
-        warnings.push("Custom CSS styles are not used.".to_owned());
-    }
+    let (logo, logo_file, headers, style) = decorations(&docs, config, page, font_pt, read, &mut found, &mut warnings);
+
     let mut other: Vec<String> = docs
         .iter()
         .filter_map(|d| d["kind"].as_str())
@@ -417,8 +449,105 @@ pub fn convert(configuration: &str, data_schema: Option<&str>) -> Result<Convert
         journal,
         article_type,
         accent,
+        headers,
+        style,
+        logo_file,
     };
-    Ok(Converted { layout, found, warnings })
+    Ok(Converted { layout, found, warnings, logo })
+}
+
+/// The logo, the headers and footers and the heading styles: what the logo, Handlebars and CSS
+/// assets and the Typography component give.
+#[allow(clippy::type_complexity)]
+fn decorations(
+    docs: &[Yaml],
+    config: &Yaml,
+    page: Option<&Yaml>,
+    font_pt: u8,
+    read: &dyn Fn(&str) -> Option<Vec<u8>>,
+    found: &mut Vec<String>,
+    warnings: &mut Vec<String>,
+) -> (Option<Vec<u8>>, Option<String>, Option<Headers>, Style) {
+    let read_text = |path: &str| read(path).filter(|b| b.len() <= crate::sciflow_page::MAX_FILE).and_then(|b| String::from_utf8(b).ok());
+    // The assets: Handlebars files by id, the logo, the CSS.
+    let assets: Vec<&Yaml> = config["assets"].as_vec().map(|v| v.iter().collect()).unwrap_or_default();
+    let asset_by_id = |id: &str| assets.iter().find(|a| a["id"].as_str() == Some(id)).and_then(|a| a["path"].as_str()).map(asset_path);
+
+    let mut logo = None;
+    let mut logo_file = None;
+    if let Some(path) = assets.iter().find(|a| a["type"].as_str() == Some("logo")).and_then(|a| a["path"].as_str()).map(asset_path) {
+        match read(&path).filter(|b| b.len() <= MAX_LOGO) {
+            Some(bytes) => match image_kind(&bytes) {
+                Some(ext) => {
+                    found.push(format!("Logo: {path}."));
+                    logo_file = Some(format!("logo.{ext}"));
+                    logo = Some(bytes);
+                }
+                None => warnings.push(format!("The logo {path} is not a PNG, JPEG or PDF image; it is left out.")),
+            },
+            None => warnings.push(format!("The logo {path} is not in the template; it is left out.")),
+        }
+    }
+
+    let mut headers = None;
+    let hf = find_pdf(docs, "HeadersAndFooters");
+    if let Some(hf) = hf {
+        let file = text_of(&hf["spec"]["template"]["fileId"]).and_then(|id| asset_by_id(&id));
+        match file.as_deref().and_then(read_text) {
+            Some(hbs) => {
+                let mut notes = Vec::new();
+                headers = crate::sciflow_page::headers(&hbs, &mut notes);
+                match &headers {
+                    Some(_) => found.push(format!("Headers and footers: {}.", file.unwrap_or_default())),
+                    None => {
+                        warnings.push(format!("{}: no header or footer regions found; the PSG running headers are used.", file.unwrap_or_default()))
+                    }
+                }
+                warnings.extend(notes);
+            }
+            None => warnings.push("The headers and footers file is not in the template; the PSG running headers are used.".to_owned()),
+        }
+    }
+
+    // Heading styles: the Typography component, then the CSS files and custom styles.
+    let base_pt = f64::from(font_pt);
+    let mut typography = Vec::new();
+    if let Some(t) = find(docs, "Typography") {
+        for level in 1..=3usize {
+            let h = &t["spec"][format!("h{level}").as_str()];
+            let mut props = Vec::new();
+            for key in ["fontSize", "fontWeight", "fontStyle", "color"] {
+                if let Some(v) = text_of(&h[key]) {
+                    props.push((key.to_owned(), v));
+                }
+            }
+            if !props.is_empty() {
+                typography.push((level, props));
+            }
+        }
+    }
+    let mut css = Vec::new();
+    for a in &assets {
+        let path = a["path"].as_str().map(asset_path).unwrap_or_default();
+        if (path.ends_with(".css") || path.ends_with(".scss"))
+            && let Some(text) = read_text(&path)
+        {
+            css.push(text);
+        }
+    }
+    if let Some(custom) = page.and_then(|p| p["customStyles"].as_vec()) {
+        css.extend(custom.iter().filter_map(|c| text_of(&c["css"])));
+    }
+    let mut notes = Vec::new();
+    let style = crate::sciflow_page::style(&typography, &css, base_pt, &mut notes);
+    for note in notes {
+        if note.contains("left out") { warnings.push(note) } else { found.push(note) }
+    }
+    if !typography.is_empty() {
+        found.push("Heading sizes and weights from the Typography component.".to_owned());
+    }
+
+    (logo, logo_file, headers, style)
 }
 
 fn mm(v: f64) -> String {
@@ -455,6 +584,9 @@ impl Layout {
             mm(self.bottom_mm),
             if self.two_sided { "" } else { ",twoside=false" }
         ));
+        if self.headers.as_ref().is_some_and(|h| h.uses_logo) && self.logo_file.is_some() {
+            out.push_str("% Room for the logo in the header.\n\\geometry{headheight=10mm}\n");
+        }
         out.push_str("% The running headers are as wide as the new text block.\n\\setlength\\headwidth{\\textwidth}\n");
         if self.sans {
             out.push_str("% A sans-serif text face; Chinese and Japanese follow with Noto Sans CJK.\n\\renewcommand\\familydefault{\\sfdefault}\n");
@@ -467,7 +599,28 @@ impl Layout {
         }
         if let Some(depth) = self.toc_depth {
             out.push_str(&format!("\\setcounter{{tocdepth}}{{{depth}}}\n"));
-            out.push_str(&format!("\\AtBeginDocument{{\\renewcommand*\\contentsname{{{}}}}}\n", escape(&self.toc_label)));
+            out.push_str("% The contents heading; a Chinese or Japanese article's language replaces it.\n");
+            out.push_str(&format!("\\psgContentsName{{{}}}\n", escape(&self.toc_label)));
+        }
+        let logo = self.logo_file.as_deref().map(|f| format!("\\includegraphics[height=8mm]{{{f}}}")).unwrap_or_default();
+        if let Some(f) = &self.logo_file
+            && !self.headers.as_ref().is_some_and(|h| h.uses_logo)
+        {
+            out.push_str(&format!("% The journal's logo, above the title.\n\\psgLogo{{{f}}}\n"));
+        }
+        let style = self.style.latex();
+        if self.headers.is_some() || !style.is_empty() {
+            out.push_str("\\makeatletter\n");
+            if let Some(h) = &self.headers {
+                out.push_str("% Headers and footers from the SciFlow template's Handlebars file.\n");
+                out.push_str(&format!("\\newcommand\\psgsciflowlogo{{{logo}}}\n"));
+                out.push_str(&h.latex(self.two_sided));
+            }
+            if !style.is_empty() {
+                out.push_str("% Headings and links from the SciFlow template's typography and CSS.\n");
+                out.push_str(&style);
+            }
+            out.push_str("\\makeatother\n");
         }
         out.push_str("\\input{psg-metadata}\n\\addbibresource{references.bib}\n\n\\begin{document}\n\\psgmaketitle\n");
         if self.toc_depth.is_some() {
@@ -551,7 +704,7 @@ mod tests {
 
     #[test]
     fn a_journal_configuration_becomes_a_layout() {
-        let c = convert(JOURNAL, Some("properties:\n  themeColor:\n    default: \"#1a2b3c\"\n")).unwrap();
+        let c = convert(JOURNAL, &|p: &str| (p == DATA_SCHEMA).then(|| b"properties:\n  themeColor:\n    default: \"#1a2b3c\"\n".to_vec())).unwrap();
         let l = &c.layout;
         assert_eq!(l.title, "Journal Article");
         assert_eq!(l.paper_name, Some("a4paper"));
@@ -573,7 +726,7 @@ mod tests {
     #[test]
     fn custom_sizes_contents_and_double_sided_pages() {
         let text = "kind: Configuration\nspec:\n  title: Book\n  type: thesis\n  citationStyle:\n    id: elsevier-harvard\n---\nkind: Page\nspec:\n  page:\n    size: 17cm 24cm\n    pageBreaks:\n      beforeChapter: recto\n    margins: {inner: 25mm, outer: 20mm, top: 17mm, bottom: 20mm}\n    handling: double-sided\n---\nkind: TableOfContents\nspec:\n  depth: 9\ntranslations:\n  en-US:\n    label: Table of Contents\n";
-        let c = convert(text, None).unwrap();
+        let c = convert(text, &|_: &str| None).unwrap();
         let l = &c.layout;
         assert_eq!(l.paper_mm, (170.0, 240.0));
         assert!(l.two_sided && l.body_new_page);
@@ -582,22 +735,22 @@ mod tests {
         let main = l.main_tex();
         assert!(main.contains("paperwidth=170mm,paperheight=240mm"));
         assert!(main.contains("\\documentclass[10pt,authoryear]{psg-article}"));
-        assert!(main.contains("\\renewcommand*\\contentsname{Table of Contents}"));
+        assert!(main.contains("\\psgContentsName{Table of Contents}"));
         assert!(main.contains("\\tableofcontents\n\\clearpage"));
     }
 
     #[test]
     fn hostile_values_are_refused_or_escaped() {
         // Not a configuration at all.
-        assert!(convert("kind: Page\n", None).is_err());
-        assert!(convert(&"[".repeat(10_000), None).is_err());
-        assert!(convert(&"x".repeat(MAX_TEXT + 1), None).is_err());
+        assert!(convert("kind: Page\n", &|_: &str| None).is_err());
+        assert!(convert(&"[".repeat(10_000), &|_: &str| None).is_err());
+        assert!(convert(&"x".repeat(MAX_TEXT + 1), &|_: &str| None).is_err());
         // Margins that leave no room.
         let squeezed = "kind: Configuration\nspec: {}\n---\nkind: Page\nspec:\n  page:\n    margins: {inner: 150mm, outer: 150mm}\n";
-        assert!(convert(squeezed, None).is_err());
+        assert!(convert(squeezed, &|_: &str| None).is_err());
         // Nonsense values fall back, and a label can't run TeX commands.
         let odd = "kind: Configuration\nspec:\n  citationStyle: {id: '\\input{/etc/passwd}'}\n---\nkind: Page\nspec:\n  page:\n    size: huge\n    font: {size: 900pt}\n    margins: {inner: -5mm}\n---\nkind: TableOfContents\nspec: {title: '\\write18{rm}'}\n";
-        let c = convert(odd, None).unwrap();
+        let c = convert(odd, &|_: &str| None).unwrap();
         assert_eq!(c.layout.paper_name, Some("a4paper"));
         assert_eq!(c.layout.font_pt, 10);
         assert_eq!(c.layout.inner_mm, 22.0);

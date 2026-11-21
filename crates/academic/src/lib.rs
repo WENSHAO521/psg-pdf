@@ -44,6 +44,7 @@ pub mod process;
 pub mod project;
 mod project_revision;
 pub mod sciflow;
+mod sciflow_page;
 pub mod scripts;
 pub mod synctex;
 pub mod template;

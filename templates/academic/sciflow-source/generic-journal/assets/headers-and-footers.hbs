@@ -1,0 +1,80 @@
+<div class="HeadersAndFooters {{getUniqueKey}}" dir="ltr">
+    <style>
+        .{{getUniqueKey}} .article-type-wrapper {
+            background: {{getMetaData 'themeColor'}};
+            padding: 0.5rem 2cm 0.5rem 1rem;
+            vertical-align: middle;
+            transform: translateX(2cm);
+        }
+
+        .{{getUniqueKey}} .article-type {
+            font-size: 1.4rem;
+            color: {{contrastColor (getMetaData 'themeColor')}};
+        }
+
+        .{{getUniqueKey}} .issue-information {
+            font-size: 1rem;
+        }
+    </style>
+    {{!-- The first page header --}}
+    <div class="first-page-header flex justify-between col-12 pt2">
+        <div>
+            {{!-- Get any image defined as logo and provide the journal name as an alt text --}}
+            {{{image 'logo' (get 'JournalMeta:name') 0.2}}}
+        </div>
+        {{#if (exists 'ArticleMeta:articleType') }}
+        <div class="flex flex-column justify-around">
+            <div class="article-type-wrapper">
+                <span class="article-type">{{ get 'ArticleMeta:articleType' }}</span>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+
+    {{!-- The footer on the first page --}}
+    <div class="first-page-footer flex justify-between col-12 pb2 pt1">
+        <div>
+            <div class="center">
+                {{#if (exists 'JournalMeta:publisher.publisherName')}}{{get 'JournalMeta:publisher.publisherName'}} | {{/if}}
+                {{#if (exists 'ArticleMeta:volume')}}Volume {{get 'ArticleMeta:volume'}}{{^}} - you can set meta data in
+                the article meta settings{{/if}}
+                {{#if (exists 'ArticleMeta:issue')}}{{#if (exists 'ArticleMeta:volume')}}, {{/if}}Issue {{get
+                'ArticleMeta:issue'}}{{/if}}
+            </div>
+            <div>{{#if (get 'ArticleMeta:identifiers.doi')}}DOI: {{get 'ArticleMeta:identifiers.doi'}}{{/if}}</div>
+        </div>
+        <div>
+            {{{image 'license-image' ''}}}
+        </div>
+    </div>
+
+    {{!-- The header on recto pages (for LTR this means right pages) --}}
+    <div class="recto-page-header flex justify-between col-12 pt3">
+        <span class="author-names">{{{renderAuthorNames}}}</span>
+        <span></span>
+    </div>
+
+    {{!-- The footer on recto pages --}}
+    <div class="recto-page-footer flex justify-between col-12 pb2 pt1">
+        <div class="issue-information">
+            {{get 'JournalMeta:publisher.publisherName'}}
+        </div>
+        <span class="page-number" style="content: counter(page, {{get 'pageCounter.style'}});"></span>
+    </div>
+
+    {{!-- The header on verso pages (for LTR this means left) --}}
+    <div class="verso-page-header flex justify-between col-12 pt2">
+        <span class="alt-title">{{get 'ArticleMeta:altTitle'}}</span>
+        <span></span>
+    </div>
+
+    {{!-- The footer on verso pages --}}
+    <div class="verso-page-footer flex justify-between col-12 pb2">
+        <span class="page-number" style="content: counter(page, {{get 'pageCounter.style'}});"></span>
+        <div>
+            {{get 'JournalMeta:name'}}
+            {{#if (get 'ArticleMeta:issn')}} | ISSN. {{get 'ArticleMeta:issn'}}{{^}}{{/if}}
+            {{#if (get 'ArticleMeta:volume')}} | Vol. {{get 'ArticleMeta:volume'}}{{^}}{{/if}}
+        </div>
+    </div>
+</div>

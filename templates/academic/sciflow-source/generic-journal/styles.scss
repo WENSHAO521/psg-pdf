@@ -1,0 +1,21 @@
+// you can insert any custom styles here. Only use this as a last resort if configuration changes do not work for your use case
+.Title {
+    .meta-data {
+        p {
+            margin: 0;
+            padding: 0;
+        }
+    }
+}
+
+.journal-meta__column {
+    align-items: center;
+    text-align: center;
+}
+
+@media (min-width: 52em) {
+    .journal-meta__column {
+        align-items: flex-start;
+        text-align: left;
+    }
+}

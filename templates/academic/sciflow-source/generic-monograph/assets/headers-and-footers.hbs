@@ -1,0 +1,82 @@
+<div class="HeadersAndFooters {{getUniqueKey}}">
+
+    {{!-- The header on recto pages (for LTR this means right) --}}
+    <style>
+        .{{getUniqueKey}} {
+            hyphens: manual;
+        }
+        .{{getPage}} .{{getUniqueKey}} .recto-page-header, .{{getPage}} .{{getUniqueKey}} .first-page-header {
+            text-align: right;
+            font-style: italic;
+        }
+        .top-padding {
+            padding-top: 1cm;
+        }
+    </style>
+    <div class="recto-page-header flex flex-column top-padding col-12">
+        <div class="col-12 flex justify-between">
+            <div>{{!-- adding a spacer to align against --}}</div>
+            <div>
+                <span style="content: string(sub-heading-text-numbering) string(sub-heading-separator)"></span>
+                <span style="content: string(sub-heading-text-title)"></span>
+            </div>
+        </div>
+    </div>
+
+    {{!-- The footer on recto pages --}}
+    <style>
+        .{{getPage}} .recto-page-footer, .{{getPage}} .first-page-footer {
+            display: flex;
+            text-align: right;
+        }
+    </style>
+    <div class="recto-page-footer flex justify-between pt2 col-12">
+        <div>
+            {{getMetaData 'journal-meta.title'}}
+            {{#if (getMetaData 'article-meta.volume')}}
+            | Vol. {{getMetaData
+            'article-meta.volume'}} ({{getYear (getMetaData 'article-meta.history.epubDate')}})
+            {{^}}{{/if}}
+        </div>
+        <span class="page-number" style="content: counter(page, {{get 'pageCounter.style'}});"></span>
+    </div>
+
+    <div class="first-page-header flex flex-column justify-between col-12">{{!-- empty first page header --}}</div>
+
+    <div class="first-page-footer flex flex justify-between pt2 col-12">
+        <div>
+            {{getMetaData 'journal-meta.title'}}
+            {{#if (getMetaData 'article-meta.volume')}}
+            | Vol. {{getMetaData
+            'article-meta.volume'}} ({{getYear (getMetaData 'article-meta.history.epubDate')}})
+            {{^}}{{/if}}
+        </div>
+        <span class="page-number" style="content: counter(page, {{get 'pageCounter.style'}});"></span>
+    </div>
+
+    {{!-- The header on verso pages (for LTR this means left) --}}
+    <style>
+        .{{getPage}} .verso-page-header {
+            text-align: left;
+            font-style: italic;
+        }
+    </style>
+    <div class="verso-page-header flex flex-column top-padding col-12">
+        <div class="col-12 flex flex">
+            <span style="content: string(main-heading-text-numbering, first-except) string(sub-heading-separator)"></span>
+            <span style="content: string(main-heading-text-title, first-except)"></span>
+        </div>
+    </div>
+
+    {{!-- The footer on verso pages --}}
+    <div class="verso-page-footer flex pt2 justify-between col-12">
+        <span class="page-number" style="content: counter(page, {{get 'pageCounter.style'}});"></span>
+        <div>
+            {{getMetaData 'journal-meta.title'}}
+            {{#if (getMetaData 'article-meta.volume')}}
+            | Vol. {{getMetaData
+            'article-meta.volume'}} ({{getYear (getMetaData 'article-meta.history.epubDate')}})
+            {{^}}{{/if}}
+        </div>
+    </div>
+</div>

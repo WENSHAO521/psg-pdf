@@ -185,17 +185,27 @@
 \newcommand\psgLanguage[1]{%
   \edef\psg@lang{#1}%
   \ifx\psg@lang\psg@lang@zhhant
-    \psg@labels{摘要：}{關鍵詞：}{收稿日期：}{修訂日期：}{接受日期：}{出版日期：}{圖}{表}{參考文獻}\fi
+    \psg@labels{摘要：}{關鍵詞：}{收稿日期：}{修訂日期：}{接受日期：}{出版日期：}{圖}{表}{參考文獻}%
+    \renewcommand*\psg@lbl@contents{目錄}\fi
   \ifx\psg@lang\psg@lang@zhhans
-    \psg@labels{摘要：}{关键词：}{收稿日期：}{修订日期：}{接受日期：}{出版日期：}{图}{表}{参考文献}\fi
+    \psg@labels{摘要：}{关键词：}{收稿日期：}{修订日期：}{接受日期：}{出版日期：}{图}{表}{参考文献}%
+    \renewcommand*\psg@lbl@contents{目录}\fi
   \ifx\psg@lang\psg@lang@ja
-    \psg@labels{要旨：}{キーワード：}{受付：}{改訂：}{受理：}{公開：}{図}{表}{参考文献}\fi
+    \psg@labels{要旨：}{キーワード：}{受付：}{改訂：}{受理：}{公開：}{図}{表}{参考文献}%
+    \renewcommand*\psg@lbl@contents{目次}\fi
   \DefineBibliographyStrings{english}{references={\psg@lbl@references},bibliography={\psg@lbl@references}}%
   % Chinese and Japanese: every paragraph indented two characters, and a space after "圖 1".
   \ifx\psg@lbl@figure\psg@lbl@en@figure\else
     \setlength\parindent{2em}\RequirePackage{indentfirst}\captionsetup{labelsep=quad}%
   \fi}
 \newcommand*\psg@lbl@en@figure{Figure}
+%% The contents heading a template chose (\psgContentsName), replaced by the article language's.
+\newcommand*\psg@lbl@contents{}
+\newcommand\psgContentsName[1]{\renewcommand*\psg@lbl@contents{#1}}
+\AtBeginDocument{\psg@ifempty\psg@lbl@contents{}{\renewcommand*\contentsname{\psg@lbl@contents}}}
+%% A journal logo above the title block (PNG, JPEG or PDF in the project folder).
+\newcommand*\psg@logo{}
+\newcommand\psgLogo[1]{\renewcommand*\psg@logo{#1}}
 \AtBeginDocument{%
   \renewcommand*\figurename{\psg@lbl@figure}%
   \renewcommand*\tablename{\psg@lbl@table}}
@@ -255,6 +265,7 @@
 \newcommand\psgmaketitle{%
   \thispagestyle{psgfirst}%
   \begingroup
+  \psg@ifempty\psg@logo{}{\noindent\includegraphics[height=14mm,keepaspectratio]{\psg@logo}\par\vspace{6pt}}%
   \noindent{\color{psgaccent}\rule{\textwidth}{2pt}}\par\vspace{2pt}%
   \noindent{\small\textsc{\psg@journal}%
     \ifx\psg@issn\@empty\else\hfill ISSN \psg@issn\fi}\par

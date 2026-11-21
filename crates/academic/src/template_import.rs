@@ -176,10 +176,13 @@ fn import_sciflow(
     mut warnings: Vec<String>,
 ) -> Result<Imported, Error> {
     let folder = config.strip_suffix(crate::sciflow::CONFIGURATION).unwrap_or_default();
-    let read = |path: &str| files.iter().find(|(p, _)| p == path).and_then(|(_, b)| std::str::from_utf8(b).ok());
-    let text = read(config).ok_or_else(|| Error::Template(format!("{config}: not UTF-8 text")))?;
-    let schema = read(&format!("{folder}{}", crate::sciflow::DATA_SCHEMA));
-    let converted = crate::sciflow::convert(text, schema)?;
+    let text = files
+        .iter()
+        .find(|(p, _)| p == config)
+        .and_then(|(_, b)| std::str::from_utf8(b).ok())
+        .ok_or_else(|| Error::Template(format!("{config}: not UTF-8 text")))?;
+    let read = |path: &str| files.iter().find(|(p, _)| *p == format!("{folder}{path}")).map(|(_, b)| b.clone());
+    let converted = crate::sciflow::convert(text, &read)?;
     let display_name = name.map(str::trim).filter(|n| !n.is_empty()).map(str::to_owned).unwrap_or_else(|| converted.layout.title.clone());
     let manifest = Manifest {
         id: unreserved_id(template_id(&display_name)),
@@ -200,7 +203,11 @@ fn import_sciflow(
     let mut found = vec![format!("SciFlow configuration: {config}.")];
     found.extend(converted.found);
     warnings.extend(converted.warnings);
-    let (template, dir) = install(store, manifest, sciflow_files(&converted.layout))?;
+    let mut files = sciflow_files(&converted.layout);
+    if let (Some(name), Some(bytes)) = (&converted.layout.logo_file, converted.logo) {
+        files.push((name.clone(), bytes));
+    }
+    let (template, dir) = install(store, manifest, files)?;
     Ok(Imported { template, dir, found, warnings })
 }
 
@@ -1008,11 +1015,12 @@ mod tests {
         std::fs::create_dir_all(src.join("assets")).unwrap();
         std::fs::write(
             src.join(crate::sciflow::CONFIGURATION),
-            "kind: Configuration\nspec:\n  title: Unicorn Journal\n  citationStyle:\n    id: ieee\n---\nkind: Page\nspec:\n  page:\n    size: Letter\n    font: {size: 12pt, family: 'Noto Serif, serif'}\n    handling: double-sided\n---\nkind: JournalMeta\nspec:\n  name: Unicorn Journal\n",
+            "kind: Configuration\nspec:\n  title: Unicorn Journal\n  citationStyle:\n    id: ieee\n  assets:\n    - id: logo\n      type: logo\n      path: tpl/my-journal/assets/logo.pdf\n---\nkind: Page\nspec:\n  page:\n    size: Letter\n    font: {size: 12pt, family: 'Noto Serif, serif'}\n    handling: double-sided\n---\nkind: JournalMeta\nspec:\n  name: Unicorn Journal\n",
         )
         .unwrap();
         std::fs::write(src.join(crate::sciflow::DATA_SCHEMA), "properties:\n  themeColor:\n    default: '#336699'\n").unwrap();
         std::fs::write(src.join("assets").join("headers.hbs"), "{{title}}").unwrap();
+        std::fs::write(src.join("assets").join("logo.pdf"), b"%PDF-1.4\n%%EOF\n").unwrap();
         let store = root.path().join("store");
         let added = import(&root.path().join("unicorn"), &store, None).unwrap();
         assert_eq!(added.template.manifest.name, "Unicorn Journal");
@@ -1023,6 +1031,9 @@ mod tests {
         assert!(main.contains("letterpaper"), "{main}");
         assert!(main.contains("{HTML}{336699}"), "{main}");
         assert!(!main.contains("sfdefault"), "{main}");
+        assert!(main.contains("\\psgLogo{logo.pdf}"), "{main}");
+        assert_eq!(std::fs::read(added.dir.join("logo.pdf")).unwrap(), b"%PDF-1.4\n%%EOF\n");
+        assert!(added.template.manifest.files.contains(&"logo.pdf".to_owned()));
         let metadata = std::fs::read_to_string(added.dir.join(METADATA_FILE)).unwrap();
         assert!(metadata.contains("Unicorn Journal"));
         for f in ["psg-article.cls", "body.tex", "references.bib"] {

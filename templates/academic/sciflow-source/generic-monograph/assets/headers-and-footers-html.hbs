@@ -1,0 +1,8 @@
+<div class="HeadersAndFooters col-12 flex justify-between" text-direction="ltr">
+    <div><b>{{getMetaData 'journal-meta.title'}}</b></div>
+    <div>
+        {{#if (getMetaData 'article-meta.identifiers.doi')}}
+            <a href="" target="_blank" rel="noopener" href="https://doi.org/{{getMetaData 'article-meta.identifiers.doi'}}">doi.org/{{getMetaData 'article-meta.identifiers.doi'}}</a>
+        {{^}}{{/if}}
+    </div>
+</div>

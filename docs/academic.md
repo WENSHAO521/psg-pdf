@@ -165,7 +165,8 @@ Phase five (automatic typesetting):
 - **A journal's own template** (`template_import.rs`): a `.zip` or folder; see
   [academic-guide.md](academic-guide.md#a-journals-own-template).
 - **SciFlow templates** (`sciflow.rs`): a SciFlow `configuration.sfo.yml` becomes a template on the
-  PSG class (page, margins, sides, text size and face, citation style, contents, theme colour);
+  PSG class (page, margins, sides, text size and face, citation style, contents, theme colour,
+  Handlebars headers and footers and logo through `sciflow_page.rs`, heading and link CSS);
   three of SciFlow's generic templates are built in. See
   [academic-guide.md](academic-guide.md#sciflow-templates).
 - **`typeset`**: manuscript, template and a metadata file to a PDF in one command, with `--json`.

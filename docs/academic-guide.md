@@ -150,9 +150,15 @@ other template: the page size and margins, single- or double-sided pages, the te
 sans-serif or serif face, widows and orphans, the citation style (its Zotero/CSL id mapped to the
 closest BibLaTeX style: `apa`, `ieee`, `chicago-note-bibliography`, `modern-language-association`,
 `vancouver`, `american-chemical-society`, `nature`; others to numbered or author-year citations),
-the table of contents, the journal name and article type, and the theme colour from
-`metaData.schema.yml`. SciFlow's HTML, EPUB and reader settings, Handlebars headers and footers,
-custom CSS and logos are left out, and each one left out is listed after adding the template.
+the table of contents (its heading follows the article's language for Chinese and Japanese), the
+journal name and article type, and the theme colour from `metaData.schema.yml`. Its Handlebars
+headers and footers become the PDF's running headers and footers: the first page, right-hand and
+left-hand pages, with the journal, volume, issue, DOI, article type, short title, authors, page
+number and section title filled from the publication details. The logo (PNG, JPEG or PDF; a PDF
+logo stays sharp at any size) goes where the headers put it, or above the title. From the
+Typography component and the CSS, the size, weight, style and colour of the headings and the colour
+of links are carried over. SciFlow's HTML, EPUB and reader settings and CSS rules for anything else
+are left out, and each thing left out is listed after adding the template.
 
 Three of SciFlow's generic templates come built in: **SciFlow Journal Article** (A4, single-sided,
 11 pt sans-serif, APA), **SciFlow Report with Contents** (the same, with a two-level table of
