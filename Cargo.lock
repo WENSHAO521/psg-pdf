@@ -4465,6 +4465,7 @@ dependencies = [
  "craft-docx",
  "craft-wordmodel",
  "flate2",
+ "image",
 ]
 
 [[package]]

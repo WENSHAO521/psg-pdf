@@ -297,12 +297,26 @@ fn light_shading_after_text_is_not_flagged() {
 
 #[test]
 fn graphics_state_carries_across_streams() {
-    // The first stream sets a white fill after the text; the second stream's rectangle over
-    // the text is therefore white, not the default black: no finding. Without the carry fix
-    // the rectangle would default to black and flag.
+    // The second stream uses the first stream's white fill for its rectangle.
     let s1 = b"BT /F1 24 Tf 100 700 Td (SECRET DATA 123) Tj ET\n1 g\n";
     let s2 = b"100 688 220 32 re f\n";
     let findings = audit_redactions(&open(two_streams(s1, s2))).expect("audit must run");
+    assert_eq!(findings.len(), 1, "{findings:?}");
+    assert_eq!(findings[0].kind, FindingKind::HiddenUnderWhite);
+}
+
+#[test]
+fn white_cover_is_reported_when_painted_after_text() {
+    let text = b"0 g BT /F1 24 Tf 100 700 Td (ASSESSMENT DRAFT) Tj ET\n";
+    let cover = b"1 g 100 688 260 32 re f\n";
+    let content = [text.as_slice(), cover.as_slice()].concat();
+    let findings = audit_redactions(&open(one_page(&content, ""))).unwrap();
+    assert_eq!(findings.len(), 1, "{findings:?}");
+    assert_eq!(findings[0].kind, FindingKind::HiddenUnderWhite);
+    assert_eq!(findings[0].covered_text, "ASSESSMENT DRAFT");
+
+    let content = [cover.as_slice(), text.as_slice()].concat();
+    let findings = audit_redactions(&open(one_page(&content, ""))).unwrap();
     assert!(findings.is_empty(), "{findings:?}");
 }
 
@@ -480,6 +494,7 @@ fn finding_kind_ids_are_stable() {
     // The string IDs are the crate's public vocabulary (CLI output, future machine-readable
     // formats). They must not change; add a variant instead of renaming.
     assert_eq!(FindingKind::CoveredText.id(), "covered-text");
+    assert_eq!(FindingKind::HiddenUnderWhite.id(), "hidden-under-white");
     assert_eq!(FindingKind::UnappliedMark.id(), "unapplied-mark");
 }
 
@@ -774,10 +789,10 @@ fn withheld_covered_text_is_not_assembled() {
     let lines = pdfcraft_edit::text_lines(&doc, 0).expect("text");
     let mut budget = crate::Budget { limits: crate::Limits::DEFAULT, comparisons: 0, page_cost: 0, covered_text: 0 };
     budget.start_page(&lines);
-    let withheld = budget.hidden_text(&lines, false, &PAGE, |_| true).expect("within the budget");
+    let withheld = budget.hidden_text(&lines, false, &PAGE, None, |_| true).expect("within the budget");
     assert_eq!(withheld.map(|t| t.capacity()), Some(0), "a finding, with no text built for it");
-    assert_eq!(budget.hidden_text(&lines, false, &PAGE, |_| false).expect("within the budget"), None);
-    let copied = budget.hidden_text(&lines, true, &PAGE, |_| true).expect("within the budget");
+    assert_eq!(budget.hidden_text(&lines, false, &PAGE, None, |_| false).expect("within the budget"), None);
+    let copied = budget.hidden_text(&lines, true, &PAGE, None, |_| true).expect("within the budget");
     assert_eq!(copied.as_deref(), Some("SECRET DATA 123"));
 }
 
@@ -874,4 +889,32 @@ fn every_finding_record_counts_against_the_output_bound() {
     assert_eq!(crate::audit(&doc, exact).expect("within the budget").len(), 3);
     let short = crate::Limits { covered_text: 3 * one - 1, ..exact };
     assert!(matches!(crate::audit(&doc, short), Err(crate::AuditError::TooMuchOutput)));
+}
+
+#[test]
+fn text_drawn_on_a_white_cover_is_not_hidden_under_it() {
+    // A label, a white box behind the value beside it, then the value on the same baseline: the
+    // value is drawn on the white and nothing is hidden, although the line starts before the box.
+    let content = b"0 g BT /F1 24 Tf 100 700 Td (Name:) Tj ET\n1 g 172 688 200 32 re f\n0 g BT /F1 24 Tf 172 700 Td (John Smith) Tj ET\n";
+    let doc = open(one_page(content, ""));
+    let page = pdfcraft_model::pages(&doc)[0].clone();
+    let lines = pdfcraft_edit::glyph_text_lines(&doc, &page).unwrap();
+    assert_eq!(lines.len(), 1, "the label and the value must join into one line: {:?}", lines.iter().map(|l| &l.text).collect::<Vec<_>>());
+    let findings = audit_redactions(&doc).unwrap();
+    assert!(findings.is_empty(), "{findings:?}");
+}
+
+#[test]
+fn white_cover_reports_only_the_runs_painted_before_it() {
+    // The secret is whited out, then a visible value is drawn beside it on the same line, partly
+    // on the box: the finding names the secret, not the value drawn on top.
+    let content = b"0 g BT /F1 24 Tf 100 700 Td (SECRET) Tj ET\n1 g 98 688 140 32 re f\n0 g BT /F1 24 Tf 200 700 Td (shown) Tj ET\n";
+    let doc = open(one_page(content, ""));
+    let page = pdfcraft_model::pages(&doc)[0].clone();
+    let lines = pdfcraft_edit::glyph_text_lines(&doc, &page).unwrap();
+    assert_eq!(lines.len(), 1, "{:?}", lines.iter().map(|l| &l.text).collect::<Vec<_>>());
+    let findings = audit_redactions(&doc).unwrap();
+    assert_eq!(findings.len(), 1, "{findings:?}");
+    assert_eq!(findings[0].kind, FindingKind::HiddenUnderWhite);
+    assert_eq!(findings[0].covered_text, "SECRET");
 }

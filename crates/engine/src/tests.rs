@@ -8088,6 +8088,9 @@ fn exporting_office_files_keeps_images() {
         std::fs::write(format!("{dir}/pic.docx"), &docx).unwrap();
     }
     assert!(String::from_utf8(d.export_office(compare::OfficeFormat::Html)).unwrap().contains("data:image/png;base64,"));
+    let rtf = d.export_office_checked(compare::OfficeFormat::Rtf);
+    assert!(rtf.truncated_pages.is_empty());
+    assert!(String::from_utf8(rtf.bytes).unwrap().contains("\\pict\\pngblip"));
 }
 
 /// #314: a page whose content is drawn through a form XObject exports its text (the file from
