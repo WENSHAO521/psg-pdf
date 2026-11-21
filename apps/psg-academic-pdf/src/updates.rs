@@ -214,16 +214,4 @@ mod tests {
         assert_eq!(UPDATE_APP.repo, "WENSHAO521/psg-pdf");
         assert_eq!(UPDATE_APP.name, "PSG Academic PDF");
     }
-
-    #[test]
-    fn the_updater_knows_the_msis_own_uninstall_record() {
-        // An MSI copy updates only by finding exactly one uninstall record with this name and
-        // publisher, so both must be what packaging/windows/psg-academic-pdf.wxs registers.
-        let wxs = include_str!("../../../packaging/windows/psg-academic-pdf.wxs");
-        assert!(
-            wxs.contains(&format!(r#"<Package Name="{}" Manufacturer="{}""#, UPDATE_APP.name, UPDATE_APP.publisher)),
-            "the MSI registers another name or publisher"
-        );
-        assert!(wxs.contains(&format!(r"App Paths\{}.exe", UPDATE_APP.id)));
-    }
 }

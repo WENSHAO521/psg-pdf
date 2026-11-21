@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Regenerate the macOS DMG window files, one set per product (see README.md here):
 
-    background.svg / background.tiff / dmg-layout.DS_Store                      PSG PDF
-    academic-background.svg / academic-background.tiff / academic-layout.DS_Store  PSG Academic PDF
+    background.svg / background.tiff / dmg-layout.DS_Store  PSG PDF
 
 Needs resvg and usvg on PATH and:
     pip install 'pillow>=12' ds_store==1.3.3 mac_alias==2.2.3
@@ -41,16 +40,6 @@ VARIANTS = {
         "accent": "#d8ae5c",
         "prefix": "",
         "layout": "dmg-layout.DS_Store",
-    },
-    "psg-academic-pdf": {
-        "volume": "PSG Academic PDF",
-        "app": "PSG Academic PDF.app",
-        "title": "PSG Academic PDF",
-        "icon": "../../../assets/app-icon-academic/psg-academic-pdf.svg",
-        "field": "#3d1a55",
-        "accent": "#d8ae5c",
-        "prefix": "academic-",
-        "layout": "academic-layout.DS_Store",
     },
 }
 WIDTH, HEIGHT = 660, 400  # window content, pt; the background's 1x size

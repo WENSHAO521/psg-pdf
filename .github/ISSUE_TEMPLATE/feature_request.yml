@@ -1,5 +1,5 @@
 name: Suggest an improvement
-description: An idea for PSG PDF or PSG Academic PDF.
+description: An idea for PSG PDF.
 labels: ["enhancement"]
 body:
   - type: dropdown
@@ -8,8 +8,7 @@ body:
       label: Product
       options:
         - PSG PDF
-        - PSG Academic PDF
-        - Both
+        - The pdfcraft-cli command-line tool
     validations:
       required: true
   - type: textarea

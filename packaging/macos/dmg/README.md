@@ -1,24 +1,23 @@
 # macOS DMG windows
 
 What Finder shows when a DMG opens: a 660 × 400 pt background with the app icon and the
-`Applications` link side by side. There is one set of files per app. `package.sh` copies them
+`Applications` link side by side. There is one set of files per app (PSG PDF). `package.sh` copies them
 into the image; nothing here is generated at build time, so each DMG builds with a plain
 `hdiutil create -srcfolder` (no Finder scripting on CI, nothing extra installed in the signing job).
 
 | File | What |
 |---|---|
-| `background.svg`, `academic-background.svg` | The backgrounds of PSG PDF and PSG Academic PDF, written by `generate.py`: the app icon (`assets/app-icon/psg-pdf.svg` or `assets/app-icon-academic/psg-academic-pdf.svg`, linked, not copied) cropped as a cover on the app's colour field (deep blue `#14306a` or academic purple `#3d1a55`), with a gold accent (`#d8ae5c`), Ink and Paper. Their text (Inter, JetBrains Mono, from `assets/fonts`) is outlined with usvg, so rendering them needs no fonts. |
-| `background.tiff`, `academic-background.tiff` | Each background at 1x (660 × 400 px, 72 dpi) and 2x (1320 × 800 px, 144 dpi) in one HiDPI TIFF (16-colour palette, Deflate, sRGB). Goes to `.background/background.tiff` in its image. |
-| `dmg-layout.DS_Store`, `academic-layout.DS_Store` | Finder's view settings for each volume: window size, icon size 128, the app at (326, 205), `Applications` at (574, 205), and the background. Goes to `.DS_Store` in the image; named so it isn't mistaken for (or ignored like) a Finder-generated `.DS_Store`. |
+| `background.svg` | The background of PSG PDF, written by `generate.py`: the app icon (`assets/app-icon/psg-pdf.svg`, linked, not copied) cropped as a cover on the app's colour field (deep blue `#14306a`), with a gold accent (`#d8ae5c`), Ink and Paper. Its text (Inter, JetBrains Mono, from `assets/fonts`) is outlined with usvg, so rendering it needs no fonts. |
+| `background.tiff` | The background at 1x (660 × 400 px, 72 dpi) and 2x (1320 × 800 px, 144 dpi) in one HiDPI TIFF (16-colour palette, Deflate, sRGB). Goes to `.background/background.tiff` in the image. |
+| `dmg-layout.DS_Store` | Finder's view settings for the volume: window size, icon size 128, the app at (326, 205), `Applications` at (574, 205), and the background. Goes to `.DS_Store` in the image; named so it isn't mistaken for (or ignored like) a Finder-generated `.DS_Store`. |
 | `generate.py` | Writes all of the above from the template and layout in the script. |
 
 ## The volume name has no version
 
-The mounted volumes are called `PSG PDF` and `PSG Academic PDF`, without a version. The layout
+The mounted volume is called `PSG PDF`, without a version. The layout
 points at the background through an alias that includes the volume name, and Finder resolves it by
 that name: with a versioned name the window keeps its size and icon positions but shows no
-background. The DMG file names (`psg-pdf-<version>-macos-<arch>.dmg`,
-`psg-academic-pdf-<version>-macos-<arch>.dmg`) still carry the version.
+background. The DMG file name (`psg-pdf-<version>-macos-<arch>.dmg`) still carries the version.
 
 ## Rules
 

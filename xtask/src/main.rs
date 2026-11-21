@@ -30,7 +30,7 @@ const COMMANDS: &[(&str, &str, Command)] = &[
     ),
     (
         "products",
-        "PSG PDF and PSG Academic PDF identities (packaging/products.toml): `check` (default), `matrix` (release workflow JSON), `get <id> <key>`",
+        "PSG product identities (packaging/products.toml): `check` (default), `matrix` (release workflow JSON), `get <id> <key>`",
         products::run,
     ),
     ("layers", "Enforce the crate dependency layering (plan/architecture.md §3)", gates::layers),

@@ -10,7 +10,7 @@ unset UPDATE_SIGNING_KEY
 make_inventory() {
   local tag="$1" root="$2" product platform suffix folder hashes
   local -a suffixes
-  for product in psg-pdf psg-academic-pdf; do
+  for product in psg-pdf; do
     for platform in linux-x86_64 windows-x64 macos-universal; do
       case "$platform" in
         linux-x86_64) suffixes=(.deb .rpm .AppImage .tar.gz) ;;
@@ -47,8 +47,8 @@ check_inventory() {
 for tag in v99.0.0-beta.1 v99.0.0; do
   root="$temp/$tag"
   make_inventory "$tag" "$root/missing-platform"
-  rm -r -- "$root/missing-platform/psg-academic-pdf-macos-universal"
-  check_inventory "$tag" "$root/missing-platform" "psg-academic-pdf for macos-universal is missing"
+  rm -r -- "$root/missing-platform/psg-pdf-windows-x64"
+  check_inventory "$tag" "$root/missing-platform" "psg-pdf for windows-x64 is missing"
   [[ ! -e "$root/missing-platform/SHA256SUMS.txt" ]]
 
   make_inventory "$tag" "$root/missing-checksum"
@@ -62,7 +62,7 @@ for tag in v99.0.0-beta.1 v99.0.0; do
 
   make_inventory "$tag" "$root/complete"
   check_inventory "$tag" "$root/complete" 'UPDATE_SIGNING_KEY secret is missing'
-  [[ "$(wc -l <"$root/complete/SHA256SUMS.txt")" -eq 14 ]]
+  [[ "$(wc -l <"$root/complete/SHA256SUMS.txt")" -eq 7 ]]
 done
 
-echo 'Both channels require checksummed installers for both products on all three platforms.'
+echo 'Both channels require checksummed installers for every product on all three platforms.'

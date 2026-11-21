@@ -1,5 +1,5 @@
 name: Report a problem
-description: Something in PSG PDF or PSG Academic PDF doesn't work as it should.
+description: Something in PSG PDF doesn't work as it should.
 labels: ["bug"]
 body:
   - type: markdown
@@ -13,8 +13,6 @@ body:
       label: Product
       options:
         - PSG PDF
-        - PSG Academic PDF
-        - Both
         - The pdfcraft-cli command-line tool
     validations:
       required: true
@@ -61,6 +59,5 @@ body:
     attributes:
       label: Log or error message
       description: |
-        For PSG Academic PDF, the Problems tab or the Compile output. For PSG PDF, the log file
-        named in docs/development.md ("Logs"). Remove anything personal first.
+        The log file named in docs/development.md ("Logs"). Remove anything personal first.
       render: text

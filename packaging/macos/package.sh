@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
-# Build, sign and (optionally) notarize one PSG product for macOS. PSG PDF and PSG Academic PDF
-# are independent products (packaging/products.toml), each on its own DMG:
+# Build, sign and (optionally) notarize a PSG product for macOS (packaging/products.toml):
 #
 #   --product psg-pdf:
 #     $DIST/psg-pdf-<version>-macos-<arch>.dmg           PSG PDF.app, drag-to-Applications
 #     $DIST/pdfcraft-cli-<version>-macos-<arch>.zip      the headless CLI
-#   --product psg-academic-pdf:
-#     $DIST/psg-academic-pdf-<version>-macos-<arch>.dmg  PSG Academic PDF.app, drag-to-Applications
 #
-# Usage: packaging/macos/package.sh [--product psg-pdf|psg-academic-pdf] [--arch universal|aarch64|x86_64] [--skip-build]
+# Usage: packaging/macos/package.sh [--product psg-pdf] [--arch universal|aarch64|x86_64] [--skip-build]
 #
 # Signing (env):
 #   MACOS_SIGN_IDENTITY   codesign identity (name or SHA-1). Default "-" = ad-hoc (local testing;
@@ -47,11 +44,7 @@ case "$PRODUCT" in
     NAME="PSG PDF"; BIN=psg-pdf; PACKAGES=(psg-pdf pdfcraft-cli)
     ICNS="$ROOT/assets/app-icon/psg-pdf.icns"; PLIST="$HERE/Info.plist.in"
     LAYOUT="$HERE/dmg/dmg-layout.DS_Store"; BACKGROUND="$HERE/dmg/background.tiff" ;;
-  psg-academic-pdf)
-    NAME="PSG Academic PDF"; BIN=psg-academic-pdf; PACKAGES=(psg-academic-pdf)
-    ICNS="$ROOT/assets/app-icon-academic/psg-academic-pdf.icns"; PLIST="$HERE/Info-academic.plist.in"
-    LAYOUT="$HERE/dmg/academic-layout.DS_Store"; BACKGROUND="$HERE/dmg/academic-background.tiff" ;;
-  *) echo "unknown --product $PRODUCT (psg-pdf or psg-academic-pdf)" >&2; exit 2 ;;
+  *) echo "unknown --product $PRODUCT (psg-pdf)" >&2; exit 2 ;;
 esac
 
 # Keep in sync with LSMinimumSystemVersion in Info.plist.in.
@@ -174,17 +167,9 @@ seal() {
 }
 
 assemble "$APP" "$BIN" "$NAME" "$ICNS" "$PLIST"
-if [[ "$PRODUCT" = psg-pdf ]]; then
-  # OCR models: the app finds them at Contents/MacOS/../Resources/models. Before signing, so the
-  # bundle's seal covers them.
-  stage_models "$APP/Contents/Resources/models"
-else
-  # Journal templates in Contents/Resources/templates/academic, where the app looks for them
-  # (crates/academic/src/template.rs). Not in Contents/MacOS: codesign treats every file there as
-  # code and refuses to seal the bundle. The PSG Research Article template is also compiled in.
-  mkdir -p "$APP/Contents/Resources/templates"
-  cp -R "$ROOT/templates/academic" "$APP/Contents/Resources/templates/academic"
-fi
+# OCR models: the app finds them at Contents/MacOS/../Resources/models. Before signing, so the
+# bundle's seal covers them.
+stage_models "$APP/Contents/Resources/models"
 seal "$APP" "$NAME"
 
 # ---- DMG ---------------------------------------------------------------------------------------
@@ -241,12 +226,6 @@ if [[ "$NOTARIZE" = 1 ]]; then
 fi
 
 # ---- CLI (PSG PDF) -----------------------------------------------------------------------------
-if [[ "$PRODUCT" != psg-pdf ]]; then
-  "$APP/Contents/MacOS/$NAME" --version
-  echo "==> done"
-  ls -lh "$DMG"
-  exit 0
-fi
 echo "==> building $CLI_ZIP"
 CLI_DIR="$WORK/pdfcraft-cli-$VERSION-macos-$ARCH"
 mkdir -p "$CLI_DIR"

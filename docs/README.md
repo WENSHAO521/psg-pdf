@@ -11,7 +11,7 @@ step, and `.nojekyll` keeps Pages from processing these notes.
 | Page | What it covers |
 |---|---|
 | [PSG Academic PDF guide](academic-guide.md) | What it needs (TeX), making an article step by step, the command-line form, languages |
-| [The two products](products.md) | Installers, install folders, updates, and migrating from the old PSG PDF Suite |
+| [Products](products.md) | Installers, install folders, updates, and migrating from the old PSG PDF Suite |
 | [Interface language](localization.md) | Choosing PSG PDF's interface language |
 | [Batch conversion, OCR and compression](cli-batch.md) | Running `pdfcraft-cli batch` over many files |
 | [Windows printing](windows-printing.md) | How PSG PDF prints on Windows |

@@ -1,18 +1,15 @@
 #!/usr/bin/env bash
-# Build and package one PSG product for Linux (<arch> is x86_64 or aarch64, or riscv64 when
-# cross-compiling). PSG PDF and PSG Academic PDF are independent products (packaging/products.toml):
-# each has its own packages, package name, desktop entry, icons and AppImage update channel, and
-# either can be installed without the other.
+# Build and package a PSG product for Linux (<arch> is x86_64 or aarch64, or riscv64 when
+# cross-compiling; packaging/products.toml).
 #
 #   $DIST/<product>-<version>-linux-<arch>.AppImage  any distro with glibc >= the build host's
 #   $DIST/<product>-<version>-linux-<arch>.AppImage.zsync  delta updates (needs zsyncmake)
 #   $DIST/<product>-<version>-linux-<arch>.deb       Debian, Ubuntu, Mint, Pop!_OS, ...
 #   $DIST/<product>-<version>-linux-<arch>.rpm       Fedora, openSUSE, RHEL, ...
 #   $DIST/<product>-<version>-linux-<arch>.tar.gz    plain FHS-style tree (bin/, share/)
-#   $DIST/pdfcraft-cli-<version>-linux-<arch>.tar.gz  PSG PDF only: the headless CLI alone
+#   $DIST/pdfcraft-cli-<version>-linux-<arch>.tar.gz  the headless CLI alone
 #
-# <product> is psg-pdf (default) or psg-academic-pdf. The psg-academic-pdf packages take over the
-# files the 0.18.x "PSG PDF Suite" package (named psg-pdf) installed for it (docs/products.md).
+# <product> is psg-pdf (the default and only product).
 #
 # A local or patched build: set PDFCRAFT_BUILD_LABEL (e.g. `titlebar`). `--version` and About then
 # show `0.7.1 (titlebar)`, file names carry `-titlebar`, and the .rpm/.deb release becomes
@@ -22,7 +19,7 @@
 # CROSS_COMPILE (binutils prefix, for strip) and optionally EMULATOR (e.g. qemu-riscv64) to
 # smoke-test the CLI.
 #
-# Usage: packaging/linux/package.sh [--product psg-pdf|psg-academic-pdf] [--skip-build]
+# Usage: packaging/linux/package.sh [--product psg-pdf] [--skip-build]
 #                                   [--formats "appimage deb rpm tar cli"]
 #
 # Needs: cargo, curl and the network (the OCR models: cargo xtask models); nfpm for deb/rpm (https://nfpm.goreleaser.com); appimagetool for the AppImage
@@ -57,17 +54,7 @@ case "$PRODUCT" in
     ICONS="$ROOT/assets/app-icon"
     NFPM="$HERE/nfpm.yaml"
     ;;
-  psg-academic-pdf)
-    NAME="PSG Academic PDF"
-    APP_ID=com.panoramascholarly.psgacademicpdf
-    BINARIES="psg-academic-pdf"
-    PACKAGES="-p psg-academic-pdf"
-    ICONS="$ROOT/assets/app-icon-academic"
-    NFPM="$HERE/nfpm-academic.yaml"
-    # The headless CLI belongs to PSG PDF.
-    FORMATS="${FORMATS//cli/}"
-    ;;
-  *) echo "unknown product: $PRODUCT (psg-pdf or psg-academic-pdf)" >&2; exit 2 ;;
+  *) echo "unknown product: $PRODUCT (psg-pdf)" >&2; exit 2 ;;
 esac
 APP_BIN="${BINARIES%% *}"
 
@@ -116,11 +103,6 @@ case "$PRODUCT" in
     install -Dm644 "$HERE/$APP_ID.mime.xml" "$STAGE/usr/share/mime/packages/$APP_ID.xml"
     # OCR models: the app finds them at <bin>/../share/pdfcraft/models, so in every format below.
     stage_models "$STAGE/usr/share/pdfcraft/models"
-    ;;
-  psg-academic-pdf)
-    # The journal templates, which it looks for in ../share/psg-academic-pdf/templates.
-    mkdir -p "$STAGE/usr/share/psg-academic-pdf"
-    cp -R "$ROOT/templates/academic" "$STAGE/usr/share/psg-academic-pdf/templates"
     ;;
 esac
 
@@ -255,11 +237,9 @@ if has appimage; then
   fi
 fi
 
-# Smoke test: the CLI for PSG PDF; PSG Academic PDF's headless `templates` command, which must
-# find the staged templates through ../share/psg-academic-pdf.
+# Smoke test: the CLI.
 case "$PRODUCT" in
   psg-pdf) SMOKE=("$STAGE/usr/bin/pdfcraft-cli" --version) ;;
-  psg-academic-pdf) SMOKE=("$STAGE/usr/bin/psg-academic-pdf" templates) ;;
 esac
 if [[ -z "${CROSS_TARGET:-}" ]]; then
   "${SMOKE[@]}"

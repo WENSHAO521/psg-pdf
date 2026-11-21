@@ -67,7 +67,6 @@ for product in "${products[@]}"; do
     path="$(find_bin "$bin")" || { echo "::error::$bin was not built"; exit 1; }
     "$path" --version
   done
-  if [[ "$product" == psg-academic-pdf ]]; then "$(find_bin psg-academic-pdf)" templates; fi
   echo "::endgroup::"
 done
 

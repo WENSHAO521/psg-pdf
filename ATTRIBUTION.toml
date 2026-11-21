@@ -2920,28 +2920,6 @@ kind = "icon"
 usage = "PSG Academic PDF window, taskbar, Dock and launcher icon; rendered by packaging/psg-icons.py"
 sha256 = "81d22634f6ec3fcfdbc46e205fa8858a7124fa161e103b6a6b648cfc030757dd"
 
-[[asset]]
-path = "packaging/macos/dmg/academic-background.svg"
-title = "PSG Academic PDF macOS DMG window background"
-author = "PSG PDF contributors"
-source = "Contributor-original, written by packaging/macos/dmg/generate.py; its text is outlined from Inter and JetBrains Mono (OFL-1.1, assets/fonts)"
-licence = "MIT OR Apache-2.0"
-licence_file = "assets/app-icon-academic/LICENSE.txt"
-kind = "image"
-usage = "Finder window of the PSG Academic PDF macOS DMG; rendered to academic-background.tiff by packaging/macos/dmg/generate.py"
-sha256 = "dec9c66c4a026f10a8d5b76665f000d8898b640be6de7c1f4ed1fdaf1b9df608"
-
-[[asset]]
-path = "packaging/macos/dmg/academic-background.tiff"
-title = "PSG Academic PDF macOS DMG window background (rendered)"
-author = "PSG PDF contributors"
-source = "Rendered from packaging/macos/dmg/academic-background.svg by packaging/macos/dmg/generate.py"
-licence = "MIT OR Apache-2.0"
-licence_file = "assets/app-icon-academic/LICENSE.txt"
-kind = "image"
-usage = "1x + 2x HiDPI 16-colour palette TIFF copied into the PSG Academic PDF macOS DMG by packaging/macos/package.sh; includes the free LittleCMS built-in sRGB profile"
-sha256 = "d267e2d688305647ec15f9106d073f1eaef1a62d9a748bda62f46e7f7e40040d"
-
 [[fetched]]
 file = "text-detection.onnx"
 url = "https://ocrs-models.s3-accelerate.amazonaws.com/text-detection.onnx"
