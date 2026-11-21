@@ -687,9 +687,17 @@ pub fn builtin_manifest(id: &str, name: &str, source: &str, layout: &Layout) -> 
          main = \"main.tex\"\n\
          body = \"body.tex\"\n\
          metadata = \"psg-metadata.tex\"\n\
-         files = [\"main.tex\", \"psg-article.cls\", \"body.tex\", \"references.bib\", \"psg-metadata.tex\"]\n",
-        summary = layout.summary()
+         files = [\"main.tex\", \"psg-article.cls\", \"body.tex\", \"references.bib\", \"psg-metadata.tex\"]\n{journal}{article_type}",
+        summary = layout.summary(),
+        journal = if layout.journal.is_empty() { String::new() } else { format!("journal = \"{}\"\n", toml_text(&layout.journal)) },
+        article_type =
+            if layout.article_type.is_empty() { String::new() } else { format!("article_type = \"{}\"\n", toml_text(&layout.article_type)) },
     )
+}
+
+/// Text for a TOML basic string.
+fn toml_text(text: &str) -> String {
+    one_line(text).replace('\\', "\\\\").replace('"', "\\\"")
 }
 
 fn one_line(text: &str) -> String {

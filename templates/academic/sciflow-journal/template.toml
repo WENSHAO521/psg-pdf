@@ -11,3 +11,4 @@ main = "main.tex"
 body = "body.tex"
 metadata = "psg-metadata.tex"
 files = ["main.tex", "psg-article.cls", "body.tex", "references.bib", "psg-metadata.tex"]
+article_type = "Original article"

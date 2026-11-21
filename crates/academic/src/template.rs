@@ -40,6 +40,12 @@ pub struct Manifest {
     pub body: String,
     pub metadata: String,
     pub files: Vec<String>,
+    /// The journal a new project's sample metadata names (templates converted from SciFlow).
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub journal: String,
+    /// The article type a new project's sample metadata names.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub article_type: String,
 }
 
 fn default_engine() -> String {
@@ -331,7 +337,9 @@ mod tests {
             let src = root.join("sciflow-source").join(source);
             let config = std::fs::read_to_string(src.join(crate::sciflow::CONFIGURATION)).unwrap();
             let read = |path: &str| std::fs::read(src.join(path)).ok();
-            let converted = crate::sciflow::convert(&config, &read).unwrap();
+            let mut converted = crate::sciflow::convert(&config, &read).unwrap();
+            // SciFlow's generic templates name a demo journal; the built-ins keep PSG's sample.
+            converted.layout.journal.clear();
             let mut files: Vec<(String, Vec<u8>)> = crate::template_import::sciflow_files(&converted.layout);
             let manifest = crate::sciflow::builtin_manifest(id, name, source, &converted.layout);
             files.push((MANIFEST.to_owned(), manifest.into_bytes()));

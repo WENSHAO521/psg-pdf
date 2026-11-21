@@ -87,6 +87,17 @@ impl Project {
         }
         template.materialize(dir)?;
         let m = &template.manifest;
+        // A template that names its journal (one converted from SciFlow) puts it in place of the
+        // sample journal, so a new project starts with the template's own.
+        let mut metadata = metadata;
+        let sample = PublicationMetadata::sample();
+        if !m.journal.is_empty() && metadata.journal == sample.journal {
+            metadata.journal = m.journal.clone();
+            metadata.journal_abbrev.clear();
+        }
+        if !m.article_type.is_empty() && metadata.article_type == sample.article_type {
+            metadata.article_type = m.article_type.clone();
+        }
         let project = Project {
             dir: dir.to_path_buf(),
             file: ProjectFile {

@@ -3826,7 +3826,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "f3e6fb1b9c06152e4d3b725471c29c0edfffae8a50062b72c5f1be09c7285da7"
+sha256 = "401be185688ab4275b6022805ecd80dc009f4b4b64fece31d0921bdcab743e8e"
 
 [[asset]]
 path = "templates/academic/sciflow-journal/references.bib"
@@ -3848,7 +3848,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "3f91eb71bb2e8316e7fb38ce88ab57fc540e83f75a869c0fd125c612eb013eb0"
+sha256 = "baeedb60dd1ee147b13355e06c63093ceff3a58e9d4e78862d08f66ab60fb832"
 
 [[asset]]
 path = "templates/academic/sciflow-report/body.tex"
@@ -3892,7 +3892,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "f3e6fb1b9c06152e4d3b725471c29c0edfffae8a50062b72c5f1be09c7285da7"
+sha256 = "401be185688ab4275b6022805ecd80dc009f4b4b64fece31d0921bdcab743e8e"
 
 [[asset]]
 path = "templates/academic/sciflow-report/references.bib"
@@ -3914,7 +3914,7 @@ licence = "MIT OR Apache-2.0"
 licence_file = "templates/academic/LICENSE.txt"
 kind = "data"
 usage = "Journal template compiled into PSG Academic PDF (crates/academic/src/template.rs) and copied into new projects"
-sha256 = "81f7d5258e38f6c983d1622256f2e177023f5a4100dc5baeb2f6e3b8a2e33c7d"
+sha256 = "fecc9bb6c059153a2abdbeed01118d473c1866774f3422222f4947afd608e3b3"
 
 [[asset]]
 path = "templates/academic/sciflow-monograph/body.tex"

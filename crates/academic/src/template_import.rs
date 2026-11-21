@@ -113,6 +113,8 @@ pub fn import(source: &Path, store: &Path, name: Option<&str>) -> Result<Importe
         body: body_name.to_owned(),
         metadata: METADATA_FILE.to_owned(),
         files: Vec::new(),
+        journal: String::new(),
+        article_type: String::new(),
     };
     let (template, dir) = install(store, manifest, kept)?;
     Ok(Imported { template, dir, found, warnings })
@@ -199,6 +201,8 @@ fn import_sciflow(
         body: "body.tex".to_owned(),
         metadata: METADATA_FILE.to_owned(),
         files: Vec::new(),
+        journal: converted.layout.journal.clone(),
+        article_type: converted.layout.article_type.clone(),
     };
     let mut found = vec![format!("SciFlow configuration: {config}.")];
     found.extend(converted.found);
@@ -1025,6 +1029,11 @@ mod tests {
         let added = import(&root.path().join("unicorn"), &store, None).unwrap();
         assert_eq!(added.template.manifest.name, "Unicorn Journal");
         assert_eq!(added.template.manifest.engine, "xelatex");
+        assert_eq!(added.template.manifest.journal, "Unicorn Journal");
+        // A project made from it starts with the template's journal, not the PSG sample's.
+        let project = crate::Project::create(&root.path().join("project"), &added.template, PublicationMetadata::sample()).unwrap();
+        assert_eq!(project.file.metadata.journal, "Unicorn Journal");
+        assert!(std::fs::read_to_string(root.path().join("project").join(METADATA_FILE)).unwrap().contains("Unicorn Journal"));
         let main = std::fs::read_to_string(added.dir.join("main.tex")).unwrap();
         assert!(main.contains("\\def\\psgbiblatexoptions{style=ieee}"), "{main}");
         assert!(main.contains("\\documentclass[12pt]{psg-article}"), "{main}");

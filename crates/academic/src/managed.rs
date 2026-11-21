@@ -47,6 +47,8 @@ pub const REQUIRED_PACKAGES: &[&str] = &[
     "latexmk",
     "biber",
     "biblatex",
+    // The APA style the built-in SciFlow templates cite with.
+    "biblatex-apa",
     "csquotes",
     "soul",
     "microtype",
@@ -650,6 +652,16 @@ fn is_missing_file_name(name: &str) -> bool {
 pub fn missing_files(log: &str) -> Vec<String> {
     let mut files = Vec::new();
     for line in log.lines() {
+        // BibLaTeX names a missing citation style, not its file: `Style 'apa' not found.`
+        // (`Package biblatex Error: Style 'ieee' not found.`); the style is its `.bbx` file.
+        if let Some(rest) = line.split("Style '").nth(1).filter(|_| line.contains("biblatex") && line.contains("not found")) {
+            let style = rest.split('\'').next().unwrap_or_default();
+            let name = format!("{style}.bbx");
+            if is_missing_file_name(&name) && !files.contains(&name) {
+                files.push(name);
+            }
+            continue;
+        }
         let Some(start) = line.find("File `") else { continue };
         if !line.contains("not found") {
             continue;
@@ -752,6 +764,8 @@ mod tests {
                    ! LaTeX Error: File `acmart.cls' not found.\n";
         assert_eq!(missing_files(log), vec!["soul.sty".to_owned(), "acmart.cls".to_owned()]);
         assert!(missing_files("no problems here").is_empty());
+        let style = "! Package biblatex Error: Style 'apa' not found.\n! Package biblatex Error: Style '../x' not found.\n";
+        assert_eq!(missing_files(style), vec!["apa.bbx".to_owned()]);
     }
 
     #[test]
