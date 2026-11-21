@@ -381,7 +381,7 @@ fn find_command(masked: &str, name: &str, from: usize) -> Option<usize> {
 }
 
 /// The end (exclusive) of the group that opens at `open` (`{` or `[`).
-fn group_end(masked: &str, open: usize) -> Option<usize> {
+pub(crate) fn group_end(masked: &str, open: usize) -> Option<usize> {
     let bytes = masked.as_bytes();
     let (left, right) = match bytes.get(open)? {
         b'{' => (b'{', b'}'),

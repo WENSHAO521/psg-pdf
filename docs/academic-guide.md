@@ -149,6 +149,13 @@ the metadata writes them back from then on: set this article's in the metadata f
 title, authors and keywords always come from the metadata, never from the template's own
 `\hypersetup`.
 
+Tables and figures from Word are set the way the template's sample article sets its own: the
+settings before its first table (`\captionsetup`, the font and size, rule spacing), its column
+colour and alignment, the face of the note under it, and, for a long table, the environment the
+sample puts its table page in (a landscape page, say). Captions lose Word's bold, and a "Note."
+paragraph under a table or figure moves under it in the template's note face. What was learnt is
+kept in the project's `psg-house-style.toml`, which can be edited.
+
 A Word manuscript's Greek letters, Unicode subscripts and superscripts and math signs typed as plain
 text (`τⱼ`, `x₀`, `≤`) are written as the LaTeX commands that draw them when the template uses
 pdfLaTeX, whose fonts have no glyph for them. Web addresses typed as plain text may break after a

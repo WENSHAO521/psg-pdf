@@ -108,6 +108,16 @@ impl ManuscriptImporter for PandocImporter {
         let write = self.pandoc(project, &["--from=json", "--to=latex", "--wrap=preserve", "-o", CONVERTED, TREE], source, cancel)?;
         let converted = project.dir.join(CONVERTED);
         let body = std::fs::read(&converted).map_err(|e| Error::io(&converted, e))?;
+        // The template's way with tables and figures, learnt from its sample article before the
+        // manuscript replaces it, goes on the manuscript's.
+        let style = house_style(project)?;
+        let (body, styled) = match &style {
+            Some(style) => {
+                let (text, applied) = crate::house_style::apply(&String::from_utf8_lossy(&body), style);
+                (text.into_bytes(), Some(applied))
+            }
+            None => (body, None),
+        };
         write_atomic(&project.dir.join(&project.file.body), &body)?;
         let _ = std::fs::remove_file(&converted);
         let _ = std::fs::remove_file(&tree_path);
@@ -140,6 +150,12 @@ impl ManuscriptImporter for PandocImporter {
             changes.figures,
             changes.tables
         );
+        if let Some(applied) = styled.filter(|a| a.tables + a.figures > 0) {
+            note.push_str(&format!(
+                " {} table(s) and {} figure(s) set the way the template's sample sets them ({} note(s); {} table(s) on the template's table page).",
+                applied.tables, applied.figures, applied.notes, applied.on_own_page
+            ));
+        }
         if let Some(cited) = &cited {
             note.push(' ');
             note.push_str(cited);
@@ -165,6 +181,23 @@ impl ManuscriptImporter for PandocImporter {
         }
         Ok(note)
     }
+}
+
+/// The project's table and figure style: read from [`crate::house_style::FILE`], or learnt from
+/// the body the template came with (its sample article) and saved there, before the first
+/// manuscript replaces that body.
+fn house_style(project: &Project) -> Result<Option<crate::house_style::HouseStyle>, Error> {
+    let path = project.dir.join(crate::house_style::FILE);
+    if let Ok(text) = std::fs::read_to_string(&path) {
+        return Ok(toml::from_str(&text).ok());
+    }
+    let Ok(sample) = project.read_body() else { return Ok(None) };
+    let style = crate::house_style::learn(&sample);
+    // Saved even when there is nothing to learn, so a later import never learns from a manuscript.
+    let text = toml::to_string_pretty(&style.clone().unwrap_or_default())
+        .map_err(|e| Error::Project(format!("could not write {}: {e}", crate::house_style::FILE)))?;
+    write_atomic(&path, text.as_bytes())?;
+    Ok(style)
 }
 
 /// Where Pandoc writes the bibliography entries of the Word citations, before they are added to

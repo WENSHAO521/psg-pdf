@@ -36,6 +36,7 @@ pub mod compile;
 pub mod diagnostics;
 pub mod docx;
 pub mod engine;
+pub mod house_style;
 pub mod managed;
 pub mod metadata;
 pub mod pandoc;
